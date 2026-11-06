@@ -1,0 +1,22 @@
+{
+  "name": "Tour",
+  "description": "漫游引导组件，分步高亮目标元素并浮层讲解（遮罩挖洞）",
+  "category": "引导",
+  "useCase": ["新功能上手引导", "页面关键区域讲解", "分步操作向导"],
+  "dontUse": ["表单校验提示用 Form 错误信息", "轻量说明用 Tooltip/Popover"],
+  "props": {
+    "steps": { "type": "TourStep[]", "desc": "步骤：title/description/target（选择器或取元素函数）/placement" },
+    "open": { "type": "boolean", "desc": "受控开关" },
+    "defaultOpen": { "type": "boolean", "default": "false", "desc": "非受控初始开关" },
+    "onOpenChange": { "type": "(open: boolean) => void", "desc": "开关变化回调（Esc/完成触发）" },
+    "current": { "type": "number", "desc": "受控当前步（从 0 计）" },
+    "onCurrentChange": { "type": "(i: number) => void", "desc": "步数变化回调" },
+    "classNames": { "type": "{ root?; mask?; card?; title?; description?; footer? }", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "卡片 role=dialog + aria-labelledby/aria-describedby 关联标题与描述",
+    "Esc 关闭；遮罩 aria-hidden，不拦截目标元素交互",
+    "上一步/下一步/完成均为原生 button，可键盘操作"
+  ],
+  "related": ["Tooltip", "Popover", "Modal"]
+}

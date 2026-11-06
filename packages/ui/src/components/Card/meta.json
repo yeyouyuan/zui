@@ -1,0 +1,22 @@
+{
+  "name": "Card",
+  "description": "卡片容器：标题/内容/页脚/媒体区的通用信息块",
+  "category": "数据展示",
+  "useCase": ["仪表盘指标块", "列表中的详情卡", "表单/设置的分组容器"],
+  "dontUse": ["表格类数据用 Table/List", "需要固定侧栏抽屉用 Drawer"],
+  "props": {
+    "title": { "type": "React.ReactNode", "default": "—", "desc": "卡片标题" },
+    "extra": { "type": "React.ReactNode", "default": "—", "desc": "头部右侧插槽（操作按钮等）" },
+    "cover": { "type": "React.ReactNode", "default": "—", "desc": "顶部媒体区" },
+    "footer": { "type": "React.ReactNode", "default": "—", "desc": "页脚插槽" },
+    "bordered": { "type": "boolean", "default": "true", "desc": "边框" },
+    "hoverable": { "type": "boolean", "default": "false", "desc": "hover 阴影 + 上浮" },
+    "classNames": { "type": "{ root?; header?; ... }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "标题建议用语义标题层级（h3 等）保持文档大纲正确",
+    "可点卡片若整体可点，内部不要再放嵌套按钮（或明确操作区分）",
+    "hoverable 仅视觉反馈，不承载唯一交互路径"
+  ],
+  "related": ["Tabs", "Table", "List"]
+}

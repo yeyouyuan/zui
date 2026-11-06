@@ -1,0 +1,92 @@
+/**
+ * ZUI 设计令牌 — Semantic 语义层
+ *
+ * 语义层是组件唯一消费入口：组件 CSS 只允许使用 --z-color-* 语义变量、
+ * 尺寸类变量（--z-radius / --z-space-* / --z-text-* …）与本组件自己的
+ * --z-<name>-* 变量，禁止硬编码色值（透明度叠加除外，用 color-mix()）。
+ *
+ * 本层全部通过 var() 引用 base.css 的 primitive 色阶；
+ * 品牌换肤只需覆盖本层变量（见 README）。暗色覆盖见 dark.css。
+ * 明暗两套映射的对比度均按 WCAG AA 校准：
+ * 正文 fg 与 bg ≥ 4.5:1，primary-fg 与 primary ≥ 4.5:1。
+ */
+
+:root {
+  /* ============================================================
+   * 背景（bg → bg-subtle → bg-muted 依次加重；elevated 为浮层表面）
+   * ============================================================ */
+  --z-color-bg: var(--z-neutral-50);          /* 页面底色 */
+  --z-color-bg-subtle: var(--z-neutral-100);  /* 次级背景：分区、斑马行 */
+  --z-color-bg-muted: var(--z-neutral-200);   /* 弱化填充：标签、代码块、禁用输入 */
+  --z-color-bg-elevated: var(--z-neutral-50); /* 浮层表面：卡片、弹层、菜单（靠阴影/描边区分） */
+  --z-color-bg-inverse: var(--z-neutral-900); /* 反色表面：Tooltip、深色条 */
+
+  /* ============================================================
+   * 前景（文字 / 图标）
+   * ============================================================ */
+  --z-color-fg: var(--z-neutral-950);          /* 正文 */
+  --z-color-fg-muted: var(--z-neutral-600);    /* 次要文字：说明、元信息 */
+  --z-color-fg-subtle: var(--z-neutral-500);   /* 弱化文字：占位符、时间戳 */
+  --z-color-fg-inverse: var(--z-neutral-50);   /* 反色表面上的文字 */
+  --z-color-fg-on-primary: var(--z-neutral-50); /* 主色填充上的文字（与 primary-fg 同源） */
+
+  /* ============================================================
+   * 边框
+   * ============================================================ */
+  --z-color-border: var(--z-neutral-300);        /* 常规描边：输入框、卡片（约 #d9d9d9 感） */
+  --z-color-border-subtle: var(--z-neutral-200); /* 极弱分隔：行分隔线 */
+  --z-color-border-strong: var(--z-neutral-500); /* 强调描边：hover / 选中态（≥3:1） */
+  --z-color-border-focus: var(--z-brand-600);    /* 焦点描边 */
+
+  /* ============================================================
+   * 主色（品牌蓝）
+   * ============================================================ */
+  --z-color-primary: var(--z-brand-600);             /* 主按钮、选中态、主强调 */
+  --z-color-primary-hover: var(--z-brand-700);       /* 悬停（加深） */
+  --z-color-primary-active: var(--z-brand-800);      /* 按下 */
+  --z-color-primary-fg: var(--z-neutral-50);         /* 主色上的文字/图标 */
+  --z-color-primary-subtle: var(--z-brand-50);       /* 主色弱化底：浅色徽标、选中行 */
+  --z-color-primary-subtle-fg: var(--z-brand-700);   /* 主色弱化底上的文字 */
+
+  /* ============================================================
+   * 状态色 — 危险 / 成功 / 警告 / 信息（同构）
+   * ============================================================ */
+  --z-color-danger: var(--z-danger-600);
+  --z-color-danger-hover: var(--z-danger-700);
+  --z-color-danger-fg: var(--z-neutral-50);
+  --z-color-danger-subtle: var(--z-danger-50);
+  --z-color-danger-subtle-fg: var(--z-danger-700);
+
+  --z-color-success: var(--z-success-600);
+  --z-color-success-hover: var(--z-success-700);
+  --z-color-success-fg: var(--z-neutral-50);
+  --z-color-success-subtle: var(--z-success-50);
+  --z-color-success-subtle-fg: var(--z-success-700);
+
+  --z-color-warning: var(--z-warning-600);
+  --z-color-warning-hover: var(--z-warning-700);
+  --z-color-warning-fg: var(--z-neutral-50);
+  --z-color-warning-subtle: var(--z-warning-50);
+  --z-color-warning-subtle-fg: var(--z-warning-700);
+
+  --z-color-info: var(--z-info-600);
+  --z-color-info-hover: var(--z-info-700);
+  --z-color-info-fg: var(--z-neutral-50);
+  --z-color-info-subtle: var(--z-info-50);
+  --z-color-info-subtle-fg: var(--z-info-700);
+
+  /* ============================================================
+   * 链接与焦点
+   * ============================================================ */
+  --z-color-link: var(--z-brand-600);        /* 正文中的链接（与 bg ≥ 4.5:1） */
+  --z-color-link-hover: var(--z-brand-700);  /* 链接悬停 */
+  --z-color-focus-ring: var(--z-brand-600);  /* :focus-visible 焦点圈（与 bg ≥ 3:1） */
+
+  /* ============================================================
+   * 遮罩与禁用
+   * ============================================================ */
+  --z-color-overlay: color-mix(in oklch, var(--z-neutral-950) 45%, transparent);
+  --z-color-disabled-bg: var(--z-neutral-100);
+  --z-color-disabled-fg: var(--z-neutral-400);
+  --z-color-disabled-border: var(--z-neutral-200);
+}

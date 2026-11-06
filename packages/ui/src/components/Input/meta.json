@@ -1,0 +1,22 @@
+{
+  "name": "Input",
+  "description": "单行文本输入框，支持前后缀插槽、清除按钮与校验状态",
+  "category": "基础",
+  "useCase": ["表单文本字段", "搜索框（配 prefix 图标）", "带清除按钮的受控输入"],
+  "dontUse": ["多行文本用 textarea（或 Mentions）", "数字步进用 InputNumber", "日期录入用 DatePicker"],
+  "props": {
+    "size": { "type": "'sm' | 'md' | 'lg'", "default": "'md'", "desc": "尺寸" },
+    "status": { "type": "'default' | 'error' | 'success'", "default": "'default'", "desc": "校验状态（根 data-status）" },
+    "prefix": { "type": "React.ReactNode", "default": "—", "desc": "前置插槽（图标等）" },
+    "suffix": { "type": "React.ReactNode", "default": "—", "desc": "后置插槽" },
+    "clearable": { "type": "boolean", "default": "false", "desc": "有值时显示清除按钮" },
+    "onClear": { "type": "() => void", "default": "—", "desc": "点击清除按钮回调（清除后聚焦输入框）" },
+    "classNames": { "type": "{ root?; input?; prefix?; suffix?; clear? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "清除按钮 type=button + aria-label=\"清除\"，readOnly 时隐藏",
+    "status=error 时配 aria-invalid + aria-describedby 指向错误文案",
+    "原生 input 语义，其余属性（placeholder/aria-* /事件）透传根元素"
+  ],
+  "related": ["Form", "Select", "Button"]
+}

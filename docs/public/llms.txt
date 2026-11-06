@@ -1,0 +1,387 @@
+# ZUI — React 19 Component Library (AI Quick Reference)
+
+> ZUI is a token-driven, zero-runtime-style, accessibility-first React 19 component library.
+> This file is the LLM-facing cheat sheet: read it fully and you can generate correct ZUI code.
+
+## Install & Setup
+
+```
+pnpm add @zui/react          # components + bundled styles
+pnpm add @zui/tokens         # optional: TS constants + CSS variable references
+```
+
+```tsx
+import '@zui/react/styles.css'; // once per app (includes tokens + reset + all component styles)
+import { Button, Input, Select, Modal, Tabs, Table, MessageProvider, useMessage } from '@zui/react';
+```
+
+- React 19 native refs: components accept `ref` directly via `React.ComponentPropsWithRef<'x'>`. NEVER use `forwardRef`.
+- Theme: default follows system. Force dark with `document.documentElement.dataset.theme = 'dark'`, force light with `'light'`, clear the attribute to follow the system again.
+- Controlled convention (ALL stateful components): `value` / `defaultValue` / `onChange` (or `checked` / `defaultChecked` / `onChange` for boolean state; `open` / `defaultOpen` / `onOpenChange` for Modal).
+- Sizes: `size?: 'sm' | 'md' | 'lg'` default `'md'` (Switch: `'sm' | 'md'`; Table uses `density`; Message has no size).
+- `disabled?: boolean` everywhere. Every component forwards remaining props to its root element (className, style, aria-*, data-*, events) unless noted.
+
+## Component API Signatures (one prop per line)
+
+### Button
+```
+Button: (props: ButtonProps) => JSX.Element
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'   // default 'primary'
+  size?: 'sm' | 'md' | 'lg'                                            // default 'md'
+  loading?: boolean                                                    // default false; spinner + aria-busy, blocks click, stays focusable
+  iconStart?: React.ReactNode
+  iconEnd?: React.ReactNode
+  fullWidth?: boolean                                                  // default false
+  classNames?: { root?: string; icon?: string; label?: string; spinner?: string }
+  ...rest: React.ComponentPropsWithRef<'button'>                       // forwarded to root (except 'prefix')
+Root data attrs: data-variant | data-size | data-loading | data-full-width
+Parts: root | icon | label | spinner
+```
+
+### Input
+```
+Input: (props: InputProps) => JSX.Element
+  size?: 'sm' | 'md' | 'lg'                                            // default 'md'
+  status?: 'default' | 'error' | 'success'                             // default 'default' (root data-status)
+  prefix?: React.ReactNode
+  suffix?: React.ReactNode
+  clearable?: boolean                                                  // default false; clear button when value present
+  onClear?: () => void
+  classNames?: { root?: string; input?: string; prefix?: string; suffix?: string; clear?: string }
+  ...rest: React.ComponentPropsWithRef<'input'>                        // forwarded (except 'prefix', 'size')
+Structure: root(z-input) > prefix + input(z-input-field) + clear(z-input-clear) + suffix
+Clear button: type="button", aria-label="清除", hidden when readOnly; focuses input then calls onClear
+Parts: root | input | prefix | suffix | clear
+```
+
+### Checkbox
+```
+Checkbox: (props: CheckboxProps) => JSX.Element
+  checked?: boolean
+  defaultChecked?: boolean
+  onChange?: (checked: boolean) => void                                // NOTE: boolean arg, not event
+  label?: React.ReactNode
+  indeterminate?: boolean                                              // DOM input.indeterminate + aria-checked="mixed"
+  classNames?: { root?: string; control?: string; label?: string }
+  ...rest: React.ComponentPropsWithRef<'input'>                        // except 'type' | 'onChange' | 'checked' | 'defaultChecked' | 'size'
+Parts: root | control | label   (native input visually hidden, kept for a11y)
+```
+
+### Radio / RadioGroup
+```
+RadioGroup: (props: RadioGroupProps) => JSX.Element
+  value?: string
+  defaultValue?: string
+  onChange?: (value: string) => void
+  name?: string                                                        // injected into child Radios
+  disabled?: boolean                                                   // group-level, injected
+  orientation?: 'horizontal' | 'vertical'                              // default 'vertical' (role="radiogroup" + aria-orientation)
+  children?: React.ReactNode
+  className?: string
+  classNames?: { root?: string }
+Radio: (props: RadioProps) => JSX.Element
+  value: string                                                        // REQUIRED
+  label?: React.ReactNode
+  disabled?: boolean
+  classNames?: { root?: string; control?: string; label?: string }
+  ...rest: React.ComponentPropsWithRef<'input'>                        // except 'type' | 'onChange' | 'checked' | 'defaultChecked' | 'size'
+Without RadioGroup, Radios fall back to native name-based grouping.
+Parts (Radio): root | control | label   (visual dot: z-radio-dot)
+```
+
+### Switch
+```
+Switch: (props: SwitchProps) => JSX.Element
+  checked?: boolean
+  defaultChecked?: boolean
+  onChange?: (checked: boolean) => void                                // NOTE: boolean arg
+  size?: 'sm' | 'md'                                                   // default 'md' (no lg)
+  label?: React.ReactNode
+  classNames?: { root?: string; track?: string; thumb?: string; label?: string }
+  ...rest: React.ComponentPropsWithRef<'button'>                       // except 'onChange' | 'value' | 'type'
+Native button with role="switch", aria-checked; Space/Enter toggle.
+Parts: root | track | label (thumb slot: class z-switch-thumb, no data-part)
+```
+
+### Select (select-only combobox, WAI-ARIA APG)
+```
+SelectOption: { value: string; label: React.ReactNode; disabled?: boolean }
+Select: (props: SelectProps) => JSX.Element
+  options: SelectOption[]                                              // REQUIRED
+  value?: string
+  defaultValue?: string
+  onChange?: (value: string) => void
+  placeholder?: string                                                 // default '请选择'
+  disabled?: boolean                                                   // default false
+  size?: 'sm' | 'md' | 'lg'                                            // default 'md'
+  status?: 'default' | 'error' | 'success'                             // default 'default'
+  id?: string
+  name?: string                                                        // renders hidden input for form submit
+  className?: string
+  classNames?: { root?: string; trigger?: string; value?: string; listbox?: string; option?: string; empty?: string }
+  'aria-label'?: string
+  'aria-labelledby'?: string
+  'aria-describedby'?: string
+Trigger: button with aria-haspopup="listbox", aria-expanded, aria-controls, aria-activedescendant (focus stays on trigger)
+List: role="listbox"; options role="option" + aria-selected + aria-disabled
+Keyboard: Enter/Space/ArrowDown/ArrowUp open (closed); ArrowUp/ArrowDown move; Home/End first/last; Enter/Space select; Esc close + refocus trigger; Tab closes; first-letter typeahead
+Parts: root | trigger | value | listbox | option | empty
+```
+
+### Modal (compound)
+```
+Modal: (props: ModalProps) => JSX.Element
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  children: React.ReactNode                                            // REQUIRED
+Modal.Trigger: native button, toggles open on click, props forwarded
+Modal.Content: (props: ModalContentProps) => JSX.Element
+  size?: 'sm' | 'md' | 'lg'                                            // default 'md'
+  closeOnOverlay?: boolean                                             // default true
+  closeOnEsc?: boolean                                                 // default true
+  classNames?: { overlay?: string; content?: string }
+  ...rest: React.ComponentPropsWithRef<'div'>
+Modal.Header | Modal.Title | Modal.Description | Modal.Body | Modal.Footer: structure components (Title/Description auto-wire aria-labelledby/aria-describedby)
+Modal.Close: native button; icon-only use defaults to aria-label="关闭", text children provide the accessible name and render as an action button
+Content renders via Portal to body; root dialog: role="dialog", aria-modal="true", tabIndex=-1
+Focus (APG): open moves focus ([data-autofocus] first, else first focusable, else dialog), Tab cycles, close restores focus to trigger
+Also: overlay click close, Esc close, scroll lock, data-state="open"/"closed" enter/exit animation
+Parts (inside Content): trigger | overlay | content | header | title | description | body | footer | close
+```
+
+### Tabs (compound)
+```
+Tabs: (props: TabsProps) => JSX.Element
+  value?: string
+  defaultValue?: string
+  onValueChange?: (value: string) => void                              // NOTE: name is onValueChange
+  orientation?: 'horizontal' | 'vertical'                              // default 'horizontal'
+  activationMode?: 'automatic' | 'manual'                              // default 'automatic' (focus selects); manual = Enter/Space
+  children?: React.ReactNode
+  className?: string
+  classNames?: { root?: string; list?: string; trigger?: string; panel?: string }
+Tabs.List: role="tablist" + aria-orientation
+Tabs.Trigger: { value: string; disabled?: boolean; icon?: React.ReactNode } + forwarded props; role="tab"; roving tabindex (selected=0, others=-1)
+Tabs.Panel: { value: string; forceMount?: boolean }                    // default unmounted when inactive; forceMount keeps it (hidden)
+Keyboard: ArrowLeft/ArrowRight (ArrowUp/ArrowDown when vertical), Home/End; manual mode activates on Enter/Space
+aria-controls / aria-labelledby wired both ways via useId
+Parts: root | list | trigger | panel | icon
+```
+
+### Table (compound, presentational)
+```
+Table: (props: TableProps) => JSX.Element
+  density?: 'comfortable' | 'compact'                                  // default 'comfortable' (root data-density)
+  bordered?: boolean                                                   // default false (row separators always on)
+  striped?: boolean                                                    // default false
+  classNames?: { root?: string }
+  ...rest: React.ComponentPropsWithRef<'table'>                        // except 'size'
+Table.Head | Table.Body: thead / tbody wrappers, props forwarded
+Table.Row: { selected?: boolean } → data-selected; class z-table-row
+Table.HeaderCell: { align?: 'left' | 'center' | 'right' } (default 'left'); th with scope="col"
+Table.Cell: { align?: 'left' | 'center' | 'right' } (default 'left'); data-align
+Pure semantic table markup: <table>/<thead>/<tbody>/<tr>/<th>/<td>
+Parts: root | header-cell | cell
+```
+
+### Message (hooks-based — NO static methods)
+```
+MessageProvider: (props) => JSX.Element
+  children?: React.ReactNode
+  max?: number                                                         // default 3 (oldest evicted)
+  placement?: 'top' | 'bottom'                                         // default 'top' (list data-placement)
+useMessage(): MessageApi                                               // THROWS outside MessageProvider
+MessageApi:
+  show:    (config: MessageConfig | string) => string                  // returns id
+  success: (config: MessageConfig | string) => string
+  error:   (config: MessageConfig | string) => string
+  warning: (config: MessageConfig | string) => string
+  info:    (config: MessageConfig | string) => string
+  dismiss: (id: string) => void
+  clear:   () => void
+MessageConfig:
+  content: React.ReactNode                                             // REQUIRED
+  duration?: number                                                    // default 3000 ms; 0 = never auto-close
+  closable?: boolean                                                   // default false (close button aria-label="关闭")
+  onClose?: () => void
+Semantics: role="status" + aria-live="polite" (error: aria-live="assertive"); data-variant per type; data-state="open"/"closing" (200ms exit)
+NEVER write message.success() as a global/static call — always useMessage() inside MessageProvider.
+Parts: root (z-message-list) | item | icon | content | close
+```
+
+## Controlled-State Convention
+
+- Object/string state: `value` + `onChange(next)`; uncontrolled via `defaultValue`.
+- Boolean state (Checkbox/Switch): `checked` + `onChange(checked: boolean)`; uncontrolled via `defaultChecked`.
+- Open state (Modal): `open` + `onOpenChange(open: boolean)`; uncontrolled via `defaultOpen`.
+- Tabs: `value` + `onValueChange(value: string)`.
+- Select/RadioGroup: `value` + `onChange(value: string)`.
+
+## Customization Outlets (the ONLY supported styling hooks)
+
+Every component exposes exactly three semantic outlets:
+
+1. `data-part="<part>"` on each structural element (root is `data-part="root"`); states via data attributes (`data-variant`, `data-size`, `data-status`, `data-open`, `data-selected`, `data-checked`...).
+2. `classNames?: Record<PartName, string>` — slot-level class names APPENDED (never overriding) to each part.
+3. Component-level CSS variables `--z-<component>-*` (e.g. `--z-button-bg`, `--z-input-height`, `--z-modal-content-radius`) defined on the component's own selector; override anywhere.
+
+Global design tokens (override to re-theme): `--z-color-{bg,fg,border,primary,danger,success,warning,info,...}` semantic layer, `--z-radius` (single source; sm/md/lg/xl derive via calc), `--z-space-1..12`, `--z-text-xs..2xl`, `--z-shadow-xs..lg`, `--z-font-sans/mono`, `--z-duration-*`, `--z-z-*` (z-index scale).
+
+Example re-theme:
+```css
+:root { --z-color-primary: hsl(220 62% 46%); --z-radius: 10px; }
+.z-button-slot { --z-button-radius: 2px; } /* component-scoped override */
+```
+
+## Taboos (do NOT do these)
+
+- Do NOT style via internal class names (`z-button`, `z-input-field`, ...) — they are implementation details and not part of the contract. Use `data-part`, `classNames`, and `--z-<component>-*` variables only.
+- Do NOT use static/imperative message APIs (e.g. `message.success(...)` imported from the package) — use `useMessage()` inside `MessageProvider`.
+- Do NOT use `forwardRef` — React 19 native `ref` prop.
+- Do NOT rely on state modifier classes (no `.is-active`) — states are data attributes.
+- Do NOT hardcode colors in overrides that should theme — override semantic `--z-color-*` tokens instead.
+- Do NOT expect `Select` to accept arbitrary DOM props (it takes a fixed prop set + aria-*); wrap it for layout (no `style` prop).
+- Do NOT skip keyboard/ARIA requirements when composing: focus visibility (`:focus-visible`), roles and `aria-*` are contractual.
+
+## AI Auto-Translate (useAutoTranslate) — @zui/i18n
+
+Automatic translation of built-in component copy (placeholder / 请选择 / 清除 / 关闭 /
+暂无数据 / 上一页 / 下一页 …) via OpenAI / DeepL / Youdao / custom endpoints, with a
+localStorage cache and graceful fallback to the source text on errors.
+
+```
+import { useAutoTranslate, type TranslateConfig, type TranslateProvider } from '@zui/i18n';
+
+type TranslateProvider = 'openai' | 'deepl' | 'youdao' | 'custom';
+
+interface TranslateConfig {
+  provider: TranslateProvider;
+  baseURL?: string;                // OpenAI-compatible API root; host-only gets /v1
+  key?: string;                    // OpenAI-compatible Bearer key
+  apiKey?: string;                 // youdao: appKey
+  endpoint?: string;               // REQUIRED for 'custom'; full URL override for others
+  model?: string;                  // openai, e.g. 'gpt-4o-mini'
+  appSecret?: string;              // youdao signing secret
+  sourceLang?: string;             // default 'zh'
+  targetLang: string;              // REQUIRED, e.g. 'en'
+  cache?: boolean;                 // default true (localStorage)
+  cacheKey?: string;               // default 'zui-translate-cache'
+}
+
+function useAutoTranslate(config: TranslateConfig): {
+  t:      (text: string, context?: { component?: string; role?: string }) => Promise<string>;
+  tSync:  (text: string, context?: { component?: string; role?: string }) => string;
+  isLoading: boolean;
+  error?: Error;
+  clearCache: () => void;
+};
+```
+
+- `t(text, context)` — async translate; cache hit resolves immediately; provider failure
+  falls back to the source text (never throws into render).
+- `tSync(text, context)` — render-safe: cache hit returns the translation synchronously;
+  miss returns the source text and schedules an async backfill (re-render picks it up).
+- `context` injects component hints into the provider prompt
+  (`t('请选择', { component: 'Select', role: 'placeholder' })`).
+- Cache: `localStorage`, keyed by language pair, provider settings, source text and component/role context. `clearCache()` empties it.
+- OpenAI-compatible Chat Completions setup: `baseURL`, `key`, `model` plus `targetLang`.
+  A host-only baseURL gets `/v1/chat/completions`; versioned or proxy paths get
+  `/chat/completions`. A server proxy can keep the key.
+- Provider endpoints: openai `chat/completions` (system prompt carries component context),
+  deepl `/v2/translate`, youdao `/api`, custom `POST endpoint`
+  `{ texts, sourceLang, targetLang, contexts? }` → `{ translations: string[] }`.
+- Translations with missing, renamed or extra `{placeholder}` variables fall back to source text.
+- ConfigProvider accepts `translate?: TranslateConfig` and translates built-in copy at runtime.
+  Nested providers merge source locales before translating; application children and values are not translated.
+  A key or proxy endpoint enables OpenAI/DeepL, Youdao needs appKey + appSecret, and custom needs an endpoint.
+
+## meta.json — per-component AI metadata (CONTRACTS-V3 §2)
+
+Path: `packages/ui/src/components/<Name>/meta.json` (all 57 components ship metadata). Consumed by `@zui/mcp` tools
+and the registry generator.
+
+```json
+{
+  "name": "Button",
+  "description": "按钮组件，触发即时操作",
+  "category": "基础",
+  "useCase": ["表单提交", "对话框确认", "工具栏操作"],
+  "dontUse": ["不要用 Button 做页面导航（用 Link）"],
+  "props": {
+    "variant": { "type": "'primary'|'secondary'|'outline'|'ghost'|'danger'", "default": "'primary'", "desc": "按钮变体" }
+  },
+  "a11yNotes": ["loading 时保持可聚焦"],
+  "related": ["Input", "Form"]
+}
+```
+
+Field meaning:
+- `name` / `description` — component name and one-line summary (used in search results).
+- `category` — one of 基础 / 数据录入 / 数据展示 / 导航 / 反馈 / 表单 / 其他.
+- `useCase` — when TO use this component (array of short phrases).
+- `dontUse` — when NOT to (and which component to use instead).
+- `props` — only the KEY props (4–8 per component), each `{ type, default?, desc }`.
+- `a11yNotes` — accessibility contract (roles, aria, keyboard).
+- `related` — related component names.
+
+## Registry & CLI (packages/cli + registry/)
+
+The registry (`registry/registry.json`) contains 57 components and 4 blocks, generated from sources +
+`meta.json`; `@zui/cli` copies component source into your project (free to edit) with an
+upstream update channel.
+
+```bash
+node registry/scripts/generate.mjs          # rebuild registry.json
+node registry/scripts/generate.mjs --check  # CI: registry vs components
+
+pnpm dlx @zui/cli init                 # interactive setup → writes .zurc.json
+pnpm dlx @zui/cli add button           # copy Button.tsx + Button.css → src/components/ui/button/
+pnpm dlx @zui/cli add button modal     # multiple components
+pnpm dlx @zui/cli add --all            # everything in the registry
+pnpm dlx @zui/cli diff button          # unified diff: local copy vs registry (update channel)
+pnpm dlx @zui/cli list                 # list all components (--json for machine output)
+```
+
+- `add` copies components to `<components>/<kebab-name>/`, blocks to `<components>/blocks/<name>/`,
+  shared utils/config/styles to `<components>/_zui/`, resolves `registryDependencies` recursively,
+  rewrites imports and prints npm deps. Registry top-level `exports` maps public symbols to barrels.
+- Published CLI/MCP packages include their registry, source and metadata in `data/`.
+- `diff` outputs `--- a/... +++ b/...` patches (local = a, registry = b).
+- registry entry shape: `{ name, type: 'registry:component' | 'registry:block', title, description,
+  dependencies, registryDependencies, files, cssVars, meta }` — `meta` points at the
+  component's `meta.json`.
+
+## MCP server (packages/mcp) — 3 tools
+
+`@zui/mcp` is a pure stdio JSON-RPC 2.0 server (no MCP SDK). Configure it in Claude
+Desktop / Cursor as a stdio MCP server (see `packages/mcp/README.md` for full config):
+
+```json
+{
+  "mcpServers": {
+    "zui": {
+      "command": "node",
+      "args": ["/abs/path/to/zui/packages/mcp/dist/index.js"],
+      "env": { "ZUI_ROOT": "/abs/path/to/zui" }
+    }
+  }
+}
+```
+
+Tools (via `tools/call`):
+
+| tool | args | returns |
+|---|---|---|
+| `zui_search_components` | `query` (string, required), `limit` (number) | `{ query, count, results: [{ name, description, category }] }` |
+| `zui_get_component_api` | `name` (string, required) | markdown props signature + usage + a11y (from meta.json + CONTRACTS-V3) |
+| `zui_generate_code` | `component` (string, required), `props` (object), `children` (string) | import + usable JSX snippet; `props` values render literally, `"{expr}"` emits a JSX expression |
+
+Example request line (one JSON per line on stdin):
+
+```json
+{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"zui_search_components","arguments":{"query":"表单"}}}
+```
+
+Raw JSON-RPC methods supported: `initialize`, `notifications/initialized`, `ping`,
+`tools/list`, `tools/call`.

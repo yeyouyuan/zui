@@ -1,0 +1,26 @@
+{
+  "name": "Form",
+  "description": "表单容器：字段注册、value/onChange 注入、blur/submit 校验与错误聚合",
+  "category": "表单",
+  "useCase": ["登录/注册等数据录入", "带校验规则的配置表单", "需要命令式校验/重置/定位字段的复杂表单"],
+  "dontUse": ["纯筛选条（直接组合 Input + Button）", "只读信息展示用 Descriptions"],
+  "props": {
+    "initialValues": { "type": "Record<string, unknown>", "default": "—", "desc": "初始值（resetFields 归还目标）" },
+    "onFinish": { "type": "(values: Record<string, unknown>) => void", "default": "—", "desc": "全量校验通过时触发，携带聚合值" },
+    "onFinishFailed": { "type": "(errors: Record<string, string>) => void", "default": "—", "desc": "校验失败时触发，携带字段错误映射" },
+    "form": { "type": "FormInstance", "default": "—", "desc": "绑定 useForm() 实例；不传时自建实例（可在 Form 内用 useForm() 获取）" },
+    "classNames": { "type": "{ root? }", "default": "—", "desc": "slot 级类名追加" },
+    "Form.Item.name": { "type": "string", "default": "—", "desc": "字段名（值收集与校验 key）" },
+    "Form.Item.label": { "type": "React.ReactNode", "default": "—", "desc": "标签内容（htmlFor 关联控件）" },
+    "Form.Item.rules": { "type": "FormRule[]", "default": "—", "desc": "校验规则：required/min/max/pattern/validator/message" },
+    "Form.Item.required": { "type": "boolean", "default": "false", "desc": "必填标记（* + aria-required + 必填校验）" }
+  },
+  "a11yNotes": [
+    "校验时机：blur 校验该字段、submit 全量校验",
+    "错误红字 + 控件 aria-invalid + aria-describedby 关联错误元素",
+    "label 通过 htmlFor 关联注入 id 的控件",
+    "useForm：validateFields / setFieldsValue / getFieldsValue / resetFields / scrollToField",
+    "Form.Item 用 Context + cloneElement 向单子元素注入 name/value/onChange/onBlur/aria-*"
+  ],
+  "related": ["Input", "InputNumber", "Select", "Checkbox"]
+}

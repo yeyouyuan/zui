@@ -1,0 +1,21 @@
+{
+  "name": "Skeleton",
+  "description": "骨架屏：加载占位（文本行/圆形/自定义尺寸）",
+  "category": "数据展示",
+  "useCase": ["列表/详情加载占位", "头像位占位（circle）", "首屏内容渐显前的占位"],
+  "dontUse": ["小范围转圈用 Spin", "已知无数据用 Empty"],
+  "props": {
+    "lines": { "type": "number", "default": "3", "desc": "文本行数" },
+    "width": { "type": "number | string", "default": "—", "desc": "宽度" },
+    "height": { "type": "number | string", "default": "—", "desc": "高度" },
+    "circle": { "type": "boolean", "default": "false", "desc": "圆形（头像位）" },
+    "active": { "type": "boolean", "default": "true", "desc": "渐变扫光动画" },
+    "classNames": { "type": "{ root? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "骨架为装饰性占位，整体 aria-hidden，读屏不重复朗读",
+    "加载区域请在外层补 aria-busy / role=\"status\"（如列表容器）",
+    "动画遵循 prefers-reduced-motion 时可降级为静态块"
+  ],
+  "related": ["Spin", "Empty", "List"]
+}

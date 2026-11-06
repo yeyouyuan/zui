@@ -1,0 +1,70 @@
+/* Statistic —— 统计数值（标题 + 千分位数字 + 前后缀）。
+   组件级变量定义在根选择器上，可被用户任意覆盖。 */
+
+.z-statistic {
+  --z-statistic-font-family: var(--z-font-sans);
+  --z-statistic-title-font-size: var(--z-text-sm);
+  --z-statistic-title-fg: var(--z-color-fg-muted);
+  --z-statistic-title-font-weight: var(--z-weight-regular);
+  --z-statistic-title-margin-bottom: var(--z-space-1);
+  --z-statistic-value-font-size: var(--z-text-2xl);
+  --z-statistic-value-font-weight: var(--z-weight-semibold); /* 大数字字重 600 */
+  --z-statistic-value-fg: var(--z-color-fg);
+  --z-statistic-value-line-height: var(--z-leading-tight);
+  --z-statistic-suffix-font-size: var(--z-text-md);
+  --z-statistic-suffix-font-weight: var(--z-weight-regular);
+  --z-statistic-suffix-fg: var(--z-color-fg-muted);
+  --z-statistic-suffix-margin-left: var(--z-space-1);
+  --z-statistic-prefix-font-size: var(--z-text-md);
+  --z-statistic-prefix-font-weight: var(--z-weight-regular);
+  --z-statistic-prefix-fg: var(--z-color-fg-muted);
+  --z-statistic-prefix-margin-right: var(--z-space-1);
+}
+
+.z-statistic {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: column;
+  font-family: var(--z-statistic-font-family);
+}
+
+.z-statistic-title {
+  margin-bottom: var(--z-statistic-title-margin-bottom);
+  color: var(--z-statistic-title-fg);
+  font-size: var(--z-statistic-title-font-size);
+  font-weight: var(--z-statistic-title-font-weight);
+  line-height: var(--z-leading-normal);
+}
+
+.z-statistic-value {
+  display: inline-flex;
+  align-items: baseline;
+  color: var(--z-statistic-value-fg);
+  font-size: var(--z-statistic-value-font-size);
+  font-weight: var(--z-statistic-value-font-weight);
+  line-height: var(--z-statistic-value-line-height);
+}
+
+.z-statistic-number {
+  font-variant-numeric: tabular-nums;
+}
+
+.z-statistic-prefix {
+  margin-right: var(--z-statistic-prefix-margin-right);
+  color: var(--z-statistic-prefix-fg);
+  font-size: var(--z-statistic-prefix-font-size);
+  font-weight: var(--z-statistic-prefix-font-weight);
+}
+
+.z-statistic-suffix {
+  margin-left: var(--z-statistic-suffix-margin-left);
+  color: var(--z-statistic-suffix-fg);
+  font-size: var(--z-statistic-suffix-font-size);
+  font-weight: var(--z-statistic-suffix-font-weight);
+}
+
+.z-statistic-prefix svg,
+.z-statistic-suffix svg {
+  display: inline-block;
+  vertical-align: -0.125em;
+}

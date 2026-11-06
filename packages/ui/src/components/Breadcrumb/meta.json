@@ -1,0 +1,19 @@
+{
+  "name": "Breadcrumb",
+  "description": "面包屑：层级位置导航（nav 语义）",
+  "category": "导航",
+  "useCase": ["多层级页面位置指示", "文件/目录路径导航", "返回上层的快捷入口"],
+  "dontUse": ["同级切换用 Tabs", "步骤流程用 Timeline/分步条", "不超过两级的简单返回直接放返回按钮"],
+  "props": {
+    "separator": { "type": "React.ReactNode", "default": "'/'", "desc": "分隔符内容" },
+    "children": { "type": "React.ReactNode", "default": "—", "desc": "Breadcrumb.Item 列表" },
+    "Breadcrumb.Item.href": { "type": "string", "default": "—", "desc": "有 href 渲染 <a>，否则渲染 <span>（当前页）" },
+    "classNames": { "type": "{ root?; item?; separator? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "根 role=\"navigation\" + aria-label=\"面包屑\"",
+    "ol/li 语义列表，当前页 aria-current=\"page\"（渲染为 span）",
+    "分隔符 aria-hidden，不被读屏重复朗读"
+  ],
+  "related": ["Tabs", "DropdownMenu", "Card"]
+}

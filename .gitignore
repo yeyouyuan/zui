@@ -1,0 +1,9 @@
+node_modules
+dist
+packages/cli/data/
+packages/mcp/data/
+.DS_Store
+coverage
+*.local
+*.log
+.zcode/

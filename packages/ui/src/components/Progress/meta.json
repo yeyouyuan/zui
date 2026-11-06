@@ -1,0 +1,21 @@
+{
+  "name": "Progress",
+  "description": "进度条：百分比进度展示（normal/active/success/error 状态）",
+  "category": "反馈",
+  "useCase": ["上传/下载进度", "任务完成度", "步骤完成百分比"],
+  "dontUse": ["不确定进度（无百分比）用 Spin", "多步骤流程用 Timeline/分步条"],
+  "props": {
+    "percent": { "type": "number", "default": "（必填，0-100）", "desc": "进度百分比" },
+    "size": { "type": "'sm' | 'md'", "default": "'md'", "desc": "条高（sm 6px / md 8px）" },
+    "status": { "type": "'normal' | 'active' | 'success' | 'error'", "default": "'normal'", "desc": "状态（active 扫光动画）" },
+    "showInfo": { "type": "boolean", "default": "true", "desc": "右侧百分比文字" },
+    "color": { "type": "string", "default": "—", "desc": "自定义填充色" },
+    "classNames": { "type": "{ root?; track?; fill?; info? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "role=\"progressbar\" + aria-valuenow/min/max + aria-valuetext（如\"60%\"）",
+    "百分比文字与 aria-valuetext 保持一致",
+    "status 用语义色（success/error/warning），不要只靠颜色表达状态"
+  ],
+  "related": ["Spin", "Skeleton", "Result"]
+}

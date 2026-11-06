@@ -1,0 +1,23 @@
+{
+  "name": "Radio",
+  "description": "单选框：RadioGroup 内互斥单选，支持水平/垂直排列",
+  "category": "基础",
+  "useCase": ["表单互斥选项（如性别/级别）", "筛选条件单选", "设置项中的模式切换"],
+  "dontUse": ["布尔开关用 Switch/Checkbox", "选项较多时用 Select"],
+  "props": {
+    "value": { "type": "string", "default": "（必填）", "desc": "选项值（Radio 必填）" },
+    "label": { "type": "React.ReactNode", "default": "—", "desc": "选项标签" },
+    "disabled": { "type": "boolean", "default": "false", "desc": "禁用（Radio/Group 级）" },
+    "RadioGroup.value": { "type": "string", "default": "—", "desc": "组受控选中值" },
+    "RadioGroup.defaultValue": { "type": "string", "default": "—", "desc": "组非受控初始值" },
+    "RadioGroup.onChange": { "type": "(value: string) => void", "default": "—", "desc": "组选中变化回调" },
+    "RadioGroup.orientation": { "type": "'horizontal' | 'vertical'", "default": "'vertical'", "desc": "排列方向" },
+    "classNames": { "type": "{ root?; control?; label? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "RadioGroup：role=\"radiogroup\" + aria-orientation",
+    "原生 input[type=radio] 视觉隐藏保留，同组 name 分组，方向键切换",
+    "无 RadioGroup 时回退原生 name 分组"
+  ],
+  "related": ["Checkbox", "Select", "Form"]
+}

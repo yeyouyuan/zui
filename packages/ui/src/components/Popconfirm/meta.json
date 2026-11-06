@@ -1,0 +1,18 @@
+{
+  "name": "Popconfirm",
+  "description": "气泡确认框，点击触发器弹出确认气泡后才执行操作",
+  "category": "反馈",
+  "useCase": ["删除/危险操作二次确认", "提交前确认", "状态切换确认"],
+  "dontUse": ["复杂多字段确认用 Modal", "轻量成功提示用 Message"],
+  "props": {
+    "title": { "type": "React.ReactNode", "desc": "确认标题" },
+    "description": { "type": "React.ReactNode", "desc": "补充描述" },
+    "onConfirm": { "type": "() => void", "desc": "确定回调（随后自动关闭）" },
+    "onCancel": { "type": "() => void", "desc": "取消回调（随后自动关闭）" },
+    "okText": { "type": "string", "default": "'确定'", "desc": "确定按钮文案" },
+    "cancelText": { "type": "string", "default": "'取消'", "desc": "取消按钮文案" },
+    "children": { "type": "React.ReactElement", "desc": "触发元素（自动注入 aria-haspopup/expanded）" }
+  },
+  "a11yNotes": ["面板 role=dialog + aria-labelledby/describedby，打开焦点移入确定按钮，Esc 关闭并归还焦点"],
+  "related": ["Modal", "Tooltip", "Popover"]
+}

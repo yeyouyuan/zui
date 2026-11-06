@@ -1,0 +1,227 @@
+/* Button —— 组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-button {
+  --z-button-height: 2rem; /* 32px md */
+  --z-button-padding-x: var(--z-space-4);
+  --z-button-font-size: var(--z-text-sm);
+  --z-button-font-weight: var(--z-weight-medium);
+  --z-button-radius: var(--z-radius-sm); /* 6px 控件圆角 */
+  --z-button-gap: var(--z-space-2);
+  --z-button-border-width: 1px;
+  --z-button-bg: var(--z-color-primary);
+  --z-button-fg: var(--z-color-primary-fg);
+  --z-button-border: var(--z-color-primary);
+  --z-button-hover-bg: var(--z-color-primary-hover);
+  --z-button-hover-fg: var(--z-color-primary-fg);
+  --z-button-active-bg: var(--z-color-primary-active);
+  --z-button-focus-ring: var(--z-color-focus-ring);
+  --z-button-disabled-bg: var(--z-color-disabled-bg);
+  --z-button-disabled-fg: var(--z-color-disabled-fg);
+  --z-button-disabled-border: var(--z-color-disabled-border);
+  --z-button-spinner-size: 1em;
+  --z-button-spinner-width: 2px;
+  --z-button-transition: var(--z-duration-fast) var(--z-ease-standard);
+}
+
+/* 尺寸：仅覆盖尺寸类变量（sm 24px / md 32px / lg 40px） */
+.z-button[data-size='sm'] {
+  --z-button-height: 1.5rem; /* 24px */
+  --z-button-padding-x: var(--z-space-3);
+  --z-button-font-size: var(--z-text-xs);
+  --z-button-radius: 0.25rem;
+}
+
+.z-button[data-size='lg'] {
+  --z-button-height: 2.5rem; /* 40px */
+  --z-button-padding-x: var(--z-space-5);
+  --z-button-font-size: var(--z-text-md);
+  --z-button-radius: 0.5rem;
+}
+
+/* 变体：仅覆盖颜色类变量 */
+.z-button[data-variant='secondary'] {
+  --z-button-bg: var(--z-color-bg);
+  --z-button-fg: var(--z-color-fg);
+  --z-button-border: var(--z-color-border);
+  --z-button-hover-bg: var(--z-color-bg-subtle);
+  --z-button-hover-fg: var(--z-color-fg);
+  --z-button-active-bg: var(--z-color-bg-muted);
+}
+
+.z-button[data-variant='outline'] {
+  --z-button-bg: var(--z-color-bg);
+  --z-button-fg: var(--z-color-fg);
+  --z-button-border: var(--z-color-border);
+  --z-button-hover-bg: var(--z-color-bg-subtle);
+  --z-button-hover-fg: var(--z-color-primary);
+  --z-button-active-bg: var(--z-color-bg-muted);
+}
+
+.z-button[data-variant='ghost'] {
+  --z-button-bg: transparent;
+  --z-button-fg: var(--z-color-fg);
+  --z-button-border: transparent;
+  --z-button-hover-bg: var(--z-color-bg-subtle);
+  --z-button-hover-fg: var(--z-color-fg);
+  --z-button-active-bg: var(--z-color-bg-muted);
+}
+
+.z-button[data-variant='danger'] {
+  --z-button-bg: var(--z-color-danger);
+  --z-button-fg: var(--z-color-danger-fg);
+  --z-button-border: var(--z-color-danger);
+  --z-button-hover-bg: var(--z-color-danger-hover);
+  --z-button-hover-fg: var(--z-color-danger-fg);
+  --z-button-active-bg: var(--z-color-danger-hover);
+}
+
+/* 布局与视觉 */
+.z-button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--z-button-gap);
+  height: var(--z-button-height);
+  padding: 0 var(--z-button-padding-x);
+  border: var(--z-button-border-width) solid var(--z-button-border);
+  border-radius: var(--z-button-radius);
+  background: var(--z-button-bg);
+  color: var(--z-button-fg);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-button-font-size);
+  font-weight: var(--z-button-font-weight);
+  line-height: var(--z-leading-tight);
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  transition:
+    background-color var(--z-button-transition),
+    border-color var(--z-button-transition),
+    color var(--z-button-transition),
+    box-shadow var(--z-button-transition),
+    transform var(--z-button-transition);
+}
+
+/* hover：微投影（按主/危色着色，其余变体中性灰） */
+.z-button:hover:not(:disabled):not([data-loading='true']) {
+  background: var(--z-button-hover-bg);
+  border-color: var(--z-button-hover-bg);
+  color: var(--z-button-hover-fg);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--z-button-hover-bg) 25%, transparent);
+}
+
+.z-button[data-variant='secondary']:hover:not(:disabled):not([data-loading='true']),
+.z-button[data-variant='outline']:hover:not(:disabled):not([data-loading='true']),
+.z-button[data-variant='ghost']:hover:not(:disabled):not([data-loading='true']) {
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--z-color-border-strong) 25%, transparent);
+}
+
+.z-button[data-variant='secondary']:hover:not(:disabled):not([data-loading='true']),
+.z-button[data-variant='ghost']:hover:not(:disabled):not([data-loading='true']) {
+  border-color: var(--z-color-border);
+}
+
+.z-button[data-variant='ghost']:hover:not(:disabled):not([data-loading='true']) {
+  border-color: transparent;
+}
+
+.z-button[data-variant='outline']:hover:not(:disabled):not([data-loading='true']) {
+  border-color: var(--z-color-border-focus);
+}
+
+.z-button[data-variant='secondary']:hover:not(:disabled):not([data-loading='true']) {
+  border-color: var(--z-color-border-strong);
+}
+
+/* active：下压感（位移 + 收掉投影） */
+.z-button:active:not(:disabled):not([data-loading='true']) {
+  background: var(--z-button-active-bg);
+  border-color: var(--z-button-active-bg);
+  box-shadow: none;
+  transform: translateY(1px);
+}
+
+.z-button[data-variant='secondary']:active:not(:disabled):not([data-loading='true']),
+.z-button[data-variant='outline']:active:not(:disabled):not([data-loading='true']) {
+  border-color: var(--z-color-border-strong);
+}
+
+.z-button[data-variant='ghost']:active:not(:disabled):not([data-loading='true']) {
+  border-color: transparent;
+}
+
+/* focus-visible：柔光圈（双层：bg 贴边 + 主色 35% 扩散），克制不生硬 */
+.z-button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--z-color-bg),
+    0 0 0 4px color-mix(in srgb, var(--z-button-focus-ring) 35%, transparent);
+}
+
+.z-button:disabled {
+  background: var(--z-button-disabled-bg);
+  border-color: var(--z-button-disabled-border);
+  color: var(--z-button-disabled-fg);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* loading：置灰但保留可聚焦 */
+.z-button[data-loading='true'] {
+  cursor: progress;
+  opacity: 0.65;
+  box-shadow: none;
+}
+
+.z-button[data-full-width='true'] {
+  width: 100%;
+}
+
+.z-button-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.z-button-icon > svg {
+  width: 1em;
+  height: 1em;
+}
+
+.z-button-label {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* spinner：占满一个字宽位，插入不挤动标签（布局不跳） */
+.z-button-spinner {
+  box-sizing: border-box;
+  flex: none;
+  width: var(--z-button-spinner-size);
+  height: var(--z-button-spinner-size);
+  border: var(--z-button-spinner-width) solid currentColor;
+  border-right-color: color-mix(in srgb, currentColor 25%, transparent);
+  border-radius: var(--z-radius-full);
+  animation: z-button-spin calc(var(--z-duration-slow) * 2) linear infinite;
+}
+
+@keyframes z-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-button,
+  .z-button-spinner {
+    transition: none;
+    animation: none;
+    transform: none;
+  }
+
+  .z-button:active:not(:disabled):not([data-loading='true']) {
+    transform: none;
+  }
+}

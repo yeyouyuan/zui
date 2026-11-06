@@ -1,0 +1,66 @@
+/* Divider —— 组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-divider {
+  --z-divider-line-color: var(--z-color-border-subtle);
+  --z-divider-thickness: 1px;
+  --z-divider-margin-y: var(--z-space-4);
+  --z-divider-margin-x: var(--z-space-2);
+  --z-divider-text-gap: var(--z-space-3); /* 带文字时两侧留白 12px */
+  --z-divider-text-color: var(--z-color-fg-muted);
+  --z-divider-text-font-size: var(--z-text-xs); /* 12px */
+  --z-divider-text-font-weight: var(--z-weight-regular);
+  --z-divider-vertical-height: 0.9em;
+}
+
+.z-divider {
+  box-sizing: border-box;
+  font-family: var(--z-font-sans);
+}
+
+/* horizontal：1px border-subtle 线 */
+.z-divider[data-orientation='horizontal'] {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: var(--z-divider-margin-y) 0;
+  gap: var(--z-divider-text-gap);
+}
+
+.z-divider[data-orientation='horizontal'] > .z-divider-line {
+  flex: 1;
+  height: 0;
+  border-top: var(--z-divider-thickness) solid var(--z-divider-line-color);
+}
+
+.z-divider[data-orientation='horizontal'][data-dashed='true'] > .z-divider-line {
+  border-top-style: dashed;
+}
+
+/* 中间文字：12px fg-muted，两侧留白由 flex gap 提供 */
+.z-divider-text {
+  flex: none;
+  font-size: var(--z-divider-text-font-size);
+  font-weight: var(--z-divider-text-font-weight);
+  color: var(--z-divider-text-color);
+  line-height: var(--z-leading-tight);
+}
+
+/* vertical：1px 竖线 inline-flex 高 0.9em，通过 top: -0.06em 修正与文本中轴绝对对齐 */
+.z-divider[data-orientation='vertical'] {
+  position: relative;
+  top: -0.06em;
+  display: inline-flex;
+  align-items: stretch;
+  height: var(--z-divider-vertical-height);
+  margin: 0 var(--z-divider-margin-x);
+  vertical-align: middle;
+}
+
+.z-divider[data-orientation='vertical'] > .z-divider-line {
+  width: 0;
+  border-left: var(--z-divider-thickness) solid var(--z-divider-line-color);
+}
+
+.z-divider[data-orientation='vertical'][data-dashed='true'] > .z-divider-line {
+  border-left-style: dashed;
+}

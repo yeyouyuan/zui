@@ -1,0 +1,323 @@
+/* ZUI Transfer —— 双列穿梭框：组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-transfer {
+  --z-transfer-width: 12rem; /* 单列宽度 */
+  --z-transfer-height: 15rem; /* 列表体高度 */
+  --z-transfer-border: var(--z-color-border);
+  --z-transfer-radius: var(--z-radius-md);
+  --z-transfer-bg: var(--z-color-bg-elevated);
+  --z-transfer-header-bg: var(--z-color-bg-subtle);
+  --z-transfer-header-fg: var(--z-color-fg-muted);
+  --z-transfer-header-height: 2.25rem;
+  --z-transfer-header-font-size: var(--z-text-sm);
+  --z-transfer-search-padding: var(--z-space-2);
+  --z-transfer-search-height: 2rem;
+  --z-transfer-item-height: 2.25rem;
+  --z-transfer-item-padding-x: var(--z-space-3);
+  --z-transfer-item-fg: var(--z-color-fg);
+  --z-transfer-item-hover-bg: var(--z-color-bg-muted);
+  --z-transfer-item-selected-bg: var(--z-color-primary-subtle);
+  --z-transfer-item-selected-fg: var(--z-color-primary-subtle-fg);
+  --z-transfer-item-disabled-fg: var(--z-color-disabled-fg);
+  --z-transfer-empty-fg: var(--z-color-fg-subtle);
+  --z-transfer-button-size: 2rem;
+  --z-transfer-button-gap: var(--z-space-2);
+  --z-transfer-button-bg: var(--z-color-bg-elevated);
+  --z-transfer-button-fg: var(--z-color-fg-muted);
+  --z-transfer-button-border: var(--z-color-border);
+  --z-transfer-button-hover-bg: var(--z-color-primary-subtle);
+  --z-transfer-button-hover-fg: var(--z-color-primary-subtle-fg);
+  --z-transfer-checkbox-size: 1rem;
+  --z-transfer-checkbox-bg: var(--z-color-bg-elevated);
+  --z-transfer-checkbox-border: var(--z-color-border-strong);
+  --z-transfer-checkbox-checked-bg: var(--z-color-primary);
+  --z-transfer-checkbox-check-color: var(--z-color-primary-fg);
+  --z-transfer-checkbox-disabled-bg: var(--z-color-disabled-bg);
+  --z-transfer-checkbox-disabled-border: var(--z-color-disabled-border);
+  --z-transfer-gap: var(--z-space-3);
+  --z-transfer-focus-ring: var(--z-color-focus-ring);
+
+  display: inline-flex;
+  align-items: stretch;
+  gap: var(--z-transfer-gap);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-text-sm);
+  color: var(--z-transfer-item-fg);
+  max-width: 100%;
+}
+
+/* --------------------------------- 列表 --------------------------------- */
+
+.z-transfer-list {
+  display: flex;
+  flex-direction: column;
+  width: var(--z-transfer-width);
+  min-width: 0;
+  box-sizing: border-box;
+  background: var(--z-transfer-bg);
+  border: 1px solid var(--z-transfer-border);
+  border-radius: var(--z-transfer-radius);
+  overflow: hidden;
+}
+
+@media (max-width: 32rem) {
+  .z-transfer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    width: 100%;
+  }
+
+  .z-transfer-list {
+    width: 100%;
+  }
+}
+
+.z-transfer-list-header {
+  display: flex;
+  align-items: center;
+  gap: var(--z-space-2);
+  height: var(--z-transfer-header-height);
+  padding: 0 var(--z-transfer-item-padding-x);
+  font-size: var(--z-transfer-header-font-size);
+  color: var(--z-transfer-header-fg);
+  background: var(--z-transfer-header-bg);
+  border-bottom: 1px solid var(--z-transfer-border);
+  user-select: none;
+}
+
+.z-transfer-list-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.z-transfer-list-count {
+  font-size: var(--z-text-xs);
+  color: var(--z-transfer-header-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------- 搜索 --------------------------------- */
+
+.z-transfer-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: var(--z-transfer-search-padding);
+  border-bottom: 1px solid var(--z-transfer-border);
+}
+
+.z-transfer-search-icon {
+  position: absolute;
+  left: calc(var(--z-transfer-search-padding) + var(--z-space-2));
+  color: var(--z-color-fg-subtle);
+  pointer-events: none;
+  flex: none;
+}
+
+.z-transfer-search-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--z-transfer-search-height);
+  padding: 0 var(--z-space-2) 0 1.75rem;
+  font-family: inherit;
+  font-size: var(--z-text-sm);
+  line-height: var(--z-transfer-search-height);
+  color: var(--z-transfer-item-fg);
+  background: var(--z-color-bg);
+  border: 1px solid var(--z-transfer-border);
+  border-radius: var(--z-radius-sm);
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    border-color var(--z-duration-fast) var(--z-ease-standard),
+    box-shadow var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-transfer-search-input:focus-visible {
+  outline: none;
+  border-color: var(--z-color-border-focus);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-transfer-focus-ring) 15%, transparent);
+}
+
+/* -------------------------------- 列表体 -------------------------------- */
+
+.z-transfer-list-body {
+  box-sizing: border-box;
+  flex: 1;
+  margin: 0;
+  padding: var(--z-space-1);
+  list-style: none;
+  height: var(--z-transfer-height);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--z-color-border) transparent;
+}
+
+.z-transfer-empty {
+  padding: var(--z-space-4);
+  font-size: var(--z-text-xs);
+  color: var(--z-transfer-empty-fg);
+  text-align: center;
+}
+
+.z-transfer-item {
+  border-radius: var(--z-radius-sm);
+}
+
+.z-transfer-item-label {
+  display: flex;
+  align-items: center;
+  gap: var(--z-space-2);
+  min-height: var(--z-transfer-item-height);
+  padding: 0 var(--z-transfer-item-padding-x);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-transfer-item:hover:not([data-disabled='true']) .z-transfer-item-label {
+  background: var(--z-transfer-item-hover-bg);
+}
+
+.z-transfer-item[data-checked='true'] .z-transfer-item-label {
+  color: var(--z-transfer-item-selected-fg);
+  background: var(--z-transfer-item-selected-bg);
+}
+
+.z-transfer-item[data-disabled='true'] .z-transfer-item-label {
+  color: var(--z-transfer-item-disabled-fg);
+  cursor: not-allowed;
+}
+
+.z-transfer-item-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* -------------------------------- 复选框 -------------------------------- */
+
+.z-transfer-checkbox {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  cursor: pointer;
+}
+
+.z-transfer-item[data-disabled='true'] .z-transfer-checkbox {
+  cursor: not-allowed;
+}
+
+.z-transfer-checkbox input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.z-transfer-checkbox-box {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-transfer-checkbox-size);
+  height: var(--z-transfer-checkbox-size);
+  border: 1px solid var(--z-transfer-checkbox-border);
+  border-radius: 0.25rem;
+  background: var(--z-transfer-checkbox-bg);
+  transition:
+    background-color var(--z-duration-fast) var(--z-ease-standard),
+    border-color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-transfer-checkbox input:checked ~ .z-transfer-checkbox-box,
+.z-transfer-checkbox input:indeterminate ~ .z-transfer-checkbox-box {
+  background: var(--z-transfer-checkbox-checked-bg);
+  border-color: var(--z-transfer-checkbox-checked-bg);
+}
+
+.z-transfer-checkbox input:checked ~ .z-transfer-checkbox-box::after {
+  content: '';
+  display: block;
+  width: calc(var(--z-transfer-checkbox-size) * 0.45);
+  height: calc(var(--z-transfer-checkbox-size) * 0.25);
+  border-left: 2px solid var(--z-transfer-checkbox-check-color);
+  border-bottom: 2px solid var(--z-transfer-checkbox-check-color);
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+.z-transfer-checkbox input:indeterminate ~ .z-transfer-checkbox-box::after {
+  content: '';
+  display: block;
+  width: calc(var(--z-transfer-checkbox-size) * 0.5);
+  height: 2px;
+  background: var(--z-transfer-checkbox-check-color);
+}
+
+.z-transfer-checkbox input:disabled ~ .z-transfer-checkbox-box {
+  background: var(--z-transfer-checkbox-disabled-bg);
+  border-color: var(--z-transfer-checkbox-disabled-border);
+}
+
+.z-transfer-checkbox input:focus-visible ~ .z-transfer-checkbox-box {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-transfer-focus-ring) 35%, transparent);
+}
+
+/* -------------------------------- 移动钮 -------------------------------- */
+
+.z-transfer-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--z-transfer-button-gap);
+}
+
+.z-transfer-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-transfer-button-size);
+  height: var(--z-transfer-button-size);
+  padding: 0;
+  color: var(--z-transfer-button-fg);
+  background: var(--z-transfer-button-bg);
+  border: 1px solid var(--z-transfer-button-border);
+  border-radius: var(--z-radius-sm);
+  cursor: pointer;
+  transition:
+    color var(--z-duration-fast) var(--z-ease-standard),
+    background-color var(--z-duration-fast) var(--z-ease-standard),
+    border-color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-transfer-button:hover:not(:disabled) {
+  color: var(--z-transfer-button-hover-fg);
+  background: var(--z-transfer-button-hover-bg);
+  border-color: var(--z-color-primary);
+}
+
+.z-transfer-button:focus-visible {
+  outline: none;
+  border-color: var(--z-color-border-focus);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-transfer-focus-ring) 15%, transparent);
+}
+
+.z-transfer-button:disabled {
+  color: var(--z-color-disabled-fg);
+  background: var(--z-color-disabled-bg);
+  border-color: var(--z-color-disabled-border);
+  cursor: not-allowed;
+}

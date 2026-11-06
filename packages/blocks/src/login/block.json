@@ -1,0 +1,6 @@
+{
+  "name": "login",
+  "description": "登录页区块：品牌位 + Form 账号/密码表单 + 记住我 + 第三方登录，基于 Card/Input/Button/Checkbox 拼装",
+  "dependencies": ["Form", "Button", "Input", "Card", "Checkbox", "Divider"],
+  "category": "业务块"
+}

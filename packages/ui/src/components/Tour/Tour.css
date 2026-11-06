@@ -1,0 +1,151 @@
+/* ZUI Tour —— 遮罩挖洞高亮 + 浮层卡片：组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-tour {
+  --z-tour-z: var(--z-z-modal);
+  --z-tour-mask-radius: var(--z-radius-sm);
+  --z-tour-mask-color: var(--z-color-overlay);
+  --z-tour-card-width: 20rem;
+  --z-tour-card-bg: var(--z-color-bg-elevated);
+  --z-tour-card-fg: var(--z-color-fg);
+  --z-tour-card-radius: var(--z-radius-lg);
+  --z-tour-card-shadow: var(--z-shadow-lg);
+  --z-tour-card-padding: var(--z-space-5);
+  --z-tour-card-gap: var(--z-space-3);
+  --z-tour-title-font-size: var(--z-text-md);
+  --z-tour-title-font-weight: var(--z-weight-semibold);
+  --z-tour-description-font-size: var(--z-text-sm);
+  --z-tour-description-fg: var(--z-color-fg-muted);
+  --z-tour-footer-gap: var(--z-space-3);
+  --z-tour-progress-fg: var(--z-color-fg-subtle);
+  --z-tour-button-height: 2rem;
+  --z-tour-button-padding-x: var(--z-space-3);
+  --z-tour-button-radius: var(--z-radius-sm);
+  --z-tour-button-bg: var(--z-color-bg-muted);
+  --z-tour-button-fg: var(--z-color-fg);
+  --z-tour-button-primary-bg: var(--z-color-primary);
+  --z-tour-button-primary-fg: var(--z-color-primary-fg);
+  --z-tour-button-disabled-bg: var(--z-color-disabled-bg);
+  --z-tour-button-disabled-fg: var(--z-color-disabled-fg);
+  --z-tour-focus-ring: var(--z-color-focus-ring);
+}
+
+/* -------------------------------- 遮罩 --------------------------------- */
+/* box-shadow 挖洞：遮罩元素即洞本身，超大阴影铺满四周做暗化 */
+
+.z-tour-mask {
+  position: fixed;
+  z-index: var(--z-tour-z);
+  border-radius: var(--z-tour-mask-radius);
+  box-shadow: 0 0 0 9999px var(--z-tour-mask-color);
+  pointer-events: none;
+}
+
+/* 目标缺失时退化为全屏遮罩 */
+.z-tour-mask--full {
+  inset: 0;
+  background: var(--z-tour-mask-color);
+  box-shadow: none;
+}
+
+/* -------------------------------- 卡片 --------------------------------- */
+
+.z-tour-card {
+  position: fixed;
+  z-index: calc(var(--z-tour-z) + 1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--z-tour-card-gap);
+  box-sizing: border-box;
+  width: var(--z-tour-card-width);
+  max-width: calc(100vw - var(--z-space-4));
+  max-height: calc(100dvh - var(--z-space-4));
+  overflow: auto;
+  overflow-wrap: anywhere;
+  padding: var(--z-tour-card-padding);
+  font-family: var(--z-font-sans);
+  color: var(--z-tour-card-fg);
+  background: var(--z-tour-card-bg);
+  border-radius: var(--z-tour-card-radius);
+  box-shadow: var(--z-tour-card-shadow);
+}
+
+.z-tour-card:focus-visible {
+  outline: none;
+  box-shadow:
+    var(--z-tour-card-shadow),
+    0 0 0 2px color-mix(in srgb, var(--z-tour-focus-ring) 35%, transparent);
+}
+
+.z-tour-title {
+  font-size: var(--z-tour-title-font-size);
+  font-weight: var(--z-tour-title-font-weight);
+  line-height: var(--z-leading-tight);
+}
+
+.z-tour-description {
+  font-size: var(--z-tour-description-font-size);
+  line-height: var(--z-leading-normal);
+  color: var(--z-tour-description-fg);
+}
+
+/* -------------------------------- 底栏 --------------------------------- */
+
+.z-tour-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--z-tour-footer-gap);
+  margin-top: var(--z-space-1);
+}
+
+.z-tour-progress {
+  font-size: var(--z-text-xs);
+  color: var(--z-tour-progress-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.z-tour-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--z-space-2);
+}
+
+.z-tour-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--z-tour-button-height);
+  padding: 0 var(--z-tour-button-padding-x);
+  font-family: inherit;
+  font-size: var(--z-text-sm);
+  color: var(--z-tour-button-fg);
+  background: var(--z-tour-button-bg);
+  border: none;
+  border-radius: var(--z-tour-button-radius);
+  cursor: pointer;
+  transition: background-color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-tour-button--primary {
+  color: var(--z-tour-button-primary-fg);
+  background: var(--z-tour-button-primary-bg);
+}
+
+.z-tour-button--primary:hover:not(:disabled) {
+  background: var(--z-color-primary-hover);
+}
+
+.z-tour-button:hover:not(:disabled):not(.z-tour-button--primary) {
+  background: var(--z-color-bg-subtle);
+}
+
+.z-tour-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-tour-focus-ring) 35%, transparent);
+}
+
+.z-tour-button:disabled {
+  color: var(--z-tour-button-disabled-fg);
+  background: var(--z-tour-button-disabled-bg);
+  cursor: not-allowed;
+}

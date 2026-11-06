@@ -1,0 +1,282 @@
+/* ZUI DatePicker —— 触发器（Input 视觉）+ Portal 日历面板（role=grid） */
+
+.z-datepicker {
+  /* 组件级变量（用户可覆盖） */
+  --z-datepicker-trigger-height: 2rem; /* 32px，与 Input 同高 */
+  --z-datepicker-trigger-padding-x: var(--z-space-3);
+  --z-datepicker-trigger-font-size: var(--z-text-sm);
+  --z-datepicker-trigger-radius: var(--z-radius-sm);
+  --z-datepicker-trigger-bg: var(--z-color-bg-elevated);
+  --z-datepicker-trigger-fg: var(--z-color-fg);
+  --z-datepicker-trigger-border: var(--z-color-border);
+  --z-datepicker-trigger-hover-border: var(--z-color-border-focus);
+  --z-datepicker-trigger-focus-border: var(--z-color-border-focus);
+  --z-datepicker-trigger-focus-ring: var(--z-color-focus-ring);
+  --z-datepicker-placeholder-fg: var(--z-color-fg-subtle);
+  --z-datepicker-icon-color: var(--z-color-fg-muted);
+  --z-datepicker-disabled-bg: var(--z-color-disabled-bg);
+  --z-datepicker-disabled-fg: var(--z-color-disabled-fg);
+  --z-datepicker-disabled-border: var(--z-color-disabled-border);
+  --z-datepicker-panel-width: 17.5rem; /* 280px */
+  --z-datepicker-panel-bg: var(--z-color-bg-elevated);
+  --z-datepicker-panel-border: var(--z-color-border-subtle);
+  --z-datepicker-panel-radius: 0.5rem;
+  --z-datepicker-panel-shadow: var(--z-shadow-lg);
+  --z-datepicker-panel-padding: var(--z-space-3);
+  --z-datepicker-panel-gap: var(--z-space-2);
+  --z-datepicker-header-gap: var(--z-space-2);
+  --z-datepicker-label-font-size: var(--z-text-sm);
+  --z-datepicker-label-font-weight: var(--z-weight-medium);
+  --z-datepicker-label-fg: var(--z-color-fg);
+  --z-datepicker-nav-size: 1.5rem;
+  --z-datepicker-nav-color: var(--z-color-fg-muted);
+  --z-datepicker-nav-hover-bg: var(--z-color-bg-muted);
+  --z-datepicker-grid-gap: 2px;
+  --z-datepicker-day-size: 2rem;
+  --z-datepicker-day-font-size: var(--z-text-sm);
+  --z-datepicker-day-fg: var(--z-color-fg);
+  --z-datepicker-day-radius: var(--z-radius-sm);
+  --z-datepicker-day-hover-bg: var(--z-color-bg-muted);
+  --z-datepicker-day-selected-bg: var(--z-color-primary);
+  --z-datepicker-day-selected-fg: var(--z-color-primary-fg);
+  --z-datepicker-day-today-border: var(--z-color-primary);
+  --z-datepicker-day-out-fg: var(--z-color-fg-subtle);
+  --z-datepicker-day-disabled-fg: var(--z-color-disabled-fg);
+  --z-datepicker-weekday-fg: var(--z-color-fg-muted);
+  --z-datepicker-weekday-font-size: var(--z-text-xs);
+  --z-datepicker-transition: var(--z-duration-fast) var(--z-ease-standard);
+
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+  font-family: var(--z-font-sans);
+  font-size: var(--z-datepicker-trigger-font-size);
+  color: var(--z-datepicker-trigger-fg);
+}
+
+/* --------------------------------- 尺寸 --------------------------------- */
+
+.z-datepicker[data-size='sm'] {
+  --z-datepicker-trigger-height: 1.5rem; /* 24px */
+  --z-datepicker-trigger-font-size: var(--z-text-xs);
+  --z-datepicker-trigger-padding-x: var(--z-space-2);
+  --z-datepicker-day-size: 1.75rem;
+}
+
+.z-datepicker[data-size='lg'] {
+  --z-datepicker-trigger-height: 2.5rem; /* 40px */
+  --z-datepicker-trigger-font-size: var(--z-text-md);
+  --z-datepicker-trigger-padding-x: var(--z-space-4);
+  --z-datepicker-day-size: 2.25rem;
+}
+
+/* -------------------------------- 触发器 -------------------------------- */
+
+.z-datepicker-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--z-space-2);
+  width: 100%;
+  height: var(--z-datepicker-trigger-height);
+  padding: 0 var(--z-datepicker-trigger-padding-x);
+  background: var(--z-datepicker-trigger-bg);
+  border: 1px solid var(--z-datepicker-trigger-border);
+  border-radius: var(--z-datepicker-trigger-radius);
+  transition:
+    border-color var(--z-datepicker-transition),
+    box-shadow var(--z-datepicker-transition);
+}
+
+.z-datepicker-trigger:hover {
+  border-color: var(--z-datepicker-trigger-hover-border);
+}
+
+.z-datepicker-trigger:focus-within {
+  border-color: var(--z-datepicker-trigger-focus-border);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-datepicker-trigger-focus-ring) 15%, transparent);
+}
+
+.z-datepicker-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.z-datepicker-input::placeholder {
+  color: var(--z-datepicker-placeholder-fg);
+}
+
+.z-datepicker-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--z-datepicker-icon-color);
+  line-height: 0;
+}
+
+/* 禁用态 */
+.z-datepicker[data-disabled='true'] .z-datepicker-trigger {
+  background: var(--z-datepicker-disabled-bg);
+  border-color: var(--z-datepicker-disabled-border);
+  cursor: not-allowed;
+}
+
+.z-datepicker[data-disabled='true'] .z-datepicker-input {
+  color: var(--z-datepicker-disabled-fg);
+  cursor: not-allowed;
+}
+
+/* --------------------------------- 面板 --------------------------------- */
+
+.z-datepicker-panel {
+  z-index: var(--z-z-dropdown);
+  display: flex;
+  flex-direction: column;
+  gap: var(--z-datepicker-panel-gap);
+  box-sizing: border-box;
+  width: var(--z-datepicker-panel-width);
+  max-width: calc(100vw - var(--z-space-4));
+  max-height: calc(100dvh - var(--z-space-4));
+  overflow-y: auto;
+  padding: var(--z-datepicker-panel-padding);
+  background: var(--z-datepicker-panel-bg);
+  border: 1px solid var(--z-datepicker-panel-border);
+  border-radius: var(--z-datepicker-panel-radius);
+  box-shadow: var(--z-datepicker-panel-shadow);
+  font-family: var(--z-font-sans);
+}
+
+/* --------------------------------- 头部 --------------------------------- */
+
+.z-datepicker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--z-datepicker-header-gap);
+}
+
+.z-datepicker-label {
+  flex: 1;
+  font-size: var(--z-datepicker-label-font-size);
+  font-weight: var(--z-datepicker-label-font-weight);
+  color: var(--z-datepicker-label-fg);
+  text-align: center;
+}
+
+.z-datepicker-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-datepicker-nav-size);
+  height: var(--z-datepicker-nav-size);
+  padding: 0;
+  color: var(--z-datepicker-nav-color);
+  background: transparent;
+  border: none;
+  border-radius: var(--z-datepicker-day-radius);
+  cursor: pointer;
+  transition: background-color var(--z-datepicker-transition);
+}
+
+.z-datepicker-nav:hover:not(:disabled) {
+  background: var(--z-datepicker-nav-hover-bg);
+  color: var(--z-datepicker-label-fg);
+}
+
+.z-datepicker-nav:focus-visible {
+  outline: 2px solid var(--z-color-border-focus);
+  outline-offset: 1px;
+}
+
+.z-datepicker-nav:disabled {
+  color: var(--z-datepicker-day-disabled-fg);
+  cursor: not-allowed;
+}
+
+/* -------------------------------- 网格 ---------------------------------- */
+
+.z-datepicker-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--z-datepicker-grid-gap);
+}
+
+.z-datepicker-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--z-datepicker-grid-gap);
+}
+
+.z-datepicker-weekday {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--z-datepicker-day-size);
+  font-size: var(--z-datepicker-weekday-font-size);
+  color: var(--z-datepicker-weekday-fg);
+  user-select: none;
+}
+
+.z-datepicker-day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--z-datepicker-day-size);
+  font-size: var(--z-datepicker-day-font-size);
+  color: var(--z-datepicker-day-fg);
+  border: 1px solid transparent;
+  border-radius: var(--z-datepicker-day-radius);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--z-datepicker-transition),
+    color var(--z-datepicker-transition);
+}
+
+.z-datepicker-day:hover {
+  background: var(--z-datepicker-day-hover-bg);
+}
+
+.z-datepicker-day:focus-visible {
+  outline: 2px solid var(--z-color-border-focus);
+  outline-offset: 1px;
+}
+
+/* 当前选中 */
+.z-datepicker-day[aria-selected='true'] {
+  background: var(--z-datepicker-day-selected-bg);
+  color: var(--z-datepicker-day-selected-fg);
+}
+
+.z-datepicker-day[aria-selected='true']:hover {
+  background: var(--z-datepicker-day-selected-bg);
+}
+
+/* 今天高亮 */
+.z-datepicker-day[data-today] {
+  border-color: var(--z-datepicker-day-today-border);
+}
+
+.z-datepicker-day[data-today][aria-selected='true'] {
+  border-color: var(--z-datepicker-day-selected-bg);
+}
+
+/* 面板外月份的日期 */
+.z-datepicker-day[data-out-month] {
+  color: var(--z-datepicker-day-out-fg);
+}
+
+/* min/max 之外禁用 */
+.z-datepicker-day[aria-disabled='true'] {
+  color: var(--z-datepicker-day-disabled-fg);
+  cursor: not-allowed;
+}
+
+.z-datepicker-day[aria-disabled='true']:hover {
+  background: transparent;
+}

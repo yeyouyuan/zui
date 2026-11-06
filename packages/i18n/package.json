@@ -1,0 +1,36 @@
+{
+  "name": "@zui/i18n",
+  "version": "0.1.0",
+  "description": "ZUI AI \u7ffb\u8bd1\uff1auseAutoTranslate \u7ec4\u4ef6\u5185\u7f6e\u6587\u6848\u81ea\u52a8\u7ffb\u8bd1\uff08openai/deepl/youdao/custom + localStorage \u7f13\u5b58\uff09",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "@zui/cli",
+  "version": "0.1.0",
+  "description": "ZUI registry CLI：init / add / diff / list，把 registry 组件源码复制进你的项目",
+  "type": "module",
+  "bin": {
+    "zui": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "data"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node ../../registry/scripts/bundle.mjs cli",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

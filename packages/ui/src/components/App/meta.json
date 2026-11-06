@@ -1,0 +1,15 @@
+{
+  "name": "App",
+  "description": "应用容器，统一 message / notification / modal 上下文，useApp 一处取用",
+  "category": "其他",
+  "useCase": ["应用根节点包裹一次，全局反馈 API 随处可用", "替代多 Provider 嵌套", "轻量确认框 modal.confirm"],
+  "dontUse": ["局部区块不必套 App", "复杂弹窗内容仍用 Modal 组件"],
+  "props": {
+    "children": { "type": "React.ReactNode", "desc": "应用内容" },
+    "message": { "type": "{ max?; placement?: 'top'|'bottom' }", "desc": "MessageProvider 配置透传" },
+    "notification": { "type": "{ max?; placement?: NotificationPlacement }", "desc": "NotificationProvider 配置透传" },
+    "className": { "type": "string", "desc": "根元素附加类名" }
+  },
+  "a11yNotes": ["内置确认框 role=dialog + aria-modal，Esc/点击遮罩关闭；useApp 无 Provider 时抛明确错误"],
+  "related": ["Message", "Notification", "Modal"]
+}

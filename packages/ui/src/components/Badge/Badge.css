@@ -1,0 +1,123 @@
+/* Badge —— 组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-badge {
+  --z-badge-size: 1rem; /* 16px 最小宽高 */
+  --z-badge-padding-x: var(--z-space-1);
+  --z-badge-font-size: var(--z-text-xs); /* 12px */
+  --z-badge-font-weight: var(--z-weight-medium);
+  --z-badge-radius: var(--z-radius-full);
+  --z-badge-dot-size: 0.5rem; /* 8px */
+  --z-badge-border-width: 2px;
+  --z-badge-bg: var(--z-color-danger);
+  --z-badge-fg: var(--z-color-danger-fg);
+  --z-badge-border-color: var(--z-color-bg);
+}
+
+.z-badge[data-color='primary'] {
+  --z-badge-bg: var(--z-color-primary);
+  --z-badge-fg: var(--z-color-primary-fg);
+}
+
+.z-badge[data-color='success'] {
+  --z-badge-bg: var(--z-color-success);
+  --z-badge-fg: var(--z-color-success-fg);
+}
+
+.z-badge[data-color='warning'] {
+  --z-badge-bg: var(--z-color-warning);
+  --z-badge-fg: var(--z-color-warning-fg);
+}
+
+.z-badge[data-color='error'] {
+  --z-badge-bg: var(--z-color-danger);
+  --z-badge-fg: var(--z-color-danger-fg);
+}
+
+.z-badge[data-color='neutral'] {
+  --z-badge-bg: var(--z-color-bg-inverse);
+  --z-badge-fg: var(--z-color-fg-inverse);
+}
+
+/* 独立模式（无 children）：颜色直接落在 indicator 上 */
+.z-badge-indicator[data-color='primary'] {
+  --z-badge-bg: var(--z-color-primary);
+  --z-badge-fg: var(--z-color-primary-fg);
+}
+
+.z-badge-indicator[data-color='success'] {
+  --z-badge-bg: var(--z-color-success);
+  --z-badge-fg: var(--z-color-success-fg);
+}
+
+.z-badge-indicator[data-color='warning'] {
+  --z-badge-bg: var(--z-color-warning);
+  --z-badge-fg: var(--z-color-warning-fg);
+}
+
+.z-badge-indicator[data-color='error'] {
+  --z-badge-bg: var(--z-color-danger);
+  --z-badge-fg: var(--z-color-danger-fg);
+}
+
+.z-badge-indicator[data-color='neutral'] {
+  --z-badge-bg: var(--z-color-bg-inverse);
+  --z-badge-fg: var(--z-color-fg-inverse);
+}
+
+/* 包裹型：children 位置锚点，角标右上角 translate 50% */
+.z-badge {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+/* 角标：红底白字小胶囊；dot 模式 8px 圆点 */
+.z-badge-indicator {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--z-badge-size);
+  height: var(--z-badge-size);
+  padding: 0 var(--z-badge-padding-x);
+  border-radius: var(--z-badge-radius);
+  background: var(--z-badge-bg);
+  color: var(--z-badge-fg);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-badge-font-size);
+  font-weight: var(--z-badge-font-weight);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* 包裹型角标：绝对定位右上角 */
+.z-badge > .z-badge-indicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  transform: translate(50%, -50%);
+  border: var(--z-badge-border-width) solid var(--z-badge-border-color);
+}
+
+.z-badge-indicator[data-single='true'] {
+  width: var(--z-badge-size);
+  padding: 0;
+}
+
+.z-badge-indicator[data-dot='true'] {
+  min-width: var(--z-badge-dot-size);
+  width: var(--z-badge-dot-size);
+  height: var(--z-badge-dot-size);
+  padding: 0;
+}
+
+.z-badge-indicator--standalone {
+  vertical-align: middle;
+}
+
+.z-badge-indicator--standalone[data-dot='true'] {
+  /* 独立圆点也保持 8px 圆点形态 */
+  border-radius: var(--z-radius-full);
+}

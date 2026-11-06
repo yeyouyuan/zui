@@ -1,0 +1,22 @@
+/* Watermark —— 组件级变量定义在根选择器上 */
+
+.z-watermark {
+  --z-watermark-overlay-bg-repeat: repeat;
+  --z-watermark-overlay-z: 0;
+}
+
+.z-watermark {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.z-watermark-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-watermark-overlay-z);
+  background-repeat: var(--z-watermark-overlay-bg-repeat);
+  pointer-events: none;
+  user-select: none;
+}

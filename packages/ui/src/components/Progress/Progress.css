@@ -1,0 +1,92 @@
+/* ZUI Progress —— 进度条（圆角轨道 + 语义状态填充 + 300ms 宽度过渡） */
+
+.z-progress {
+  /* 组件级变量（用户可覆盖） */
+  --z-progress-height: 8px;
+  --z-progress-radius: var(--z-radius-full);
+  --z-progress-track-bg: var(--z-color-bg-muted);
+  --z-progress-color: var(--z-color-primary);
+  --z-progress-info-gap: var(--z-space-3);
+  --z-progress-info-font-size: var(--z-text-sm);
+  --z-progress-info-color: var(--z-color-fg-muted);
+  --z-progress-transition: width 300ms var(--z-ease-standard);
+
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--z-progress-info-gap);
+  font-family: var(--z-font-sans);
+}
+
+.z-progress[data-size='sm'] {
+  --z-progress-height: 6px;
+}
+
+.z-progress-track {
+  flex: 1;
+  height: var(--z-progress-height);
+  overflow: hidden;
+  background: var(--z-progress-track-bg);
+  border-radius: var(--z-progress-radius);
+}
+
+.z-progress-fill {
+  height: 100%;
+  background: var(--z-progress-color);
+  border-radius: var(--z-progress-radius);
+  transition: var(--z-progress-transition);
+}
+
+/* ------------------------------- 语义状态 ------------------------------- */
+
+.z-progress[data-status='success'] {
+  --z-progress-color: var(--z-color-success);
+}
+
+.z-progress[data-status='error'] {
+  --z-progress-color: var(--z-color-danger);
+}
+
+.z-progress[data-status='active'] {
+  --z-progress-color: var(--z-color-primary);
+}
+
+/* active：流动光扫过填充 */
+.z-progress[data-status='active'] .z-progress-fill {
+  background-image: linear-gradient(
+    115deg,
+    color-mix(in oklch, var(--z-progress-color) 60%, transparent) 0%,
+    color-mix(in oklch, var(--z-color-primary-fg) 45%, transparent) 50%,
+    color-mix(in oklch, var(--z-progress-color) 60%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: z-progress-flow 1.2s linear infinite;
+}
+
+@keyframes z-progress-flow {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.z-progress-info {
+  min-width: 3em;
+  font-size: var(--z-progress-info-font-size);
+  line-height: var(--z-leading-normal);
+  color: var(--z-progress-info-color);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-progress-fill {
+    transition: none;
+  }
+
+  .z-progress[data-status='active'] .z-progress-fill {
+    animation: none;
+  }
+}

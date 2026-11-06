@@ -1,0 +1,17 @@
+{
+  "name": "Image",
+  "description": "图片组件，支持加载失败兜底与点击全屏预览",
+  "category": "数据展示",
+  "useCase": ["商品/头像图片展示", "图片墙预览", "弱网兜底图"],
+  "dontUse": ["背景装饰图用 CSS background", "图标用图标方案而非 Image"],
+  "props": {
+    "src": { "type": "string", "desc": "图片地址（原生 img 属性透传）" },
+    "width": { "type": "number | string", "desc": "宽度（root 与 img 同步）" },
+    "height": { "type": "number | string", "desc": "高度" },
+    "fallback": { "type": "string", "desc": "加载失败兜底图" },
+    "preview": { "type": "boolean", "default": "true", "desc": "点击打开全屏预览" },
+    "alt": { "type": "string", "desc": "替代文本" }
+  },
+  "a11yNotes": ["预览层 role=dialog + aria-modal，Esc/点击遮罩关闭，焦点陷阱并归还焦点"],
+  "related": ["Avatar", "Watermark"]
+}

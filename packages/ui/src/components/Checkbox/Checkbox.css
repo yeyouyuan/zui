@@ -1,0 +1,137 @@
+/* Checkbox —— 组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-checkbox {
+  --z-checkbox-size: var(--z-space-4); /* 16px */
+  --z-checkbox-gap: var(--z-space-2);
+  --z-checkbox-radius: 0.25rem;
+  --z-checkbox-border-width: 1px;
+  --z-checkbox-bg: var(--z-color-bg-elevated);
+  --z-checkbox-border: var(--z-color-border-strong);
+  --z-checkbox-hover-border: var(--z-color-primary);
+  --z-checkbox-checked-bg: var(--z-color-primary);
+  --z-checkbox-checked-border: var(--z-color-primary);
+  --z-checkbox-check-color: var(--z-color-primary-fg);
+  --z-checkbox-mixed-color: var(--z-color-primary-fg);
+  --z-checkbox-disabled-bg: var(--z-color-disabled-bg);
+  --z-checkbox-disabled-border: var(--z-color-disabled-border);
+  --z-checkbox-disabled-fg: var(--z-color-disabled-fg);
+  --z-checkbox-label-color: var(--z-color-fg);
+  --z-checkbox-label-font-size: var(--z-text-sm);
+  --z-checkbox-transition: 150ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.z-checkbox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--z-checkbox-gap);
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.z-checkbox input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.z-checkbox-box {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-checkbox-size);
+  height: var(--z-checkbox-size);
+  border: var(--z-checkbox-border-width) solid var(--z-checkbox-border);
+  border-radius: var(--z-checkbox-radius);
+  background: var(--z-checkbox-bg);
+  transition:
+    background-color var(--z-checkbox-transition),
+    border-color var(--z-checkbox-transition),
+    box-shadow var(--z-checkbox-transition);
+}
+
+/* hover：边框变 primary */
+.z-checkbox input:not(:disabled):not(:checked):not(:indeterminate):hover ~ .z-checkbox-box {
+  border-color: var(--z-checkbox-hover-border);
+}
+
+.z-checkbox-box::after {
+  content: '';
+  display: block;
+  width: calc(var(--z-checkbox-size) * 0.45);
+  height: calc(var(--z-checkbox-size) * 0.25);
+  border-left: 2px solid var(--z-checkbox-check-color);
+  border-bottom: 2px solid var(--z-checkbox-check-color);
+  transform: rotate(-45deg) scale(0);
+  transform-origin: center;
+  transition: transform var(--z-checkbox-transition);
+}
+
+.z-checkbox input:checked ~ .z-checkbox-box {
+  background: var(--z-checkbox-checked-bg);
+  border-color: var(--z-checkbox-checked-border);
+}
+
+.z-checkbox input:checked ~ .z-checkbox-box::after {
+  transform: rotate(-45deg) scale(1);
+}
+
+/* indeterminate：横线视觉态（伪元素缩放为水平短横） */
+.z-checkbox input:indeterminate ~ .z-checkbox-box::after,
+.z-checkbox input:indeterminate:checked ~ .z-checkbox-box::after {
+  width: calc(var(--z-checkbox-size) * 0.5);
+  height: 0;
+  border-left: none;
+  border-bottom: 2px solid var(--z-checkbox-mixed-color);
+  transform: rotate(0deg) scale(1);
+}
+
+.z-checkbox input:focus-visible ~ .z-checkbox-box {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.z-checkbox input:disabled ~ .z-checkbox-box {
+  background: var(--z-checkbox-disabled-bg);
+  border-color: var(--z-checkbox-disabled-border);
+}
+
+.z-checkbox input:disabled:checked ~ .z-checkbox-box {
+  background: var(--z-checkbox-disabled-bg);
+  border-color: var(--z-checkbox-disabled-border);
+}
+
+.z-checkbox input:disabled:checked ~ .z-checkbox-box::after {
+  border-color: var(--z-checkbox-disabled-fg);
+}
+
+.z-checkbox input:disabled:indeterminate ~ .z-checkbox-box::after {
+  border-bottom-color: var(--z-checkbox-disabled-fg);
+}
+
+.z-checkbox:has(input:disabled) {
+  cursor: not-allowed;
+}
+
+.z-checkbox-label {
+  color: var(--z-checkbox-label-color);
+  font-size: var(--z-checkbox-label-font-size);
+  line-height: var(--z-leading-normal);
+}
+
+.z-checkbox input:disabled ~ .z-checkbox-label {
+  color: var(--z-checkbox-disabled-fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-checkbox-box,
+  .z-checkbox-box::after {
+    transition: none;
+  }
+}

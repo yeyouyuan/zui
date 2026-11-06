@@ -1,0 +1,22 @@
+{
+  "name": "List",
+  "description": "列表：ul/li 语义结构，支持头像/标题/描述/右侧 extra、边框、尺寸与加载态",
+  "category": "数据展示",
+  "useCase": ["消息/通知列表", "搜索结果列表", "设置项/成员列表"],
+  "dontUse": ["大数据量长列表用 VirtualTable/虚拟滚动", "层级树结构用 Tree"],
+  "props": {
+    "items": { "type": "Array<{ key; title; description?; extra?; avatar? }>", "default": "—", "desc": "列表项数据" },
+    "header": { "type": "React.ReactNode", "default": "—", "desc": "列表头" },
+    "footer": { "type": "React.ReactNode", "default": "—", "desc": "列表尾" },
+    "bordered": { "type": "boolean", "default": "true", "desc": "外框 + 头尾分隔" },
+    "size": { "type": "'sm' | 'md'", "default": "'md'", "desc": "尺寸（行距/字号/头像）" },
+    "loading": { "type": "boolean", "default": "false", "desc": "加载态：渲染 spinner 块替代列表体，根 aria-busy" },
+    "classNames": { "type": "{ root?; item?; meta?; extra? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "ul/li 语义结构（list-style 清零不影响语义）",
+    "loading 时根元素 aria-busy=true，spinner 块 role=status + aria-label=\"加载中\"",
+    "标题/描述文字默认单行省略，复杂内容请自行传 ReactNode"
+  ],
+  "related": ["VirtualTable", "Tree", "Collapse"]
+}

@@ -1,0 +1,72 @@
+/* Popover —— 点击弹出层（白底圆角 + shadow-lg），组件级变量定义在根选择器上 */
+
+.z-popover-root {
+  /* 组件级变量（用户可覆盖） */
+  --z-popover-bg: var(--z-color-bg-elevated);
+  --z-popover-fg: var(--z-color-fg);
+  --z-popover-radius: 0.5rem; /* 8px 浮层圆角 */
+  --z-popover-padding: var(--z-space-3); /* 12px */
+  --z-popover-shadow: var(--z-shadow-lg);
+  --z-popover-offset: var(--z-space-2); /* 浮层与触发器间距 */
+  --z-popover-max-width: 20rem;
+  --z-popover-z: var(--z-z-dropdown);
+  --z-popover-animation-duration: 150ms;
+  --z-popover-transition: var(--z-popover-animation-duration) var(--z-ease-entrance);
+
+  position: relative;
+}
+
+.z-popover {
+  gap: var(--z-popover-offset);
+  position: fixed;
+  z-index: var(--z-popover-z);
+  box-sizing: border-box;
+  max-width: min(var(--z-popover-max-width), calc(100vw - var(--z-space-4)));
+  max-height: calc(100dvh - var(--z-space-4));
+  overflow-y: auto;
+  padding: var(--z-popover-padding);
+  color: var(--z-popover-fg);
+  background: var(--z-popover-bg);
+  border-radius: var(--z-popover-radius);
+  box-shadow: var(--z-popover-shadow);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-text-sm);
+  line-height: var(--z-leading-normal);
+  overflow-wrap: break-word;
+  outline: none;
+  animation: z-popover-in var(--z-popover-transition);
+}
+
+.z-popover[data-state='open'] {
+  opacity: 1;
+}
+
+.z-popover[data-state='closed'] {
+  opacity: 0;
+  animation: z-popover-out var(--z-popover-transition);
+}
+
+@keyframes z-popover-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes z-popover-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-popover {
+    animation: none;
+    transition: none;
+  }
+}

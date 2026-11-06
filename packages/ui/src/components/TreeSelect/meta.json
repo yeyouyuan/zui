@@ -1,0 +1,38 @@
+{
+  "name": "TreeSelect",
+  "description": "树选择：触发器多值 Tag 显示 + 弹出 Tree 面板（Popover 模式），多选带勾选传播",
+  "category": "数据录入",
+  "useCase": ["级联分类多选", "组织架构选人/选部门", "目录树中挑选多个节点"],
+  "dontUse": ["纯扁平选项用 Select", "只展示树不选择用 Tree"],
+  "props": {
+    "data": { "type": "TreeNode[]", "default": "—", "desc": "树数据（与 Tree 的 TreeNode 同构）" },
+    "value": { "type": "string[]", "default": "—", "desc": "受控选中 key 数组" },
+    "defaultValue": { "type": "string[]", "default": "[]", "desc": "非受控初始值" },
+    "onChange": {
+      "type": "(keys: string[]) => void",
+      "default": "—",
+      "desc": "选中变更回调（多选输出勾选闭包，树序）"
+    },
+    "multiple": {
+      "type": "boolean",
+      "default": "true",
+      "desc": "多选模式（勾选框 + Tag）；false 为单选"
+    },
+    "placeholder": { "type": "string", "default": "'请选择'", "desc": "占位文案" },
+    "ariaLabel": { "type": "string", "default": "placeholder", "desc": "触发器的稳定无障碍名称" },
+    "disabled": { "type": "boolean", "default": "false", "desc": "禁用" },
+    "size": { "type": "'sm' | 'md' | 'lg'", "default": "'md'", "desc": "尺寸" },
+    "classNames": {
+      "type": "{ root?; trigger?; panel?; tags? }",
+      "default": "—",
+      "desc": "slot 级类名追加"
+    }
+  },
+  "a11yNotes": [
+    "触发器 role=combobox + aria-label + aria-haspopup=\"tree\" + aria-expanded + aria-controls 指向面板",
+    "面板为 role=tree/treeitem，多选时 treeitem 带 aria-checked（半选 mixed）",
+    "Enter/Space/↓ 打开面板并聚焦首项；↑↓/Home/End 导航，←→ 收起或展开，Space/Enter 选择；Esc 关闭并归还焦点",
+    "Tag 移除按钮带 aria-label=\"移除 <标题>\"；禁用态 aria-disabled"
+  ],
+  "related": ["Tree", "Select", "Tag"]
+}

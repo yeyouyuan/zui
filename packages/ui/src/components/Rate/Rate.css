@@ -1,0 +1,92 @@
+/* Rate —— 组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-rate {
+  --z-rate-star-size: 1.25rem; /* 20px */
+  --z-rate-gap: var(--z-space-1);
+  --z-rate-star-empty-color: var(--z-color-border-strong);
+  --z-rate-star-filled-color: var(--z-color-warning);
+  --z-rate-star-hover-color: var(--z-color-warning-hover);
+  --z-rate-focus-ring: var(--z-color-focus-ring);
+  --z-rate-disabled-opacity: 0.5;
+  --z-rate-transition: var(--z-duration-fast) var(--z-ease-standard);
+}
+
+/* 布局 */
+.z-rate {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--z-rate-gap);
+}
+
+/* 单星按钮：左右两半拼合（overflow 裁剪半边星形） */
+.z-rate-star {
+  box-sizing: border-box;
+  display: inline-flex;
+  width: var(--z-rate-star-size);
+  height: var(--z-rate-star-size);
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.z-rate-star:focus-visible {
+  outline: 2px solid var(--z-rate-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--z-radius-sm);
+}
+
+.z-rate-star-half {
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  color: var(--z-rate-star-empty-color);
+  transition: color var(--z-rate-transition);
+}
+
+.z-rate-star-half svg {
+  display: block;
+  width: var(--z-rate-star-size);
+  height: var(--z-rate-star-size);
+}
+
+.z-rate-star-half[data-half='1'] svg {
+  margin-left: calc(var(--z-rate-star-size) / -2);
+}
+
+/* 选中态：warning 语义色填充 */
+.z-rate-star[data-filled='half'] .z-rate-star-half[data-half='0.5'],
+.z-rate-star[data-filled='full'] .z-rate-star-half {
+  color: var(--z-rate-star-filled-color);
+}
+
+.z-rate:not([data-disabled]):not([data-readonly]) .z-rate-star:hover .z-rate-star-half {
+  color: var(--z-rate-star-hover-color);
+}
+
+.z-rate:not([data-disabled]):not([data-readonly])
+  .z-rate-star[data-filled='full']:hover
+  .z-rate-star-half[data-half='0.5'] {
+  color: var(--z-rate-star-hover-color);
+}
+
+/* 禁用 / 只读 */
+.z-rate[data-disabled],
+.z-rate[data-readonly] {
+  opacity: var(--z-rate-disabled-opacity);
+}
+
+.z-rate[data-disabled] .z-rate-star {
+  cursor: not-allowed;
+}
+
+.z-rate[data-readonly] .z-rate-star {
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-rate-star-half {
+    transition: none;
+  }
+}

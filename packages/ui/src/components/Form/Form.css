@@ -1,0 +1,60 @@
+/* Form —— 组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-form {
+  --z-form-item-gap: var(--z-space-4);
+  --z-form-label-color: var(--z-color-fg);
+  --z-form-label-font-size: var(--z-text-sm);
+  --z-form-label-font-weight: var(--z-weight-medium);
+  --z-form-label-margin-bottom: var(--z-space-1);
+  --z-form-required-color: var(--z-color-danger);
+  --z-form-error-color: var(--z-color-danger);
+  --z-form-error-font-size: var(--z-text-xs);
+  --z-form-error-margin-top: var(--z-space-1);
+}
+
+/* 布局 */
+.z-form {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--z-form-item-gap);
+}
+
+.z-form-item {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.z-form-item-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--z-space-1);
+  margin-bottom: var(--z-form-label-margin-bottom);
+  color: var(--z-form-label-color);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-form-label-font-size);
+  font-weight: var(--z-form-label-font-weight);
+  line-height: var(--z-leading-normal);
+}
+
+.z-form-item-required {
+  color: var(--z-form-required-color);
+  font-weight: var(--z-weight-medium);
+  line-height: 1;
+}
+
+.z-form-item-control {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.z-form-item-error {
+  margin-top: var(--z-form-error-margin-top);
+  color: var(--z-form-error-color);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-form-error-font-size);
+  line-height: var(--z-leading-normal);
+}

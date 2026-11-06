@@ -1,0 +1,20 @@
+{
+  "name": "Tag",
+  "description": "标签：小块语义色标签，可关闭、可带图标",
+  "category": "数据展示",
+  "useCase": ["状态/分类标记", "可移除的筛选项（多选回显）", "关键词/属性标注"],
+  "dontUse": ["数字角标用 Badge", "大面积提示用 Alert", "可点击的操作按钮用 Button"],
+  "props": {
+    "color": { "type": "'primary' | 'success' | 'warning' | 'error' | 'neutral'", "default": "'neutral'", "desc": "语义颜色" },
+    "closable": { "type": "boolean", "default": "false", "desc": "显示关闭按钮" },
+    "onClose": { "type": "(e: React.MouseEvent) => void", "default": "—", "desc": "点击关闭回调" },
+    "icon": { "type": "React.ReactNode", "default": "—", "desc": "前置图标" },
+    "classNames": { "type": "{ root?; icon?; close? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "关闭按钮 aria-label=\"关闭\"，图标 aria-hidden",
+    "span 语义 + 透传原生属性（aria-* / 事件）",
+    "颜色仅表达强调，状态判断不要只靠颜色"
+  ],
+  "related": ["Badge", "Select", "Alert"]
+}

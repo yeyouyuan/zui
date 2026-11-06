@@ -1,0 +1,40 @@
+{
+  "name": "Drawer",
+  "description": "抽屉：从边缘滑出的面板（复合组件），承载表单/筛选/详情",
+  "category": "反馈",
+  "useCase": ["筛选/配置面板", "详情侧滑展示", "移动端底部操作面板（placement=bottom）"],
+  "dontUse": ["必须确认的阻断操作用 Modal", "轻量浮层用 Popover", "常驻侧边栏布局自行用 CSS 布局"],
+  "props": {
+    "open": { "type": "boolean", "default": "—", "desc": "受控打开状态" },
+    "defaultOpen": { "type": "boolean", "default": "false", "desc": "非受控初始状态" },
+    "onOpenChange": { "type": "(open: boolean) => void", "default": "—", "desc": "开关变化回调" },
+    "Drawer.Content.placement": {
+      "type": "'left' | 'right' | 'top' | 'bottom'",
+      "default": "'right'",
+      "desc": "滑出方向"
+    },
+    "Drawer.Content.size": {
+      "type": "number | string",
+      "default": "378",
+      "desc": "抽屉宽/高（按方向）"
+    },
+    "Drawer.Content.closeOnOverlay": {
+      "type": "boolean",
+      "default": "true",
+      "desc": "点击遮罩关闭"
+    },
+    "Drawer.Content.closeOnEsc": { "type": "boolean", "default": "true", "desc": "Esc 关闭" },
+    "Drawer.Content.classNames": {
+      "type": "{ overlay?; content? }",
+      "default": "—",
+      "desc": "slot 级类名追加"
+    }
+  },
+  "a11yNotes": [
+    "内容区 role=\"dialog\" + aria-modal=\"true\" + aria-labelledby 关联 Drawer.Title",
+    "焦点管理同 Modal：打开聚焦、Tab 循环、关闭归还触发器",
+    "复合结构：Drawer.Trigger / Content / Header / Title / Body / Footer / Close（Close 图标用法默认 aria-label=\"关闭\"；有文字时作为普通操作按钮）",
+    "滚动锁 + 遮罩/Esc 关闭 + 进出场动画"
+  ],
+  "related": ["Modal", "Popover", "Form"]
+}

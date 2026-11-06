@@ -1,0 +1,132 @@
+/* Tag —— 组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-tag {
+  --z-tag-height: 1.5rem; /* 24px */
+  --z-tag-padding-x: var(--z-space-2);
+  --z-tag-gap: var(--z-space-1);
+  --z-tag-radius: 0.25rem; /* 4px */
+  --z-tag-font-size: var(--z-text-xs); /* 12px */
+  --z-tag-line-height: var(--z-leading-tight);
+  --z-tag-icon-size: 0.875rem; /* 14px */
+  --z-tag-close-size: 0.875rem;
+  --z-tag-close-gap: var(--z-space-1);
+  --z-tag-bg: var(--z-color-bg-muted);
+  --z-tag-fg: var(--z-color-fg-muted);
+  --z-tag-border: transparent;
+  --z-tag-hover-bg: color-mix(in srgb, var(--z-color-fg) 8%, var(--z-tag-bg));
+  --z-tag-focus-ring: var(--z-color-focus-ring);
+  --z-tag-transition: var(--z-duration-fast) var(--z-ease-standard);
+}
+
+/* 状态：浅底 + 状态字色（subtle 对），error 收口到 danger 令牌 */
+.z-tag[data-color='primary'] {
+  --z-tag-bg: var(--z-color-primary-subtle);
+  --z-tag-fg: var(--z-color-primary-subtle-fg);
+}
+
+.z-tag[data-color='success'] {
+  --z-tag-bg: var(--z-color-success-subtle);
+  --z-tag-fg: var(--z-color-success-subtle-fg);
+}
+
+.z-tag[data-color='warning'] {
+  --z-tag-bg: var(--z-color-warning-subtle);
+  --z-tag-fg: var(--z-color-warning-subtle-fg);
+}
+
+.z-tag[data-color='error'] {
+  --z-tag-bg: var(--z-color-danger-subtle);
+  --z-tag-fg: var(--z-color-danger-subtle-fg);
+}
+
+.z-tag[data-color='neutral'] {
+  --z-tag-bg: var(--z-color-bg-muted);
+  --z-tag-fg: var(--z-color-fg-muted);
+}
+
+/* 布局与视觉：圆角 4px 小块、24px 高 */
+.z-tag {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--z-tag-gap);
+  height: var(--z-tag-height);
+  padding: 0 var(--z-tag-padding-x);
+  border: 1px solid var(--z-tag-border);
+  border-radius: var(--z-tag-radius);
+  background: var(--z-tag-bg);
+  color: var(--z-tag-fg);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-tag-font-size);
+  line-height: var(--z-tag-line-height);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.z-tag-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-tag-icon-size);
+  height: var(--z-tag-icon-size);
+}
+
+.z-tag-icon > svg {
+  width: 100%;
+  height: 100%;
+}
+
+.z-tag-label {
+  display: inline-block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 关闭钮 × */
+.z-tag-close {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-tag-close-size);
+  height: var(--z-tag-close-size);
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0.125rem;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+  transition:
+    opacity var(--z-tag-transition),
+    background-color var(--z-tag-transition);
+}
+
+.z-tag-close:hover {
+  opacity: 1;
+  background: var(--z-tag-hover-bg);
+}
+
+.z-tag-close:focus-visible {
+  outline: none;
+  opacity: 1;
+  box-shadow:
+    0 0 0 2px var(--z-tag-bg),
+    0 0 0 4px color-mix(in srgb, var(--z-tag-focus-ring) 35%, transparent);
+}
+
+.z-tag-close > svg {
+  width: 100%;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-tag-close {
+    transition: none;
+  }
+}

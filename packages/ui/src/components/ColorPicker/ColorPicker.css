@@ -1,0 +1,213 @@
+/* ColorPicker —— 组件级变量定义在根选择器上，可被用户任意覆盖
+   注意：饱和度/亮度方块与色相条是取色器数学模型（纯色相谱、白/黑基色），
+   与主题无关，由组件以行内样式注入，本文件只消费语义令牌。 */
+
+.z-color-picker {
+  --z-color-picker-height: 2rem; /* 32px md，与 Input 同高 */
+  --z-color-picker-font-size: var(--z-text-sm);
+  --z-color-picker-radius: var(--z-radius-sm);
+  --z-color-picker-gap: var(--z-space-2);
+  --z-color-picker-trigger-bg: var(--z-color-bg-elevated);
+  --z-color-picker-trigger-fg: var(--z-color-fg);
+  --z-color-picker-trigger-border: var(--z-color-border);
+  --z-color-picker-trigger-hover-border: var(--z-color-border-focus);
+  --z-color-picker-trigger-focus-ring: var(--z-color-focus-ring);
+  --z-color-picker-swatch-size: 1.25rem;
+  --z-color-picker-swatch-radius: var(--z-radius-sm);
+  --z-color-picker-swatch-border: var(--z-color-border-subtle);
+  --z-color-picker-panel-width: 15.5rem;
+  --z-color-picker-panel-bg: var(--z-color-bg-elevated);
+  --z-color-picker-panel-border: var(--z-color-border-subtle);
+  --z-color-picker-panel-padding: var(--z-space-3);
+  --z-color-picker-panel-gap: var(--z-space-3);
+  --z-color-picker-panel-radius: var(--z-radius-md);
+  --z-color-picker-panel-shadow: var(--z-shadow-md);
+  --z-color-picker-sv-height: 8.5rem;
+  --z-color-picker-sv-radius: var(--z-radius-sm);
+  --z-color-picker-hue-height: 0.75rem;
+  --z-color-picker-hue-radius: var(--z-radius-full);
+  --z-color-picker-pointer-size: 0.875rem;
+  --z-color-picker-pointer-border: var(--z-color-bg-elevated);
+  --z-color-picker-hex-input-bg: var(--z-color-bg);
+  --z-color-picker-hex-input-fg: var(--z-color-fg);
+  --z-color-picker-hex-input-border: var(--z-color-border);
+  --z-color-picker-hex-input-radius: var(--z-radius-sm);
+  --z-color-picker-disabled-bg: var(--z-color-disabled-bg);
+  --z-color-picker-disabled-fg: var(--z-color-disabled-fg);
+  --z-color-picker-disabled-border: var(--z-color-disabled-border);
+  --z-color-picker-transition: var(--z-duration-fast) var(--z-ease-standard);
+}
+
+/* 尺寸：仅覆盖尺寸类变量（sm 24px / md 32px / lg 40px，与 Input 对齐） */
+.z-color-picker[data-size='sm'] {
+  --z-color-picker-height: 1.5rem; /* 24px */
+  --z-color-picker-font-size: var(--z-text-xs);
+  --z-color-picker-radius: 0.25rem;
+  --z-color-picker-swatch-size: 1rem;
+}
+
+.z-color-picker[data-size='lg'] {
+  --z-color-picker-height: 2.5rem; /* 40px */
+  --z-color-picker-font-size: var(--z-text-md);
+  --z-color-picker-radius: 0.5rem;
+  --z-color-picker-swatch-size: 1.5rem;
+}
+
+/* 根与触发器 */
+.z-color-picker {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.z-color-picker-swatch {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--z-color-picker-gap);
+  height: var(--z-color-picker-height);
+  padding: 0 var(--z-space-3);
+  border: 1px solid var(--z-color-picker-trigger-border);
+  border-radius: var(--z-color-picker-radius);
+  background: var(--z-color-picker-trigger-bg);
+  color: var(--z-color-picker-trigger-fg);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-color-picker-font-size);
+  cursor: pointer;
+  transition:
+    border-color var(--z-color-picker-transition),
+    box-shadow var(--z-color-picker-transition);
+}
+
+.z-color-picker-swatch:hover:not(:disabled) {
+  border-color: var(--z-color-picker-trigger-hover-border);
+}
+
+.z-color-picker-swatch:focus-visible {
+  border-color: var(--z-color-picker-trigger-hover-border);
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-color-picker-trigger-focus-ring) 15%, transparent);
+}
+
+.z-color-picker-swatch:disabled {
+  background: var(--z-color-picker-disabled-bg);
+  border-color: var(--z-color-picker-disabled-border);
+  color: var(--z-color-picker-disabled-fg);
+  cursor: not-allowed;
+}
+
+.z-color-picker-swatch-color {
+  flex: none;
+  width: var(--z-color-picker-swatch-size);
+  height: var(--z-color-picker-swatch-size);
+  border: 1px solid var(--z-color-picker-swatch-border);
+  border-radius: var(--z-color-picker-swatch-radius);
+}
+
+.z-color-picker-swatch-hex {
+  font-family: var(--z-font-mono);
+  font-size: var(--z-color-picker-font-size);
+  text-transform: lowercase;
+}
+
+/* 弹出面板：绝对定位于 root 内（Popover 模式），外部点击 / Esc 关闭 */
+.z-color-picker-panel {
+  position: fixed;
+  top: calc(100% + var(--z-space-1));
+  left: 0;
+  z-index: var(--z-z-dropdown);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--z-color-picker-panel-gap);
+  width: var(--z-color-picker-panel-width);
+  padding: var(--z-color-picker-panel-padding);
+  border: 1px solid var(--z-color-picker-panel-border);
+  border-radius: var(--z-color-picker-panel-radius);
+  background: var(--z-color-picker-panel-bg);
+  box-shadow: var(--z-color-picker-panel-shadow);
+  max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+}
+
+.z-color-picker-panel:focus {
+  outline: none;
+}
+
+/* 饱和度/亮度方块：底色（纯色相）+ 白/黑叠加层由组件行内样式注入 */
+.z-color-picker-sv {
+  position: relative;
+  height: var(--z-color-picker-sv-height);
+  border-radius: var(--z-color-picker-sv-radius);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.z-color-picker-sv-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.z-color-picker-sv:focus-visible,
+.z-color-picker-hue:focus-visible {
+  outline: 2px solid var(--z-color-picker-trigger-focus-ring);
+  outline-offset: 2px;
+}
+
+/* 色相条：纯色相谱由组件行内样式注入 */
+.z-color-picker-hue {
+  position: relative;
+  height: var(--z-color-picker-hue-height);
+  border-radius: var(--z-color-picker-hue-radius);
+  cursor: pointer;
+  touch-action: none;
+}
+
+/* SV / hue 共用取色指示点 */
+.z-color-picker-pointer {
+  position: absolute;
+  box-sizing: border-box;
+  width: var(--z-color-picker-pointer-size);
+  height: var(--z-color-picker-pointer-size);
+  border: 2px solid var(--z-color-picker-pointer-border);
+  border-radius: var(--z-radius-full);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  box-shadow: var(--z-shadow-sm);
+}
+
+/* hex 输入 */
+.z-color-picker-hex-row {
+  display: flex;
+  align-items: center;
+}
+
+.z-color-picker-hex-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 1.75rem;
+  padding: 0 var(--z-space-2);
+  border: 1px solid var(--z-color-picker-hex-input-border);
+  border-radius: var(--z-color-picker-hex-input-radius);
+  background: var(--z-color-picker-hex-input-bg);
+  color: var(--z-color-picker-hex-input-fg);
+  font-family: var(--z-font-mono);
+  font-size: var(--z-text-sm);
+  text-transform: lowercase;
+  outline: none;
+  transition: border-color var(--z-color-picker-transition);
+}
+
+.z-color-picker-hex-input:focus {
+  border-color: var(--z-color-picker-trigger-hover-border);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-color-picker-trigger-focus-ring) 15%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-color-picker-swatch,
+  .z-color-picker-hex-input {
+    transition: none;
+  }
+}

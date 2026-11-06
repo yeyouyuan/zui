@@ -1,0 +1,14 @@
+{
+  "name": "zui-preview",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@zui/react": "file:../packages/ui",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.5"
+  }
+}

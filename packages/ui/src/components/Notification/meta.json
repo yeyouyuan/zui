@@ -1,0 +1,18 @@
+{
+  "name": "Notification",
+  "description": "通知卡片，全局右上角（四角可配）的可交互消息提醒",
+  "category": "反馈",
+  "useCase": ["系统级事件提醒", "后台任务完成通知", "可点击跳转的提醒卡片"],
+  "dontUse": ["表单校验错误就近提示（用 Form 错误）", "轻量瞬时反馈用 Message"],
+  "props": {
+    "title": { "type": "React.ReactNode", "desc": "通知标题（必填）" },
+    "description": { "type": "React.ReactNode", "desc": "通知描述" },
+    "duration": { "type": "number", "default": "4500", "desc": "自动关闭毫秒数，0 不自动关" },
+    "closable": { "type": "boolean", "default": "true", "desc": "显示关闭按钮" },
+    "placement": { "type": "'topLeft'|'topRight'|'bottomLeft'|'bottomRight'", "default": "'topRight'", "desc": "出现位置（可逐条覆盖 Provider 默认）" },
+    "icon": { "type": "React.ReactNode", "desc": "自定义图标（默认按变体提供）" },
+    "onClick": { "type": "() => void", "desc": "点击卡片回调" }
+  },
+  "a11yNotes": ["error 用 role=alert + aria-live=assertive，其余 role=status + polite；关闭按钮 aria-label=关闭"],
+  "related": ["Message", "App", "Result"]
+}

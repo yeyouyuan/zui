@@ -1,0 +1,25 @@
+{
+  "name": "Calendar",
+  "description": "静态日历展示组件，按月浏览并选中单个日期（ISO YYYY-MM-DD），与 DatePicker 独立",
+  "category": "数据展示",
+  "useCase": ["日程/活动面板中的月历视图", "详情页内嵌的日期展示与选择", "需要完整键盘无障碍的日历网格"],
+  "dontUse": ["不要用 Calendar 做表单里的弹出日期输入（用 DatePicker）", "不要用它做日期区间选择（区间版 v0.4 提供）"],
+  "props": {
+    "value": { "type": "string", "desc": "受控值，ISO 'YYYY-MM-DD'" },
+    "defaultValue": { "type": "string", "desc": "非受控初始值" },
+    "onChange": { "type": "(iso: string) => void", "desc": "选中日期后回调（ISO）" },
+    "fullscreen": { "type": "boolean", "default": "true", "desc": "true 全幅撑满容器；false 收缩为内容宽度" },
+    "classNames": {
+      "type": "{ root?; header?; grid?; day?; label?; nav?; week?; weekday? }",
+      "desc": "slot 级类名追加"
+    }
+  },
+  "a11yNotes": [
+    "role=grid / role=row / role=gridcell，aria-selected 标记选中日，aria-current=date 标记今天",
+    "roving tabindex：焦点日期格 tabIndex=0，其余 -1",
+    "键盘：←→/↑↓ 移动（周循环）、Home/End 月首尾、PageUp/PageDown 上下月、Enter/Space 选中",
+    "月份导航按钮带 aria-label（上一月/下一月）",
+    "非当月日期仅弱化展示，仍可点击选中"
+  ],
+  "related": ["DatePicker", "Table", "Card"]
+}

@@ -1,0 +1,80 @@
+/* Image —— 组件级变量定义在根选择器上 */
+
+.z-image {
+  --z-image-radius: var(--z-radius-md);
+  --z-image-object-fit: cover;
+  --z-image-cursor: zoom-in;
+  --z-image-preview-bg: var(--z-color-overlay);
+  --z-image-preview-img-shadow: var(--z-shadow-lg);
+  --z-image-preview-close-size: 2.25rem;
+  --z-image-preview-close-bg: var(--z-color-bg-elevated);
+  --z-image-preview-close-fg: var(--z-color-fg);
+}
+
+.z-image {
+  box-sizing: border-box;
+  display: inline-block;
+  overflow: hidden;
+  border-radius: var(--z-image-radius);
+  line-height: 0;
+}
+
+.z-image-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--z-image-object-fit);
+}
+
+.z-image[data-preview='true'] .z-image-img {
+  cursor: var(--z-image-cursor);
+}
+
+.z-image-img:focus-visible {
+  outline: 2px solid var(--z-color-border-focus);
+  outline-offset: -2px;
+}
+
+.z-image-preview {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--z-image-preview-bg);
+  cursor: zoom-out;
+}
+
+.z-image-preview:focus-visible {
+  outline: none;
+}
+
+.z-image-preview-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  max-height: 90dvh;
+  border-radius: var(--z-radius-sm);
+  box-shadow: var(--z-image-preview-img-shadow);
+}
+
+.z-image-preview-close {
+  position: absolute;
+  top: var(--z-space-4);
+  right: var(--z-space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-image-preview-close-size);
+  height: var(--z-image-preview-close-size);
+  border: none;
+  border-radius: var(--z-radius-full);
+  background: var(--z-image-preview-close-bg);
+  color: var(--z-image-preview-close-fg);
+  cursor: pointer;
+}
+
+.z-image-preview-close:focus-visible {
+  outline: 2px solid var(--z-color-border-focus);
+  outline-offset: 2px;
+}

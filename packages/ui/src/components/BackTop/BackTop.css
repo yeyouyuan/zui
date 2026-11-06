@@ -1,0 +1,62 @@
+/* BackTop —— 组件级变量定义在根选择器上 */
+
+.z-back-top {
+  --z-back-top-size: 2.5rem;
+  --z-back-top-radius: var(--z-radius-full);
+  --z-back-top-bg: var(--z-color-bg-elevated);
+  --z-back-top-fg: var(--z-color-fg);
+  --z-back-top-border: var(--z-color-border-subtle);
+  --z-back-top-hover-bg: var(--z-color-bg-subtle);
+  --z-back-top-shadow: var(--z-shadow-md);
+  --z-back-top-right: var(--z-space-6);
+  --z-back-top-bottom: var(--z-space-6);
+  --z-back-top-transition: var(--z-duration-normal) var(--z-ease-standard);
+  --z-back-top-icon-size: 1.125rem;
+}
+
+.z-back-top {
+  box-sizing: border-box;
+  position: fixed;
+  right: var(--z-back-top-right);
+  bottom: var(--z-back-top-bottom);
+  z-index: var(--z-z-sticky);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-back-top-size);
+  height: var(--z-back-top-size);
+  padding: 0;
+  border: 1px solid var(--z-back-top-border);
+  border-radius: var(--z-back-top-radius);
+  background: var(--z-back-top-bg);
+  color: var(--z-back-top-fg);
+  cursor: pointer;
+  box-shadow: var(--z-back-top-shadow);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(var(--z-space-2));
+  transition:
+    opacity var(--z-back-top-transition),
+    transform var(--z-back-top-transition),
+    visibility var(--z-back-top-transition);
+}
+
+.z-back-top[data-visible='true'] {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.z-back-top:hover {
+  background: var(--z-back-top-hover-bg);
+}
+
+.z-back-top:focus-visible {
+  outline: 2px solid var(--z-color-border-focus);
+  outline-offset: 2px;
+}
+
+.z-back-top svg {
+  width: var(--z-back-top-icon-size);
+  height: var(--z-back-top-icon-size);
+}

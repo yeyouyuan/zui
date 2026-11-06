@@ -1,0 +1,21 @@
+{
+  "name": "Checkbox",
+  "description": "复选框：布尔选择，支持半选（indeterminate）与标签",
+  "category": "基础",
+  "useCase": ["表单中的布尔开关项", "列表多选（配合 Table/Transfer）", "全选/半选父子联动"],
+  "dontUse": ["单选互斥场景用 Radio/RadioGroup", "即时生效的开关用 Switch"],
+  "props": {
+    "checked": { "type": "boolean", "default": "—", "desc": "受控勾选状态" },
+    "defaultChecked": { "type": "boolean", "default": "false", "desc": "非受控初始状态" },
+    "onChange": { "type": "(checked: boolean) => void", "default": "—", "desc": "勾选变化回调（布尔参数，非事件）" },
+    "label": { "type": "React.ReactNode", "default": "—", "desc": "标签内容（整行可点击）" },
+    "indeterminate": { "type": "boolean", "default": "false", "desc": "半选态（DOM input.indeterminate）" },
+    "classNames": { "type": "{ root?; control?; label? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "原生 input[type=checkbox] 视觉隐藏保留，键盘 Space 切换",
+    "半选时 aria-checked=\"mixed\"",
+    "label 关联 input，点击标签即勾选"
+  ],
+  "related": ["Radio", "Switch", "Form"]
+}

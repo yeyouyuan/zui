@@ -1,0 +1,24 @@
+{
+  "name": "ColorPicker",
+  "description": "取色器：swatch 触发器弹出 HSV 取色面板，饱和度/亮度方块 + 色相条 + hex 输入",
+  "category": "数据录入",
+  "useCase": ["主题/外观配置", "图表系列配色", "表单内颜色字段"],
+  "dontUse": ["固定色板多选展示用 Tag/自定义色板列表", "需要透明度时本版不支持（v0.4 再评估 alpha）"],
+  "props": {
+    "value": { "type": "string", "default": "—", "desc": "受控值（hex，统一归一化为 '#rrggbb' 小写）" },
+    "defaultValue": { "type": "string", "default": "'#ff0000'", "desc": "非受控初始值（'#rgb'/'#rrggbb'/省略 '#' 均可）" },
+    "onChange": { "type": "(hex: string) => void", "default": "—", "desc": "值变更回调（归一化 hex）" },
+    "disabled": { "type": "boolean", "default": "false", "desc": "禁用（触发器原生 disabled，面板不可开）" },
+    "size": { "type": "'sm' | 'md' | 'lg'", "default": "'md'", "desc": "触发器尺寸" },
+    "classNames": { "type": "{ root?; swatch?; panel?; hue? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "触发器 button：aria-haspopup=dialog + aria-expanded + aria-controls 面板 id",
+    "面板 role=dialog（aria-label=\"颜色选择面板\"），打开后焦点进入 SV 方块，Esc 关闭并归还焦点到触发器",
+    "SV 方块与色相条均 role=slider（aria-valuenow/min/max/valuetext），可 Tab 聚焦",
+    "面板内 ←→/↑↓ 调 SV、Home/End 调 hue；色相条聚焦时 ←→/↑↓ 按 APG slider 语义调 hue；hex 输入框内方向键保留光标行为",
+    "SV/hue 支持指针点击与拖拽取色；外部点击关闭面板（useOnClickOutside）",
+    "不做 alpha；hex 文本归一化 '#rrggbb' 小写"
+  ],
+  "related": ["Input", "Form", "Slider"]
+}

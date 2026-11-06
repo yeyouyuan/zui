@@ -1,0 +1,19 @@
+{
+  "name": "Timeline",
+  "description": "时间轴：竖线 + 节点圆点 + 内容，支持左/右/交替布局与 pending 尾节点",
+  "category": "数据展示",
+  "useCase": ["流程/审批进度", "动态流/活动记录", "版本历史/订单跟踪"],
+  "dontUse": ["简单键值对展示用 Descriptions", "大数据表格用 Table/VirtualTable", "交互式步骤条用 Tabs"],
+  "props": {
+    "items": { "type": "Array<{ key?; label?; children; color?; dot? }>", "default": "—", "desc": "时间轴项（children 为内容）" },
+    "mode": { "type": "'left' | 'right' | 'alternate'", "default": "'left'", "desc": "布局：左/右/交替" },
+    "pending": { "type": "React.ReactNode", "default": "—", "desc": "尾部进行中节点（虚点）" },
+    "classNames": { "type": "{ root?; item?; dot?; label?; content? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "色点颜色映射状态色（primary/success/warning/error/neutral），状态判断不要只靠颜色",
+    "dot 可传自定义 ReactNode，pending 节点用空心虚点",
+    "aria-* / 事件等原生属性透传到根元素（div）"
+  ],
+  "related": ["Descriptions", "List", "Statistic"]
+}

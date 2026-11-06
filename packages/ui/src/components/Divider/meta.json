@@ -1,0 +1,19 @@
+{
+  "name": "Divider",
+  "description": "分割线：水平/垂直的内容分隔（可带中间文字）",
+  "category": "数据展示",
+  "useCase": ["表单/卡片内的区域分隔", "工具栏按钮组分隔", "标题与内容的视觉分界"],
+  "dontUse": ["结构化数据分组用 Card/Descriptions", "列表项分隔交给 Table/List 自带的行分隔线"],
+  "props": {
+    "orientation": { "type": "'horizontal' | 'vertical'", "default": "'horizontal'", "desc": "方向" },
+    "dashed": { "type": "boolean", "default": "false", "desc": "虚线样式" },
+    "children": { "type": "React.ReactNode", "default": "—", "desc": "中间文字（仅 horizontal）" },
+    "classNames": { "type": "{ root? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "纯装饰分隔：aria-hidden（不承载语义）",
+    "带中间文字时文字可被读屏获取，作为视觉分组标签",
+    "vertical 分割线需有确定高度（多为 flex 行内用）"
+  ],
+  "related": ["Card", "Tabs", "List"]
+}

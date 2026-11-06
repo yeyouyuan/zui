@@ -1,0 +1,196 @@
+/* ZUI TimePicker —— 时/分/秒三列滚动面板：组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-time-picker {
+  --z-time-picker-trigger-height: 2rem; /* 32px，与 Input 同高 */
+  --z-time-picker-trigger-padding-x: var(--z-space-3);
+  --z-time-picker-trigger-font-size: var(--z-text-sm);
+  --z-time-picker-trigger-radius: var(--z-radius-sm);
+  --z-time-picker-trigger-bg: var(--z-color-bg-elevated);
+  --z-time-picker-trigger-fg: var(--z-color-fg);
+  --z-time-picker-trigger-border: var(--z-color-border);
+  --z-time-picker-trigger-hover-border: var(--z-color-border-focus);
+  --z-time-picker-placeholder-fg: var(--z-color-fg-subtle);
+  --z-time-picker-panel-bg: var(--z-color-bg-elevated);
+  --z-time-picker-panel-border: var(--z-color-border-subtle);
+  --z-time-picker-panel-radius: 0.5rem;
+  --z-time-picker-panel-shadow: var(--z-shadow-lg);
+  --z-time-picker-panel-margin-top: var(--z-space-1);
+  --z-time-picker-panel-height: 13.5rem;
+  --z-time-picker-column-width: 3.5rem;
+  --z-time-picker-column-border: var(--z-color-border-subtle);
+  --z-time-picker-item-height: 2.25rem;
+  --z-time-picker-item-fg: var(--z-color-fg);
+  --z-time-picker-item-hover-bg: var(--z-color-bg-muted);
+  --z-time-picker-item-active-bg: var(--z-color-primary-subtle);
+  --z-time-picker-item-active-fg: var(--z-color-primary-subtle-fg);
+  --z-time-picker-item-font-size: var(--z-text-sm);
+  --z-time-picker-focus-ring: var(--z-color-focus-ring);
+  --z-time-picker-animation-duration: var(--z-duration-fast);
+
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+  font-family: var(--z-font-sans);
+  font-size: var(--z-time-picker-trigger-font-size);
+  color: var(--z-time-picker-trigger-fg);
+}
+
+/* --------------------------------- 尺寸 --------------------------------- */
+
+.z-time-picker[data-size='sm'] {
+  --z-time-picker-trigger-height: 1.5rem;
+  --z-time-picker-trigger-font-size: var(--z-text-xs);
+  --z-time-picker-trigger-padding-x: var(--z-space-2);
+  --z-time-picker-item-height: 1.75rem;
+}
+
+.z-time-picker[data-size='lg'] {
+  --z-time-picker-trigger-height: 2.5rem;
+  --z-time-picker-trigger-font-size: var(--z-text-md);
+  --z-time-picker-trigger-padding-x: var(--z-space-4);
+  --z-time-picker-item-height: 2.5rem;
+}
+
+/* -------------------------------- 触发器 -------------------------------- */
+
+.z-time-picker-trigger {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--z-space-2);
+  width: 100%;
+  height: var(--z-time-picker-trigger-height);
+  padding: 0 var(--z-time-picker-trigger-padding-x);
+  font-family: inherit;
+  font-size: var(--z-time-picker-trigger-font-size);
+  color: var(--z-time-picker-trigger-fg);
+  text-align: left;
+  background: var(--z-time-picker-trigger-bg);
+  border: 1px solid var(--z-time-picker-trigger-border);
+  border-radius: var(--z-time-picker-trigger-radius);
+  cursor: pointer;
+  transition:
+    border-color var(--z-duration-fast) var(--z-ease-standard),
+    box-shadow var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-time-picker-trigger:hover:not(:disabled) {
+  border-color: var(--z-time-picker-trigger-hover-border);
+}
+
+.z-time-picker-trigger:focus-visible {
+  outline: none;
+  border-color: var(--z-color-border-focus);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-time-picker-focus-ring) 15%, transparent);
+}
+
+.z-time-picker-trigger:disabled {
+  color: var(--z-color-disabled-fg);
+  background: var(--z-color-disabled-bg);
+  border-color: var(--z-color-disabled-border);
+  cursor: not-allowed;
+}
+
+.z-time-picker-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.z-time-picker-value[data-placeholder] {
+  color: var(--z-time-picker-placeholder-fg);
+}
+
+.z-time-picker-clock-icon {
+  flex: none;
+  color: var(--z-color-fg-muted);
+}
+
+/* -------------------------------- 弹层 --------------------------------- */
+
+.z-time-picker-panel {
+  position: fixed;
+  top: 100%;
+  left: 0;
+  z-index: var(--z-z-dropdown);
+  display: flex;
+  margin-top: var(--z-time-picker-panel-margin-top);
+  height: var(--z-time-picker-panel-height);
+  background: var(--z-time-picker-panel-bg);
+  border: 1px solid var(--z-time-picker-panel-border);
+  border-radius: var(--z-time-picker-panel-radius);
+  box-shadow: var(--z-time-picker-panel-shadow);
+  max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+}
+
+.z-time-picker-panel:focus-visible {
+  outline: none;
+}
+
+.z-time-picker-panel[data-open='false'] {
+  display: none;
+}
+
+.z-time-picker-panel[data-open='true'] {
+  animation: z-time-picker-panel-in var(--z-time-picker-animation-duration) var(--z-ease-entrance);
+}
+
+@keyframes z-time-picker-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-time-picker-panel {
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* -------------------------------- 列/项 --------------------------------- */
+
+.z-time-picker-column {
+  width: var(--z-time-picker-column-width);
+  padding: var(--z-space-1);
+  overflow-y: auto;
+  border-right: 1px solid var(--z-time-picker-column-border);
+}
+
+.z-time-picker-column:last-child {
+  border-right: none;
+}
+
+.z-time-picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--z-time-picker-item-height);
+  font-size: var(--z-time-picker-item-font-size);
+  color: var(--z-time-picker-item-fg);
+  font-variant-numeric: tabular-nums;
+  border-radius: var(--z-radius-sm);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-time-picker-item[data-active='true'] {
+  color: var(--z-time-picker-item-active-fg);
+  background: var(--z-time-picker-item-active-bg);
+  font-weight: var(--z-weight-medium);
+}
+
+.z-time-picker-item:hover:not([data-active='true']) {
+  background: var(--z-time-picker-item-hover-bg);
+}

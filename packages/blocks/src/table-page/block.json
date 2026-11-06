@@ -1,0 +1,6 @@
+{
+  "name": "table-page",
+  "description": "表格页区块：搜索/下拉筛选工具栏 + 可选行选择的 Table + Pagination 分页，典型 CRUD 列表页",
+  "dependencies": ["Table", "Pagination", "Card", "Select", "Button", "Input", "Checkbox", "Tag"],
+  "category": "业务块"
+}

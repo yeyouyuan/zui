@@ -1,0 +1,22 @@
+{
+  "name": "Collapse",
+  "description": "折叠面板：分组内容收纳展示，支持手风琴单开模式与展开高度动画",
+  "category": "数据展示",
+  "useCase": ["FAQ/设置分组收纳", "表单分区折叠", "详情页信息分组（手风琴）"],
+  "dontUse": ["需要标签页切换的多面板用 Tabs", "全屏弹层内容用 Modal/Drawer"],
+  "props": {
+    "items": { "type": "Array<{ key; label; children; disabled? }>", "default": "—", "desc": "面板项（key/标题/内容/禁用）" },
+    "value": { "type": "string[]", "default": "—", "desc": "受控展开 key 列表" },
+    "defaultValue": { "type": "string[]", "default": "[]", "desc": "非受控初始展开 key" },
+    "onChange": { "type": "(keys: string[]) => void", "default": "—", "desc": "展开变更回调（手风琴模式最多 1 个 key）" },
+    "accordion": { "type": "boolean", "default": "false", "desc": "手风琴模式（单开）；点开合面板全部收起" },
+    "classNames": { "type": "{ root?; item?; header?; content? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "header 为原生 button（role=button）+ aria-expanded + aria-controls 关联面板 id",
+    "面板 role=region + aria-labelledby 回指 header",
+    "展开高度动画用 CSS grid-template-rows 0fr↔1fr 过渡；收起时 visibility:hidden 退出无障碍树",
+    "disabled 项 aria-disabled 且点击无效（保留可聚焦）；header 原生 Enter/Space 激活"
+  ],
+  "related": ["Tabs", "List", "Tree"]
+}

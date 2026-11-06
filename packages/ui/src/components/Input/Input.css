@@ -1,0 +1,155 @@
+/* Input —— 组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-input {
+  --z-input-height: 2rem; /* 32px md，与 Button 同高 */
+  --z-input-padding-x: var(--z-space-3);
+  --z-input-gap: var(--z-space-2);
+  --z-input-font-size: var(--z-text-sm);
+  --z-input-radius: var(--z-radius-sm); /* 6px，与 Button 同圆角 */
+  --z-input-border-width: 1px;
+  --z-input-bg: var(--z-color-bg-elevated);
+  --z-input-fg: var(--z-color-fg);
+  --z-input-border: var(--z-color-border);
+  --z-input-hover-border: var(--z-color-border-focus);
+  --z-input-focus-border: var(--z-color-border-focus);
+  --z-input-focus-ring: var(--z-color-focus-ring);
+  --z-input-placeholder-color: var(--z-color-fg-subtle);
+  --z-input-affix-color: var(--z-color-fg-muted);
+  --z-input-affix-font-size: var(--z-text-sm);
+  --z-input-clear-color: var(--z-color-fg-subtle);
+  --z-input-clear-hover-color: var(--z-color-fg);
+  --z-input-disabled-bg: var(--z-color-disabled-bg);
+  --z-input-disabled-fg: var(--z-color-disabled-fg);
+  --z-input-disabled-border: var(--z-color-disabled-border);
+  --z-input-transition: var(--z-duration-fast) var(--z-ease-standard);
+}
+
+/* 尺寸：仅覆盖尺寸类变量（sm 24px / md 32px / lg 40px，与 Button 对齐） */
+.z-input[data-size='sm'] {
+  --z-input-height: 1.5rem; /* 24px */
+  --z-input-padding-x: var(--z-space-2);
+  --z-input-font-size: var(--z-text-xs);
+  --z-input-radius: 0.25rem;
+}
+
+.z-input[data-size='lg'] {
+  --z-input-height: 2.5rem; /* 40px */
+  --z-input-padding-x: var(--z-space-4);
+  --z-input-font-size: var(--z-text-md);
+  --z-input-radius: 0.5rem;
+}
+
+/* 状态：仅覆盖颜色类变量 */
+.z-input[data-status='error'] {
+  --z-input-border: var(--z-color-danger);
+  --z-input-hover-border: var(--z-color-danger);
+  --z-input-focus-border: var(--z-color-danger);
+  --z-input-focus-ring: var(--z-color-danger);
+}
+
+.z-input[data-status='success'] {
+  --z-input-border: var(--z-color-success);
+  --z-input-hover-border: var(--z-color-success);
+  --z-input-focus-border: var(--z-color-success);
+  --z-input-focus-ring: var(--z-color-success);
+}
+
+/* 布局与视觉 */
+.z-input {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--z-input-gap);
+  height: var(--z-input-height);
+  padding: 0 var(--z-input-padding-x);
+  border: var(--z-input-border-width) solid var(--z-input-border);
+  border-radius: var(--z-input-radius);
+  background: var(--z-input-bg);
+  transition:
+    border-color var(--z-input-transition),
+    box-shadow var(--z-input-transition);
+}
+
+/* hover：边框转 primary（antd 式） */
+.z-input:hover:not(:has(.z-input-field:disabled)) {
+  border-color: var(--z-input-hover-border);
+}
+
+/* focus：柔光圈（color-mix 15%）而非生硬描边 */
+.z-input:focus-within {
+  border-color: var(--z-input-focus-border);
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-input-focus-ring) 15%, transparent);
+}
+
+.z-input-field {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--z-input-fg);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-input-font-size);
+  line-height: var(--z-leading-normal);
+  outline: none;
+}
+
+.z-input-field::placeholder {
+  color: var(--z-input-placeholder-color);
+}
+
+.z-input-prefix,
+.z-input-suffix {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  color: var(--z-input-affix-color);
+  font-size: var(--z-input-affix-font-size);
+}
+
+.z-input-clear {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: var(--z-radius-full);
+  background: transparent;
+  color: var(--z-input-clear-color);
+  font-size: var(--z-input-affix-font-size);
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--z-input-transition);
+}
+
+.z-input-clear:hover {
+  color: var(--z-input-clear-hover-color);
+}
+
+.z-input-clear:focus-visible {
+  outline: 2px solid var(--z-input-focus-ring);
+  outline-offset: 2px;
+}
+
+.z-input:has(.z-input-field:disabled) {
+  background: var(--z-input-disabled-bg);
+  border-color: var(--z-input-disabled-border);
+  cursor: not-allowed;
+}
+
+.z-input-field:disabled {
+  color: var(--z-input-disabled-fg);
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-input,
+  .z-input-clear {
+    transition: none;
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Badge",
+  "description": "徽标：数字/圆点角标，可包裹子元素右上角展示",
+  "category": "数据展示",
+  "useCase": ["未读消息数", "图标状态圆点", "数值溢出显示（99+）"],
+  "dontUse": ["文字标签用 Tag", "大面积状态色块用 Alert"],
+  "props": {
+    "count": { "type": "number", "default": "—", "desc": "数字（0 时默认隐藏）" },
+    "dot": { "type": "boolean", "default": "false", "desc": "小圆点模式" },
+    "max": { "type": "number", "default": "99", "desc": "超出显示 `${max}+`" },
+    "showZero": { "type": "boolean", "default": "false", "desc": "count=0 时仍显示" },
+    "color": { "type": "'primary' | 'success' | 'warning' | 'error' | 'neutral'", "default": "'error'", "desc": "角标颜色" },
+    "children": { "type": "React.ReactNode", "default": "—", "desc": "被包裹元素（右上角角标）；无则独立展示数字" },
+    "classNames": { "type": "{ root?; indicator? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "纯数字角标建议在可访问名里补语义（如按钮 aria-label 含未读数）",
+    "圆点为装饰态，不承载独立语义",
+    "颜色仅表达强调，状态判断不要只靠颜色（可叠加图标/文字）"
+  ],
+  "related": ["Tag", "Avatar", "Button"]
+}

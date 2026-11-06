@@ -1,0 +1,112 @@
+/* Card —— props 式卡片；组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-card {
+  --z-card-bg: var(--z-color-bg-elevated);
+  --z-card-border: var(--z-color-border-subtle);
+  --z-card-border-width: 1px;
+  --z-card-radius: 0.5rem; /* 8px */
+  --z-card-padding: var(--z-space-5); /* 20px */
+  --z-card-header-height: 3rem; /* 48px */
+  --z-card-header-gap: var(--z-space-4);
+  --z-card-title-font-size: var(--z-text-md);
+  --z-card-title-font-weight: var(--z-weight-medium);
+  --z-card-title-fg: var(--z-color-fg);
+  --z-card-extra-font-size: var(--z-text-sm);
+  --z-card-extra-fg: var(--z-color-fg-muted);
+  --z-card-shadow: none;
+  --z-card-hover-shadow: var(--z-shadow-md);
+  --z-card-hover-translate-y: -2px;
+  --z-card-transition: var(--z-duration-normal) var(--z-ease-standard);
+}
+
+/* 布局与视觉 */
+.z-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background: var(--z-card-bg);
+  border-radius: var(--z-card-radius);
+  color: var(--z-color-fg);
+  font-family: var(--z-font-sans);
+  box-shadow: var(--z-card-shadow);
+  overflow: hidden;
+}
+
+.z-card[data-bordered='true'] {
+  border: var(--z-card-border-width) solid var(--z-card-border);
+}
+
+/* hoverable：hover 阴影 + 上浮 */
+.z-card[data-hoverable='true'] {
+  transition:
+    box-shadow var(--z-card-transition),
+    transform var(--z-card-transition);
+}
+
+.z-card[data-hoverable='true']:hover {
+  box-shadow: var(--z-card-hover-shadow);
+  transform: translateY(var(--z-card-hover-translate-y));
+}
+
+/* cover：顶部媒体区（裁切到卡片圆角） */
+.z-card-cover {
+  overflow: hidden;
+  border-radius: var(--z-card-radius) var(--z-card-radius) 0 0;
+}
+
+.z-card-cover > img,
+.z-card-cover > * {
+  display: block;
+  width: 100%;
+}
+
+/* header：高 48px 左右、左右 padding 20px，底部分割线两端贴齐 */
+.z-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--z-card-header-gap);
+  min-height: var(--z-card-header-height);
+  padding: 0 var(--z-card-padding);
+  border-bottom: var(--z-card-border-width) solid var(--z-card-border);
+}
+
+.z-card-header:last-child {
+  border-bottom: none;
+}
+
+.z-card-title {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--z-card-title-font-size);
+  font-weight: var(--z-card-title-font-weight);
+  color: var(--z-card-title-fg);
+  line-height: var(--z-leading-tight);
+}
+
+.z-card-extra {
+  flex: none;
+  margin-left: auto;
+  font-size: var(--z-card-extra-font-size);
+  color: var(--z-card-extra-fg);
+}
+
+/* body：内容区 20px 内边距 */
+.z-card-body {
+  padding: var(--z-card-padding);
+}
+
+/* footer：顶部分隔线 */
+.z-card-footer {
+  padding: var(--z-card-padding);
+  border-top: var(--z-card-border-width) solid var(--z-card-border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-card[data-hoverable='true'] {
+    transition: none;
+  }
+
+  .z-card[data-hoverable='true']:hover {
+    transform: none;
+  }
+}

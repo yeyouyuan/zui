@@ -1,0 +1,21 @@
+{
+  "name": "Tooltip",
+  "description": "文字提示：hover/聚焦时显示的轻量悬浮说明",
+  "category": "数据展示",
+  "useCase": ["图标按钮的补充说明", "缩写/术语的解释", "次要信息的悬停提示"],
+  "dontUse": ["放交互内容（按钮/表单）用 Popover", "重要且常驻的信息直接展示在页面上"],
+  "props": {
+    "content": { "type": "React.ReactNode", "default": "（必填）", "desc": "提示内容" },
+    "children": { "type": "React.ReactElement", "default": "（必填）", "desc": "单个触发元素" },
+    "placement": { "type": "'top' | 'bottom' | 'left' | 'right'", "default": "'top'", "desc": "出现方位" },
+    "delay": { "type": "number", "default": "200", "desc": "显示延迟（ms）" },
+    "disabled": { "type": "boolean", "default": "false", "desc": "禁用（不显示）" },
+    "classNames": { "type": "{ root?; content? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "提示层 role=\"tooltip\"，自动向触发元素注入 aria-describedby",
+    "hover 与键盘聚焦都会触发（不仅鼠标）",
+    "触发元素需可聚焦（button/a/input），纯 span 触发器补 tabIndex=0"
+  ],
+  "related": ["Popover", "Button", "Icon"]
+}

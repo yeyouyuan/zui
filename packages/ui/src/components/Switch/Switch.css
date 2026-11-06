@@ -1,0 +1,104 @@
+/* Switch —— 组件级变量定义在根选择器上 */
+
+.z-switch {
+  --z-switch-track-width: 2.25rem; /* 36px md */
+  --z-switch-track-height: 1.25rem; /* 20px md */
+  --z-switch-thumb-size: 1rem; /* 16px */
+  --z-switch-thumb-offset: calc(
+    (var(--z-switch-track-height) - var(--z-switch-thumb-size)) / 2
+  );
+  --z-switch-thumb-travel: calc(var(--z-switch-track-width) - var(--z-switch-thumb-size) - 2 * var(--z-switch-thumb-offset));
+  --z-switch-gap: var(--z-space-2);
+  --z-switch-track-bg: var(--z-color-border-strong); /* 关态中性灰 */
+  --z-switch-track-checked-bg: var(--z-color-primary);
+  --z-switch-track-disabled-bg: var(--z-color-disabled-border);
+  --z-switch-thumb-bg: var(--z-color-bg-elevated);
+  --z-switch-thumb-shadow: 0 1px 2px oklch(0.155 0.005 250 / 0.2),
+    0 2px 4px oklch(0.155 0.005 250 / 0.1);
+  --z-switch-thumb-disabled-bg: var(--z-color-bg-elevated);
+  --z-switch-label-color: var(--z-color-fg);
+  --z-switch-label-font-size: var(--z-text-sm);
+  --z-switch-transition: var(--z-duration-normal) var(--z-ease-standard);
+}
+
+.z-switch[data-size='sm'] {
+  --z-switch-track-width: 1.75rem; /* 28px */
+  --z-switch-track-height: 1rem; /* 16px */
+  --z-switch-thumb-size: 0.75rem; /* 12px */
+}
+
+.z-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--z-switch-gap);
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--z-switch-label-color);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-switch-label-font-size);
+  line-height: var(--z-leading-normal);
+  cursor: pointer;
+}
+
+.z-switch:disabled {
+  cursor: not-allowed;
+  color: var(--z-color-disabled-fg);
+}
+
+.z-switch-track {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  width: var(--z-switch-track-width);
+  height: var(--z-switch-track-height);
+  padding: 0 var(--z-switch-thumb-offset);
+  border-radius: var(--z-radius-full);
+  background: var(--z-switch-track-bg);
+  transition: background-color var(--z-switch-transition);
+}
+
+.z-switch-thumb {
+  display: block;
+  width: var(--z-switch-thumb-size);
+  height: var(--z-switch-thumb-size);
+  border-radius: var(--z-radius-full);
+  background: var(--z-switch-thumb-bg);
+  box-shadow: var(--z-switch-thumb-shadow);
+  transform: translateX(0);
+  transition:
+    transform var(--z-switch-transition),
+    box-shadow var(--z-switch-transition);
+}
+
+.z-switch[data-checked] .z-switch-track {
+  background: var(--z-switch-track-checked-bg);
+}
+
+.z-switch[data-checked] .z-switch-thumb {
+  transform: translateX(var(--z-switch-thumb-travel));
+}
+
+.z-switch:disabled .z-switch-track {
+  background: var(--z-switch-track-disabled-bg);
+}
+
+.z-switch:disabled .z-switch-thumb {
+  background: var(--z-switch-thumb-disabled-bg);
+  box-shadow: none;
+}
+
+.z-switch:focus-visible {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--z-radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-switch-track,
+  .z-switch-thumb {
+    transition: none;
+  }
+}

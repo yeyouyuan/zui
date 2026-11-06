@@ -1,0 +1,186 @@
+/* Pagination —— 组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-pagination {
+  --z-pagination-gap: var(--z-space-1);
+  --z-pagination-item-size: 2rem; /* 页码方形 32px */
+  --z-pagination-item-font-size: var(--z-text-sm);
+  --z-pagination-item-font-weight: var(--z-weight-regular);
+  --z-pagination-item-radius: var(--z-radius-sm);
+  --z-pagination-item-bg: transparent;
+  --z-pagination-item-fg: var(--z-color-fg);
+  --z-pagination-item-hover-bg: var(--z-color-bg-subtle); /* hover 浅灰 */
+  --z-pagination-item-hover-fg: var(--z-color-fg);
+  --z-pagination-item-active-bg: var(--z-color-bg-muted);
+  --z-pagination-current-bg: var(--z-color-primary); /* 当前页 primary 底 */
+  --z-pagination-current-fg: var(--z-color-primary-fg); /* 白字 */
+  --z-pagination-current-hover-bg: var(--z-color-primary-hover);
+  --z-pagination-current-font-weight: var(--z-weight-medium);
+  --z-pagination-disabled-bg: transparent;
+  --z-pagination-disabled-fg: var(--z-color-disabled-fg);
+  --z-pagination-focus-ring: var(--z-color-focus-ring);
+  --z-pagination-jumper-gap: var(--z-space-2);
+  --z-pagination-jumper-font-size: var(--z-text-sm);
+  --z-pagination-jumper-fg: var(--z-color-fg-muted);
+  --z-pagination-jumper-input-width: 3.25rem;
+  --z-pagination-jumper-input-height: var(--z-pagination-item-size); /* 32px 与页码按钮严格同高对齐 */
+  --z-pagination-jumper-input-padding-x: var(--z-space-2);
+  --z-pagination-jumper-input-radius: var(--z-radius-sm);
+  --z-pagination-jumper-input-border: var(--z-color-border);
+  --z-pagination-jumper-input-bg: var(--z-color-bg);
+  --z-pagination-jumper-input-fg: var(--z-color-fg);
+  --z-pagination-jumper-input-focus-border: var(--z-color-border-focus);
+  --z-pagination-transition: var(--z-duration-fast) var(--z-ease-standard);
+}
+
+/* 布局 */
+.z-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--z-pagination-gap);
+  font-family: var(--z-font-sans);
+}
+
+/* 页码 / 上下页按钮：方形 32px */
+.z-pagination-item {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-pagination-item-size);
+  height: var(--z-pagination-item-size);
+  padding: 0;
+  border: none;
+  border-radius: var(--z-pagination-item-radius);
+  background: var(--z-pagination-item-bg);
+  color: var(--z-pagination-item-fg);
+  font-family: inherit;
+  font-size: var(--z-pagination-item-font-size);
+  font-weight: var(--z-pagination-item-font-weight);
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color var(--z-pagination-transition),
+    color var(--z-pagination-transition),
+    box-shadow var(--z-pagination-transition);
+}
+
+/* hover 浅灰 */
+.z-pagination-item:hover:not(:disabled):not([aria-current='page']) {
+  background: var(--z-pagination-item-hover-bg);
+  color: var(--z-pagination-item-hover-fg);
+}
+
+.z-pagination-item:active:not(:disabled):not([aria-current='page']) {
+  background: var(--z-pagination-item-active-bg);
+}
+
+/* 当前页：primary 底白字 */
+.z-pagination-item[aria-current='page'] {
+  background: var(--z-pagination-current-bg);
+  color: var(--z-pagination-current-fg);
+  font-weight: var(--z-pagination-current-font-weight);
+  cursor: default;
+}
+
+.z-pagination-item[aria-current='page']:hover:not(:disabled) {
+  background: var(--z-pagination-current-hover-bg);
+  color: var(--z-pagination-current-fg);
+}
+
+/* focus-visible：柔光圈（与 Button 同规范） */
+.z-pagination-item:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--z-color-bg),
+    0 0 0 4px color-mix(in srgb, var(--z-pagination-focus-ring) 35%, transparent);
+}
+
+.z-pagination-item:disabled {
+  background: var(--z-pagination-disabled-bg);
+  color: var(--z-pagination-disabled-fg);
+  cursor: not-allowed;
+}
+
+.z-pagination-item > svg {
+  width: 1em;
+  height: 1em;
+}
+
+/* 省略号：与页码同宽占位，不可交互 */
+.z-pagination-ellipsis {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-pagination-item-size);
+  height: var(--z-pagination-item-size);
+  color: var(--z-pagination-disabled-fg);
+  font-size: var(--z-pagination-item-font-size);
+  line-height: 1;
+  user-select: none;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* 跳页 */
+.z-pagination-jumper {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: var(--z-pagination-item-size);
+  gap: var(--z-pagination-jumper-gap);
+  margin-inline-start: var(--z-space-2);
+  color: var(--z-pagination-jumper-fg);
+  font-family: inherit;
+  font-size: var(--z-pagination-jumper-font-size);
+}
+
+.z-pagination-jumper input {
+  box-sizing: border-box;
+  width: var(--z-pagination-jumper-input-width);
+  height: var(--z-pagination-jumper-input-height);
+  padding: 0 var(--z-pagination-jumper-input-padding-x);
+  border: 1px solid var(--z-pagination-jumper-input-border);
+  border-radius: var(--z-pagination-jumper-input-radius);
+  background: var(--z-pagination-jumper-input-bg);
+  color: var(--z-pagination-jumper-input-fg);
+  font-family: inherit;
+  font-size: var(--z-pagination-jumper-font-size);
+  line-height: 1;
+  text-align: center;
+  transition:
+    border-color var(--z-pagination-transition),
+    box-shadow var(--z-pagination-transition);
+  /* 隐去数字输入框的增减箭头 */
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.z-pagination-jumper input::-webkit-outer-spin-button,
+.z-pagination-jumper input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.z-pagination-jumper input:focus-visible {
+  outline: none;
+  border-color: var(--z-pagination-jumper-input-focus-border);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--z-pagination-focus-ring) 25%, transparent);
+}
+
+.z-pagination-jumper input:disabled {
+  border-color: var(--z-color-disabled-border);
+  background: var(--z-color-disabled-bg);
+  color: var(--z-color-disabled-fg);
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-pagination-item,
+  .z-pagination-jumper input {
+    transition: none;
+  }
+}

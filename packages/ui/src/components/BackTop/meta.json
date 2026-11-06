@@ -1,0 +1,15 @@
+{
+  "name": "BackTop",
+  "description": "返回顶部按钮，滚动超过阈值后淡入显示，点击平滑回到顶部",
+  "category": "导航",
+  "useCase": ["长文档/列表页回到顶部", "后台管理长表格滚动辅助"],
+  "dontUse": ["短页面无需此组件", "不要用它承载其他常驻操作（用 FloatButton）"],
+  "props": {
+    "target": { "type": "() => HTMLElement | Window", "desc": "滚动容器，默认 window" },
+    "visibilityHeight": { "type": "number", "default": "400", "desc": "显示阈值（滚动距离）" },
+    "onClick": { "type": "() => void", "desc": "点击回调（随后自动平滑回顶）" },
+    "children": { "type": "React.ReactNode", "desc": "自定义按钮内容" }
+  },
+  "a11yNotes": ["隐藏时 aria-hidden + tabIndex=-1，可见后可聚焦，aria-label 默认'返回顶部'"],
+  "related": ["FloatButton", "Affix"]
+}

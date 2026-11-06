@@ -1,0 +1,22 @@
+{
+  "name": "Alert",
+  "description": "警告提示：页面内的常驻状态提示条（info/success/warning/error）",
+  "category": "反馈",
+  "useCase": ["页面顶部的公告/提示", "表单页的规则说明", "可关闭的状态反馈（如升级提示）"],
+  "dontUse": ["瞬时反馈用 Message", "需要用户确认的强提醒用 Modal", "字段级错误直接放在 Form.Item 下"],
+  "props": {
+    "type": { "type": "'info' | 'success' | 'warning' | 'error'", "default": "'info'", "desc": "语义类型" },
+    "title": { "type": "React.ReactNode", "default": "—", "desc": "标题" },
+    "children": { "type": "React.ReactNode", "default": "—", "desc": "辅助描述" },
+    "closable": { "type": "boolean", "default": "false", "desc": "可关闭" },
+    "onClose": { "type": "() => void", "default": "—", "desc": "关闭回调" },
+    "showIcon": { "type": "boolean", "default": "true", "desc": "显示类型图标" },
+    "classNames": { "type": "{ root?; icon?; title?; description?; close? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "装饰性图标 aria-hidden；关闭按钮 aria-label=\"关闭\"",
+    "重要内容建议加 role=\"alert\" 或区域 aria-live（按场景）",
+    "type 语义映射颜色（info/success/warning/error 语义令牌）"
+  ],
+  "related": ["Message", "Notification", "Result"]
+}

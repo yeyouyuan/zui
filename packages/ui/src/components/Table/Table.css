@@ -1,0 +1,110 @@
+/* ZUI Table —— 组合式展示型（纯语义 table 包装） */
+
+.z-table {
+  /* 组件级变量（用户可覆盖） */
+  --z-table-font-size: var(--z-text-sm);
+  --z-table-header-font-size: var(--z-text-xs); /* 13px 感：12px + 中文表头紧凑 */
+  --z-table-header-bg: var(--z-color-bg-subtle);
+  --z-table-header-fg: var(--z-color-fg-muted);
+  --z-table-cell-padding-x: var(--z-space-4); /* 16px */
+  --z-table-cell-padding-y: 0.875rem; /* 舒适行高 ≈48px（14px 字 + 1.5 行高） */
+  --z-table-border-color: var(--z-color-border);
+  --z-table-border-color-subtle: var(--z-color-border-subtle);
+  --z-table-row-hover-bg: var(--z-color-bg-muted);
+  --z-table-row-selected-bg: var(--z-color-primary-subtle);
+  --z-table-row-selected-fg: var(--z-color-primary-subtle-fg);
+  --z-table-striped-bg: var(--z-color-bg-subtle);
+
+  box-sizing: border-box;
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--z-font-sans);
+  font-size: var(--z-table-font-size);
+  line-height: var(--z-leading-normal);
+  color: var(--z-color-fg);
+  text-align: left;
+}
+
+/* 紧凑密度：行高 ≈36px，缩小 cell padding */
+.z-table[data-density='compact'] {
+  --z-table-cell-padding-x: var(--z-space-3);
+  --z-table-cell-padding-y: 0.375rem; /* ≈36px 行高 */
+  --z-table-font-size: var(--z-text-xs);
+}
+
+/* --------------------------------- cells --------------------------------- */
+
+.z-table-header-cell,
+.z-table-cell {
+  padding: var(--z-table-cell-padding-y) var(--z-table-cell-padding-x);
+  vertical-align: middle;
+}
+
+.z-table-header-cell {
+  font-size: var(--z-table-header-font-size);
+  font-weight: var(--z-weight-semibold); /* 600 表头 */
+  color: var(--z-table-header-fg);
+  background-color: var(--z-table-header-bg); /* bg-subtle 表头带 */
+  border-bottom: 1px solid var(--z-table-border-color);
+  white-space: nowrap;
+}
+
+.z-table-cell {
+  border-bottom: 1px solid var(--z-table-border-color-subtle);
+}
+
+/* 对齐（data-align） */
+.z-table-header-cell[data-align='left'],
+.z-table-cell[data-align='left'] {
+  text-align: left;
+}
+
+.z-table-header-cell[data-align='center'],
+.z-table-cell[data-align='center'] {
+  text-align: center;
+}
+
+.z-table-header-cell[data-align='right'],
+.z-table-cell[data-align='right'] {
+  text-align: right;
+}
+
+/* ---------------------------------- rows --------------------------------- */
+
+/* 行分隔线始终有（cell border-bottom）；展示型 hover 反馈 */
+.z-table-row {
+  transition: background-color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-table-row:hover {
+  background-color: var(--z-table-row-hover-bg);
+}
+
+.z-table-row[data-selected='true'] {
+  background-color: var(--z-table-row-selected-bg);
+  color: var(--z-table-row-selected-fg);
+}
+
+.z-table-row[data-selected='true'] .z-table-cell {
+  border-bottom-color: color-mix(in srgb, var(--z-color-primary) 12%, transparent);
+}
+
+/* striped：偶数行背景 */
+.z-table[data-striped='true'] .z-table-row:nth-child(even) {
+  background-color: var(--z-table-striped-bg);
+}
+
+/* bordered：外框 + 全部单元格竖线 */
+.z-table[data-bordered='true'] {
+  border: 1px solid var(--z-table-border-color);
+}
+
+.z-table[data-bordered='true'] .z-table-header-cell,
+.z-table[data-bordered='true'] .z-table-cell {
+  border-right: 1px solid var(--z-table-border-color-subtle);
+}
+
+.z-table[data-bordered='true'] .z-table-header-cell:last-child,
+.z-table[data-bordered='true'] .z-table-cell:last-child {
+  border-right: none;
+}

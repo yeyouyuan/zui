@@ -1,0 +1,135 @@
+/* Slider —— 组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-slider {
+  --z-slider-track-height: 6px;
+  --z-slider-track-bg: var(--z-color-bg-muted);
+  --z-slider-track-radius: var(--z-radius-full);
+  --z-slider-fill-bg: var(--z-color-primary);
+  --z-slider-thumb-size: 16px;
+  --z-slider-thumb-bg: var(--z-color-bg);
+  --z-slider-thumb-border: 2px solid var(--z-color-primary);
+  --z-slider-thumb-shadow: var(--z-shadow-sm);
+  --z-slider-thumb-focus-ring: var(--z-color-focus-ring);
+  --z-slider-tooltip-bg: var(--z-color-bg-inverse);
+  --z-slider-tooltip-fg: var(--z-color-fg-inverse);
+  --z-slider-tooltip-font-size: var(--z-text-xs);
+  --z-slider-tooltip-radius: var(--z-radius-sm);
+  --z-slider-tooltip-padding-x: var(--z-space-2);
+  --z-slider-tooltip-padding-y: var(--z-space-1);
+  --z-slider-mark-color: var(--z-color-fg-muted);
+  --z-slider-mark-active-color: var(--z-color-primary);
+  --z-slider-mark-font-size: var(--z-text-xs);
+  --z-slider-disabled-opacity: 0.5;
+  --z-slider-transition: var(--z-duration-fast) var(--z-ease-standard);
+}
+
+/* 布局 */
+.z-slider {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--z-space-2) 0;
+}
+
+.z-slider-track {
+  position: relative;
+  height: var(--z-slider-track-height);
+  border-radius: var(--z-slider-track-radius);
+  background: var(--z-slider-track-bg);
+  cursor: pointer;
+}
+
+.z-slider-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: var(--z-slider-track-radius);
+  background: var(--z-slider-fill-bg);
+  transition: width var(--z-slider-transition);
+}
+
+.z-slider-thumb {
+  position: absolute;
+  top: 50%;
+  width: var(--z-slider-thumb-size);
+  height: var(--z-slider-thumb-size);
+  border: var(--z-slider-thumb-border);
+  border-radius: var(--z-radius-full);
+  background: var(--z-slider-thumb-bg);
+  box-shadow: var(--z-slider-thumb-shadow);
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  transition: left var(--z-slider-transition);
+}
+
+.z-slider-thumb:active {
+  cursor: grabbing;
+}
+
+.z-slider-thumb:focus-visible {
+  outline: none;
+  box-shadow:
+    var(--z-slider-thumb-shadow),
+    0 0 0 3px color-mix(in srgb, var(--z-slider-thumb-focus-ring) 30%, transparent);
+}
+
+/* 数值气泡 */
+.z-slider-tooltip {
+  position: absolute;
+  bottom: calc(100% + var(--z-space-2));
+  left: 50%;
+  padding: var(--z-slider-tooltip-padding-y) var(--z-slider-tooltip-padding-x);
+  border-radius: var(--z-slider-tooltip-radius);
+  background: var(--z-slider-tooltip-bg);
+  color: var(--z-slider-tooltip-fg);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-slider-tooltip-font-size);
+  line-height: var(--z-leading-tight);
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* 刻度 */
+.z-slider-marks {
+  position: relative;
+  height: var(--z-space-5);
+  margin-top: var(--z-space-2);
+}
+
+.z-slider-mark {
+  position: absolute;
+  color: var(--z-slider-mark-color);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-slider-mark-font-size);
+  line-height: var(--z-leading-normal);
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.z-slider-mark[data-active] {
+  color: var(--z-slider-mark-active-color);
+  font-weight: var(--z-weight-medium);
+}
+
+/* 禁用 */
+.z-slider[data-disabled] {
+  opacity: var(--z-slider-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.z-slider[data-disabled] .z-slider-track {
+  cursor: not-allowed;
+}
+
+.z-slider[data-disabled] .z-slider-thumb {
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-slider-fill,
+  .z-slider-thumb {
+    transition: none;
+  }
+}

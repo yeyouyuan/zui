@@ -1,0 +1,19 @@
+{
+  "name": "Empty",
+  "description": "空状态：无数据/无结果时的插图 + 描述 + 操作区",
+  "category": "数据展示",
+  "useCase": ["列表/搜索无结果", "首次使用引导", "清空数据后的兜底展示"],
+  "dontUse": ["加载中用 Skeleton/Spin", "错误态用 Result/Alert"],
+  "props": {
+    "image": { "type": "React.ReactNode", "default": "内置插图", "desc": "自定义插图（默认简洁 SVG）" },
+    "description": { "type": "React.ReactNode", "default": "'暂无数据'", "desc": "描述文案（可走 locale/翻译）" },
+    "children": { "type": "React.ReactNode", "default": "—", "desc": "操作区（如\"去创建\"按钮）" },
+    "classNames": { "type": "{ root?; image?; description? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "装饰性插图 aria-hidden，语义由 description 承担",
+    "描述文案即空状态的可访问名，读屏可感知",
+    "操作按钮用 Button（保持键盘可达）"
+  ],
+  "related": ["Skeleton", "Result", "Spin"]
+}

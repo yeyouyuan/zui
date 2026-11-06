@@ -1,0 +1,150 @@
+/**
+ * ZUI 设计令牌 — 暗色主题（只覆盖 Semantic 语义层）
+ *
+ * - 主动切换：<html data-theme="dark">（见 README）。
+ * - 跟随系统：未显式指定 data-theme="light" 时，
+ *   prefers-color-scheme: dark 自动生效。
+ * - 本文件只重映射 --z-color-* 语义变量到深色 primitive 色阶，
+ *   尺寸/字阶/阴影/动效等 primitive 变量不变（阴影亦保持通用）。
+ * - 对比度按 WCAG AA 校准（fg 与 bg ≥ 4.5:1、primary-fg 与 primary ≥ 4.5:1）。
+ */
+
+/* ============================================================
+ * 主动暗色：html[data-theme='dark']
+ * ============================================================ */
+[data-theme='dark'] {
+  /* 背景 */
+  --z-color-bg: var(--z-neutral-950);
+  --z-color-bg-subtle: var(--z-neutral-900);
+  --z-color-bg-muted: var(--z-neutral-800);
+  --z-color-bg-elevated: var(--z-neutral-900);
+  --z-color-bg-inverse: var(--z-neutral-50);
+
+  /* 前景 */
+  --z-color-fg: var(--z-neutral-50);
+  --z-color-fg-muted: var(--z-neutral-300);
+  --z-color-fg-subtle: var(--z-neutral-400);
+  --z-color-fg-inverse: var(--z-neutral-950);
+  --z-color-fg-on-primary: var(--z-neutral-950);
+
+  /* 边框 */
+  --z-color-border: var(--z-neutral-700);
+  --z-color-border-subtle: var(--z-neutral-800);
+  --z-color-border-strong: var(--z-neutral-400);
+  --z-color-border-focus: var(--z-brand-500);
+
+  /* 主色 */
+  --z-color-primary: var(--z-brand-500);
+  --z-color-primary-hover: var(--z-brand-400);
+  --z-color-primary-active: var(--z-brand-300);
+  --z-color-primary-fg: var(--z-neutral-950);
+  --z-color-primary-subtle: var(--z-brand-900);
+  --z-color-primary-subtle-fg: var(--z-brand-300);
+
+  /* 状态色 — 危险 / 成功 / 警告 / 信息（同构） */
+  --z-color-danger: var(--z-danger-500);
+  --z-color-danger-hover: var(--z-danger-400);
+  --z-color-danger-fg: var(--z-neutral-950);
+  --z-color-danger-subtle: var(--z-danger-900);
+  --z-color-danger-subtle-fg: var(--z-danger-300);
+
+  --z-color-success: var(--z-success-500);
+  --z-color-success-hover: var(--z-success-400);
+  --z-color-success-fg: var(--z-neutral-950);
+  --z-color-success-subtle: var(--z-success-900);
+  --z-color-success-subtle-fg: var(--z-success-300);
+
+  --z-color-warning: var(--z-warning-500);
+  --z-color-warning-hover: var(--z-warning-400);
+  --z-color-warning-fg: var(--z-neutral-950);
+  --z-color-warning-subtle: var(--z-warning-900);
+  --z-color-warning-subtle-fg: var(--z-warning-300);
+
+  --z-color-info: var(--z-info-500);
+  --z-color-info-hover: var(--z-info-400);
+  --z-color-info-fg: var(--z-neutral-950);
+  --z-color-info-subtle: var(--z-info-900);
+  --z-color-info-subtle-fg: var(--z-info-300);
+
+  /* 链接与焦点 */
+  --z-color-link: var(--z-brand-500);
+  --z-color-link-hover: var(--z-brand-400);
+  --z-color-focus-ring: var(--z-brand-500);
+
+  /* 遮罩与禁用 */
+  --z-color-overlay: color-mix(in oklch, var(--z-neutral-950) 65%, transparent);
+  --z-color-disabled-bg: var(--z-neutral-800);
+  --z-color-disabled-fg: var(--z-neutral-500);
+  --z-color-disabled-border: var(--z-neutral-800);
+}
+
+/* ============================================================
+ * 跟随系统暗色（显式 data-theme='light' 时保持浅色，不覆盖）
+ * ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    /* 背景 */
+    --z-color-bg: var(--z-neutral-950);
+    --z-color-bg-subtle: var(--z-neutral-900);
+    --z-color-bg-muted: var(--z-neutral-800);
+    --z-color-bg-elevated: var(--z-neutral-900);
+    --z-color-bg-inverse: var(--z-neutral-50);
+
+    /* 前景 */
+    --z-color-fg: var(--z-neutral-50);
+    --z-color-fg-muted: var(--z-neutral-300);
+    --z-color-fg-subtle: var(--z-neutral-400);
+    --z-color-fg-inverse: var(--z-neutral-950);
+    --z-color-fg-on-primary: var(--z-neutral-950);
+
+    /* 边框 */
+    --z-color-border: var(--z-neutral-700);
+    --z-color-border-subtle: var(--z-neutral-800);
+    --z-color-border-strong: var(--z-neutral-400);
+    --z-color-border-focus: var(--z-brand-500);
+
+    /* 主色 */
+    --z-color-primary: var(--z-brand-500);
+    --z-color-primary-hover: var(--z-brand-400);
+    --z-color-primary-active: var(--z-brand-300);
+    --z-color-primary-fg: var(--z-neutral-950);
+    --z-color-primary-subtle: var(--z-brand-900);
+    --z-color-primary-subtle-fg: var(--z-brand-300);
+
+    /* 状态色 */
+    --z-color-danger: var(--z-danger-500);
+    --z-color-danger-hover: var(--z-danger-400);
+    --z-color-danger-fg: var(--z-neutral-950);
+    --z-color-danger-subtle: var(--z-danger-900);
+    --z-color-danger-subtle-fg: var(--z-danger-300);
+
+    --z-color-success: var(--z-success-500);
+    --z-color-success-hover: var(--z-success-400);
+    --z-color-success-fg: var(--z-neutral-950);
+    --z-color-success-subtle: var(--z-success-900);
+    --z-color-success-subtle-fg: var(--z-success-300);
+
+    --z-color-warning: var(--z-warning-500);
+    --z-color-warning-hover: var(--z-warning-400);
+    --z-color-warning-fg: var(--z-neutral-950);
+    --z-color-warning-subtle: var(--z-warning-900);
+    --z-color-warning-subtle-fg: var(--z-warning-300);
+
+    --z-color-info: var(--z-info-500);
+    --z-color-info-hover: var(--z-info-400);
+    --z-color-info-fg: var(--z-neutral-950);
+    --z-color-info-subtle: var(--z-info-900);
+    --z-color-info-subtle-fg: var(--z-info-300);
+
+    /* 链接与焦点 */
+    --z-color-link: var(--z-brand-500);
+    --z-color-link-hover: var(--z-brand-400);
+    --z-color-focus-ring: var(--z-brand-500);
+
+    /* 遮罩与禁用 */
+    --z-color-overlay: color-mix(in oklch, var(--z-neutral-950) 65%, transparent);
+    --z-color-disabled-bg: var(--z-neutral-800);
+    --z-color-disabled-fg: var(--z-neutral-500);
+    --z-color-disabled-border: var(--z-neutral-800);
+  }
+}

@@ -1,0 +1,249 @@
+/* ZUI Select —— select-only combobox（APG 模式，焦点保持触发器 + aria-activedescendant） */
+
+.z-select {
+  /* 组件级变量（用户可覆盖） */
+  --z-select-trigger-height: 2rem; /* 32px，与 Input 同高 */
+  --z-select-trigger-padding-x: var(--z-space-3);
+  --z-select-trigger-font-size: var(--z-text-sm);
+  --z-select-trigger-radius: var(--z-radius-sm); /* 6px，与 Input 同圆角 */
+  --z-select-trigger-bg: var(--z-color-bg-elevated);
+  --z-select-trigger-fg: var(--z-color-fg);
+  --z-select-trigger-border: var(--z-color-border);
+  --z-select-trigger-hover-border: var(--z-color-border-focus);
+  --z-select-placeholder-fg: var(--z-color-fg-subtle);
+  --z-select-listbox-bg: var(--z-color-bg-elevated);
+  --z-select-listbox-border: var(--z-color-border-subtle);
+  --z-select-listbox-radius: 0.5rem; /* 8px 浮层圆角 */
+  --z-select-listbox-shadow: var(--z-shadow-lg);
+  --z-select-listbox-padding: var(--z-space-1);
+  --z-select-listbox-max-height: 16rem;
+  --z-select-listbox-margin-top: var(--z-space-1);
+  --z-select-option-padding-x: var(--z-space-3);
+  --z-select-option-height: 2rem; /* 32px 行高 */
+  --z-select-option-radius: var(--z-radius-sm);
+  --z-select-option-fg: var(--z-color-fg);
+  --z-select-option-hover-bg: var(--z-color-bg-muted);
+  --z-select-option-active-bg: var(--z-color-primary-subtle);
+  --z-select-option-active-fg: var(--z-color-primary-subtle-fg);
+  --z-select-option-disabled-fg: var(--z-color-disabled-fg);
+  --z-select-empty-fg: var(--z-color-fg-muted);
+  --z-select-empty-padding: var(--z-space-4);
+  --z-select-animation-duration: var(--z-duration-fast);
+
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+  font-family: var(--z-font-sans);
+  font-size: var(--z-select-trigger-font-size);
+  color: var(--z-select-trigger-fg);
+}
+
+/* --------------------------------- 尺寸 --------------------------------- */
+
+.z-select[data-size='sm'] {
+  --z-select-trigger-height: 1.5rem; /* 24px */
+  --z-select-trigger-font-size: var(--z-text-xs);
+  --z-select-trigger-padding-x: var(--z-space-2);
+  --z-select-option-height: 1.75rem;
+}
+
+.z-select[data-size='lg'] {
+  --z-select-trigger-height: 2.5rem; /* 40px */
+  --z-select-trigger-font-size: var(--z-text-md);
+  --z-select-trigger-padding-x: var(--z-space-4);
+  --z-select-option-height: 2.25rem;
+}
+
+/* -------------------------------- 触发器 -------------------------------- */
+
+.z-select-trigger {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: var(--z-select-trigger-height);
+  padding: 0 var(--z-select-trigger-padding-x);
+  font-family: inherit;
+  font-size: var(--z-select-trigger-font-size);
+  color: var(--z-select-trigger-fg);
+  text-align: left;
+  background: var(--z-select-trigger-bg);
+  border: 1px solid var(--z-select-trigger-border);
+  border-radius: var(--z-select-trigger-radius);
+  cursor: pointer;
+  transition:
+    border-color var(--z-duration-fast) var(--z-ease-standard),
+    background-color var(--z-duration-fast) var(--z-ease-standard),
+    box-shadow var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-select-trigger::after {
+  content: '';
+  flex: none;
+  width: 0.4375rem;
+  height: 0.4375rem;
+  margin-left: var(--z-space-2);
+  border-right: 1.5px solid var(--z-color-fg-subtle);
+  border-bottom: 1.5px solid var(--z-color-fg-subtle);
+  transform: translateY(-25%) rotate(45deg);
+  transition: transform var(--z-duration-fast) var(--z-ease-standard);
+  pointer-events: none;
+}
+
+.z-select[data-open='true'] .z-select-trigger::after {
+  transform: translateY(25%) rotate(-135deg);
+}
+
+/* hover：边框转 primary（antd 式，与 Input 一致） */
+.z-select-trigger:hover:not(:disabled) {
+  border-color: var(--z-select-trigger-hover-border);
+}
+
+/* focus：柔光圈（与 Input 一致） */
+.z-select-trigger:focus-visible {
+  outline: none;
+  border-color: var(--z-color-border-focus);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-color-focus-ring) 15%, transparent);
+}
+
+.z-select[data-status='error'] .z-select-trigger {
+  --z-select-trigger-border: var(--z-color-danger);
+}
+
+.z-select[data-status='error'] .z-select-trigger:hover:not(:disabled),
+.z-select[data-status='error'] .z-select-trigger:focus-visible {
+  border-color: var(--z-color-danger);
+}
+
+.z-select[data-status='error'] .z-select-trigger:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-color-danger) 15%, transparent);
+}
+
+.z-select[data-status='success'] .z-select-trigger {
+  --z-select-trigger-border: var(--z-color-success);
+}
+
+.z-select[data-status='success'] .z-select-trigger:hover:not(:disabled),
+.z-select[data-status='success'] .z-select-trigger:focus-visible {
+  border-color: var(--z-color-success);
+}
+
+.z-select[data-status='success'] .z-select-trigger:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-color-success) 15%, transparent);
+}
+
+.z-select-trigger:disabled {
+  color: var(--z-color-disabled-fg);
+  background: var(--z-color-disabled-bg);
+  border-color: var(--z-color-disabled-border);
+  cursor: not-allowed;
+}
+
+/* --------------------------------- 值 ---------------------------------- */
+
+.z-select-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.z-select-value[data-placeholder] {
+  color: var(--z-select-placeholder-fg);
+}
+
+/* -------------------------------- 弹层 --------------------------------- */
+
+.z-select-listbox {
+  position: fixed;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: var(--z-z-dropdown);
+  margin-top: var(--z-select-listbox-margin-top);
+  padding: var(--z-select-listbox-padding);
+  max-height: min(var(--z-select-listbox-max-height), calc(100dvh - 16px));
+  overflow-y: auto;
+  background: var(--z-select-listbox-bg);
+  border: 1px solid var(--z-select-listbox-border);
+  border-radius: var(--z-select-listbox-radius);
+  box-shadow: var(--z-select-listbox-shadow);
+  max-width: calc(100vw - 16px);
+}
+
+.z-select-listbox[data-open='false'] {
+  display: none;
+}
+
+.z-select-listbox[data-open='true'] {
+  animation: z-select-listbox-in var(--z-select-animation-duration) var(--z-ease-entrance);
+}
+
+@keyframes z-select-listbox-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-select-listbox {
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* -------------------------------- 选项 --------------------------------- */
+
+.z-select-option {
+  display: flex;
+  align-items: center;
+  gap: var(--z-space-2);
+  min-height: var(--z-select-option-height);
+  padding: 0 var(--z-select-option-padding-x);
+  font-size: var(--z-select-trigger-font-size);
+  color: var(--z-select-option-fg);
+  border-radius: var(--z-select-option-radius);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-select-option[data-active='true'] {
+  color: var(--z-select-option-active-fg);
+  background: var(--z-select-option-active-bg);
+}
+
+.z-select-option:hover:not([aria-disabled='true']):not([data-active='true']) {
+  background: var(--z-select-option-hover-bg);
+}
+
+.z-select-option[aria-selected='true'] {
+  font-weight: var(--z-weight-medium);
+}
+
+.z-select-option[aria-selected='true']::after {
+  content: '✓';
+  margin-left: auto;
+  color: var(--z-color-primary);
+}
+
+.z-select-option[aria-disabled='true'] {
+  color: var(--z-select-option-disabled-fg);
+  cursor: not-allowed;
+}
+
+/* -------------------------------- 空态 --------------------------------- */
+
+.z-select-empty {
+  padding: var(--z-select-empty-padding);
+  font-size: var(--z-text-sm);
+  color: var(--z-select-empty-fg);
+  text-align: center;
+}

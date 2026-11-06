@@ -1,0 +1,20 @@
+{
+  "name": "Spin",
+  "description": "加载指示：转圈 spinner，可包裹内容半透明遮罩",
+  "category": "反馈",
+  "useCase": ["局部区域加载中", "包裹内容的加载遮罩（children 模式）", "带文案的加载态（tip）"],
+  "dontUse": ["首屏大面积占位用 Skeleton", "按钮内加载态用 Button loading"],
+  "props": {
+    "spinning": { "type": "boolean", "default": "true", "desc": "是否加载中" },
+    "size": { "type": "'sm' | 'md' | 'lg'", "default": "'md'", "desc": "spinner 尺寸" },
+    "tip": { "type": "React.ReactNode", "default": "—", "desc": "底部文案（如\"加载中\"）" },
+    "children": { "type": "React.ReactNode", "default": "—", "desc": "有 children 时包裹并半透明遮罩" },
+    "classNames": { "type": "{ root?; spinner?; tip? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "加载容器 aria-busy=true；spinner 图形 aria-hidden",
+    "tip 文案即加载态的可访问名（读屏可感知\"加载中\"）",
+    "包裹模式下内容仍在 DOM 中（半透明），注意加载期间的交互拦截"
+  ],
+  "related": ["Skeleton", "Button", "Empty"]
+}

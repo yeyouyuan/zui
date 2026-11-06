@@ -1,0 +1,16 @@
+{
+  "name": "Watermark",
+  "description": "水印组件，为内容区域叠加半透明防伪水印",
+  "category": "其他",
+  "useCase": ["文档/合同防伪", "截图溯源", "内部系统版权标识"],
+  "dontUse": ["不要用水印替代版权文字说明", "高安全场景需服务端合成水印"],
+  "props": {
+    "content": { "type": "React.ReactNode | React.ReactNode[]", "desc": "文本水印内容（多节点多行平铺）" },
+    "image": { "type": "string", "desc": "图片水印（data-uri，优先于 content）" },
+    "rotate": { "type": "number", "default": "-22", "desc": "旋转角度" },
+    "gap": { "type": "[number, number]", "default": "[100, 100]", "desc": "平铺间距" },
+    "children": { "type": "React.ReactNode", "desc": "被覆盖的内容" }
+  },
+  "a11yNotes": ["覆盖层 aria-hidden + pointer-events:none，不影响内容可交互性"],
+  "related": ["Image", "Card"]
+}

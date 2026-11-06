@@ -1,0 +1,17 @@
+{
+  "name": "Segmented",
+  "description": "分段控制器，用于在少量互斥选项间快速切换视图",
+  "category": "导航",
+  "useCase": ["视图模式切换（列表/卡片/地图）", "时间范围快捷选择", "紧凑单选切换"],
+  "dontUse": ["选项超过 5 个时改用 Select", "多选场景改用 Checkbox"],
+  "props": {
+    "options": { "type": "Array<{ value; label; icon?; disabled? }>", "desc": "选项列表" },
+    "value": { "type": "string", "desc": "受控值" },
+    "defaultValue": { "type": "string", "desc": "非受控初值（默认首项）" },
+    "onChange": { "type": "(value: string) => void", "desc": "选中变化回调" },
+    "size": { "type": "'sm'|'md'|'lg'", "default": "'md'", "desc": "尺寸" },
+    "block": { "type": "boolean", "default": "false", "desc": "撑满宽度" }
+  },
+  "a11yNotes": ["role=radiogroup + role=radio，←→/Home/End 键盘切换，roving tabindex"],
+  "related": ["Radio", "Tabs", "Select"]
+}

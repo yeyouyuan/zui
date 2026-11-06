@@ -1,0 +1,163 @@
+/* InputNumber —— 组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-input-number {
+  --z-input-number-height: 2rem; /* 32px md，与 Input 同高 */
+  --z-input-number-padding-x: var(--z-space-3);
+  --z-input-number-gap: var(--z-space-1);
+  --z-input-number-font-size: var(--z-text-sm);
+  --z-input-number-radius: var(--z-radius-sm);
+  --z-input-number-bg: var(--z-color-bg-elevated);
+  --z-input-number-fg: var(--z-color-fg);
+  --z-input-number-border: var(--z-color-border);
+  --z-input-number-hover-border: var(--z-color-border-focus);
+  --z-input-number-focus-border: var(--z-color-border-focus);
+  --z-input-number-focus-ring: var(--z-color-focus-ring);
+  --z-input-number-control-width: 1.25rem;
+  --z-input-number-control-color: var(--z-color-fg-muted);
+  --z-input-number-control-hover-bg: var(--z-color-bg-muted);
+  --z-input-number-control-hover-color: var(--z-color-fg);
+  --z-input-number-control-active-bg: var(--z-color-bg-subtle);
+  --z-input-number-disabled-bg: var(--z-color-disabled-bg);
+  --z-input-number-disabled-fg: var(--z-color-disabled-fg);
+  --z-input-number-disabled-border: var(--z-color-disabled-border);
+  --z-input-number-transition: var(--z-duration-fast) var(--z-ease-standard);
+}
+
+/* 尺寸：仅覆盖尺寸类变量（sm 24px / md 32px / lg 40px，与 Input 对齐） */
+.z-input-number[data-size='sm'] {
+  --z-input-number-height: 1.5rem; /* 24px */
+  --z-input-number-padding-x: var(--z-space-2);
+  --z-input-number-font-size: var(--z-text-xs);
+  --z-input-number-radius: 0.25rem;
+  --z-input-number-control-width: 1.125rem;
+}
+
+.z-input-number[data-size='lg'] {
+  --z-input-number-height: 2.5rem; /* 40px */
+  --z-input-number-padding-x: var(--z-space-4);
+  --z-input-number-font-size: var(--z-text-md);
+  --z-input-number-radius: 0.5rem;
+  --z-input-number-control-width: 1.5rem;
+}
+
+/* 布局与视觉 */
+.z-input-number {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: stretch;
+  gap: var(--z-input-number-gap);
+  height: var(--z-input-number-height);
+  padding: 0 var(--z-input-number-padding-x);
+  border: 1px solid var(--z-input-number-border);
+  border-radius: var(--z-input-number-radius);
+  background: var(--z-input-number-bg);
+  transition:
+    border-color var(--z-input-number-transition),
+    box-shadow var(--z-input-number-transition);
+}
+
+.z-input-number:hover:not([data-disabled]) {
+  border-color: var(--z-input-number-hover-border);
+}
+
+/* focus：柔光圈（color-mix 15%）而非生硬描边 */
+.z-input-number:focus-within {
+  border-color: var(--z-input-number-focus-border);
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-input-number-focus-ring) 15%, transparent);
+}
+
+.z-input-number-input {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--z-input-number-fg);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-input-number-font-size);
+  line-height: var(--z-leading-normal);
+  outline: none;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* 隐藏原生 spinner，+/- 按钮接管步进 */
+.z-input-number-input::-webkit-outer-spin-button,
+.z-input-number-input::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.z-input-number-controls {
+  display: inline-flex;
+  flex: none;
+  flex-direction: column;
+  align-self: center;
+  border-left: 1px solid var(--z-color-border-subtle);
+}
+
+.z-input-number-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-input-number-control-width);
+  height: calc(var(--z-input-number-height) / 2 - 1px);
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--z-input-number-control-color);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-input-number-font-size);
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color var(--z-input-number-transition),
+    color var(--z-input-number-transition);
+}
+
+.z-input-number-btn:hover:not(:disabled) {
+  background: var(--z-input-number-control-hover-bg);
+  color: var(--z-input-number-control-hover-color);
+}
+
+.z-input-number-btn:active:not(:disabled) {
+  background: var(--z-input-number-control-active-bg);
+}
+
+.z-input-number-btn:focus-visible {
+  outline: 2px solid var(--z-input-number-focus-ring);
+  outline-offset: -2px;
+  border-radius: var(--z-input-number-radius);
+}
+
+.z-input-number[data-disabled] {
+  background: var(--z-input-number-disabled-bg);
+  border-color: var(--z-input-number-disabled-border);
+  cursor: not-allowed;
+}
+
+.z-input-number[data-disabled] .z-input-number-input {
+  color: var(--z-input-number-disabled-fg);
+  cursor: not-allowed;
+}
+
+.z-input-number[data-disabled] .z-input-number-btn {
+  color: var(--z-input-number-disabled-fg);
+  cursor: not-allowed;
+}
+
+.z-input-number-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-input-number,
+  .z-input-number-btn {
+    transition: none;
+  }
+}

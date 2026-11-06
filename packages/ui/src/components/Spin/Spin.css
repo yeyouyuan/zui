@@ -1,0 +1,105 @@
+/* ZUI Spin —— 加载中（旋转环；独立/包裹两种模式，包裹带半透明遮罩） */
+
+.z-spin {
+  /* 组件级变量（用户可覆盖） */
+  --z-spin-size: 2rem;
+  --z-spin-ring-width: 3px;
+  --z-spin-color: var(--z-color-primary);
+  --z-spin-track-color: color-mix(in oklch, var(--z-spin-color) 25%, transparent);
+  --z-spin-tip-color: var(--z-color-fg-muted);
+  --z-spin-tip-font-size: var(--z-text-sm);
+  --z-spin-gap: var(--z-space-2);
+  --z-spin-mask-bg: color-mix(in oklch, var(--z-color-bg) 65%, transparent);
+}
+
+.z-spin[data-size='sm'] {
+  --z-spin-size: 1.25rem;
+  --z-spin-ring-width: 2px;
+}
+
+.z-spin[data-size='lg'] {
+  --z-spin-size: 2.75rem;
+}
+
+.z-spin-spinner {
+  display: inline-flex;
+  width: var(--z-spin-size);
+  height: var(--z-spin-size);
+}
+
+.z-spin-svg {
+  width: 100%;
+  height: 100%;
+  animation: z-spin-rotate 0.8s linear infinite;
+}
+
+.z-spin-track {
+  stroke: var(--z-spin-track-color);
+  stroke-width: var(--z-spin-ring-width);
+}
+
+.z-spin-head {
+  stroke: var(--z-spin-color);
+  stroke-width: var(--z-spin-ring-width);
+  stroke-linecap: round;
+  stroke-dasharray: 30 120;
+}
+
+@keyframes z-spin-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* -------------------------------- 独立模式 -------------------------------- */
+
+.z-spin--inline {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--z-spin-gap);
+  color: var(--z-spin-color);
+}
+
+.z-spin--inline .z-spin-tip {
+  color: var(--z-spin-tip-color);
+}
+
+/* -------------------------------- 包裹模式 -------------------------------- */
+
+.z-spin--wrap {
+  position: relative;
+}
+
+.z-spin--wrap .z-spin-children {
+  transition: opacity var(--z-duration-normal) var(--z-ease-standard);
+}
+
+.z-spin--wrap[data-spinning] .z-spin-children {
+  opacity: 0.5;
+}
+
+.z-spin-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--z-spin-gap);
+  color: var(--z-spin-color);
+  background: var(--z-spin-mask-bg);
+}
+
+.z-spin-tip {
+  font-size: var(--z-spin-tip-font-size);
+  color: var(--z-spin-tip-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-spin-svg {
+    animation-duration: 1.6s;
+  }
+}

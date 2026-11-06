@@ -1,0 +1,21 @@
+{
+  "name": "Switch",
+  "description": "开关：布尔状态即时切换（开/关）",
+  "category": "基础",
+  "useCase": ["设置项即时生效开关", "启用/停用某功能", "表单中的布尔字段（需立即反馈）"],
+  "dontUse": ["需要提交才生效的表单勾选用 Checkbox", "互斥单选用 Radio"],
+  "props": {
+    "checked": { "type": "boolean", "default": "—", "desc": "受控开关状态" },
+    "defaultChecked": { "type": "boolean", "default": "false", "desc": "非受控初始状态" },
+    "onChange": { "type": "(checked: boolean) => void", "default": "—", "desc": "开关变化回调（布尔参数）" },
+    "size": { "type": "'sm' | 'md'", "default": "'md'", "desc": "尺寸（无 lg）" },
+    "label": { "type": "React.ReactNode", "default": "—", "desc": "标签内容" },
+    "classNames": { "type": "{ root?; track?; thumb?; label? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "原生 button + role=\"switch\" + aria-checked",
+    "键盘 Space/Enter 切换",
+    "禁用用原生 disabled"
+  ],
+  "related": ["Checkbox", "Radio", "Form"]
+}

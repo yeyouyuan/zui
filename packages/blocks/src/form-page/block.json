@@ -1,0 +1,6 @@
+{
+  "name": "form-page",
+  "description": "表单页区块：Form + 分区 Card + 受控 Input/Select/DatePicker 字段组 + Switch/Checkbox + 粘底操作栏",
+  "dependencies": ["Form", "Input", "Select", "DatePicker", "Button", "Card", "Checkbox", "Switch", "Divider", "Tag"],
+  "category": "业务块"
+}

@@ -1,0 +1,97 @@
+/* Breadcrumb —— 组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-breadcrumb {
+  --z-breadcrumb-font-size: var(--z-text-sm);
+  --z-breadcrumb-fg: var(--z-color-fg-muted);
+  --z-breadcrumb-hover-fg: var(--z-color-primary); /* hover 字色变 primary */
+  --z-breadcrumb-current-fg: var(--z-color-fg);
+  --z-breadcrumb-current-font-weight: var(--z-weight-medium);
+  --z-breadcrumb-separator-fg: var(--z-color-fg-subtle);
+  --z-breadcrumb-separator-margin-x: var(--z-space-2);
+  --z-breadcrumb-focus-ring: var(--z-color-focus-ring);
+  --z-breadcrumb-transition: var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-breadcrumb {
+  box-sizing: border-box;
+}
+
+/* 布局：ol/li 语义列表，横向排列 */
+.z-breadcrumb ol {
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.z-breadcrumb ol > li {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* item 部件：href 渲染 a，否则 span */
+.z-breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--z-space-1);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-breadcrumb-font-size);
+  line-height: var(--z-leading-normal);
+  color: var(--z-breadcrumb-fg);
+  text-decoration: none;
+  border-radius: var(--z-radius-sm);
+  transition: color var(--z-breadcrumb-transition);
+}
+
+.z-breadcrumb-item svg {
+  flex-shrink: 0;
+}
+
+/* hover 字色变 primary */
+.z-breadcrumb-item:hover {
+  color: var(--z-breadcrumb-hover-fg);
+}
+
+/* 最后一项：当前页 */
+.z-breadcrumb-item[aria-current='page'] {
+  color: var(--z-breadcrumb-current-fg);
+  font-weight: var(--z-breadcrumb-current-font-weight);
+  cursor: default;
+}
+
+.z-breadcrumb-item[aria-current='page']:hover {
+  color: var(--z-breadcrumb-current-fg);
+}
+
+/* focus-visible：柔光圈 */
+.z-breadcrumb-item:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--z-color-bg),
+    0 0 0 4px color-mix(in srgb, var(--z-breadcrumb-focus-ring) 35%, transparent);
+}
+
+/* 分隔符 */
+.z-breadcrumb-separator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline: var(--z-breadcrumb-separator-margin-x);
+  color: var(--z-breadcrumb-separator-fg);
+  font-size: var(--z-breadcrumb-font-size);
+  line-height: 1;
+  user-select: none;
+}
+
+.z-breadcrumb-separator svg {
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-breadcrumb-item {
+    transition: none;
+  }
+}

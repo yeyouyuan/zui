@@ -1,0 +1,13 @@
+/* Affix —— 组件级变量定义在根选择器上 */
+
+.z-affix {
+  --z-affix-z: var(--z-z-sticky);
+}
+
+.z-affix {
+  display: block;
+}
+
+.z-affix[data-affixed='true'] .z-affix-content {
+  z-index: var(--z-affix-z);
+}

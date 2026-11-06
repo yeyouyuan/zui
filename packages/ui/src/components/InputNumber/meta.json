@@ -1,0 +1,28 @@
+{
+  "name": "InputNumber",
+  "description": "数字输入：带 +/- 步进按钮的数值输入框，边界 clamp 与小数位控制",
+  "category": "数据录入",
+  "useCase": ["数量/金额输入", "表单内数值字段", "带上下限的参数调节"],
+  "dontUse": ["大范围取值偏好拖拽时用 Slider", "非数值文本输入用 Input"],
+  "props": {
+    "value": { "type": "number | null", "default": "—", "desc": "受控值（null 表示空）" },
+    "defaultValue": { "type": "number | null", "default": "null", "desc": "非受控初始值" },
+    "onChange": { "type": "(v: number | null) => void", "default": "—", "desc": "值变更回调（清空时为 null）" },
+    "min": { "type": "number", "default": "-Infinity", "desc": "最小值（边界 clamp）" },
+    "max": { "type": "number", "default": "Infinity", "desc": "最大值（边界 clamp）" },
+    "step": { "type": "number", "default": "1", "desc": "步进（+/- 按钮与 ↑↓ 键盘共用）" },
+    "precision": { "type": "number", "default": "—", "desc": "小数位数（提交与显示按此舍入）" },
+    "size": { "type": "'sm' | 'md' | 'lg'", "default": "'md'", "desc": "尺寸" },
+    "controls": { "type": "boolean", "default": "true", "desc": "显示 +/- 步进按钮" },
+    "disabled": { "type": "boolean", "default": "false", "desc": "禁用（原生 disabled）" },
+    "classNames": { "type": "{ root?; input?; increase?; decrease? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "input type=number（spinbutton 语义）+ ↑↓ 键盘步进（preventDefault 接管原生步进）",
+    "+/- 按钮 aria-label=\"增加\"/\"减少\"（本轮硬编码中文，locale 由后续轮次扩展）",
+    "到边界时对应步进按钮原生 disabled（不透传 aria-disabled）",
+    "隐藏原生 spinner（appearance: textfield），键盘与按钮是唯一步进入口",
+    "失焦时做边界 clamp 与精度归一，回写显示文本"
+  ],
+  "related": ["Input", "Slider", "Form"]
+}

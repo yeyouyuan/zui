@@ -1,0 +1,226 @@
+/* ZUI Modal —— 组合式对话框（APG Dialog：焦点陷阱 + 滚动锁 + 进出场动画） */
+
+.z-modal-overlay {
+  /* 组件级变量（用户可覆盖） */
+  --z-modal-overlay-bg: var(--z-color-overlay);
+  --z-modal-content-width-sm: 24rem;
+  --z-modal-content-width-md: 32rem;
+  --z-modal-content-width-lg: 48rem;
+  --z-modal-content-bg: var(--z-color-bg-elevated);
+  --z-modal-content-fg: var(--z-color-fg);
+  --z-modal-content-radius: 0.75rem; /* 12px 浮层圆角 */
+  --z-modal-content-shadow:
+    0 4px 8px -2px oklch(0.155 0.005 250 / 0.1), 0 24px 48px -12px oklch(0.155 0.005 250 / 0.22);
+  --z-modal-content-padding: var(--z-space-6);
+  --z-modal-content-max-height: calc(100vh - var(--z-space-8));
+  --z-modal-header-gap: var(--z-space-2);
+  --z-modal-title-font-size: var(--z-text-md); /* 16px */
+  --z-modal-description-font-size: var(--z-text-sm);
+  --z-modal-description-fg: var(--z-color-fg-muted);
+  --z-modal-body-padding: var(--z-space-4) 0;
+  --z-modal-footer-gap: var(--z-space-3);
+  --z-modal-footer-padding-top: var(--z-space-4);
+  --z-modal-close-size: 2rem;
+  --z-modal-close-fg: var(--z-color-fg-subtle);
+  --z-modal-close-hover-bg: var(--z-color-bg-muted);
+  --z-modal-animation-duration: var(--z-duration-normal);
+
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--z-space-4);
+  background: var(--z-modal-overlay-bg);
+}
+
+/* --------------------------------- content -------------------------------- */
+
+.z-modal {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--z-modal-content-width-md);
+  max-height: var(--z-modal-content-max-height);
+  padding: var(--z-modal-content-padding);
+  overflow: hidden;
+  font-family: var(--z-font-sans);
+  font-size: var(--z-text-md);
+  line-height: var(--z-leading-normal);
+  color: var(--z-modal-content-fg);
+  background: var(--z-modal-content-bg);
+  border-radius: var(--z-modal-content-radius);
+  box-shadow: var(--z-modal-content-shadow);
+}
+
+@supports (height: 100dvh) {
+  .z-modal {
+    max-height: min(var(--z-modal-content-max-height), calc(100dvh - var(--z-space-8)));
+  }
+}
+
+.z-modal[data-size='sm'] {
+  max-width: var(--z-modal-content-width-sm);
+}
+
+.z-modal[data-size='lg'] {
+  max-width: var(--z-modal-content-width-lg);
+}
+
+.z-modal:focus {
+  outline: none;
+}
+
+/* -------------------------------- 进出场 -------------------------------- */
+
+@keyframes z-modal-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes z-modal-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* 打开：scale 0.96→1 + translateY 8px→0 */
+@keyframes z-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes z-modal-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(0.25rem) scale(0.96);
+  }
+}
+
+.z-modal-overlay[data-state='open'] {
+  animation: z-modal-overlay-in var(--z-modal-animation-duration) var(--z-ease-entrance);
+}
+
+.z-modal-overlay[data-state='closed'] {
+  animation: z-modal-overlay-out var(--z-modal-animation-duration) var(--z-ease-exit);
+}
+
+.z-modal[data-state='open'] {
+  animation: z-modal-in var(--z-modal-animation-duration) var(--z-ease-entrance);
+}
+
+.z-modal[data-state='closed'] {
+  animation: z-modal-out var(--z-modal-animation-duration) var(--z-ease-exit);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-modal-overlay,
+  .z-modal {
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* --------------------------------- 结构 --------------------------------- */
+
+.z-modal-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--z-modal-header-gap);
+  padding-right: var(--z-modal-close-size);
+}
+
+.z-modal-title {
+  margin: 0;
+  font-size: var(--z-modal-title-font-size);
+  font-weight: var(--z-weight-semibold);
+  line-height: var(--z-leading-tight);
+}
+
+.z-modal-description {
+  margin: 0;
+  font-size: var(--z-modal-description-font-size);
+  color: var(--z-modal-description-fg);
+  line-height: var(--z-leading-normal);
+}
+
+.z-modal-body {
+  flex: 1;
+  min-height: 0;
+  padding: var(--z-modal-body-padding);
+  overflow-y: auto;
+}
+
+.z-modal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--z-modal-footer-gap);
+  padding-top: var(--z-modal-footer-padding-top);
+}
+
+.z-modal-close {
+  position: absolute;
+  top: var(--z-space-3);
+  right: var(--z-space-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-modal-close-size);
+  height: var(--z-modal-close-size);
+  font-size: var(--z-text-lg);
+  line-height: 1;
+  color: var(--z-modal-close-fg);
+  background: transparent;
+  border-radius: var(--z-radius-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--z-duration-fast) var(--z-ease-standard),
+    color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-modal-close[data-has-label] {
+  position: static;
+  box-sizing: border-box;
+  min-width: 4rem;
+  width: auto;
+  min-height: 2rem;
+  max-width: 100%;
+  height: auto;
+  padding: var(--z-space-1) var(--z-space-4);
+  border: 1px solid var(--z-color-border);
+  font-size: var(--z-text-sm);
+  font-weight: var(--z-weight-medium);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.z-modal-close:hover {
+  color: var(--z-color-fg);
+  background: var(--z-modal-close-hover-bg);
+}
+
+.z-modal-close:focus-visible {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: 2px;
+}

@@ -1,0 +1,23 @@
+{
+  "name": "DropdownMenu",
+  "description": "下拉菜单：点击触发的操作菜单列表（复合组件）",
+  "category": "导航",
+  "useCase": ["行操作/更多操作菜单", "用户头像下拉", "工具栏的次级操作收纳"],
+  "dontUse": ["选项录入（单选值）用 Select", "确认删除等破坏性操作二次确认用 Popconfirm/Modal", "常驻导航用 Tabs/Breadcrumb"],
+  "props": {
+    "open": { "type": "boolean", "default": "—", "desc": "受控打开状态" },
+    "defaultOpen": { "type": "boolean", "default": "false", "desc": "非受控初始状态" },
+    "onOpenChange": { "type": "(open: boolean) => void", "default": "—", "desc": "开关变化回调" },
+    "DropdownMenu.Item.onSelect": { "type": "() => void", "default": "—", "desc": "菜单项选中回调" },
+    "DropdownMenu.Item.danger": { "type": "boolean", "default": "false", "desc": "危险项（红色，删除类）" },
+    "DropdownMenu.Item.disabled": { "type": "boolean", "default": "false", "desc": "禁用该项" },
+    "DropdownMenu.Item.icon": { "type": "React.ReactNode", "default": "—", "desc": "菜单项图标" },
+    "DropdownMenu.Content.classNames": { "type": "{ content? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "role=\"menu\"/\"menuitem\"/\"separator\"，菜单项 aria-disabled",
+    "触发器 aria-haspopup=\"menu\" + aria-expanded + aria-controls",
+    "复合结构：DropdownMenu.Trigger / Content / Item / Label / Separator；外部点击/Esc 关闭"
+  ],
+  "related": ["Popover", "Select", "Button"]
+}

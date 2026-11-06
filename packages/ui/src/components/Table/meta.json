@@ -1,0 +1,22 @@
+{
+  "name": "Table",
+  "description": "表格：语义化 table 展示（复合组件，presentational）",
+  "category": "数据展示",
+  "useCase": ["配置/记录类数据列表", "表单内的数据展示", "中小数据量（非虚拟滚动）"],
+  "dontUse": ["上万行大数据用 VirtualTable（虚拟滚动）", "层级数据用 Tree", "卡片流式布局用 List"],
+  "props": {
+    "density": { "type": "'comfortable' | 'compact'", "default": "'comfortable'", "desc": "行高密度（根 data-density）" },
+    "bordered": { "type": "boolean", "default": "false", "desc": "外框（行分隔线始终有）" },
+    "striped": { "type": "boolean", "default": "false", "desc": "斑马纹" },
+    "Table.Row.selected": { "type": "boolean", "default": "false", "desc": "行选中态（data-selected）" },
+    "Table.HeaderCell.align": { "type": "'left' | 'center' | 'right'", "default": "'left'", "desc": "表头对齐（th scope=\"col\"）" },
+    "Table.Cell.align": { "type": "'left' | 'center' | 'right'", "default": "'left'", "desc": "单元格对齐（data-align）" },
+    "classNames": { "type": "{ root? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "纯语义 table 标记：<table>/<thead>/<tbody>/<tr>/<th scope=\"col\">/<td>",
+    "复合结构：Table / Table.Head / Table.Body / Table.Row / Table.HeaderCell / Table.Cell",
+    "排序/筛选等交互需自行在表头单元格内实现并补 aria-sort"
+  ],
+  "related": ["Pagination", "VirtualTable", "Card"]
+}

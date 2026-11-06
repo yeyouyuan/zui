@@ -1,0 +1,27 @@
+{
+  "name": "Slider",
+  "description": "滑块：连续取值输入，支持刻度、数值气泡与 APG 键盘步进",
+  "category": "数据录入",
+  "useCase": ["音量/亮度等连续参数", "带刻度的区间取值", "表单内数值拖拽输入"],
+  "dontUse": ["精确数值输入用 InputNumber", "离散选项切换用 Segmented/Radio"],
+  "props": {
+    "value": { "type": "number", "default": "—", "desc": "受控值" },
+    "defaultValue": { "type": "number", "default": "min", "desc": "非受控初始值" },
+    "onChange": { "type": "(v: number) => void", "default": "—", "desc": "值变更回调" },
+    "min": { "type": "number", "default": "0", "desc": "最小值" },
+    "max": { "type": "number", "default": "100", "desc": "最大值" },
+    "step": { "type": "number", "default": "1", "desc": "步进（相对 min 吸附）" },
+    "disabled": { "type": "boolean", "default": "false", "desc": "禁用" },
+    "marks": { "type": "Record<number, React.ReactNode>", "default": "—", "desc": "刻度标签" },
+    "tooltip": { "type": "boolean", "default": "true", "desc": "拖动/聚焦时显示数值气泡" },
+    "classNames": { "type": "{ root?; track?; fill?; thumb?; mark? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "thumb role=slider：aria-valuenow/min/max/valuetext",
+    "键盘（APG slider）：←→/↑↓ 步进、Home/End 首尾、PageUp/PageDown 大步进（step*10）",
+    "边界 clamp，min/max 处不再触发 onChange",
+    "数值气泡 aria-hidden（语义经 aria-valuetext 传达）",
+    "禁用保留可聚焦 + aria-disabled"
+  ],
+  "related": ["InputNumber", "Rate", "Form"]
+}

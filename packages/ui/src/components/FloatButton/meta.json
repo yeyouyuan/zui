@@ -1,0 +1,18 @@
+{
+  "name": "FloatButton",
+  "description": "悬浮按钮，固定在角落的快捷操作入口，可展开菜单",
+  "category": "导航",
+  "useCase": ["全局快捷操作（客服/反馈/创建）", "多入口展开菜单", "移动端悬浮主操作"],
+  "dontUse": ["不要用它做返回顶部（用 BackTop）", "主要表单提交放页面内按钮"],
+  "props": {
+    "icon": { "type": "React.ReactNode", "desc": "按钮图标（默认 +）" },
+    "description": { "type": "React.ReactNode", "desc": "按钮内文字说明" },
+    "shape": { "type": "'circle'|'square'", "default": "'circle'", "desc": "形状" },
+    "type": { "type": "'default'|'primary'", "default": "'default'", "desc": "视觉类型" },
+    "trigger": { "type": "'click'|'hover'", "default": "'click'", "desc": "菜单展开方式" },
+    "onClick": { "type": "() => void", "desc": "点击回调" },
+    "menu": { "type": "Array<{ icon?; description?; onClick? }>", "desc": "展开菜单项" }
+  },
+  "a11yNotes": ["aria-haspopup/aria-expanded 表达菜单态，Esc 关闭并归还焦点，点击外部关闭"],
+  "related": ["BackTop", "DropdownMenu"]
+}

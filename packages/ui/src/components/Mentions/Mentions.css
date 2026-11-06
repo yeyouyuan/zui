@@ -1,0 +1,148 @@
+/* ZUI Mentions —— textarea + 前缀触发建议下拉：组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-mentions {
+  --z-mentions-font-size: var(--z-text-sm);
+  --z-mentions-textarea-padding-x: var(--z-space-3);
+  --z-mentions-textarea-padding-y: var(--z-space-2);
+  --z-mentions-textarea-radius: var(--z-radius-sm);
+  --z-mentions-textarea-bg: var(--z-color-bg-elevated);
+  --z-mentions-textarea-fg: var(--z-color-fg);
+  --z-mentions-textarea-border: var(--z-color-border);
+  --z-mentions-textarea-hover-border: var(--z-color-border-focus);
+  --z-mentions-panel-bg: var(--z-color-bg-elevated);
+  --z-mentions-panel-border: var(--z-color-border-subtle);
+  --z-mentions-panel-radius: 0.5rem;
+  --z-mentions-panel-shadow: var(--z-shadow-lg);
+  --z-mentions-panel-margin-top: var(--z-space-1);
+  --z-mentions-panel-max-height: 12rem;
+  --z-mentions-item-height: 2rem;
+  --z-mentions-item-padding-x: var(--z-space-3);
+  --z-mentions-item-fg: var(--z-color-fg);
+  --z-mentions-item-hover-bg: var(--z-color-bg-muted);
+  --z-mentions-item-active-bg: var(--z-color-primary-subtle);
+  --z-mentions-item-active-fg: var(--z-color-primary-subtle-fg);
+  --z-mentions-empty-fg: var(--z-color-fg-muted);
+  --z-mentions-focus-ring: var(--z-color-focus-ring);
+  --z-mentions-animation-duration: var(--z-duration-fast);
+
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  font-family: var(--z-font-sans);
+  font-size: var(--z-mentions-font-size);
+  color: var(--z-mentions-textarea-fg);
+}
+
+/* -------------------------------- 输入框 -------------------------------- */
+
+.z-mentions-textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--z-mentions-textarea-padding-y) var(--z-mentions-textarea-padding-x);
+  font-family: inherit;
+  font-size: var(--z-mentions-font-size);
+  line-height: var(--z-leading-normal);
+  color: var(--z-mentions-textarea-fg);
+  background: var(--z-mentions-textarea-bg);
+  border: 1px solid var(--z-mentions-textarea-border);
+  border-radius: var(--z-mentions-textarea-radius);
+  resize: vertical;
+  transition:
+    border-color var(--z-duration-fast) var(--z-ease-standard),
+    box-shadow var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-mentions-textarea:hover:not(:disabled) {
+  border-color: var(--z-mentions-textarea-hover-border);
+}
+
+.z-mentions-textarea:focus-visible {
+  outline: none;
+  border-color: var(--z-color-border-focus);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-mentions-focus-ring) 15%, transparent);
+}
+
+.z-mentions-textarea:disabled {
+  color: var(--z-color-disabled-fg);
+  background: var(--z-color-disabled-bg);
+  border-color: var(--z-color-disabled-border);
+  cursor: not-allowed;
+}
+
+/* -------------------------------- 建议面板 ------------------------------- */
+
+.z-mentions-panel {
+  position: fixed;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: var(--z-z-dropdown);
+  box-sizing: border-box;
+  margin-top: var(--z-mentions-panel-margin-top);
+  padding: var(--z-space-1);
+  max-height: min(var(--z-mentions-panel-max-height), calc(100dvh - 16px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--z-color-border) transparent;
+  background: var(--z-mentions-panel-bg);
+  border: 1px solid var(--z-mentions-panel-border);
+  border-radius: var(--z-mentions-panel-radius);
+  box-shadow: var(--z-mentions-panel-shadow);
+  animation: z-mentions-panel-in var(--z-mentions-animation-duration) var(--z-ease-entrance);
+  max-width: calc(100vw - 16px);
+}
+
+@keyframes z-mentions-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-mentions-panel {
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* -------------------------------- 建议项 -------------------------------- */
+
+.z-mentions-item {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  min-height: var(--z-mentions-item-height);
+  padding: 0 var(--z-mentions-item-padding-x);
+  color: var(--z-mentions-item-fg);
+  border-radius: var(--z-radius-sm);
+  cursor: pointer;
+  user-select: none;
+  font-size: var(--z-mentions-font-size);
+  line-height: var(--z-leading-normal);
+  transition:
+    background-color var(--z-duration-fast) var(--z-ease-standard),
+    color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-mentions-item[data-active='true'] {
+  color: var(--z-mentions-item-active-fg);
+  background: var(--z-mentions-item-active-bg);
+}
+
+.z-mentions-item:hover:not([data-active='true']) {
+  background: var(--z-mentions-item-hover-bg);
+}
+
+.z-mentions-empty {
+  padding: var(--z-space-4);
+  font-size: var(--z-text-xs);
+  color: var(--z-mentions-empty-fg);
+  text-align: center;
+}

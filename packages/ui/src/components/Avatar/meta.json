@@ -1,0 +1,23 @@
+{
+  "name": "Avatar",
+  "description": "头像：图片/文字首字符/图标三级回退展示",
+  "category": "数据展示",
+  "useCase": ["用户/组织头像", "列表项左侧的实体标识", "群组叠放展示（配合 Badge）"],
+  "dontUse": ["大图展示/预览用 Image", "装饰性插图直接用图标组件"],
+  "props": {
+    "src": { "type": "string", "default": "—", "desc": "图片地址（加载失败走回退）" },
+    "alt": { "type": "string", "default": "—", "desc": "图片替代文本" },
+    "name": { "type": "string", "default": "—", "desc": "无图时取首字符（中文取首字，英文首字母大写）" },
+    "icon": { "type": "React.ReactNode", "default": "—", "desc": "无图无名时的回退图标" },
+    "size": { "type": "'sm' | 'md' | 'lg' | number", "default": "'md'", "desc": "尺寸（sm 24 / md 32 / lg 40，number 自定义 px）" },
+    "shape": { "type": "'circle' | 'square'", "default": "'circle'", "desc": "形状" },
+    "onError": { "type": "React.ReactEventHandler<HTMLImageElement>", "default": "—", "desc": "图片加载失败回调（作用于 img）" },
+    "classNames": { "type": "{ root?; image?; fallback? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "纯装饰场景 alt=\"\"（读屏跳过）；标识身份时补有意义的 alt/name",
+    "文字首字符回退对读屏暴露为文本，语义等同姓名缩写",
+    "回退图标 aria-hidden"
+  ],
+  "related": ["Badge", "Image", "List"]
+}

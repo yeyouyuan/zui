@@ -1,0 +1,25 @@
+{
+  "name": "Rate",
+  "description": "评分：星级打分，radiogroup 语义，支持半星与键盘调整",
+  "category": "数据录入",
+  "useCase": ["服务/商品评价", "满意度打分", "表单内星级输入"],
+  "dontUse": ["连续数值输入用 Slider/InputNumber", "多选标签用 Checkbox"],
+  "props": {
+    "value": { "type": "number", "default": "—", "desc": "受控值（0..count）" },
+    "defaultValue": { "type": "number", "default": "0", "desc": "非受控初始值" },
+    "onChange": { "type": "(v: number) => void", "default": "—", "desc": "值变更回调" },
+    "count": { "type": "number", "default": "5", "desc": "星星数量" },
+    "allowHalf": { "type": "boolean", "default": "false", "desc": "允许半星" },
+    "disabled": { "type": "boolean", "default": "false", "desc": "禁用（原生 disabled 星按钮）" },
+    "readonly": { "type": "boolean", "default": "false", "desc": "只读展示" },
+    "classNames": { "type": "{ root?; star?; half? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "role=radiogroup + 每星 role=radio + aria-checked",
+    "←→/↑↓ 键盘调整（allowHalf 时步进 0.5），焦点跟随选中星",
+    "roving tabindex：仅当前值所在星可 Tab 聚焦",
+    "选中星填充 --z-color-warning 语义色",
+    "disabled 用原生 disabled；readonly 展示态 aria-readonly"
+  ],
+  "related": ["Slider", "Form", "InputNumber"]
+}

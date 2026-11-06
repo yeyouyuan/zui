@@ -1,0 +1,24 @@
+{
+  "name": "Mentions",
+  "description": "提及组件，在文本域中输入前缀触发建议下拉并插入补全",
+  "category": "数据录入",
+  "useCase": ["评论区 @ 提及成员", "工单指派", "文档内引用标签（自定义 prefix）"],
+  "dontUse": ["单值选择用 Select", "多值标签输入用 Select multiple / TreeSelect"],
+  "props": {
+    "options": { "type": "Array<{ value: string; label?: React.ReactNode }>", "desc": "可提及的选项" },
+    "value": { "type": "string", "desc": "受控文本" },
+    "defaultValue": { "type": "string", "desc": "非受控初始文本" },
+    "onChange": { "type": "(v: string) => void", "desc": "文本变化回调" },
+    "prefix": { "type": "string", "default": "'@'", "desc": "触发前缀（前需空白或行首）" },
+    "rows": { "type": "number", "default": "3", "desc": "textarea 行数" },
+    "disabled": { "type": "boolean", "default": "false", "desc": "禁用" },
+    "placeholder": { "type": "string", "desc": "占位文案" },
+    "classNames": { "type": "{ root?; textarea?; panel?; item? }", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "textarea aria-expanded/aria-controls/aria-activedescendant 联动建议面板",
+    "面板 role=listbox，项 role=option + aria-selected",
+    "↑↓ 移动、Enter/Tab 插入、Esc 关闭"
+  ],
+  "related": ["Input", "Select", "Form"]
+}

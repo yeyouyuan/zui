@@ -1,0 +1,15 @@
+{
+  "name": "Result",
+  "description": "结果页组件，反馈操作处理结果（成功/失败/警告/异常码）",
+  "category": "反馈",
+  "useCase": ["提交成功/失败反馈页", "404/403/500 异常页", "支付/上传结果展示"],
+  "dontUse": ["不要用 Result 做即时轻量反馈（用 Message）", "不要用它承载复杂表单（用 Form）"],
+  "props": {
+    "status": { "type": "'success'|'error'|'info'|'warning'|'404'|'403'|'500'", "default": "'info'", "desc": "结果状态与默认图标" },
+    "title": { "type": "React.ReactNode", "desc": "标题（缺省按 status 取默认文案）" },
+    "subTitle": { "type": "React.ReactNode", "desc": "副标题补充说明" },
+    "extra": { "type": "React.ReactNode", "desc": "操作按钮区" }
+  },
+  "a11yNotes": ["图标 aria-hidden，状态信息由标题文本承载"],
+  "related": ["Message", "Notification", "Button"]
+}

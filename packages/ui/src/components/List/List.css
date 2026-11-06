@@ -1,0 +1,163 @@
+/* List —— 列表（ul/li 语义 + 头像/标题/描述/extra）。
+   组件级变量定义在根选择器上，可被用户任意覆盖。 */
+
+.z-list {
+  --z-list-font-size: var(--z-text-sm);
+  --z-list-fg: var(--z-color-fg);
+  --z-list-bg: var(--z-color-bg);
+  --z-list-border: var(--z-color-border);
+  --z-list-radius: var(--z-radius-md);
+  --z-list-item-padding-x: var(--z-space-4);
+  --z-list-item-padding-y: var(--z-space-3);
+  --z-list-item-gap: var(--z-space-3);
+  --z-list-item-hover-bg: var(--z-color-bg-subtle);
+  --z-list-item-border: var(--z-color-border-subtle);
+  --z-list-title-font-weight: var(--z-weight-medium);
+  --z-list-title-fg: var(--z-color-fg);
+  --z-list-description-fg: var(--z-color-fg-muted);
+  --z-list-description-margin-top: var(--z-space-1);
+  --z-list-avatar-size: 2.5rem;
+  --z-list-header-padding-x: var(--z-space-4);
+  --z-list-header-padding-y: var(--z-space-3);
+  --z-list-header-bg: var(--z-color-bg-subtle);
+  --z-list-header-border: var(--z-color-border-subtle);
+  --z-list-header-fg: var(--z-color-fg-muted);
+  --z-list-loading-padding: var(--z-space-8);
+  --z-list-spinner-size: 1.25rem;
+  --z-list-spinner-width: 2px;
+  --z-list-spinner-color: var(--z-color-primary);
+  --z-list-spinner-track: var(--z-color-border);
+}
+
+/* --------------------------------- 尺寸 --------------------------------- */
+
+.z-list[data-size='sm'] {
+  --z-list-font-size: var(--z-text-xs);
+  --z-list-item-padding-x: var(--z-space-3);
+  --z-list-item-padding-y: var(--z-space-2);
+  --z-list-avatar-size: 2rem;
+}
+
+.z-list {
+  box-sizing: border-box;
+  color: var(--z-list-fg);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-list-font-size);
+  background: var(--z-list-bg);
+}
+
+.z-list[data-bordered='true'] {
+  border: 1px solid var(--z-list-border);
+  border-radius: var(--z-list-radius);
+  overflow: hidden;
+}
+
+/* -------------------------------- 头/尾 -------------------------------- */
+
+.z-list-header,
+.z-list-footer {
+  padding: var(--z-list-header-padding-y) var(--z-list-header-padding-x);
+  color: var(--z-list-header-fg);
+  background: var(--z-list-header-bg);
+  border-bottom: 1px solid var(--z-list-header-border);
+}
+
+.z-list-footer {
+  border-bottom: none;
+  border-top: 1px solid var(--z-list-header-border);
+}
+
+.z-list[data-bordered='false'] .z-list-header,
+.z-list[data-bordered='false'] .z-list-footer {
+  background: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* -------------------------------- 列表项 ------------------------------- */
+
+.z-list-body {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.z-list-item {
+  display: flex;
+  align-items: center;
+  gap: var(--z-list-item-gap);
+  box-sizing: border-box;
+  padding: var(--z-list-item-padding-y) var(--z-list-item-padding-x);
+  transition: background-color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-list-item + .z-list-item {
+  border-top: 1px solid var(--z-list-item-border);
+}
+
+.z-list-item:hover {
+  background: var(--z-list-item-hover-bg);
+}
+
+.z-list-item-avatar {
+  flex: 0 0 auto;
+  width: var(--z-list-avatar-size);
+  height: var(--z-list-avatar-size);
+  overflow: hidden;
+}
+
+.z-list-item-meta {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.z-list-item-title {
+  color: var(--z-list-title-fg);
+  font-weight: var(--z-list-title-font-weight);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.z-list-item-description {
+  margin-top: var(--z-list-description-margin-top);
+  color: var(--z-list-description-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.z-list-item-extra {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+/* -------------------------------- 加载态 ------------------------------- */
+
+.z-list-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--z-list-loading-padding);
+}
+
+.z-list-spinner {
+  box-sizing: border-box;
+  width: var(--z-list-spinner-size);
+  height: var(--z-list-spinner-size);
+  border: var(--z-list-spinner-width) solid var(--z-list-spinner-track);
+  border-top-color: var(--z-list-spinner-color);
+  border-radius: var(--z-radius-full);
+  animation: z-list-spin calc(var(--z-duration-slow) * 2) linear infinite;
+}
+
+@keyframes z-list-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-list-item {
+    transition: none;
+  }
+}

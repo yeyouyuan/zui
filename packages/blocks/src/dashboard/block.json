@@ -1,0 +1,6 @@
+{
+  "name": "dashboard",
+  "description": "仪表盘区块：Statistic 统计卡行 + 流量趋势 Tabs + 渠道分析 + 最近动态表，基于 Statistic/Table/Card/Tabs 拼装",
+  "dependencies": ["Button", "Card", "Statistic", "Table", "Tabs", "Tag"],
+  "category": "业务块"
+}

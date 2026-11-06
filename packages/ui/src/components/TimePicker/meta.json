@@ -1,0 +1,22 @@
+{
+  "name": "TimePicker",
+  "description": "时间选择组件，时/分/秒三列滚动面板选择时间点",
+  "category": "数据录入",
+  "useCase": ["作息/营业时间录入", "定时任务触发时刻", "预约时段选择"],
+  "dontUse": ["选择日期用 DatePicker", "选择时间区间用两个 TimePicker 组合（区间版 v0.4）"],
+  "props": {
+    "value": { "type": "string", "desc": "受控时间串 'HH:mm' 或 'HH:mm:ss'" },
+    "defaultValue": { "type": "string", "desc": "非受控初始时间" },
+    "onChange": { "type": "(time: string) => void", "desc": "确认回调，按 format 输出" },
+    "format": { "type": "'HH:mm'|'HH:mm:ss'", "default": "'HH:mm'", "desc": "输出格式（决定是否显示秒列）" },
+    "disabled": { "type": "boolean", "default": "false", "desc": "禁用" },
+    "size": { "type": "'sm'|'md'|'lg'", "default": "'md'", "desc": "尺寸" },
+    "classNames": { "type": "{ root?; trigger?; panel?; column?; item? }", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "触发器 aria-haspopup=listbox + aria-expanded",
+    "每列 role=listbox（时/分/秒），项 role=option + aria-selected",
+    "↑↓ 滚动当前列（循环）、←→ 切换列、Enter 确认、Esc 关闭归还焦点"
+  ],
+  "related": ["DatePicker", "Calendar", "InputNumber"]
+}

@@ -1,0 +1,65 @@
+/* ZUI 基础 reset
+ * 注意：元素级规则全部用 :where() 包裹，使优先级为 0 ——
+ * 任何组件类名（.z-*）都天然胜出，不会被 reset 压扁。
+ * 所有以 .z- 命名的组件及其子元素均自动获得 box-sizing: border-box 保护，
+ * 彻底防止外部宿主环境未重置 box-sizing 时产生的内边距/边框膨胀位移。 */
+
+:where(.z-reset, [class^='z-'], [class*=' z-']),
+:where(.z-reset, [class^='z-'], [class*=' z-']) *,
+:where(.z-reset, [class^='z-'], [class*=' z-']) *::before,
+:where(.z-reset, [class^='z-'], [class*=' z-']) *::after {
+  box-sizing: border-box;
+}
+
+.z-reset {
+  font-family: var(--z-font-sans);
+  font-size: var(--z-text-md);
+  line-height: var(--z-leading-normal);
+  color: var(--z-color-fg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:where(.z-reset) :where(button, input, select, textarea) {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+}
+
+:where(.z-reset) :where(button) {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+:where(.z-reset) :where(button:disabled, input:disabled) {
+  cursor: not-allowed;
+}
+
+/* 焦点：无自定义焦点样式的元素走全局焦点环 */
+:where(.z-reset) :where(:focus) {
+  outline: none;
+}
+
+:where(.z-reset) :focus-visible {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--z-radius-sm);
+}
+
+:where(.z-reset) [hidden] {
+  display: none !important;
+}
+
+/* 全局动效降级 */
+@media (prefers-reduced-motion: reduce) {
+  :where(.z-reset) *,
+  :where(.z-reset) *::before,
+  :where(.z-reset) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

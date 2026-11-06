@@ -1,0 +1,234 @@
+/**
+ * ZUI 设计令牌 — Primitive 基础层（无语义，只有色阶/刻度）
+ *
+ * - 颜色一律 oklch() 书写；对比度按 WCAG AA 校准（正文 fg 与 bg ≥ 4.5:1，
+ *   primary-fg 与 primary ≥ 4.5:1），明暗两套映射均满足。
+ * - 命名无语义：--z-<色系>-<刻度> / --z-<维度>-<刻度>。
+ * - 语义层（semantic.css）与暗色层（dark.css）只引用本层变量。
+ * - 本文件是所有原始值的唯一来源，可直接用于画色板 / 调试。
+ *
+ * 色阶设计说明（2026-11 视觉精修）：
+ * - 中性灰阶拉开层次：50 近白（页面底）→ 100 极浅（次级底）→ 200 浅（弱化填充）
+ *   → 300 描边（约 #d9d9d9 感）→ 400 禁用字 → 500 弱化字 → 600 次要字
+ *   → 700-950 深色前景/暗色表面，全部微冷调（hue 250）。
+ * - 品牌蓝以 #1677ff 为基准（hue 255）：brand-500 即 oklch(0.623 0.19 255) 参考主蓝；
+ *   亮色语义主色取 brand-600（压深一档），保证白字 ≥ 4.5:1 且链接对底色 ≥ 4.5:1。
+ * - 阴影双层：小而紧（贴边）+ 大而柔（扩散），浮层用 shadow-lg 立体感。
+ */
+
+/* ============================================================
+ * @property 语法注册
+ * 为关键颜色变量声明 <color>、--z-radius 声明 <length>：
+ * 主题切换时变量类型确定，可平滑插值过渡，防止换肤闪烁。
+ * （注册是全局的，放在这里仅作集中管理）
+ * ============================================================ */
+@property --z-color-bg { syntax: '<color>'; inherits: true; initial-value: oklch(0.995 0.002 250); }
+@property --z-color-bg-subtle { syntax: '<color>'; inherits: true; initial-value: oklch(0.978 0.003 250); }
+@property --z-color-bg-muted { syntax: '<color>'; inherits: true; initial-value: oklch(0.948 0.005 250); }
+@property --z-color-bg-elevated { syntax: '<color>'; inherits: true; initial-value: oklch(0.995 0.002 250); }
+@property --z-color-bg-inverse { syntax: '<color>'; inherits: true; initial-value: oklch(0.215 0.008 250); }
+@property --z-color-fg { syntax: '<color>'; inherits: true; initial-value: oklch(0.155 0.005 250); }
+@property --z-color-fg-muted { syntax: '<color>'; inherits: true; initial-value: oklch(0.47 0.016 250); }
+@property --z-color-fg-subtle { syntax: '<color>'; inherits: true; initial-value: oklch(0.562 0.014 250); }
+@property --z-color-fg-inverse { syntax: '<color>'; inherits: true; initial-value: oklch(0.995 0.002 250); }
+@property --z-color-fg-on-primary { syntax: '<color>'; inherits: true; initial-value: oklch(0.995 0.002 250); }
+@property --z-color-border { syntax: '<color>'; inherits: true; initial-value: oklch(0.878 0.006 250); }
+@property --z-color-border-subtle { syntax: '<color>'; inherits: true; initial-value: oklch(0.948 0.005 250); }
+@property --z-color-border-strong { syntax: '<color>'; inherits: true; initial-value: oklch(0.562 0.014 250); }
+@property --z-color-border-focus { syntax: '<color>'; inherits: true; initial-value: oklch(0.5625 0.19 255); }
+@property --z-color-primary { syntax: '<color>'; inherits: true; initial-value: oklch(0.5625 0.19 255); }
+@property --z-color-primary-hover { syntax: '<color>'; inherits: true; initial-value: oklch(0.51 0.185 255); }
+@property --z-color-primary-active { syntax: '<color>'; inherits: true; initial-value: oklch(0.455 0.165 255); }
+@property --z-color-primary-fg { syntax: '<color>'; inherits: true; initial-value: oklch(0.995 0.002 250); }
+@property --z-color-primary-subtle { syntax: '<color>'; inherits: true; initial-value: oklch(0.972 0.022 255); }
+@property --z-color-primary-subtle-fg { syntax: '<color>'; inherits: true; initial-value: oklch(0.51 0.185 255); }
+@property --z-color-danger { syntax: '<color>'; inherits: true; initial-value: oklch(0.555 0.175 27); }
+@property --z-color-danger-hover { syntax: '<color>'; inherits: true; initial-value: oklch(0.47 0.15 27); }
+@property --z-color-danger-fg { syntax: '<color>'; inherits: true; initial-value: oklch(0.995 0.002 250); }
+@property --z-color-danger-subtle { syntax: '<color>'; inherits: true; initial-value: oklch(0.975 0.012 27); }
+@property --z-color-danger-subtle-fg { syntax: '<color>'; inherits: true; initial-value: oklch(0.47 0.15 27); }
+@property --z-color-success { syntax: '<color>'; inherits: true; initial-value: oklch(0.538 0.13 152); }
+@property --z-color-success-hover { syntax: '<color>'; inherits: true; initial-value: oklch(0.47 0.11 152); }
+@property --z-color-success-fg { syntax: '<color>'; inherits: true; initial-value: oklch(0.995 0.002 250); }
+@property --z-color-success-subtle { syntax: '<color>'; inherits: true; initial-value: oklch(0.975 0.01 152); }
+@property --z-color-success-subtle-fg { syntax: '<color>'; inherits: true; initial-value: oklch(0.47 0.11 152); }
+@property --z-color-warning { syntax: '<color>'; inherits: true; initial-value: oklch(0.552 0.14 78); }
+@property --z-color-warning-hover { syntax: '<color>'; inherits: true; initial-value: oklch(0.47 0.12 78); }
+@property --z-color-warning-fg { syntax: '<color>'; inherits: true; initial-value: oklch(0.995 0.002 250); }
+@property --z-color-warning-subtle { syntax: '<color>'; inherits: true; initial-value: oklch(0.975 0.01 78); }
+@property --z-color-warning-subtle-fg { syntax: '<color>'; inherits: true; initial-value: oklch(0.47 0.12 78); }
+@property --z-color-info { syntax: '<color>'; inherits: true; initial-value: oklch(0.545 0.125 235); }
+@property --z-color-info-hover { syntax: '<color>'; inherits: true; initial-value: oklch(0.47 0.105 235); }
+@property --z-color-info-fg { syntax: '<color>'; inherits: true; initial-value: oklch(0.995 0.002 250); }
+@property --z-color-info-subtle { syntax: '<color>'; inherits: true; initial-value: oklch(0.975 0.01 235); }
+@property --z-color-info-subtle-fg { syntax: '<color>'; inherits: true; initial-value: oklch(0.47 0.105 235); }
+@property --z-color-link { syntax: '<color>'; inherits: true; initial-value: oklch(0.5625 0.19 255); }
+@property --z-color-link-hover { syntax: '<color>'; inherits: true; initial-value: oklch(0.51 0.185 255); }
+@property --z-color-focus-ring { syntax: '<color>'; inherits: true; initial-value: oklch(0.5625 0.19 255); }
+@property --z-color-overlay { syntax: '<color>'; inherits: true; initial-value: transparent; }
+@property --z-color-disabled-bg { syntax: '<color>'; inherits: true; initial-value: oklch(0.978 0.003 250); }
+@property --z-color-disabled-fg { syntax: '<color>'; inherits: true; initial-value: oklch(0.72 0.01 250); }
+@property --z-color-disabled-border { syntax: '<color>'; inherits: true; initial-value: oklch(0.948 0.005 250); }
+@property --z-radius { syntax: '<length>'; inherits: true; initial-value: 0.625rem; }
+
+:root {
+  /* ============================================================
+   * 1. 颜色色阶（primitives）
+   * ============================================================ */
+
+  /* --- Neutral 中性灰（冷灰阶拉开层次，微冷调，hue 250）--- */
+  --z-neutral-50: oklch(0.995 0.002 250);  /* #fcfdff 近白：页面底 */
+  --z-neutral-100: oklch(0.978 0.003 250); /* #f6f8fa 极浅：次级底 */
+  --z-neutral-200: oklch(0.948 0.005 250); /* #ebeef1 浅：弱化填充 / 极弱分隔 */
+  --z-neutral-300: oklch(0.878 0.006 250); /* #d4d7db 描边（约 #d9d9d9 感） */
+  --z-neutral-400: oklch(0.72 0.01 250);   /* #a0a5ab 禁用字 */
+  --z-neutral-500: oklch(0.562 0.014 250); /* #6f767d 弱化字（≥4.5:1） */
+  --z-neutral-600: oklch(0.47 0.016 250);  /* #545c64 次要字 */
+  --z-neutral-700: oklch(0.385 0.014 250); /* #3e444b */
+  --z-neutral-800: oklch(0.3 0.011 250);   /* #2a2e33 */
+  --z-neutral-900: oklch(0.215 0.008 250); /* #171a1d */
+  --z-neutral-950: oklch(0.155 0.005 250); /* #0c0e10 近黑非纯黑 */
+
+  /* --- Brand 主色（单一蓝，hue 255；500 = oklch(0.623 0.19 255) ≈ #1677ff 参考主蓝，
+   *    亮色主用 600 压深一档保 AA，暗色主用 500 配深色字）--- */
+  --z-brand-50: oklch(0.972 0.022 255);
+  --z-brand-100: oklch(0.935 0.05 255);
+  --z-brand-200: oklch(0.878 0.09 255);
+  --z-brand-300: oklch(0.79 0.135 255);
+  --z-brand-400: oklch(0.7 0.175 255);
+  --z-brand-500: oklch(0.623 0.19 255); /* ≈ #1677ff 参考主蓝 */
+  --z-brand-600: oklch(0.5625 0.19 255); /* ≈ #0072e3 亮色工作主蓝（白字 ≥4.5:1） */
+  --z-brand-700: oklch(0.51 0.185 255);
+  --z-brand-800: oklch(0.455 0.165 255);
+  --z-brand-900: oklch(0.39 0.13 255);
+  --z-brand-950: oklch(0.31 0.09 255);
+
+  /* --- Danger 危险（红，hue 27）--- */
+  --z-danger-50: oklch(0.975 0.012 27);
+  --z-danger-100: oklch(0.945 0.03 27);
+  --z-danger-200: oklch(0.895 0.065 27);
+  --z-danger-300: oklch(0.835 0.105 27);
+  --z-danger-400: oklch(0.745 0.15 27);
+  --z-danger-500: oklch(0.655 0.18 27);
+  --z-danger-600: oklch(0.555 0.175 27);
+  --z-danger-700: oklch(0.47 0.15 27);
+  --z-danger-800: oklch(0.39 0.115 27);
+  --z-danger-900: oklch(0.315 0.075 27);
+
+  /* --- Success 成功（绿，hue 152）--- */
+  --z-success-50: oklch(0.975 0.01 152);
+  --z-success-100: oklch(0.945 0.025 152);
+  --z-success-200: oklch(0.895 0.05 152);
+  --z-success-300: oklch(0.835 0.085 152);
+  --z-success-400: oklch(0.745 0.115 152);
+  --z-success-500: oklch(0.655 0.135 152);
+  --z-success-600: oklch(0.538 0.13 152);
+  --z-success-700: oklch(0.47 0.11 152);
+  --z-success-800: oklch(0.39 0.085 152);
+  --z-success-900: oklch(0.315 0.055 152);
+
+  /* --- Warning 警告（琥珀金，hue 78）--- */
+  --z-warning-50: oklch(0.975 0.01 78);
+  --z-warning-100: oklch(0.945 0.025 78);
+  --z-warning-200: oklch(0.895 0.05 78);
+  --z-warning-300: oklch(0.835 0.09 78);
+  --z-warning-400: oklch(0.745 0.125 78);
+  --z-warning-500: oklch(0.655 0.145 78);
+  --z-warning-600: oklch(0.552 0.14 78);
+  --z-warning-700: oklch(0.47 0.12 78);
+  --z-warning-800: oklch(0.39 0.09 78);
+  --z-warning-900: oklch(0.315 0.06 78);
+
+  /* --- Info 信息（青蓝，hue 235）--- */
+  --z-info-50: oklch(0.975 0.01 235);
+  --z-info-100: oklch(0.945 0.025 235);
+  --z-info-200: oklch(0.895 0.055 235);
+  --z-info-300: oklch(0.835 0.09 235);
+  --z-info-400: oklch(0.745 0.115 235);
+  --z-info-500: oklch(0.655 0.13 235);
+  --z-info-600: oklch(0.545 0.125 235);
+  --z-info-700: oklch(0.47 0.105 235);
+  --z-info-800: oklch(0.39 0.08 235);
+  --z-info-900: oklch(0.315 0.05 235);
+
+  /* ============================================================
+   * 2. 间距（4px 步进，16px = 1rem）
+   * ============================================================ */
+  --z-space-1: 0.25rem;  /* 4px */
+  --z-space-2: 0.5rem;   /* 8px */
+  --z-space-3: 0.75rem;  /* 12px */
+  --z-space-4: 1rem;     /* 16px */
+  --z-space-5: 1.25rem;  /* 20px */
+  --z-space-6: 1.5rem;   /* 24px */
+  --z-space-7: 1.75rem;  /* 28px */
+  --z-space-8: 2rem;     /* 32px */
+  --z-space-9: 2.25rem;  /* 36px */
+  --z-space-10: 2.5rem;  /* 40px */
+  --z-space-11: 2.75rem; /* 44px */
+  --z-space-12: 3rem;    /* 48px */
+
+  /* ============================================================
+   * 3. 圆角（--z-radius 是唯一来源，其余派生）
+   * ============================================================ */
+  --z-radius: 0.625rem;
+  --z-radius-sm: calc(var(--z-radius) - 0.25rem);   /* 0.375rem */
+  --z-radius-md: var(--z-radius);                    /* 0.625rem */
+  --z-radius-lg: calc(var(--z-radius) + 0.125rem);   /* 0.75rem */
+  --z-radius-xl: calc(var(--z-radius) + 0.375rem);   /* 1rem */
+  --z-radius-full: 9999px;
+
+  /* ============================================================
+   * 4. 字体与字阶
+   * ============================================================ */
+  --z-font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    Arial, sans-serif;
+  --z-font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+
+  --z-text-xs: 0.75rem;  /* 12px */
+  --z-text-sm: 0.875rem; /* 14px */
+  --z-text-md: 1rem;     /* 16px */
+  --z-text-lg: 1.125rem; /* 18px */
+  --z-text-xl: 1.25rem;  /* 20px */
+  --z-text-2xl: 1.5rem;  /* 24px */
+
+  --z-leading-tight: 1.25;
+  --z-leading-normal: 1.5;
+  --z-leading-relaxed: 1.75;
+
+  --z-weight-regular: 400;
+  --z-weight-medium: 500;
+  --z-weight-semibold: 600;
+
+  /* ============================================================
+   * 5. 阴影（双层：小而紧 + 大而柔，shadcn 风格；浮层用 lg 立体感）
+   * ============================================================ */
+  --z-shadow-xs: 0 1px 2px oklch(0.155 0.005 250 / 0.06);
+  --z-shadow-sm: 0 1px 2px oklch(0.155 0.005 250 / 0.07),
+    0 2px 6px oklch(0.155 0.005 250 / 0.05);
+  --z-shadow-md: 0 2px 4px -1px oklch(0.155 0.005 250 / 0.08),
+    0 6px 16px -4px oklch(0.155 0.005 250 / 0.08);
+  --z-shadow-lg: 0 4px 8px -2px oklch(0.155 0.005 250 / 0.1),
+    0 20px 40px -8px oklch(0.155 0.005 250 / 0.16);
+
+  /* ============================================================
+   * 6. 动效（配合 reset.css 的 prefers-reduced-motion 降级）
+   * ============================================================ */
+  --z-duration-fast: 120ms;
+  --z-duration-normal: 200ms;
+  --z-duration-slow: 320ms;
+  --z-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --z-ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --z-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* ============================================================
+   * 7. 层级
+   * ============================================================ */
+  --z-z-base: 0;
+  --z-z-sticky: 100;
+  --z-z-dropdown: 200;
+  --z-z-overlay: 300;
+  --z-z-modal: 400;
+  --z-z-toast: 500;
+}

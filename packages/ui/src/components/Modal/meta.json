@@ -1,0 +1,31 @@
+{
+  "name": "Modal",
+  "description": "模态对话框：Portal 渲染 + 焦点陷阱 + 确认/取消等交互",
+  "category": "反馈",
+  "useCase": ["确认/取消类对话框", "表单弹窗编辑", "重要信息的阻断式展示"],
+  "dontUse": ["非阻断的轻提示用 Message", "侧滑面板用 Drawer", "长内容/不打断流程的展示用 Popover"],
+  "props": {
+    "open": { "type": "boolean", "default": "—", "desc": "受控打开状态" },
+    "defaultOpen": { "type": "boolean", "default": "false", "desc": "非受控初始状态" },
+    "onOpenChange": { "type": "(open: boolean) => void", "default": "—", "desc": "开关变化回调" },
+    "Modal.Content.size": { "type": "'sm' | 'md' | 'lg'", "default": "'md'", "desc": "内容区尺寸" },
+    "Modal.Content.closeOnOverlay": {
+      "type": "boolean",
+      "default": "true",
+      "desc": "点击遮罩关闭"
+    },
+    "Modal.Content.closeOnEsc": { "type": "boolean", "default": "true", "desc": "Esc 关闭" },
+    "Modal.Content.classNames": {
+      "type": "{ overlay?; content? }",
+      "default": "—",
+      "desc": "slot 级类名追加"
+    }
+  },
+  "a11yNotes": [
+    "对话框 role=\"dialog\" + aria-modal=\"true\" + tabIndex=-1，Title/Description 自动接 aria-labelledby/aria-describedby",
+    "焦点管理（APG）：打开聚焦 [data-autofocus] 或首个可聚焦元素，Tab 循环，关闭归还触发器",
+    "滚动锁 + 遮罩点击/Esc 关闭 + data-state=\"open\"/\"closed\" 进出场动画",
+    "复合结构：Modal.Trigger / Content / Header / Title / Description / Body / Footer / Close（Close 图标用法默认 aria-label=\"关闭\"；有文字时作为普通操作按钮）"
+  ],
+  "related": ["Drawer", "Message", "Button"]
+}

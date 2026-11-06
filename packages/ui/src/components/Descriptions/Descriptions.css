@@ -1,0 +1,111 @@
+/* Descriptions —— 描述列表（dl/dt/dd 语义 + 网格排布 + 可选表格边框）。
+   组件级变量定义在根选择器上，可被用户任意覆盖。 */
+
+.z-descriptions {
+  --z-descriptions-font-size: var(--z-text-sm);
+  --z-descriptions-fg: var(--z-color-fg);
+  --z-descriptions-font-family: var(--z-font-sans);
+  --z-descriptions-title-font-size: var(--z-text-md);
+  --z-descriptions-title-font-weight: var(--z-weight-semibold);
+  --z-descriptions-title-fg: var(--z-color-fg);
+  --z-descriptions-title-margin-bottom: var(--z-space-3);
+  --z-descriptions-row-gap: var(--z-space-4);
+  --z-descriptions-column-gap: var(--z-space-6);
+  --z-descriptions-item-padding-x: var(--z-space-3);
+  --z-descriptions-item-padding-y: var(--z-space-2);
+  --z-descriptions-item-gap: var(--z-space-3);
+  --z-descriptions-label-fg: var(--z-color-fg-muted);
+  --z-descriptions-label-min-width: 4rem;
+  --z-descriptions-label-bg: var(--z-color-bg-subtle);
+  --z-descriptions-content-fg: var(--z-color-fg);
+  --z-descriptions-border: var(--z-color-border);
+  --z-descriptions-border-width: 1px;
+}
+
+/* 尺寸：sm 收紧字号与内边距 */
+.z-descriptions[data-size='sm'] {
+  --z-descriptions-font-size: var(--z-text-xs);
+  --z-descriptions-title-font-size: var(--z-text-sm);
+  --z-descriptions-row-gap: var(--z-space-3);
+  --z-descriptions-column-gap: var(--z-space-4);
+  --z-descriptions-item-padding-x: var(--z-space-2);
+  --z-descriptions-item-padding-y: var(--z-space-1);
+  --z-descriptions-item-gap: var(--z-space-2);
+  --z-descriptions-label-min-width: 3.25rem;
+}
+
+.z-descriptions {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  font-family: var(--z-descriptions-font-family);
+  font-size: var(--z-descriptions-font-size);
+  color: var(--z-descriptions-fg);
+}
+
+.z-descriptions-title {
+  margin-bottom: var(--z-descriptions-title-margin-bottom);
+  color: var(--z-descriptions-title-fg);
+  font-size: var(--z-descriptions-title-font-size);
+  font-weight: var(--z-descriptions-title-font-weight);
+  line-height: var(--z-leading-normal);
+}
+
+/* body：CSS 网格，每行 --z-descriptions-columns 列（由 column prop 注入，可覆盖） */
+.z-descriptions-body {
+  --z-descriptions-columns: 3;
+  display: grid;
+  grid-template-columns: repeat(var(--z-descriptions-columns), minmax(0, 1fr));
+  gap: var(--z-descriptions-row-gap) var(--z-descriptions-column-gap);
+  margin: 0;
+}
+
+.z-descriptions-item {
+  grid-column: span var(--z-descriptions-item-span, 1);
+  display: flex;
+  gap: var(--z-descriptions-item-gap);
+  min-width: 0;
+}
+
+.z-descriptions-label {
+  flex: none;
+  min-width: var(--z-descriptions-label-min-width);
+  color: var(--z-descriptions-label-fg);
+  line-height: var(--z-leading-normal);
+}
+
+.z-descriptions-content {
+  flex: 1;
+  min-width: 0;
+  margin: 0; /* dd 默认外边距清零 */
+  color: var(--z-descriptions-content-fg);
+  line-height: var(--z-leading-normal);
+  overflow-wrap: break-word;
+}
+
+/* bordered：td 风格单元格边框（item 上/左 + body 下/右 闭合） */
+.z-descriptions[data-bordered='true'] .z-descriptions-body {
+  gap: 0;
+  border-right: var(--z-descriptions-border-width) solid var(--z-descriptions-border);
+  border-bottom: var(--z-descriptions-border-width) solid var(--z-descriptions-border);
+}
+
+.z-descriptions[data-bordered='true'] .z-descriptions-item {
+  padding: var(--z-descriptions-item-padding-y) var(--z-descriptions-item-padding-x);
+  border-top: var(--z-descriptions-border-width) solid var(--z-descriptions-border);
+  border-left: var(--z-descriptions-border-width) solid var(--z-descriptions-border);
+}
+
+.z-descriptions[data-bordered='true'] .z-descriptions-label {
+  background: var(--z-descriptions-label-bg);
+}
+
+@media (max-width: 480px) {
+  .z-descriptions-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .z-descriptions-item {
+    grid-column: 1 / -1;
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "VirtualTable",
+  "description": "虚拟滚动表格：仅渲染可视区窗口行，万行级数据流畅滚动，支持固定列",
+  "category": "数据展示",
+  "useCase": ["大数据量表格（万行级）", "日志/流水列表", "需要固定列的宽表"],
+  "dontUse": ["小数据量静态表格用 Table（语义更完整）", "不要与 Table 组件混用同一份样式覆盖"],
+  "props": {
+    "data": { "type": "T[]", "default": "—", "desc": "行数据" },
+    "columns": { "type": "Array<VirtualTableColumn<T>>", "default": "—", "desc": "列定义（key/title/width/render/fixed）" },
+    "rowHeight": { "type": "number", "default": "48", "desc": "行高（px），定高虚拟滚动前提" },
+    "height": { "type": "number", "default": "—", "desc": "容器高度（px），必填" },
+    "overscan": { "type": "number", "default": "5", "desc": "可视区上下额外渲染行数" },
+    "onRowClick": { "type": "(row: T) => void", "default": "—", "desc": "行点击回调" }
+  },
+  "a11yNotes": [
+    "role=table/row/cell 语义，行带 aria-rowindex（表头为第 1 行）",
+    "根元素 aria-rowcount 反映总行数（含表头）",
+    "固定列用 sticky CSS，不改变 DOM 顺序"
+  ],
+  "related": ["Table", "List"]
+}

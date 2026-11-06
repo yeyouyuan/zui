@@ -1,0 +1,16 @@
+{
+  "name": "Affix",
+  "description": "固钉组件，滚动到阈值后将内容固定在视口或容器边缘",
+  "category": "导航",
+  "useCase": ["页面区块导航吸顶", "表单操作栏吸底", "侧边工具条固定"],
+  "dontUse": ["不要用 Affix 做返回顶部（用 BackTop）", "全屏弹层定位用 Modal/Drawer"],
+  "props": {
+    "offsetTop": { "type": "number", "desc": "吸顶阈值（优先于 offsetBottom）" },
+    "offsetBottom": { "type": "number", "desc": "吸底阈值" },
+    "target": { "type": "() => HTMLElement | Window", "desc": "滚动容器，默认 window" },
+    "onChange": { "type": "(affixed: boolean) => void", "desc": "固定态切换回调" },
+    "children": { "type": "React.ReactNode", "desc": "被固定的内容" }
+  },
+  "a11yNotes": ["占位符保持布局不跳动，固定不改变 DOM 语义结构"],
+  "related": ["BackTop", "FloatButton"]
+}

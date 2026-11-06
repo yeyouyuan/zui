@@ -1,0 +1,24 @@
+{
+  "name": "Cascader",
+  "description": "级联选择组件，多列菜单逐级展开，值为从根到叶的路径",
+  "category": "数据录入",
+  "useCase": ["省/市/区级联", "多层级分类选择", "组织架构逐级定位"],
+  "dontUse": ["只有两级且选项很少时用 Select 分组更轻", "需要独立勾选父子节点时用 TreeSelect"],
+  "props": {
+    "options": { "type": "CascaderOption[]", "desc": "选项树（value/label/children/disabled）" },
+    "value": { "type": "string[]", "desc": "选中路径（受控）" },
+    "defaultValue": { "type": "string[]", "desc": "非受控初始路径" },
+    "onChange": { "type": "(path: string[]) => void", "desc": "选中路径变化回调" },
+    "placeholder": { "type": "string", "default": "'请选择'", "desc": "占位文案" },
+    "disabled": { "type": "boolean", "default": "false", "desc": "禁用" },
+    "size": { "type": "'sm'|'md'|'lg'", "default": "'md'", "desc": "尺寸" },
+    "showSearch": { "type": "boolean", "default": "false", "desc": "搜索模式：扁平化匹配全路径" },
+    "classNames": { "type": "{ root?; trigger?; panel?; menu?; item? }", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "触发器 aria-haspopup=listbox + aria-expanded",
+    "每列 role=listbox，项 role=option + aria-selected/aria-disabled",
+    "←→ 切列、↑↓ 列内移动、Enter 展开或选中、Esc 关闭归还焦点"
+  ],
+  "related": ["Select", "TreeSelect", "Tree"]
+}

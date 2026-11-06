@@ -1,0 +1,176 @@
+/* Calendar —— 静态日历展示（与 DatePicker 独立实现，共享设计语言） */
+
+.z-calendar {
+  /* 组件级变量（用户可覆盖） */
+  --z-calendar-bg: var(--z-color-bg);
+  --z-calendar-fg: var(--z-color-fg);
+  --z-calendar-border: var(--z-color-border-subtle);
+  --z-calendar-radius: var(--z-radius-md);
+  --z-calendar-padding: var(--z-space-4);
+  --z-calendar-header-gap: var(--z-space-2);
+  --z-calendar-label-font-size: var(--z-text-md);
+  --z-calendar-label-font-weight: var(--z-weight-semibold);
+  --z-calendar-label-fg: var(--z-color-fg);
+  --z-calendar-nav-size: 2rem;
+  --z-calendar-nav-radius: var(--z-radius-sm);
+  --z-calendar-nav-fg: var(--z-color-fg-muted);
+  --z-calendar-nav-hover-bg: var(--z-color-bg-subtle);
+  --z-calendar-nav-hover-fg: var(--z-color-fg);
+  --z-calendar-grid-gap: 2px;
+  --z-calendar-weekday-font-size: var(--z-text-xs);
+  --z-calendar-weekday-font-weight: var(--z-weight-medium);
+  --z-calendar-weekday-fg: var(--z-color-fg-muted);
+  --z-calendar-day-size: 2.25rem;
+  --z-calendar-day-font-size: var(--z-text-sm);
+  --z-calendar-day-fg: var(--z-color-fg);
+  --z-calendar-day-radius: var(--z-radius-sm);
+  --z-calendar-day-hover-bg: var(--z-color-bg-subtle);
+  --z-calendar-day-selected-bg: var(--z-color-primary);
+  --z-calendar-day-selected-fg: var(--z-color-primary-fg);
+  --z-calendar-day-today-border: var(--z-color-primary);
+  --z-calendar-day-today-fg: var(--z-color-primary);
+  --z-calendar-day-out-fg: var(--z-color-fg-subtle);
+  --z-calendar-focus-ring: var(--z-color-focus-ring);
+  --z-calendar-transition: var(--z-duration-fast) var(--z-ease-standard);
+
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--z-calendar-header-gap);
+  padding: var(--z-calendar-padding);
+  border: 1px solid var(--z-calendar-border);
+  border-radius: var(--z-calendar-radius);
+  background: var(--z-calendar-bg);
+  color: var(--z-calendar-fg);
+  font-family: var(--z-font-sans);
+}
+
+/* 全幅：撑满容器；否则收缩为内容宽度（inline-flex 默认） */
+.z-calendar[data-fullscreen='true'] {
+  display: flex;
+  width: 100%;
+}
+
+/* --------------------------------- 头部 ---------------------------------- */
+
+.z-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--z-calendar-header-gap);
+}
+
+.z-calendar-label {
+  font-size: var(--z-calendar-label-font-size);
+  font-weight: var(--z-calendar-label-font-weight);
+  color: var(--z-calendar-label-fg);
+  line-height: var(--z-leading-normal);
+}
+
+.z-calendar-nav {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-calendar-nav-size);
+  height: var(--z-calendar-nav-size);
+  padding: 0;
+  border: none;
+  border-radius: var(--z-calendar-nav-radius);
+  background: transparent;
+  color: var(--z-calendar-nav-fg);
+  cursor: pointer;
+  transition:
+    background-color var(--z-calendar-transition),
+    color var(--z-calendar-transition);
+}
+
+.z-calendar-nav:hover {
+  background: var(--z-calendar-nav-hover-bg);
+  color: var(--z-calendar-nav-hover-fg);
+}
+
+.z-calendar-nav:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-calendar-focus-ring) 35%, transparent);
+}
+
+/* --------------------------------- 网格 ---------------------------------- */
+
+.z-calendar-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--z-calendar-grid-gap);
+}
+
+.z-calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--z-calendar-grid-gap);
+}
+
+.z-calendar-weekday {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.75rem;
+  font-size: var(--z-calendar-weekday-font-size);
+  font-weight: var(--z-calendar-weekday-font-weight);
+  color: var(--z-calendar-weekday-fg);
+  user-select: none;
+}
+
+.z-calendar-day {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  width: var(--z-calendar-day-size);
+  height: var(--z-calendar-day-size);
+  border: 1px solid transparent;
+  border-radius: var(--z-calendar-day-radius);
+  color: var(--z-calendar-day-fg);
+  font-size: var(--z-calendar-day-font-size);
+  line-height: var(--z-leading-tight);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--z-calendar-transition),
+    color var(--z-calendar-transition),
+    border-color var(--z-calendar-transition);
+}
+
+.z-calendar-day:hover {
+  background: var(--z-calendar-day-hover-bg);
+}
+
+.z-calendar-day:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-calendar-focus-ring) 35%, transparent);
+}
+
+/* 今天：描边 + 主色文字（未选中时生效） */
+.z-calendar-day[data-today] {
+  border-color: var(--z-calendar-day-today-border);
+  color: var(--z-calendar-day-today-fg);
+}
+
+/* 选中：实底主色（覆盖今天样式） */
+.z-calendar-day[aria-selected='true'] {
+  border-color: transparent;
+  background: var(--z-calendar-day-selected-bg);
+  color: var(--z-calendar-day-selected-fg);
+}
+
+/* 非当月日期：弱化 */
+.z-calendar-day[data-out-month] {
+  color: var(--z-calendar-day-out-fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-calendar-nav,
+  .z-calendar-day {
+    transition: none;
+  }
+}

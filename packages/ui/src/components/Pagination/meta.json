@@ -1,0 +1,23 @@
+{
+  "name": "Pagination",
+  "description": "分页器：页码导航 + 可选跳页输入（nav 语义）",
+  "category": "导航",
+  "useCase": ["表格/列表分页", "搜索结果分页", "大数据量分批加载"],
+  "dontUse": ["少量数据直接平铺或用 List", "无限滚动流式内容（自行实现加载更多）"],
+  "props": {
+    "page": { "type": "number", "default": "—", "desc": "受控当前页（1 起始）" },
+    "defaultPage": { "type": "number", "default": "1", "desc": "非受控初始页（1 起始）" },
+    "onPageChange": { "type": "(page: number) => void", "default": "—", "desc": "页码变化回调（1 起始）" },
+    "pageSize": { "type": "number", "default": "10", "desc": "每页条数" },
+    "total": { "type": "number", "default": "（必填）", "desc": "总条数" },
+    "siblings": { "type": "number", "default": "1", "desc": "当前页两侧相邻页码数" },
+    "showJumper": { "type": "boolean", "default": "false", "desc": "显示跳页输入框（数字 + Enter）" },
+    "disabled": { "type": "boolean", "default": "false", "desc": "整体禁用" }
+  },
+  "a11yNotes": [
+    "根 role=\"navigation\" + aria-label；当前页 aria-current=\"page\"",
+    "上一页/下一页按钮 aria-label（内置文案\"上一页/下一页\"，可走 locale/翻译）",
+    "页码为原生 button，键盘可达；省略号 aria-hidden"
+  ],
+  "related": ["Table", "List", "Input"]
+}

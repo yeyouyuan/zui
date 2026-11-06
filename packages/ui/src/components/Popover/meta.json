@@ -1,0 +1,22 @@
+{
+  "name": "Popover",
+  "description": "气泡卡片：点击触发的浮层，承载富内容或轻交互（复合组件）",
+  "category": "数据展示",
+  "useCase": ["点击展开的说明卡片", "轻量表单/操作面板（如颜色选择）", "需要交互内容的浮层（Tooltip 装不下时）"],
+  "dontUse": ["纯文字提示用 Tooltip", "阻断式确认用 Modal/Popconfirm", "菜单列表用 DropdownMenu"],
+  "props": {
+    "open": { "type": "boolean", "default": "—", "desc": "受控打开状态" },
+    "defaultOpen": { "type": "boolean", "default": "false", "desc": "非受控初始状态" },
+    "onOpenChange": { "type": "(open: boolean) => void", "default": "—", "desc": "开关变化回调" },
+    "Popover.Trigger.asChild": { "type": "boolean", "default": "false", "desc": "克隆子元素作为触发器（透传 toggle 与 aria 状态）" },
+    "Popover.Content.side": { "type": "'top' | 'bottom'", "default": "'bottom'", "desc": "出现方位" },
+    "Popover.Content.align": { "type": "'start' | 'center' | 'end'", "default": "'start'", "desc": "相对触发器对齐" },
+    "Popover.Content.classNames": { "type": "{ content? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "触发器 aria-haspopup=\"dialog\" + aria-expanded + aria-controls",
+    "复合结构：Popover.Trigger / Popover.Content（Content 渲染浮层，支持进出场动画）",
+    "外部点击/Esc 关闭；浮层内可放交互元素（区别于 Tooltip）"
+  ],
+  "related": ["Tooltip", "DropdownMenu", "Popconfirm"]
+}

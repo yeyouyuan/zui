@@ -1,0 +1,57 @@
+/* Tooltip —— 悬浮提示浮层（深底浅字），组件级变量定义在根选择器上 */
+
+.z-tooltip-root {
+  /* 组件级变量（用户可覆盖） */
+  --z-tooltip-max-width: 16rem;
+  --z-tooltip-bg: var(--z-color-bg-inverse);
+  --z-tooltip-fg: var(--z-color-fg-inverse);
+  --z-tooltip-radius: var(--z-radius-sm); /* 6px */
+  --z-tooltip-font-size: var(--z-text-xs); /* 12px */
+  --z-tooltip-line-height: var(--z-leading-normal);
+  --z-tooltip-padding-x: var(--z-space-2);
+  --z-tooltip-padding-y: var(--z-space-1);
+  --z-tooltip-shadow: var(--z-shadow-sm);
+  --z-tooltip-offset: var(--z-space-1);
+  --z-tooltip-z: var(--z-z-dropdown);
+  --z-tooltip-animation: var(--z-duration-fast) var(--z-ease-entrance);
+
+  position: relative;
+  display: inline-flex;
+  max-width: 100%;
+}
+
+.z-tooltip {
+  position: fixed;
+  z-index: var(--z-tooltip-z);
+  box-sizing: border-box;
+  max-width: min(var(--z-tooltip-max-width), calc(100vw - 16px));
+  padding: var(--z-tooltip-padding-y) var(--z-tooltip-padding-x);
+  color: var(--z-tooltip-fg);
+  background: var(--z-tooltip-bg);
+  border-radius: var(--z-tooltip-radius);
+  box-shadow: var(--z-tooltip-shadow);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-tooltip-font-size);
+  font-weight: var(--z-weight-regular);
+  line-height: var(--z-tooltip-line-height);
+  text-align: start;
+  overflow-wrap: break-word;
+  pointer-events: none;
+  animation: z-tooltip-in var(--z-tooltip-animation);
+  max-height: calc(100dvh - 16px);
+}
+
+@keyframes z-tooltip-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-tooltip {
+    animation: none;
+  }
+}

@@ -1,0 +1,300 @@
+/* ZUI Cascader —— 多列级联菜单：组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-cascader {
+  --z-cascader-trigger-height: 2rem; /* 32px，与 Input 同高 */
+  --z-cascader-trigger-padding-x: var(--z-space-3);
+  --z-cascader-trigger-font-size: var(--z-text-sm);
+  --z-cascader-trigger-radius: var(--z-radius-sm);
+  --z-cascader-trigger-bg: var(--z-color-bg-elevated);
+  --z-cascader-trigger-fg: var(--z-color-fg);
+  --z-cascader-trigger-border: var(--z-color-border);
+  --z-cascader-trigger-hover-border: var(--z-color-border-focus);
+  --z-cascader-placeholder-fg: var(--z-color-fg-subtle);
+  --z-cascader-value-separator-fg: var(--z-color-fg-subtle);
+  --z-cascader-panel-bg: var(--z-color-bg-elevated);
+  --z-cascader-panel-border: var(--z-color-border-subtle);
+  --z-cascader-panel-radius: 0.5rem;
+  --z-cascader-panel-shadow: var(--z-shadow-lg);
+  --z-cascader-panel-margin-top: var(--z-space-1);
+  --z-cascader-panel-max-height: 16rem;
+  --z-cascader-menu-width: 10rem;
+  --z-cascader-menu-border: var(--z-color-border-subtle);
+  --z-cascader-item-height: 2rem;
+  --z-cascader-item-padding-x: var(--z-space-3);
+  --z-cascader-item-fg: var(--z-color-fg);
+  --z-cascader-item-hover-bg: var(--z-color-bg-muted);
+  --z-cascader-item-active-bg: var(--z-color-primary-subtle);
+  --z-cascader-item-active-fg: var(--z-color-primary-subtle-fg);
+  --z-cascader-item-selected-font-weight: var(--z-weight-medium);
+  --z-cascader-item-disabled-fg: var(--z-color-disabled-fg);
+  --z-cascader-item-separator-fg: var(--z-color-fg-subtle);
+  --z-cascader-search-padding: var(--z-space-2);
+  --z-cascader-empty-fg: var(--z-color-fg-muted);
+  --z-cascader-focus-ring: var(--z-color-focus-ring);
+  --z-cascader-animation-duration: var(--z-duration-fast);
+
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+  font-family: var(--z-font-sans);
+  font-size: var(--z-cascader-trigger-font-size);
+  color: var(--z-cascader-trigger-fg);
+}
+
+/* --------------------------------- 尺寸 --------------------------------- */
+
+.z-cascader[data-size='sm'] {
+  --z-cascader-trigger-height: 1.5rem;
+  --z-cascader-trigger-font-size: var(--z-text-xs);
+  --z-cascader-trigger-padding-x: var(--z-space-2);
+  --z-cascader-item-height: 1.75rem;
+}
+
+.z-cascader[data-size='lg'] {
+  --z-cascader-trigger-height: 2.5rem;
+  --z-cascader-trigger-font-size: var(--z-text-md);
+  --z-cascader-trigger-padding-x: var(--z-space-4);
+  --z-cascader-item-height: 2.25rem;
+}
+
+/* -------------------------------- 触发器 -------------------------------- */
+
+.z-cascader-trigger {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--z-space-2);
+  width: 100%;
+  height: var(--z-cascader-trigger-height);
+  padding: 0 var(--z-cascader-trigger-padding-x);
+  font-family: inherit;
+  font-size: var(--z-cascader-trigger-font-size);
+  color: var(--z-cascader-trigger-fg);
+  text-align: left;
+  background: var(--z-cascader-trigger-bg);
+  border: 1px solid var(--z-cascader-trigger-border);
+  border-radius: var(--z-cascader-trigger-radius);
+  cursor: pointer;
+  transition:
+    border-color var(--z-duration-fast) var(--z-ease-standard),
+    box-shadow var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-cascader-trigger:hover:not(:disabled) {
+  border-color: var(--z-cascader-trigger-hover-border);
+}
+
+.z-cascader-trigger:focus-visible {
+  outline: none;
+  border-color: var(--z-color-border-focus);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-cascader-focus-ring) 15%, transparent);
+}
+
+.z-cascader-trigger:disabled {
+  color: var(--z-color-disabled-fg);
+  background: var(--z-color-disabled-bg);
+  border-color: var(--z-color-disabled-border);
+  cursor: not-allowed;
+}
+
+.z-cascader-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.z-cascader-value[data-placeholder] {
+  color: var(--z-cascader-placeholder-fg);
+}
+
+.z-cascader-value-separator {
+  color: var(--z-cascader-value-separator-fg);
+  margin: 0 0.125rem;
+}
+
+.z-cascader-arrow {
+  flex: none;
+  color: var(--z-color-fg-muted);
+  transition: transform var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-cascader[data-open='true'] .z-cascader-arrow {
+  transform: rotate(180deg);
+}
+
+/* -------------------------------- 弹层 --------------------------------- */
+
+.z-cascader-panel {
+  position: fixed;
+  top: 100%;
+  left: 0;
+  z-index: var(--z-z-dropdown);
+  box-sizing: border-box;
+  margin-top: var(--z-cascader-panel-margin-top);
+  background: var(--z-cascader-panel-bg);
+  border: 1px solid var(--z-cascader-panel-border);
+  border-radius: var(--z-cascader-panel-radius);
+  box-shadow: var(--z-cascader-panel-shadow);
+  overflow: auto;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 16px);
+}
+
+.z-cascader-panel:focus-visible {
+  outline: none;
+}
+
+.z-cascader-panel[data-open='false'] {
+  display: none;
+}
+
+.z-cascader-panel[data-open='true'] {
+  display: block;
+  animation: z-cascader-panel-in var(--z-cascader-animation-duration) var(--z-ease-entrance);
+}
+
+/* 多列横排 */
+.z-cascader-menus {
+  display: flex;
+  align-items: stretch;
+}
+
+@keyframes z-cascader-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-cascader-panel {
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* --------------------------------- 搜索 --------------------------------- */
+
+.z-cascader-search {
+  padding: var(--z-cascader-search-padding);
+  border-bottom: 1px solid var(--z-cascader-menu-border);
+}
+
+.z-cascader-search-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 1.75rem;
+  padding: 0 var(--z-space-2);
+  font-family: inherit;
+  font-size: var(--z-text-sm);
+  color: var(--z-cascader-trigger-fg);
+  background: var(--z-color-bg);
+  border: 1px solid var(--z-cascader-trigger-border);
+  border-radius: var(--z-radius-sm);
+}
+
+.z-cascader-search-input:focus-visible {
+  outline: none;
+  border-color: var(--z-color-border-focus);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-cascader-focus-ring) 15%, transparent);
+}
+
+/* -------------------------------- 列/项 --------------------------------- */
+
+.z-cascader-menu {
+  box-sizing: border-box;
+  min-width: var(--z-cascader-menu-width);
+  max-height: var(--z-cascader-panel-max-height);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--z-color-border) transparent;
+  padding: var(--z-space-1);
+  border-right: 1px solid var(--z-cascader-menu-border);
+}
+
+.z-cascader-menu:last-child {
+  border-right: none;
+}
+
+.z-cascader-search-results {
+  max-height: var(--z-cascader-panel-max-height);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--z-color-border) transparent;
+  border-right: none;
+}
+
+.z-cascader-item {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--z-space-2);
+  min-height: var(--z-cascader-item-height);
+  padding: 0 var(--z-cascader-item-padding-x);
+  font-size: var(--z-cascader-trigger-font-size);
+  color: var(--z-cascader-item-fg);
+  border-radius: var(--z-radius-sm);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--z-duration-fast) var(--z-ease-standard),
+    color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-cascader-item-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.z-cascader-item[data-active='true'] {
+  color: var(--z-cascader-item-active-fg);
+  background: var(--z-cascader-item-active-bg);
+}
+
+.z-cascader-item[data-active='true'] .z-cascader-item-arrow {
+  color: currentColor;
+}
+
+.z-cascader-item:hover:not([aria-disabled='true']):not([data-active='true']) {
+  background: var(--z-cascader-item-hover-bg);
+}
+
+.z-cascader-item[aria-selected='true'] {
+  font-weight: var(--z-cascader-item-selected-font-weight);
+}
+
+.z-cascader-item[aria-disabled='true'] {
+  color: var(--z-cascader-item-disabled-fg);
+  cursor: not-allowed;
+}
+
+.z-cascader-item-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  color: var(--z-color-fg-muted);
+  transition: color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-cascader-item-separator {
+  color: var(--z-cascader-item-separator-fg);
+}
+
+.z-cascader-empty {
+  padding: var(--z-space-4);
+  font-size: var(--z-text-xs);
+  color: var(--z-cascader-empty-fg);
+  text-align: center;
+}

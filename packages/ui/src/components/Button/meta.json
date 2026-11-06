@@ -1,0 +1,22 @@
+{
+  "name": "Button",
+  "description": "按钮组件，触发即时操作",
+  "category": "基础",
+  "useCase": ["表单提交", "对话框确认", "工具栏操作"],
+  "dontUse": ["不要用 Button 做页面导航（用 Link）"],
+  "props": {
+    "variant": { "type": "'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'", "default": "'primary'", "desc": "按钮变体" },
+    "size": { "type": "'sm' | 'md' | 'lg'", "default": "'md'", "desc": "尺寸" },
+    "loading": { "type": "boolean", "default": "false", "desc": "加载态：置灰 + spinner + aria-busy，拦截点击（保留可聚焦）" },
+    "iconStart": { "type": "React.ReactNode", "default": "—", "desc": "前置图标" },
+    "iconEnd": { "type": "React.ReactNode", "default": "—", "desc": "后置图标" },
+    "fullWidth": { "type": "boolean", "default": "false", "desc": "宽度撑满容器" },
+    "classNames": { "type": "{ root?; icon?; label?; spinner? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "loading 时保持可聚焦（不用原生 disabled），aria-busy 标记加载",
+    "原生 button 语义，键盘 Enter/Space 触发",
+    "图标按钮请补 aria-label 说明操作"
+  ],
+  "related": ["Input", "Modal", "Form"]
+}

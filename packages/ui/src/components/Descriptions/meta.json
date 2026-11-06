@@ -1,0 +1,42 @@
+{
+  "name": "Descriptions",
+  "description": "描述列表：dl/dt/dd 语义的键值对展示，支持每行列数、跨列、尺寸与表格边框",
+  "category": "数据展示",
+  "useCase": ["详情页字段展示", "表单只读态/审批详情", "用户/订单/商品属性面板"],
+  "dontUse": [
+    "可编辑表单用 Form + Input",
+    "大数据量记录列表用 Table/VirtualTable",
+    "时间顺序流程用 Timeline"
+  ],
+  "props": {
+    "title": { "type": "React.ReactNode", "default": "—", "desc": "列表标题" },
+    "column": { "type": "number", "default": "3", "desc": "宽屏每行列数；480px 以下自动单列" },
+    "size": { "type": "'sm' | 'md'", "default": "'md'", "desc": "尺寸（字号/内边距）" },
+    "bordered": {
+      "type": "boolean",
+      "default": "false",
+      "desc": "表格风格单元格边框（label 浅底）"
+    },
+    "Descriptions.Item.label": {
+      "type": "React.ReactNode",
+      "default": "—",
+      "desc": "字段标签（dt）"
+    },
+    "Descriptions.Item.span": {
+      "type": "number",
+      "default": "1",
+      "desc": "占据列数（自动收敛到 column）"
+    },
+    "classNames": {
+      "type": "{ root?; title?; body?; item?; label?; content? }",
+      "default": "—",
+      "desc": "slot 级类名追加"
+    }
+  },
+  "a11yNotes": [
+    "dl/dt/dd 语义：body 为 dl，label 为 dt，content 为 dd（dd 默认外边距已清零）",
+    "span 超过 column 时自动收敛为 column，避免溢出网格",
+    "aria-* / 事件等原生属性透传到根元素（div）"
+  ],
+  "related": ["Table", "Card", "Statistic"]
+}

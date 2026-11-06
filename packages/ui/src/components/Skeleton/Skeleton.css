@@ -1,0 +1,81 @@
+/* Skeleton —— 骨架屏；bg-muted 底 + 渐变扫光（1.5s 循环，reduced-motion 降级） */
+
+.z-skeleton {
+  --z-skeleton-width: 100%;
+  --z-skeleton-height: 1rem; /* 单行高 */
+  --z-skeleton-line-gap: var(--z-space-2); /* 行间距 8px */
+  --z-skeleton-last-line-width: 60%; /* 末行 60% 宽 */
+  --z-skeleton-radius: var(--z-radius-sm);
+  --z-skeleton-bg: var(--z-color-bg-muted);
+  --z-skeleton-highlight: color-mix(in srgb, var(--z-color-bg-muted) 45%, var(--z-color-bg));
+  --z-skeleton-duration: 1.5s;
+  --z-skeleton-easing: linear;
+}
+
+/* 布局：多行纵向排布 */
+.z-skeleton {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--z-skeleton-line-gap);
+  width: var(--z-skeleton-width);
+}
+
+/* circle：圆形（头像位），默认 40px，保持 1:1 正圆不被 flex 挤压 */
+.z-skeleton[data-circle='true'] {
+  --z-skeleton-width: 2.5rem;
+  --z-skeleton-height: 2.5rem;
+  --z-skeleton-radius: var(--z-radius-full);
+  gap: 0;
+  width: var(--z-skeleton-width);
+  height: var(--z-skeleton-height);
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--z-skeleton-radius);
+}
+
+/* 骨架行 */
+.z-skeleton-line {
+  box-sizing: border-box;
+  flex: none;
+  width: 100%;
+  height: var(--z-skeleton-height);
+  border-radius: var(--z-skeleton-radius);
+  background-color: var(--z-skeleton-bg);
+}
+
+/* 末行 60% 宽 */
+.z-skeleton-line[data-last='true'] {
+  width: var(--z-skeleton-last-line-width);
+}
+
+/* 渐变扫光动画（仅 active） */
+.z-skeleton[data-active='true'] .z-skeleton-line {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--z-skeleton-highlight) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: z-skeleton-sweep var(--z-skeleton-duration) var(--z-skeleton-easing) infinite;
+}
+
+@keyframes z-skeleton-sweep {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* prefers-reduced-motion 降级：去掉扫光动画，保留静态底 */
+@media (prefers-reduced-motion: reduce) {
+  .z-skeleton[data-active='true'] .z-skeleton-line {
+    background-image: none;
+    animation: none;
+  }
+}

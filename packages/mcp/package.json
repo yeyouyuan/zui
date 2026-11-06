@@ -1,0 +1,28 @@
+{
+  "name": "@zui/mcp",
+  "version": "0.1.0",
+  "description": "ZUI MCP server — pure stdio JSON-RPC 2.0 tool server for ZUI components (no MCP SDK)",
+  "type": "module",
+  "bin": {
+    "zui-mcp": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "data"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node ../../registry/scripts/bundle.mjs mcp",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "pnpm build && node --test tests/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

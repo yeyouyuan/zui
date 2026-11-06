@@ -1,0 +1,28 @@
+{
+  "name": "QRCode",
+  "description": "二维码组件，自研纯 TS QR 编码器（不引第三方库），渲染 SVG 矩阵",
+  "category": "数据展示",
+  "useCase": ["扫码跳转链接/小程序", "分享名片、Wi-Fi 配置信息", "工单/票据上的短码展示"],
+  "dontUse": ["不要用 QRCode 展示超长文本（容量见支持范围，超出渲染空白占位）", "不要用它做条形码（仅 QR 二维码）"],
+  "props": {
+    "value": { "type": "string", "desc": "二维码内容（必填）" },
+    "size": { "type": "number", "default": "160", "desc": "边长 px" },
+    "level": { "type": "'L' | 'M' | 'Q' | 'H'", "default": "'M'", "desc": "纠错级别" },
+    "color": { "type": "string", "default": "var(--z-color-fg)", "desc": "前景色（模块）" },
+    "bgColor": { "type": "string", "default": "var(--z-color-bg)", "desc": "背景色" }
+  },
+  "support": {
+    "modes": ["numeric 数字", "alphanumeric 字母数字（大写字母 + 数字 + 空格 + $%*+-./:）", "byte UTF-8 字节（中文、任意文本）"],
+    "versions": "Model 2 版本 1-10（自动选择最小可容纳版本）",
+    "errorCorrection": "L / M / Q / H（Reed-Solomon，标准分块交错）",
+    "quietZone": "4 模块静区（扫码器定位依赖，请勿裁切）",
+    "overflow": "内容超出版本 10 容量时渲染空白占位（不抛错）",
+    "note": "自研最简实现，不含 ECI/结构化附加/微小 QR（Micro QR）"
+  },
+  "a11yNotes": [
+    "role=img，aria-label 默认「二维码：<value>」，可用 aria-label 覆盖",
+    "纯装饰性模块用 crispEdges 渲染，无额外交互语义",
+    "前景/背景对比度由 color/bgColor 保证（默认语义令牌 fg/bg）"
+  ],
+  "related": ["Image", "Watermark"]
+}

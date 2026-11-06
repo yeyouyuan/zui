@@ -1,0 +1,107 @@
+/* App —— 组件级变量定义在根选择器上 */
+
+.z-app {
+  --z-app-modal-width: 22rem;
+  --z-app-modal-padding: var(--z-space-5);
+  --z-app-modal-radius: var(--z-radius-lg);
+  --z-app-modal-bg: var(--z-color-bg-elevated);
+  --z-app-modal-fg: var(--z-color-fg);
+  --z-app-modal-shadow: var(--z-shadow-lg);
+  --z-app-modal-overlay-bg: var(--z-color-overlay);
+  --z-app-modal-title-size: var(--z-text-lg);
+  --z-app-modal-title-weight: var(--z-weight-semibold);
+  --z-app-modal-desc-size: var(--z-text-sm);
+  --z-app-modal-desc-fg: var(--z-color-fg-muted);
+  --z-app-modal-btn-height: 2.25rem;
+  --z-app-modal-btn-radius: var(--z-radius-sm);
+  --z-app-modal-ok-bg: var(--z-color-primary);
+  --z-app-modal-ok-fg: var(--z-color-primary-fg);
+  --z-app-modal-ok-hover-bg: var(--z-color-primary-hover);
+  --z-app-modal-cancel-border: var(--z-color-border);
+  --z-app-modal-z: var(--z-z-modal);
+}
+
+.z-app {
+  display: block;
+}
+
+.z-app-modal {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-app-modal-z);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--z-space-4);
+  background: var(--z-app-modal-overlay-bg);
+  font-family: var(--z-font-sans);
+}
+
+.z-app-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--z-space-3);
+  width: var(--z-app-modal-width);
+  max-width: 100%;
+  max-height: calc(100vh - 2 * var(--z-space-4));
+  max-height: calc(100dvh - 2 * var(--z-space-4));
+  overflow: auto;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+  padding: var(--z-app-modal-padding);
+  border-radius: var(--z-app-modal-radius);
+  background: var(--z-app-modal-bg);
+  color: var(--z-app-modal-fg);
+  box-shadow: var(--z-app-modal-shadow);
+}
+
+.z-app-modal-title {
+  font-size: var(--z-app-modal-title-size);
+  font-weight: var(--z-app-modal-title-weight);
+  line-height: var(--z-leading-tight);
+}
+
+.z-app-modal-desc {
+  color: var(--z-app-modal-desc-fg);
+  font-size: var(--z-app-modal-desc-size);
+  line-height: var(--z-leading-normal);
+}
+
+.z-app-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--z-space-2);
+  margin-top: var(--z-space-2);
+}
+
+.z-app-modal-btn {
+  min-height: var(--z-app-modal-btn-height);
+  padding: 0 var(--z-space-4);
+  border: 1px solid transparent;
+  border-radius: var(--z-app-modal-btn-radius);
+  font-family: inherit;
+  font-size: var(--z-text-sm);
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.z-app-modal-btn:focus-visible {
+  outline: 2px solid var(--z-color-border-focus);
+  outline-offset: 1px;
+}
+
+.z-app-modal-cancel {
+  background: var(--z-color-bg);
+  color: var(--z-color-fg);
+  border-color: var(--z-app-modal-cancel-border);
+}
+
+.z-app-modal-ok {
+  background: var(--z-app-modal-ok-bg);
+  color: var(--z-app-modal-ok-fg);
+}
+
+.z-app-modal-ok:hover {
+  background: var(--z-app-modal-ok-hover-bg);
+}

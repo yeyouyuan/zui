@@ -1,0 +1,85 @@
+/* Result —— 组件级变量定义在根选择器上 */
+
+.z-result {
+  --z-result-icon-size: 4.5rem;
+  --z-result-gap: var(--z-space-2);
+  --z-result-title-size: var(--z-text-xl);
+  --z-result-title-weight: var(--z-weight-semibold);
+  --z-result-title-fg: var(--z-color-fg);
+  --z-result-subtitle-size: var(--z-text-md);
+  --z-result-subtitle-fg: var(--z-color-fg-muted);
+  --z-result-extra-gap: var(--z-space-3);
+  --z-result-max-width: 32rem;
+}
+
+.z-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--z-result-gap);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--z-result-max-width);
+  margin: 0 auto;
+  padding: var(--z-space-8) var(--z-space-4);
+  font-family: var(--z-font-sans);
+  text-align: center;
+}
+
+.z-result-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-result-icon-size);
+  height: var(--z-result-icon-size);
+  color: var(--z-color-info);
+}
+
+.z-result[data-status='success'] .z-result-icon {
+  color: var(--z-color-success);
+}
+
+.z-result[data-status='error'] .z-result-icon {
+  color: var(--z-color-danger);
+}
+
+.z-result[data-status='warning'] .z-result-icon {
+  color: var(--z-color-warning);
+}
+
+.z-result[data-status='info'] .z-result-icon {
+  color: var(--z-color-info);
+}
+
+.z-result[data-status='403'] .z-result-icon,
+.z-result[data-status='404'] .z-result-icon,
+.z-result[data-status='500'] .z-result-icon {
+  color: var(--z-color-fg-muted);
+}
+
+.z-result-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.z-result-title {
+  color: var(--z-result-title-fg);
+  font-size: var(--z-result-title-size);
+  font-weight: var(--z-result-title-weight);
+  line-height: var(--z-leading-tight);
+}
+
+.z-result-subtitle {
+  color: var(--z-result-subtitle-fg);
+  font-size: var(--z-result-subtitle-size);
+  line-height: var(--z-leading-normal);
+}
+
+.z-result-extra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--z-result-extra-gap);
+  margin-top: var(--z-space-2);
+}

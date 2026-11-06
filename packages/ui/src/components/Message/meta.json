@@ -1,0 +1,23 @@
+{
+  "name": "Message",
+  "description": "全局轻提示：hooks 风格 API（useMessage），自动消失的反馈条",
+  "category": "反馈",
+  "useCase": ["操作成功/失败的即时反馈", "保存/删除等轻量结果提示", "需要队列管理的多条提示"],
+  "dontUse": ["需要用户确认的场景用 Modal/Popconfirm", "可滞留可点击的通知卡片用 Notification", "表单字段错误直接内联展示"],
+  "props": {
+    "MessageProvider.max": { "type": "number", "default": "3", "desc": "最多同时显示条数（超出挤掉最旧）" },
+    "MessageProvider.placement": { "type": "'top' | 'bottom'", "default": "'top'", "desc": "出现位置" },
+    "useMessage().success": { "type": "(config: MessageConfig | string) => string", "default": "—", "desc": "成功提示，返回 id（error/warning/info/show 同构）" },
+    "MessageConfig.content": { "type": "React.ReactNode", "default": "（必填）", "desc": "提示内容" },
+    "MessageConfig.duration": { "type": "number", "default": "3000", "desc": "自动关闭毫秒数，0 不自动关" },
+    "MessageConfig.closable": { "type": "boolean", "default": "false", "desc": "显示关闭按钮（aria-label=\"关闭\"）" },
+    "MessageConfig.onClose": { "type": "() => void", "default": "—", "desc": "关闭后回调" },
+    "useMessage().dismiss": { "type": "(id: string) => void", "default": "—", "desc": "按 id 关闭（clear() 清空全部）" }
+  },
+  "a11yNotes": [
+    "role=\"status\" + aria-live=\"polite\"（error 为 assertive）",
+    "data-variant 区分类型，data-state=\"open\"/\"closing\"（200ms 退场）",
+    "禁止全局静态调用（如 message.success()）——必须在 MessageProvider 内 useMessage()"
+  ],
+  "related": ["Modal", "Notification", "App"]
+}

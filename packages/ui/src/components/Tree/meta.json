@@ -1,0 +1,29 @@
+{
+  "name": "Tree",
+  "description": "树形控件：勾选传播（父子联动 + 半选）、异步加载子节点、完整键盘导航",
+  "category": "数据展示",
+  "useCase": ["组织/文件目录结构", "权限/分类勾选（父子联动）", "异步加载的深层级数据"],
+  "dontUse": ["纯扁平列表用 List", "需要列对齐的层级数据用 Table/VirtualTable"],
+  "props": {
+    "data": { "type": "TreeNode[]", "default": "—", "desc": "树数据（key/title/children/disabled/isLeaf/loading）" },
+    "checkable": { "type": "boolean", "default": "false", "desc": "显示勾选框（父子联动 + 半选）" },
+    "checkedKeys": { "type": "string[]", "default": "—", "desc": "受控勾选 key（全选闭包）" },
+    "defaultCheckedKeys": { "type": "string[]", "default": "[]", "desc": "非受控初始勾选 key" },
+    "onCheck": { "type": "(keys: string[]) => void", "default": "—", "desc": "勾选变更回调（树序输出全选闭包）" },
+    "expandedKeys": { "type": "string[]", "default": "—", "desc": "受控展开 key" },
+    "defaultExpandedKeys": { "type": "string[]", "default": "[]", "desc": "非受控初始展开 key" },
+    "onExpand": { "type": "(keys: string[]) => void", "default": "—", "desc": "展开变更回调" },
+    "selectedKey": { "type": "string", "default": "—", "desc": "受控选中 key" },
+    "onSelect": { "type": "(key: string) => void", "default": "—", "desc": "选中回调（Enter / 点击标签）" },
+    "loadData": { "type": "(node: TreeNode) => Promise<void>", "default": "—", "desc": "异步加载子节点；加载期间节点显示 spinner + aria-busy" },
+    "classNames": { "type": "{ root?; node?; label?; icon?; checkbox? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "role=tree/treeitem/group 语义；treeitem 带 aria-expanded/aria-checked/aria-selected/aria-level",
+    "半选态 aria-checked=\"mixed\"；勾选传播：勾选父节点传导全部非 disabled 子孙，全部子节点勾选收拢父节点",
+    "disabled 节点整棵子树不参与勾选传导（aria-disabled）",
+    "键盘：↑↓ 移动节点、← 折叠/跳父、→ 展开/跳子、Space 勾选、Enter 选中；roving tabindex",
+    "加载中节点 aria-busy=true + spinner"
+  ],
+  "related": ["TreeSelect", "List", "VirtualTable"]
+}

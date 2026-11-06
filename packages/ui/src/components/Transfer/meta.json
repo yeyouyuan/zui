@@ -1,0 +1,22 @@
+{
+  "name": "Transfer",
+  "description": "穿梭框组件，在两列列表间批量搬运选项（勾选 + 移动按钮）",
+  "category": "数据录入",
+  "useCase": ["人员/权限分配", "字段选择器", "数据源与目标间批量搬运"],
+  "dontUse": ["不要用 Transfer 做单值选择（用 Select）", "选项极少且无需双列对照时用 Checkbox 组更轻"],
+  "props": {
+    "dataSource": { "type": "Array<{ key: string; title: React.ReactNode; disabled?: boolean }>", "desc": "全量数据源" },
+    "targetKeys": { "type": "string[]", "desc": "已移动到目标列的 key（受控）" },
+    "defaultTargetKeys": { "type": "string[]", "default": "[]", "desc": "非受控初始目标列 key" },
+    "onChange": { "type": "(keys: string[]) => void", "desc": "目标列变化回调（按 dataSource 顺序）" },
+    "titles": { "type": "[string, string]", "default": "['源列表','目标列表']", "desc": "双列标题" },
+    "showSearch": { "type": "boolean", "default": "false", "desc": "双列搜索框" },
+    "classNames": { "type": "{ root?; list?; item?; buttons? }", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "双列 role=listbox + aria-multiselectable，行 role=option + aria-selected",
+    "↑↓/Home/End 在列内移动焦点，Space 勾选",
+    "全选复选框支持 indeterminate（aria-checked=mixed）"
+  ],
+  "related": ["Checkbox", "Select", "Table"]
+}

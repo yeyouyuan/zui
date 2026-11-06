@@ -1,0 +1,23 @@
+{
+  "name": "Tabs",
+  "description": "标签页：同层级内容分组切换（复合组件）",
+  "category": "导航",
+  "useCase": ["设置页分区", "详情页概览/记录/文件等切换", "同屏多组内容的紧凑排布"],
+  "dontUse": ["选项互斥录入用 Select/Segmented", "步骤流程用 Timeline/分步表单"],
+  "props": {
+    "value": { "type": "string", "default": "—", "desc": "受控激活值" },
+    "defaultValue": { "type": "string", "default": "—", "desc": "非受控初始值" },
+    "onValueChange": { "type": "(value: string) => void", "default": "—", "desc": "激活变化回调（注意命名）" },
+    "orientation": { "type": "'horizontal' | 'vertical'", "default": "'horizontal'", "desc": "排列方向" },
+    "activationMode": { "type": "'automatic' | 'manual'", "default": "'automatic'", "desc": "焦点即选中 / Enter·Space 选中" },
+    "Tabs.Trigger.value": { "type": "string", "default": "（必填）", "desc": "页签值" },
+    "Tabs.Panel.forceMount": { "type": "boolean", "default": "false", "desc": "非激活面板保持挂载（隐藏）" },
+    "classNames": { "type": "{ root?; list?; trigger?; panel? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "role=\"tablist\"/\"tab\"/\"tabpanel\" + aria-orientation，roving tabindex（选中项 0 其余 -1）",
+    "键盘：←→ 切换（纵向 ↑↓）、Home/End 首尾；manual 模式 Enter/Space 激活",
+    "aria-controls / aria-labelledby 双向关联（useId）"
+  ],
+  "related": ["Card", "Table", "Collapse"]
+}

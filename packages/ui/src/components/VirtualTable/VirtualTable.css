@@ -1,0 +1,140 @@
+/* VirtualTable —— 虚拟滚动表格（独立于 Table，不合并）。
+   组件级变量定义在根选择器上，可被用户任意覆盖。 */
+
+.z-virtual-table {
+  --z-virtual-table-font-size: var(--z-text-sm);
+  --z-virtual-table-line-height: var(--z-leading-normal);
+  --z-virtual-table-border: var(--z-color-border);
+  --z-virtual-table-radius: var(--z-radius-sm);
+  --z-virtual-table-header-height: 2.5rem;
+  --z-virtual-table-header-bg: var(--z-color-bg-subtle);
+  --z-virtual-table-header-fg: var(--z-color-fg-muted);
+  --z-virtual-table-header-font-weight: var(--z-weight-medium);
+  --z-virtual-table-row-bg: var(--z-color-bg);
+  --z-virtual-table-row-hover-bg: var(--z-color-bg-subtle);
+  --z-virtual-table-row-border: var(--z-color-border-subtle);
+  --z-virtual-table-cell-padding-x: var(--z-space-4);
+  --z-virtual-table-sticky-bg: var(--z-color-bg);
+  --z-virtual-table-sticky-header-bg: var(--z-color-bg-subtle);
+  --z-virtual-table-focus-ring: var(--z-color-focus-ring);
+}
+
+.z-virtual-table {
+  position: relative;
+  overflow: auto;
+  box-sizing: border-box;
+  max-width: 100%;
+  border: 1px solid var(--z-virtual-table-border);
+  border-radius: var(--z-virtual-table-radius);
+  background: var(--z-virtual-table-row-bg);
+  color: var(--z-color-fg);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-virtual-table-font-size);
+  line-height: var(--z-virtual-table-line-height);
+}
+
+/* 表头：sticky 顶栏，横向随内容滚动 */
+.z-virtual-table-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-z-sticky);
+  display: flex;
+  box-sizing: border-box;
+  min-width: 100%;
+  height: var(--z-virtual-table-header-height);
+  background: var(--z-virtual-table-header-bg);
+  color: var(--z-virtual-table-header-fg);
+  font-weight: var(--z-virtual-table-header-font-weight);
+  border-bottom: 1px solid var(--z-virtual-table-row-border);
+}
+
+/* 表体：总高度容器，行绝对定位成窗口 */
+.z-virtual-table-body {
+  position: relative;
+  min-width: 100%;
+}
+
+.z-virtual-table-row {
+  position: absolute;
+  left: 0;
+  display: flex;
+  box-sizing: border-box;
+  min-width: 100%;
+  background: var(--z-virtual-table-row-bg);
+  border-bottom: 1px solid var(--z-virtual-table-row-border);
+  transition: background-color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-virtual-table-row:hover {
+  background: var(--z-virtual-table-row-hover-bg);
+}
+
+.z-virtual-table-row:hover .z-virtual-table-cell[data-fixed] {
+  background: var(--z-virtual-table-row-hover-bg);
+}
+
+.z-virtual-table-cell {
+  display: flex;
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  min-width: 0;
+  align-items: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 0 var(--z-virtual-table-cell-padding-x);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.z-virtual-table-cell > * {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 单元格文本对齐（data-align） */
+.z-virtual-table-cell[data-align='left'] {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.z-virtual-table-cell[data-align='center'] {
+  justify-content: center;
+  text-align: center;
+}
+
+.z-virtual-table-cell[data-align='right'] {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+/* 固定列：sticky 贴边 + 不透明底防内容穿透（left/right 由内联样式给偏移） */
+.z-virtual-table-cell[data-fixed] {
+  position: sticky;
+  z-index: 1;
+  background: var(--z-virtual-table-sticky-bg);
+}
+
+.z-virtual-table-header .z-virtual-table-cell[data-fixed] {
+  z-index: 2;
+  background: var(--z-virtual-table-sticky-header-bg);
+}
+
+/* 固定列边缘阴影（左侧固定列的右边缘，右侧固定列的左边缘） */
+.z-virtual-table-cell[data-fixed='left'][data-fixed-edge='left'] {
+  box-shadow: 2px 0 6px -2px color-mix(in srgb, var(--z-color-fg) 12%, transparent);
+}
+
+.z-virtual-table-cell[data-fixed='right'][data-fixed-edge='right'] {
+  box-shadow: -2px 0 6px -2px color-mix(in srgb, var(--z-color-fg) 12%, transparent);
+}
+
+.z-virtual-table-row:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--z-virtual-table-focus-ring) 45%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-virtual-table-row {
+    transition: none;
+  }
+}
