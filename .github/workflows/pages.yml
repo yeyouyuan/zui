@@ -19,8 +19,7 @@ jobs:
           node-version: 20
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @zui/i18n build
-      - run: pnpm --filter @zui/react build
+      - run: pnpm --filter @zui/react... build
       - run: pnpm --filter @zui/docs build
         env:
           GITHUB_PAGES_BUILD: 'true'
