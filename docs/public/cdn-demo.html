@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZUI Script 演示</title>
+    <link rel="stylesheet" href="./cdn/v0.1.0/zui.css" />
+  </head>
+  <body style="padding: 24px">
+    <main id="root"></main>
+    <script src="./cdn/v0.1.0/zui.global.js"></script>
+    <script>
+      const root = ZUI.createRoot(document.getElementById('root'));
+      root.render(
+        ZUI.React.createElement(
+          ZUI.Button,
+          {
+            variant: 'primary',
+            onClick: (event) => {
+              event.currentTarget.textContent = '点击成功';
+            },
+          },
+          'ZUI 按钮'
+        )
+      );
+    </script>
+  </body>
+</html>

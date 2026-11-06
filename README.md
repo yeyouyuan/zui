@@ -14,6 +14,25 @@
 
 ## 快速开始
 
+### 直接通过 script 使用
+
+无需安装包，可在普通 HTML 页面中引用公开的浏览器版。它已包含 React 和 React DOM，适合演示或非构建项目；不要与页面现有的另一份 React 混用。
+
+```html
+<link rel="stylesheet" href="https://yeyouyuan.github.io/zui/cdn/v0.1.0/zui.css" />
+<div id="root"></div>
+<script src="https://yeyouyuan.github.io/zui/cdn/v0.1.0/zui.global.js"></script>
+<script>
+  ZUI.createRoot(document.getElementById('root')).render(
+    ZUI.React.createElement(ZUI.Button, { variant: 'primary' }, '你好，ZUI')
+  );
+</script>
+```
+
+[在线脚本演示](https://yeyouyuan.github.io/zui/cdn-demo.html)。版本路径固定为 `v0.1.0`；升级时请改用相应版本目录。
+
+### 包管理器安装
+
 ```bash
 pnpm add @zui/react
 ```

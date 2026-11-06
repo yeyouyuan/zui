@@ -23,6 +23,8 @@ jobs:
       - run: pnpm --filter @zui/docs build
         env:
           GITHUB_PAGES_BUILD: 'true'
+      - run: pnpm --filter @zui/react build:browser
+      - run: cp docs/public/cdn-demo.html docs/dist/cdn-demo.html
       - uses: actions/upload-pages-artifact@v4
         with:
           path: docs/dist
