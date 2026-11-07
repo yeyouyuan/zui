@@ -19,7 +19,8 @@ jobs:
           node-version: 20
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @zui/react... build
+      # 文档直接依赖 blocks/i18n/icons/react/tokens；先按依赖拓扑构建全部工作区依赖。
+      - run: pnpm --filter '@zui/docs^...' build
       - run: pnpm --filter @zui/docs build
         env:
           GITHUB_PAGES_BUILD: 'true'
