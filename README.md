@@ -102,6 +102,8 @@ document.documentElement.style.setProperty('--z-color-primary', 'oklch(0.55 0.2 
 
 配套：`@zui/icons`（142 枚线性图标，组件内图标已全面接入）、`@zui/tokens`（三层令牌 + DTCG JSON）
 
+后续组件不按数量扩张；已完成缺口审计与 [组件路线图](./docs/COMPONENT-ROADMAP.md)，首个候选为 [Combobox RFC](./docs/rfcs/combobox.md)，实现前先评审 API、IME、Form 和无障碍边界。
+
 ## AI 翻译（`@zui/i18n`）
 
 组件内置文案（placeholder / 无障碍 aria-label / 分页、日期等 locale 段）可随用户语言自动翻译：

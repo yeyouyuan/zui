@@ -7,7 +7,7 @@
 - 七包版本和 CHANGELOG 已更新至 `0.2.0`，原 changeset 已消费。**不要再次执行 `changeset version`**。
 - Registry 为 66 个组件、16 个业务区块；Anchor 已有源码、导出、文档和 Registry 条目。
 - 七包已有独立 LICENSE，`@zui/react` 已有 README；`@zui/blocks` 对 `@zui/react` 的依赖已移入 `dependencies`。
-- GitHub `main` 当前为 `3ec226b`，公开 Pages 的 `v0.2.0` JS、CSS 与演示页均可访问；远端仍无 `v0.2.0` tag。`@zui/react@0.2.0` 在 npm 查询为 404，当前机器 `npm whoami` 为 `ENEEDAUTH`，因此 unpkg 尚不可用。
+- GitHub `main` 已包含质量提交 `c7fec2f` 与 Pages 依赖构建修复 `e60a06f`；对应 CI、Pages、`v0.2.0` JS/CSS 和在线脚本演示均已验证成功。远端仍无 `v0.2.0` tag，npm/unpkg 仍等待发布认证。
 - 文档 71 个导航路由已完成 320px 暗色静态布局审计；概览、图标库和 16 个业务区块另做桌面/窄屏/暗色及关键交互复核。66 个组件的全部打开态、长文案和原生 200% 缩放仍属于持续增强验收，不作为本次本地发布门禁的阻塞项。
 
 ## 1. 发布前验证
@@ -54,7 +54,7 @@ npm view @zui/react@0.2.0 version
 
 确认工作区改动和最终 diff 后，提交并推送 `main`，再创建并推送 `v0.2.0` tag。Pages 工作流在 `main` 推送后会重建文档和 `cdn/v0.2.0/`。
 
-- [ ] GitHub 上确认 `main` 包含本次提交、CI 全绿、Pages 部署成功。
-- [ ] 当前 `v0.2.0` JS、CSS 与演示页返回成功；推送本次最终提交并等待 Pages 重建后再次验证。
-- [ ] 线上浏览器打开脚本演示，确认 `ZUI.createRoot` 与组件样式正常；随后更新 README/演示页的默认示例版本。
+- [x] GitHub 上确认 `e60a06f` 已进入 `main`，对应 CI 全绿、Pages 部署成功。
+- [x] `e60a06f` 对应部署的 `v0.2.0` JS、CSS 与演示页返回成功，入口引用与最终产物哈希一致。
+- [x] 在线打开该部署的脚本演示，确认 `ZUI.createRoot`、Button 样式与点击交互正常，且无页面异常或 console error。
 - [ ] 发布完成后核对 Git tag、npm 七包版本、unpkg 和 Pages 版本一致。

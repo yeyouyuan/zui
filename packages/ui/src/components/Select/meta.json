@@ -3,21 +3,32 @@
   "description": "选择器：单选下拉（select-only combobox），WAI-ARIA APG 模式",
   "category": "基础",
   "useCase": ["表单中的枚举选择", "筛选条件里的单选下拉", "选项较多不适合 Radio 平铺的场景"],
-  "dontUse": ["可搜索/多选/级联场景用 TreeSelect/Cascader/Transfer", "选项仅 2-5 个且需平铺对比用 Radio/Segmented"],
+  "dontUse": [
+    "可搜索/多选/级联场景用 TreeSelect/Cascader/Transfer",
+    "选项仅 2-5 个且需平铺对比用 Radio/Segmented"
+  ],
   "props": {
-    "options": { "type": "SelectOption[]", "default": "（必填）", "desc": "选项列表 { value; label; disabled? }" },
+    "options": {
+      "type": "SelectOption[]",
+      "default": "（必填）",
+      "desc": "选项列表 { value; label; disabled? }"
+    },
     "value": { "type": "string", "default": "—", "desc": "受控选中值" },
     "defaultValue": { "type": "string", "default": "—", "desc": "非受控初始值" },
     "onChange": { "type": "(value: string) => void", "default": "—", "desc": "选中变化回调" },
     "placeholder": { "type": "string", "default": "'请选择'", "desc": "占位文本" },
     "size": { "type": "'sm' | 'md' | 'lg'", "default": "'md'", "desc": "尺寸" },
-    "status": { "type": "'default' | 'error' | 'success'", "default": "'default'", "desc": "校验状态" },
+    "status": {
+      "type": "'default' | 'error' | 'success'",
+      "default": "'default'",
+      "desc": "校验状态"
+    },
     "name": { "type": "string", "default": "—", "desc": "渲染隐藏 input 供表单提交" }
   },
   "a11yNotes": [
     "触发器 button：aria-haspopup=\"listbox\" + aria-expanded + aria-activedescendant（焦点保持在触发器）",
     "列表 role=\"listbox\"，选项 role=\"option\" + aria-selected + aria-disabled",
-    "键盘：[SECRET]↓ 开合、↑↓ 移动、Home/End 首尾、Enter/Space 选中、Esc 关闭归还焦点、首字母 typeahead"
+    "键盘：Enter/Space/↑↓ 开合、↑↓ 移动、Home/End 首尾、Enter/Space 选中、Esc 关闭归还焦点、首字母 typeahead"
   ],
   "related": ["Input", "Form", "Table"]
 }
