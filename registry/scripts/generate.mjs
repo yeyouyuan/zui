@@ -206,6 +206,24 @@ export function generate() {
       }
     }
   }
+  // utils / config 的桶导出（cx / useControllableState / locale 包等）也进入映射，
+  // 否则业务区块从 '@zui/react' 具名导入这些符号时复制模式无法解析本地源文件。
+  for (const extra of ['utils/index.ts', 'config/index.ts']) {
+    const barrel = path.join(UI_SRC, extra);
+    if (!fs.existsSync(barrel)) continue;
+    const text = fs.readFileSync(barrel, 'utf8');
+    for (const match of text.matchAll(/export\s+(?:type\s+)?\{([^}]+)\}\s*from\s*['"](\.[^'"]+)['"]/g)) {
+      const targetBase = path.join(path.dirname(barrel), match[2]);
+      const target = ['ts', 'tsx'].map((ext) => `${targetBase}.${ext}`).find((p) => fs.existsSync(p));
+      if (!target) continue;
+      for (const specifier of match[1].split(',')) {
+        const exported = specifier.trim().split(/\s+as\s+/).pop();
+        if (exported && !exports[exported]) {
+          exports[exported] = path.relative(REPO_ROOT, target).split(path.sep).join('/');
+        }
+      }
+    }
+  }
   for (const name of fs.readdirSync(BLOCKS_DIR).sort()) {
     const dir = path.join(BLOCKS_DIR, name);
     const metaPath = path.join(dir, 'block.json');
@@ -215,7 +233,10 @@ export function generate() {
     const source = files.map((file) => fs.readFileSync(path.join(REPO_ROOT, file), 'utf8')).join('\n');
     const imported = [...source.matchAll(/import\s+(?:type\s+)?\{([^}]+)\}\s+from\s+['"]@zui\/react['"]/g)]
       .flatMap((match) => match[1].split(',').map((specifier) => specifier.trim().replace(/^type\s+/, '').split(/\s+as\s+/)[0]));
-    const inferred = imported.map((symbol) => exports[symbol]).filter(Boolean)
+    const inferred = imported
+      .map((symbol) => exports[symbol])
+      .filter(Boolean)
+      .filter((file) => file.includes('/components/')) // utils/config 符号由 sharedFiles 覆盖，不进 registryDependencies
       .map((file) => toKebab(file.split('/')[4]));
     items.push({ name, type: 'registry:block', title: name, description: meta.description,
       dependencies: inferNpmDeps(files.map((file) => path.join(REPO_ROOT, file))).filter((dep) => dep !== '@zui/react'),

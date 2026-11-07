@@ -1,0 +1,20 @@
+/* Col —— 24 栅格列（必须是 Row 直接子级，纯布局无 role）。
+   span/offset 用内联 CSS 变量 + calc 计算（零运行时样式原则下最简方案，
+   不生成 24*24 个工具类）；gutter 内边距由 Row 经 Context 注入（内联样式）；
+   --z-col-* 为无 JS 兜底与用户静态覆盖出口（内联变量优先）。 */
+
+.z-col {
+  --z-col-span: 24;
+  --z-col-offset: 0;
+  --z-col-gutter-x: 0px;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: calc(var(--z-col-span, 24) / 24 * 100%);
+  margin-left: calc(var(--z-col-offset, 0) / 24 * 100%);
+  padding-inline: var(--z-col-gutter-x);
+}
+
+/* flex（flex-basis 语义）接管主轴尺寸时关闭 span 宽度 */
+.z-col[data-flex='true'] {
+  width: auto;
+}

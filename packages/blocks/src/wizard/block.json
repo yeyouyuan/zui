@@ -1,0 +1,6 @@
+{
+  "name": "wizard",
+  "description": "分步向导区块：Steps 步骤条 + 三步表单（基本信息/项目配置/确认创建），含必填校验、上一步/下一步与完成回调",
+  "dependencies": ["Steps", "Card", "Input", "Select", "Descriptions", "Button"],
+  "category": "业务块"
+}

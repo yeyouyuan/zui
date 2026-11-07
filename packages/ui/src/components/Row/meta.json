@@ -1,0 +1,20 @@
+{
+  "name": "Row",
+  "description": "24 栅格水平容器：gutter 间隔、水平排列与垂直对齐（与 Col 配套使用）",
+  "category": "布局",
+  "useCase": ["页面级栅格布局（Row + Col 24 栅格）", "表单/卡片内多列内容排列", "等分或不等分列布局"],
+  "dontUse": ["简单线性间距排列用 Flex/Space", "单列内容流直接用块级元素"],
+  "props": {
+    "gutter": { "type": "number | [number, number]", "default": "0", "desc": "栅格间隔；数组为 [水平, 垂直]，水平经负 margin-inline + Col padding-inline 实现，垂直走 row-gap" },
+    "justify": { "type": "'start' | 'end' | 'center' | 'space-between' | 'space-around' | 'space-evenly'", "default": "'start'", "desc": "水平排列方式（data-justify）" },
+    "align": { "type": "'top' | 'middle' | 'bottom'", "default": "'top'", "desc": "垂直对齐方式（data-align）" },
+    "wrap": { "type": "boolean", "default": "true", "desc": "是否自动换行（data-wrap）" },
+    "classNames": { "type": "{ root? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "纯布局容器：无 role、不承载语义，读屏直接读取内容流",
+    "gutter 经 React Context 注入 Col，无障碍属性透传根元素",
+    "仅用栅格表达视觉列序；有阅读顺序要求的列表仍应使用语义化标签（ul/ol）"
+  ],
+  "related": ["Col", "Flex", "Space"]
+}

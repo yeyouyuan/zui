@@ -1,0 +1,30 @@
+/* Space —— 间距容器（inline-flex + gap；纯布局，无 role）。
+   size 是运行时值（sm/md/lg → --z-space-1/2/3、number → px，内联 gap）；
+   --z-space-gap 为无 JS 兜底与用户静态覆盖出口（内联 gap 优先）。 */
+
+.z-space {
+  --z-space-gap: var(--z-space-2);
+  display: inline-flex;
+  gap: var(--z-space-gap);
+}
+
+.z-space[data-direction='vertical'] {
+  flex-direction: column;
+}
+
+.z-space[data-wrap='true'] {
+  flex-wrap: wrap;
+}
+
+/* align：交叉轴对齐（start 为默认，无规则） */
+.z-space[data-align='center'] {
+  align-items: center;
+}
+
+.z-space[data-align='end'] {
+  align-items: flex-end;
+}
+
+.z-space[data-align='baseline'] {
+  align-items: baseline;
+}

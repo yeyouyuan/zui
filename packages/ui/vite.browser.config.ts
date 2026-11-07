@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -8,7 +8,8 @@ const { version } = JSON.parse(
 ) as {
   version: string;
 };
-const outDir = `../../docs/dist/cdn/v${version}`;
+const outDir = 'dist/browser';
+const docsDir = `../../docs/dist/cdn/v${version}`;
 
 const licensePlugin = {
   name: 'zui-browser-license',
@@ -24,6 +25,10 @@ const licensePlugin = {
       join(outDir, 'LICENSE.txt'),
       ['ZUI', license, 'React', react, 'React DOM', reactDom].join('\n\n')
     );
+    mkdirSync(docsDir, { recursive: true });
+    for (const name of ['zui.global.js', 'zui.css', 'LICENSE.txt']) {
+      copyFileSync(join(outDir, name), join(docsDir, name));
+    }
   },
 };
 
@@ -34,7 +39,7 @@ export default defineConfig({
   },
   build: {
     outDir,
-    emptyOutDir: false,
+    emptyOutDir: true,
     lib: {
       entry: 'src/browser.ts',
       name: 'ZUI',

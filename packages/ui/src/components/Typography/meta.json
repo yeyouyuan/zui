@@ -1,0 +1,26 @@
+{
+  "name": "Typography",
+  "description": "排版组件：标题、段落与文本的语义化呈现，支持语义标签切换、四色调色、多行省略与一键复制",
+  "category": "基础",
+  "useCase": ["文章标题与正文层级", "强调 / 标注 / 行内代码 / 键盘按键", "可复制的内容展示"],
+  "dontUse": ["不要用 Typography 承载按钮等交互控件（用 Button）"],
+  "props": {
+    "level": { "type": "1 | 2 | 3 | 4 | 5", "default": "1", "desc": "Title 标题级别，渲染 h1-h5（仅 Title）" },
+    "ellipsis": { "type": "boolean | { rows: number }", "default": "false", "desc": "省略：true 折 1 行；{ rows: n } 用 -webkit-line-clamp 折 n 行（仅 Paragraph）" },
+    "code": { "type": "boolean", "default": "false", "desc": "行内代码 → <code>（仅 Text）" },
+    "keyboard": { "type": "boolean", "default": "false", "desc": "键盘按键 → <kbd>（仅 Text）" },
+    "mark": { "type": "boolean", "default": "false", "desc": "高亮 → <mark>（仅 Text）" },
+    "strong": { "type": "boolean", "default": "false", "desc": "加粗（仅 Text）" },
+    "underline": { "type": "boolean", "default": "false", "desc": "下划线（仅 Text）" },
+    "type": { "type": "'secondary' | 'success' | 'warning' | 'danger'", "default": "—", "desc": "只调色（secondary → --z-color-fg-muted，其余映射同名语义色）" },
+    "copyable": { "type": "boolean | { text?: string; onCopy?: () => void }", "default": "false", "desc": "内容后渲染复制按钮；clipboard 优先、execCommand 回退；成功态 1.5s" },
+    "delete": { "type": "boolean", "default": "false", "desc": "删除线（Text 渲染 <del>；Title/Paragraph 走 data-delete 样式）" },
+    "classNames": { "type": "{ root?; copy? }", "default": "—", "desc": "slot 级类名追加（root 根元素 / copy 复制按钮）" }
+  },
+  "a11yNotes": [
+    "复制按钮为原生 button，aria-label 走 locale.accessibility.copy（复制）",
+    "复制成功后 title=locale.accessibility.copied，aria-live=polite 反馈节点播报「已复制」",
+    "Title/Paragraph/Text 分别渲染 h1-h5 / p / 语义行内标签，读屏可直接识别层级"
+  ],
+  "related": ["Button", "Divider", "Tooltip"]
+}

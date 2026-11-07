@@ -115,11 +115,12 @@ B = 低难度（原生语义为主）。A 级以浮层/菜单类复合组件为�
 
 ## 4. 自动化测试边界与人工实测清单
 
-**jsdom 能测的**（三个 `a11y.*.test.tsx` 的职责边界）：DOM/ARIA 属性矩阵、ARIA 关联 id 正确性、
-键盘事件流（按键 → 状态/焦点变化）、可访问名计算（`getByRole(..., { name })` 读屏视角）。
+**jsdom 能测的**（`a11y.roles/keyboard/labels` 与 §5 axe 套件的职责边界）：DOM/ARIA 属性矩阵、
+ARIA 关联 id 正确性、键盘事件流（按键 → 状态/焦点变化）、可访问名计算（`getByRole(..., { name })`
+读屏视角）、axe 静态规则（结构/语义/命名）。
 
 **jsdom 测不了的**（必须人工实测）：真实读屏的朗读内容/顺序/时机、焦点环可见性（视觉）、
-触屏手势、系统级缩放/高对比（forced-colors）模式、双读屏并存等环境差异。
+触屏手势、系统级缩放/高对比（forced-colors）模式、双读屏并存等环境差异、**颜色对比度**。
 
 **发布前人工实测清单**：
 
@@ -132,6 +133,41 @@ B = 低难度（原生语义为主）。A 级以浮层/菜单类复合组件为�
 4. **高对比 / forced-colors**：焦点环、选中态（aria-selected/aria-checked 对应的视觉）仍可辨识。
 5. **放大镜 / 缩放 200%**：Modal、Select 弹层不遮挡当前焦点项（active option 滚动跟随已自动化，
    视觉遮挡需人工确认）。
+
+## 5. axe 集成（axe-core 自动化扫描）
+
+> 契约依据：`CONTRACTS-V5.md` §4。配套测试：`packages/ui/src/test/a11y.axe.test.tsx`
+> （devDep `axe-core@^4`，直接 `import axe from 'axe-core'`——axe-core 以 UMD 主入口
+> 暴露 `axe.run`，vitest CJS interop 下可直接运行，无需 axe-playwright/jest-axe）。
+
+**扫描矩阵**：每棵树独立 `axe.run(container)` 并断言 violations = 0——Button 全变体
+（含 loading/disabled/纯图标）、Input+label（clearable/状态）、Select 关闭态（选中/占位/禁用）、
+Checkbox（选中/未选/禁用/半选 mixed）、RadioGroup（选中/禁用项）、Switch（选中/禁用/无文字）、
+Tabs（tablist/tab/tabpanel 含 disabled tab）、Table（scope 表头/选中行）、Alert 四态（含 closable）、
+Empty、Card、Pagination（省略号/aria-current/跳页输入）、Badge（独立数字/圆点/包裹角标）。
+
+**测试环境适配（均不是规则豁免）**：
+
+- 容器带 `z-reset` class（box-sizing 依赖），内容包一层 `<main>`：axe 的 `region` 规则要求
+  页面内容落在 landmark 内，测试宿主 div 不是语义容器，用 main 包裹让扫描树结构合法，
+  从而 `region` 规则真实通过而非禁用。
+- jsdom 未实现 `canvas.getContext`，axe 的 icon-ligature 文本检测需要 2d context；
+  套件内提供确定性 stub（两次度量同宽 → 判非图标连字），同时消除 jsdom "Not implemented" 噪音。
+  该补丁只作用于本套件的 jsdom 环境。
+
+**显式禁用的规则（豁免清单）**：
+
+| 规则 | 原因 | 替代覆盖 |
+|---|---|---|
+| `color-contrast` | jsdom 不做真实布局与绘制，拿不到最终前景/背景色，该规则在 jsdom 下只会产出大量不可靠结果 | 发布前人工实测（§4 清单第 4 项）+ 真实浏览器阶段（后续可入 E2E） |
+
+**已知限制与 harness 自证**：
+
+- axe 静态规则 ≠ 真实读屏：朗读顺序、时机、焦点环可见性仍按 §4 人工实测。
+- 负向对照验证过 harness 有效性：`aria-label=""` 的按钮、缺 `alt` 的图片可被
+  `button-name` / `image-alt` 规则捕获（保证矩阵不是「永远绿灯」的空转扫描）。
+- 首轮全矩阵扫描 0 违规，未发现需要修复或按规则豁免的组件缺陷；
+  后续新增组件请按 §2 归级时同步在矩阵中登记 axe 用例，发现违规优先修组件。
 
 > 分级与怪癖清单会随组件扩充（DropdownMenu/Tooltip/Popover/Drawer 等）继续追加；
 > 新增组件请按 §2 的分级标准归级，并把对应 AT 风险登记进 §3。

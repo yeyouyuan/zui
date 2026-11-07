@@ -74,5 +74,18 @@ export * from './components/FloatButton';
 export * from './components/Result';
 export * from './components/App';
 
+// Components (v0.4 batch 1)
+export * from './components/Upload';
+export * from './components/Steps';
+export * from './components/DateRangePicker';
+export * from './components/Anchor';
+
+// Components (v0.2.0 quality + skeleton)
+export * from './components/Typography';
+export * from './components/Row';
+export * from './components/Col';
+export * from './components/Flex';
+export * from './components/Space';
+
 // Config
 export * from './config';

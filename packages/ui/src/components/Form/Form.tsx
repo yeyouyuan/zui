@@ -74,8 +74,6 @@ export interface FormInstance {
 
 /* -------------------------------- 校验工具 -------------------------------- */
 
-
-
 function isEmptyValue(value: unknown): boolean {
   if (value === undefined || value === null) return true;
   if (typeof value === 'string') return value === '';
@@ -90,7 +88,12 @@ function valueLength(value: unknown): number {
 }
 
 /** 按规则校验单个值，返回错误消息（空串表示通过） */
-function validateFormValue(rules: FormRule[], value: unknown, required: boolean, messages: import('../../config').ZuiLocale['form']): string {
+function validateFormValue(
+  rules: FormRule[],
+  value: unknown,
+  required: boolean,
+  messages: import('../../config').ZuiLocale['form']
+): string {
   const must = required || rules.some((rule) => rule.required);
   if (must && isEmptyValue(value)) {
     const requiredRule = rules.find((rule) => rule.required);
@@ -101,14 +104,16 @@ function validateFormValue(rules: FormRule[], value: unknown, required: boolean,
   for (const rule of rules) {
     if (rule.min !== undefined) {
       if (typeof value === 'number') {
-        if (value < rule.min) return rule.message ?? messages.minNumber.replace('{min}', String(rule.min));
+        if (value < rule.min)
+          return rule.message ?? messages.minNumber.replace('{min}', String(rule.min));
       } else if (valueLength(value) < rule.min) {
         return rule.message ?? messages.minLength.replace('{min}', String(rule.min));
       }
     }
     if (rule.max !== undefined) {
       if (typeof value === 'number') {
-        if (value > rule.max) return rule.message ?? messages.maxNumber.replace('{max}', String(rule.max));
+        if (value > rule.max)
+          return rule.message ?? messages.maxNumber.replace('{max}', String(rule.max));
       } else if (valueLength(value) > rule.max) {
         return rule.message ?? messages.maxLength.replace('{max}', String(rule.max));
       }
@@ -213,16 +218,15 @@ function Form(props: FormProps) {
 
   /* ------------------------------ 字段注册表 ------------------------------ */
 
-  const registerField = React.useCallback(
-    (name: string, rules: FormRule[], required: boolean) => {
-      fieldsRef.current.set(name, { rules, required });
-    },
-    []
-  );
+  const registerField = React.useCallback((name: string, rules: FormRule[], required: boolean) => {
+    fieldsRef.current.set(name, { rules, required });
+  }, []);
 
+  // 注销只清字段注册表，不清 errorsRef：FormItem 的 effect 会随 rules 引用变化
+  // 重复 cleanup→setup，若在此删除错误会吞掉 runValidate 刚算出的结果。
+  // 错误映射由 runValidate 按本次校验目标重建（见下），卸载字段的陈旧错误不会外泄。
   const unregisterField = React.useCallback((name: string) => {
     fieldsRef.current.delete(name);
-    delete errorsRef.current[name];
   }, []);
 
   const setFieldValue = React.useCallback((name: string, value: unknown) => {
@@ -230,25 +234,37 @@ function Form(props: FormProps) {
     rerender();
   }, []);
 
-  const validateFieldByName = React.useCallback((name: string): string => {
-    const field = fieldsRef.current.get(name);
-    if (!field) return '';
-    const error = validateFormValue(field.rules, valuesRef.current[name], field.required, locale.form);
-    if (error) errorsRef.current[name] = error;
-    else delete errorsRef.current[name];
-    return error;
-  }, [locale.form]);
+  const validateFieldByName = React.useCallback(
+    (name: string): string => {
+      const field = fieldsRef.current.get(name);
+      if (!field) return '';
+      const error = validateFormValue(
+        field.rules,
+        valuesRef.current[name],
+        field.required,
+        locale.form
+      );
+      if (error) errorsRef.current[name] = error;
+      else delete errorsRef.current[name];
+      return error;
+    },
+    [locale.form]
+  );
 
   const runValidate = React.useCallback(
     (names?: string[]): FormValidateResult => {
       const targets = names ?? Array.from(fieldsRef.current.keys());
-      for (const name of targets) validateFieldByName(name);
+      const errors: Record<string, string> = {};
+      for (const name of targets) {
+        const error = validateFieldByName(name);
+        if (error) errors[name] = error;
+      }
       rerender();
       const values: Record<string, unknown> = { ...valuesRef.current };
       for (const name of fieldsRef.current.keys()) {
         if (!(name in values)) values[name] = undefined;
       }
-      return { values, errors: { ...errorsRef.current } };
+      return { values, errors };
     },
     [validateFieldByName]
   );
@@ -296,9 +312,7 @@ function Form(props: FormProps) {
       }
       if (!item) return;
       item.scrollIntoView?.({ block: 'center' });
-      item
-        .querySelector<HTMLElement>('input, textarea, select, button, [tabindex]')
-        ?.focus();
+      item.querySelector<HTMLElement>('input, textarea, select, button, [tabindex]')?.focus();
     },
   });
 
@@ -344,20 +358,19 @@ function Form(props: FormProps) {
 function FormItem(props: FormItemProps) {
   const { name, label, rules, required, children, className, classNames } = props;
   const ctx = React.useContext(FormContext);
-  // 只依赖稳定的 unregisterField，避免 context 每次渲染换引用导致反复注销
-  const unregisterField = ctx?.unregisterField;
 
+  // 注册/注销都在 effect 内（幂等）：StrictMode 的 setup→cleanup→setup 双调用后
+  // 注册表仍完整，表单校验不会静默失效。rules 引用每次渲染变化时会重复注册
+  // （Map.set 幂等，开销可忽略），保证 rules 始终为最新。
   React.useEffect(() => {
-    if (!unregisterField) return undefined;
-    return () => unregisterField(name);
-  }, [unregisterField, name]);
+    if (!ctx) return undefined;
+    ctx.registerField(name, rules ?? [], required ?? false);
+    return () => ctx.unregisterField(name);
+  }, [ctx, name, rules, required]);
 
   if (!ctx) {
     throw new Error('[ZUI] Form.Item 必须作为 <Form> 的后代使用');
   }
-
-  // 渲染期同步注册（幂等，保证 rules 始终为最新）
-  ctx.registerField(name, rules ?? [], required ?? false);
 
   const error = ctx.errors[name];
   const errorId = ctx.errorId(name);
@@ -391,8 +404,7 @@ function FormItem(props: FormItemProps) {
   };
 
   const describedBy =
-    [childProps['aria-describedby'], error ? errorId : null].filter(Boolean).join(' ') ||
-    undefined;
+    [childProps['aria-describedby'], error ? errorId : null].filter(Boolean).join(' ') || undefined;
 
   const injected: Record<string, unknown> = {
     id: controlId,

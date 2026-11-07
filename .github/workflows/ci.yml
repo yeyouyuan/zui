@@ -16,17 +16,21 @@ jobs:
           node-version: 20
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
       - run: node registry/scripts/generate.mjs --check
       - run: pnpm -r build
+      - run: pnpm --filter @zui/react build:browser
       - run: pnpm -r typecheck
       - run: pnpm lint
+      # a11y: axe-core 扫描已包含在 packages/ui 测试套件（src/test/a11y.axe.test.tsx）
       - run: pnpm -r test
+      - run: pnpm test:e2e
       - name: Validate published ESM and CommonJS entries
         run: node scripts/check-distribution.mjs
       - name: Compile installed sources and MCP examples
         run: node scripts/check-consumer.mjs
-      - name: Check bundle size budget (JS gzip < 64KB)
+      - name: Check bundle size budget (JS gzip < 96 KiB)
         run: |
           SIZE=$(gzip -c packages/ui/dist/index.js | wc -c | tr -d ' ')
           echo "index.js gzip: ${SIZE} bytes"
-          [ "$SIZE" -lt 65536 ] || { echo "bundle exceeds budget"; exit 1; }
+          [ "$SIZE" -lt 98304 ] || { echo "bundle exceeds budget"; exit 1; }

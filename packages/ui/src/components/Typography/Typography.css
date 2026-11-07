@@ -1,0 +1,218 @@
+/* Typography —— 组件级变量定义在根选择器上，可被用户任意覆盖 */
+
+.z-typography {
+  --z-typography-margin: 0 0 var(--z-space-3);
+  --z-typography-color: var(--z-color-fg);
+  --z-typography-code-bg: var(--z-color-bg-subtle);
+  --z-typography-code-fg: var(--z-color-fg);
+  --z-typography-code-border: var(--z-color-border);
+  --z-typography-code-border-width: 1px;
+  --z-typography-code-radius: var(--z-radius-sm);
+  --z-typography-kbd-bg: var(--z-color-bg-muted);
+  --z-typography-kbd-border: var(--z-color-border-strong);
+  --z-typography-mark-bg: color-mix(in srgb, var(--z-color-warning) 28%, transparent);
+  --z-typography-mark-fg: var(--z-color-fg);
+  --z-typography-copy-color: var(--z-color-fg-muted);
+  --z-typography-copy-hover-color: var(--z-color-primary);
+  --z-typography-copy-success-color: var(--z-color-success);
+  --z-typography-copy-size: 1em;
+  --z-typography-copy-gap: var(--z-space-2);
+  --z-typography-ellipsis-rows: 1;
+
+  color: var(--z-typography-color);
+}
+
+/* type 只调色：覆盖色彩变量，不改字号字重与语义 */
+.z-typography[data-type='secondary'] {
+  --z-typography-color: var(--z-color-fg-muted);
+}
+
+.z-typography[data-type='success'] {
+  --z-typography-color: var(--z-color-success);
+}
+
+.z-typography[data-type='warning'] {
+  --z-typography-color: var(--z-color-warning);
+}
+
+.z-typography[data-type='danger'] {
+  --z-typography-color: var(--z-color-danger);
+}
+
+/* 标题：字号字重全部走 --z-text-* / --z-weight-* 令牌 */
+.z-typography-h1 {
+  --z-typography-h1-size: var(--z-text-2xl);
+  margin: var(--z-typography-margin);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-typography-h1-size);
+  font-weight: var(--z-weight-semibold);
+  line-height: var(--z-leading-tight);
+}
+
+.z-typography-h2 {
+  --z-typography-h2-size: var(--z-text-xl);
+  margin: var(--z-typography-margin);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-typography-h2-size);
+  font-weight: var(--z-weight-semibold);
+  line-height: var(--z-leading-tight);
+}
+
+.z-typography-h3 {
+  --z-typography-h3-size: var(--z-text-lg);
+  margin: var(--z-typography-margin);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-typography-h3-size);
+  font-weight: var(--z-weight-semibold);
+  line-height: var(--z-leading-tight);
+}
+
+.z-typography-h4 {
+  --z-typography-h4-size: var(--z-text-md);
+  margin: var(--z-typography-margin);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-typography-h4-size);
+  font-weight: var(--z-weight-semibold);
+  line-height: var(--z-leading-tight);
+}
+
+.z-typography-h5 {
+  --z-typography-h5-size: var(--z-text-sm);
+  margin: var(--z-typography-margin);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-typography-h5-size);
+  font-weight: var(--z-weight-medium);
+  line-height: var(--z-leading-tight);
+}
+
+/* 段落 */
+.z-typography-paragraph {
+  --z-typography-paragraph-size: var(--z-text-md);
+  margin: var(--z-typography-margin);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-typography-paragraph-size);
+  font-weight: var(--z-weight-regular);
+  line-height: var(--z-leading-normal);
+}
+
+/* 文本：行内元素，字号随上下文继承 */
+.z-typography-text {
+  font-family: var(--z-font-sans);
+}
+
+/* strong / underline / delete 组合（delete 在 Text 上为 <del> 原生删除线） */
+.z-typography[data-strong='true'] {
+  font-weight: var(--z-weight-semibold);
+}
+
+.z-typography[data-underline='true'] {
+  text-decoration: underline;
+  text-underline-offset: 0.125em;
+}
+
+.z-typography[data-delete='true'] {
+  text-decoration: line-through;
+}
+
+.z-typography[data-underline='true'][data-delete='true'] {
+  text-decoration: underline line-through;
+}
+
+/* 行内代码 */
+.z-typography[data-code='true'] {
+  font-family: var(--z-font-mono);
+  font-size: var(--z-text-sm);
+  line-height: var(--z-leading-normal);
+  padding: calc(var(--z-space-1) / 2) var(--z-space-2);
+  background: var(--z-typography-code-bg);
+  color: var(--z-typography-code-fg);
+  border: var(--z-typography-code-border-width) solid var(--z-typography-code-border);
+  border-radius: var(--z-typography-code-radius);
+}
+
+/* 键盘按键 */
+.z-typography[data-keyboard='true'] {
+  box-sizing: border-box;
+  display: inline-block;
+  font-family: var(--z-font-mono);
+  font-size: var(--z-text-sm);
+  line-height: var(--z-leading-tight);
+  padding: calc(var(--z-space-1) / 2) var(--z-space-2);
+  background: var(--z-typography-kbd-bg);
+  color: var(--z-color-fg);
+  border: var(--z-typography-code-border-width) solid var(--z-typography-kbd-border);
+  border-radius: var(--z-typography-code-radius);
+  box-shadow: var(--z-shadow-xs);
+}
+
+/* 高亮标注 */
+.z-typography[data-mark='true'] {
+  background: var(--z-typography-mark-bg);
+  color: var(--z-typography-mark-fg);
+  padding: 0 var(--z-space-1);
+  border-radius: var(--z-radius-sm);
+}
+
+/* 省略：rows 由内联 --z-typography-ellipsis-rows 提供（Paragraph.ellipsis 消费点） */
+.z-typography[data-ellipsis='true'] {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: var(--z-typography-ellipsis-rows, 1);
+}
+
+/* 复制按钮 */
+.z-typography-copy {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  margin-inline-start: var(--z-typography-copy-gap);
+  padding: 0;
+  border: none;
+  border-radius: var(--z-radius-sm);
+  background: transparent;
+  color: var(--z-typography-copy-color);
+  cursor: pointer;
+  font-size: inherit;
+  line-height: 1;
+  vertical-align: -0.15em;
+  transition: color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-typography-copy:hover {
+  color: var(--z-typography-copy-hover-color);
+}
+
+.z-typography-copy:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-color-focus-ring) 35%, transparent);
+}
+
+/* 成功态：Copy → CheckCircle，1.5s 后还原 */
+.z-typography-copy[data-copied='true'] {
+  color: var(--z-typography-copy-success-color);
+}
+
+.z-typography-copy-icon {
+  display: block;
+  width: var(--z-typography-copy-size);
+  height: var(--z-typography-copy-size);
+}
+
+/* aria-live 反馈节点（对读屏播报，视觉弱化为小号成功色文本） */
+.z-typography-copy-feedback {
+  margin-inline-start: var(--z-space-1);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-text-sm);
+  font-weight: var(--z-weight-regular);
+  color: var(--z-typography-copy-success-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-typography-copy {
+    transition: none;
+  }
+}

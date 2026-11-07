@@ -1,6 +1,6 @@
 {
   "name": "@zui/blocks",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "ZUI 业务区块：登录 / 仪表盘 / 表格页 / 表单页，用 @zui/react 现有组件拼装的页面级区块",
   "type": "module",
   "main": "./dist/index.js",
@@ -27,7 +27,55 @@
       "types": "./dist/form-page/index.d.ts",
       "import": "./dist/form-page/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./user-center": {
+      "types": "./dist/user-center/index.d.ts",
+      "import": "./dist/user-center/index.js"
+    },
+    "./permission": {
+      "types": "./dist/permission/index.d.ts",
+      "import": "./dist/permission/index.js"
+    },
+    "./settings": {
+      "types": "./dist/settings/index.d.ts",
+      "import": "./dist/settings/index.js"
+    },
+    "./wizard": {
+      "types": "./dist/wizard/index.d.ts",
+      "import": "./dist/wizard/index.js"
+    },
+    "./profile-edit": {
+      "types": "./dist/profile-edit/index.d.ts",
+      "import": "./dist/profile-edit/index.js"
+    },
+    "./order-list": {
+      "types": "./dist/order-list/index.d.ts",
+      "import": "./dist/order-list/index.js"
+    },
+    "./data-screen": {
+      "types": "./dist/data-screen/index.d.ts",
+      "import": "./dist/data-screen/index.js"
+    },
+    "./timeline-feed": {
+      "types": "./dist/timeline-feed/index.d.ts",
+      "import": "./dist/timeline-feed/index.js"
+    },
+    "./kanban": {
+      "types": "./dist/kanban/index.d.ts",
+      "import": "./dist/kanban/index.js"
+    },
+    "./error-pages": {
+      "types": "./dist/error-pages/index.d.ts",
+      "import": "./dist/error-pages/index.js"
+    },
+    "./search-result": {
+      "types": "./dist/search-result/index.d.ts",
+      "import": "./dist/search-result/index.js"
+    },
+    "./list-detail": {
+      "types": "./dist/list-detail/index.d.ts",
+      "import": "./dist/list-detail/index.js"
+    }
   },
   "files": [
     "dist",
@@ -40,14 +88,12 @@
     "test": "vitest run"
   },
   "peerDependencies": {
-    "@zui/react": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@zui/react": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "typescript": "^5.7.2",
@@ -58,5 +104,8 @@
     "jsdom": "^25.0.1",
     "vite": "^6.0.5",
     "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "@zui/react": "workspace:*"
   }
 }

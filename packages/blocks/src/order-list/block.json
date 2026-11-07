@@ -1,0 +1,6 @@
+{
+  "name": "order-list",
+  "description": "订单列表区块：Table 订单表格 + Pagination 分页 + Select 状态筛选 + Tag 状态标签 + Popconfirm 取消订单确认",
+  "dependencies": ["Table", "Pagination", "Select", "Tag", "Popconfirm", "Button", "Card"],
+  "category": "业务块"
+}

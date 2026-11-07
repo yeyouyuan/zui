@@ -1,0 +1,6 @@
+{
+  "name": "kanban",
+  "description": "看板区块：三列静态看板，Card + Tag 优先级 + 计数徽标；静态展示不含拖拽能力（未引入拖拽库），卡片点击仅做高亮选中",
+  "dependencies": ["Card", "Tag"],
+  "category": "业务块"
+}

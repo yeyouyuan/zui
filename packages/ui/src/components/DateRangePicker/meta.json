@@ -1,0 +1,32 @@
+{
+  "name": "DateRangePicker",
+  "description": "日期范围选择器，双月并排日历面板选择 [start, end] 区间（ISO YYYY-MM-DD 二元组）。区间版；月份选择器粒度留待后续",
+  "category": "数据录入",
+  "notes": "区间版；月份选择器粒度留待后续",
+  "useCase": ["筛选条件的时间区间", "报表/订单的起止日期", "预订类表单的入住/离店日期"],
+  "dontUse": ["不要用 DateRangePicker 选单个日期（用 DatePicker）", "不要用它做月份粒度选择（暂未支持）", "不要用它做纯日期展示（用 Calendar）"],
+  "props": {
+    "value": { "type": "[string, string]", "desc": "受控值，ISO 'YYYY-MM-DD' 二元组 [start, end]" },
+    "defaultValue": { "type": "[string, string]", "desc": "非受控初始值" },
+    "onChange": { "type": "(range: [string, string] | null) => void", "desc": "完成选择回调；null = 已清空" },
+    "min": { "type": "string", "desc": "最小可选日期（ISO，含），之外禁选" },
+    "max": { "type": "string", "desc": "最大可选日期（ISO，含），之外禁选" },
+    "disabled": { "type": "boolean", "default": "false", "desc": "禁用" },
+    "status": { "type": "'default' | 'error' | 'success'", "default": "'default'", "desc": "校验状态（触发器边框着色）" },
+    "size": { "type": "'sm' | 'md' | 'lg'", "default": "'md'", "desc": "尺寸" },
+    "allowClear": { "type": "boolean", "default": "true", "desc": "已选时显示清除按钮，点击回调 onChange(null)" },
+    "id": { "type": "string", "desc": "开始输入位 id（供 label 关联）" },
+    "classNames": { "type": "{ root?; trigger?; panel?; day?; header? }", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "双月并排面板 role=dialog（aria-label=locale.dateRange.panelLabel），左右各一个 role=grid，aria-labelledby 关联各自月份标题",
+    "月份标题/星期头/导航按钮 aria 复用 locale.date.*；开始/结束占位与分隔符用 locale.dateRange.*",
+    "roving tabindex：焦点日期格 tabIndex=0，其余 -1；焦点跟随键盘移动，跨出双月窗口时视图跟随",
+    "选择状态机：点 A 记起点（aria-selected）→ 点 B≥A 完成 [A,B] 并关闭；B<A 则 B 成为新起点（逆序重开）",
+    "范围中间格 data-in-range=true（primary-subtle 底），start/end 格 aria-selected=true",
+    "键盘：触发器 Enter/Space/↓/↑ 开关面板；面板内 ←→±1 天（周循环）、↑↓±7 天、Home/End 月首尾、PageUp/PageDown 上下月、Enter 选定、Esc 关闭并归还焦点到触发器",
+    "min/max 之外的日期 aria-disabled=true，点击与 Enter 均不生效",
+    "清除按钮 aria-label=locale.input.clear，点击 onChange(null) 并把焦点还给开始输入位"
+  ],
+  "related": ["DatePicker", "Calendar", "Input"]
+}

@@ -1,9 +1,11 @@
 {
   "name": "@zui/tokens",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "ZUI 设计令牌：三层 CSS 变量 + TS 常量 + DTCG JSON",
   "type": "module",
-  "sideEffects": ["**/*.css"],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -18,7 +20,10 @@
     "./tokens.json": "./src/tokens.json",
     "./package.json": "./package.json"
   },
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"

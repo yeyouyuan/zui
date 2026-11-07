@@ -1,0 +1,55 @@
+/* Flex —— 万能弹性容器（纯布局，无 role；component prop 可换语义标签）。
+   gap 是运行时值：sm/md/lg → --z-space-2/3/4、number → px、string 原样（内联 gap）；
+   --z-flex-gap 为无 JS 兜底与用户静态覆盖出口（有内联 gap 时内联值优先）。 */
+
+.z-flex {
+  --z-flex-gap: 0px;
+  display: flex;
+  gap: var(--z-flex-gap);
+}
+
+.z-flex[data-vertical='true'] {
+  flex-direction: column;
+}
+
+.z-flex[data-wrap='true'] {
+  flex-wrap: wrap;
+}
+
+/* justify：主轴排列（start 为默认，无规则） */
+.z-flex[data-justify='end'] {
+  justify-content: flex-end;
+}
+
+.z-flex[data-justify='center'] {
+  justify-content: center;
+}
+
+.z-flex[data-justify='space-between'] {
+  justify-content: space-between;
+}
+
+.z-flex[data-justify='space-around'] {
+  justify-content: space-around;
+}
+
+.z-flex[data-justify='space-evenly'] {
+  justify-content: space-evenly;
+}
+
+/* align：交叉轴对齐（start 为默认，无规则） */
+.z-flex[data-align='center'] {
+  align-items: center;
+}
+
+.z-flex[data-align='end'] {
+  align-items: flex-end;
+}
+
+.z-flex[data-align='baseline'] {
+  align-items: baseline;
+}
+
+.z-flex[data-align='stretch'] {
+  align-items: stretch;
+}

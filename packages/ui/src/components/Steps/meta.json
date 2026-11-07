@@ -1,0 +1,22 @@
+{
+  "name": "Steps",
+  "description": "步骤条：引导用户按顺序完成多步流程，支持派生状态与显式 error 覆盖",
+  "category": "导航",
+  "useCase": ["注册/下单等多步流程", "表单分步填写", "任务进度指引"],
+  "dontUse": ["无顺序的分组切换用 Tabs", "事件时间流用 Timeline", "层级位置用 Breadcrumb"],
+  "props": {
+    "items": { "type": "StepsItem[]（title 必填，description/icon/status/disabled 可选）", "default": "—", "desc": "步骤配置（配置式）" },
+    "current": { "type": "number", "default": "0", "desc": "当前步骤下标；< 为 finish，== 为 process，> 为 wait" },
+    "direction": { "type": "'horizontal' | 'vertical'", "default": "'horizontal'", "desc": "排列方向" },
+    "size": { "type": "'md' | 'sm'", "default": "'md'", "desc": "尺寸" },
+    "onChange": { "type": "(index: number) => void", "default": "—", "desc": "提供后步骤可点击（disabled 除外）" },
+    "item.status": { "type": "'wait' | 'process' | 'finish' | 'error'", "default": "—", "desc": "显式覆盖派生状态，error 可出现在任意位置" },
+    "classNames": { "type": "{ root?; item?; icon?; content?; connector? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "nav aria-label=locale.steps.label + ol role=\"list\" + li；当前项 aria-current=\"step\"",
+    "onChange 提供时每项为 button（disabled 除外）：roving tabindex，↑←/↓→/Home/End 移动焦点，Enter/Space 确认",
+    "finish/error 用 @zui/icons CheckCircle/XCircle，且带 aria-hidden（有 title 文本兜底）"
+  ],
+  "related": ["Tabs", "Timeline", "Breadcrumb"]
+}

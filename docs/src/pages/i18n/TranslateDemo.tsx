@@ -14,8 +14,13 @@ import {
   Tag,
   TimePicker,
   enUS,
+  frFR,
+  deDE,
+  esES,
   jaJP,
   koKR,
+  ptBR,
+  ruRU,
   useMessage,
   zhCN,
   zhTW,
@@ -36,9 +41,14 @@ const LOCALES: Array<{ value: string; label: string; locale: ZuiLocale }> = [
   { value: 'zhTW', label: '🇭🇰 繁體中文 (zh-TW)', locale: zhTW },
   { value: 'jaJP', label: '🇯🇵 日本語 (ja-JP)', locale: jaJP },
   { value: 'koKR', label: '🇰🇷 한국어 (ko-KR)', locale: koKR },
+  { value: 'frFR', label: '🇫🇷 Français (fr-FR)', locale: frFR },
+  { value: 'deDE', label: '🇩🇪 Deutsch (de-DE)', locale: deDE },
+  { value: 'esES', label: '🇪🇸 Español (es-ES)', locale: esES },
+  { value: 'ruRU', label: '🇷🇺 Русский (ru-RU)', locale: ruRU },
+  { value: 'ptBR', label: '🇧🇷 Português (pt-BR)', locale: ptBR },
 ];
 
-const LOCALE_USAGE_CODE = `import { ConfigProvider, enUS, zhCN, zhTW, jaJP, koKR } from '@zui/react';
+const LOCALE_USAGE_CODE = `import { ConfigProvider, enUS } from '@zui/react';
 
 export default function App() {
   return (
@@ -186,7 +196,7 @@ function I18nPageBody(): React.ReactNode {
     <div className="doc-page">
       <h1 className="doc-h1">国际化 i18n 与 AI 翻译</h1>
       <p className="doc-lead">
-        ZUI 采用双层国际化方案：底层提供 <strong>5 套官方内置标准语言包</strong>
+        ZUI 采用双层国际化方案：底层提供 <strong>10 套官方内置标准语言包</strong>
         （开箱即用、无网络依赖）， 同时集成 <strong>@zui/i18n 智能翻译管道</strong>
         ，支持任意大模型驱动未翻译文案的自动回填与持久化缓存。
       </p>
@@ -196,7 +206,9 @@ function I18nPageBody(): React.ReactNode {
       <p className="doc-p">
         内置 <code>zhCN</code>（简体中文）、<code>enUS</code>（English）、<code>zhTW</code>
         （繁體中文）、
-        <code>jaJP</code>（日本語）、<code>koKR</code>（한국어）五套完整语言包。通过{' '}
+        <code>jaJP</code>（日本語）、<code>koKR</code>（한국어）、<code>frFR</code>
+        （Français）、<code>deDE</code>（Deutsch）、<code>esES</code>（Español）、
+        <code>ruRU</code>（Русский）、<code>ptBR</code>（Português）十套完整语言包。通过{' '}
         <code>ConfigProvider</code> 全局注入，内部组件即刻响应。
       </p>
 

@@ -1,0 +1,261 @@
+/* ZUI Upload —— 文件上传（按钮/拖拽区触发 + 文件列表 + 上传进度） */
+
+.z-upload {
+  /* 组件级变量（用户可覆盖） */
+  --z-upload-gap: var(--z-space-3);
+  --z-upload-button-height: 2.25rem;
+  --z-upload-button-padding-x: var(--z-space-4);
+  --z-upload-button-font-size: var(--z-text-sm);
+  --z-upload-button-radius: var(--z-radius);
+  --z-upload-button-bg: var(--z-color-primary);
+  --z-upload-button-fg: var(--z-color-primary-fg);
+  --z-upload-button-hover-bg: var(--z-color-primary-hover);
+  --z-upload-dragzone-padding: var(--z-space-6);
+  --z-upload-dragzone-radius: var(--z-radius);
+  --z-upload-dragzone-bg: var(--z-color-bg-subtle);
+  --z-upload-dragzone-fg: var(--z-color-fg-muted);
+  --z-upload-dragzone-border: var(--z-color-border-strong);
+  --z-upload-dragzone-border-hover: var(--z-color-primary);
+  --z-upload-dragzone-font-size: var(--z-text-sm);
+  --z-upload-list-gap: var(--z-space-2);
+  --z-upload-list-max-height: min(320px, calc(100dvh - 16px));
+  --z-upload-item-padding: var(--z-space-2);
+  --z-upload-item-radius: var(--z-radius-sm);
+  --z-upload-item-bg: var(--z-color-bg-subtle);
+  --z-upload-item-fg: var(--z-color-fg);
+  --z-upload-item-gap: var(--z-space-2);
+  --z-upload-icon-uploading: var(--z-color-primary);
+  --z-upload-icon-success: var(--z-color-success);
+  --z-upload-icon-error: var(--z-color-danger);
+  --z-upload-size-color: var(--z-color-fg-subtle);
+  --z-upload-progress-height: 6px;
+  --z-upload-progress-bg: var(--z-color-bg-muted);
+  --z-upload-progress-fill: var(--z-color-primary);
+  --z-upload-remove-color: var(--z-color-fg-subtle);
+  --z-upload-remove-hover-color: var(--z-color-danger);
+  --z-upload-focus-ring: var(--z-color-focus-ring);
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--z-upload-gap);
+  font-family: var(--z-font-sans);
+}
+
+/* ------------------------------- 隐藏 input ------------------------------ */
+
+/* opacity 0 + 绝对定位：不可见但仍可聚焦（Enter 原生打开文件选择） */
+.z-upload-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ------------------------------ 按钮模式 -------------------------------- */
+
+.z-upload-trigger {
+  position: relative;
+  display: inline-flex;
+}
+
+.z-upload-button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--z-upload-button-height);
+  padding: 0 var(--z-upload-button-padding-x);
+  font-family: inherit;
+  font-size: var(--z-upload-button-font-size);
+  font-weight: var(--z-weight-medium);
+  line-height: var(--z-leading-normal);
+  color: var(--z-upload-button-fg);
+  background: var(--z-upload-button-bg);
+  border: none;
+  border-radius: var(--z-upload-button-radius);
+  cursor: pointer;
+  transition:
+    background var(--z-duration-fast) var(--z-ease-standard),
+    color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-upload-button:hover {
+  background: var(--z-upload-button-hover-bg);
+}
+
+/* input 获得键盘焦点时在可见按钮上给出焦点环 */
+.z-upload-trigger:focus-within .z-upload-button {
+  outline: 2px solid var(--z-upload-focus-ring);
+  outline-offset: 2px;
+}
+
+/* ------------------------------ 拖拽区模式 ------------------------------- */
+
+.z-upload-dragzone {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--z-upload-dragzone-padding);
+  font-size: var(--z-upload-dragzone-font-size);
+  color: var(--z-upload-dragzone-fg);
+  background: var(--z-upload-dragzone-bg);
+  border: 1px dashed var(--z-upload-dragzone-border);
+  border-radius: var(--z-upload-dragzone-radius);
+  cursor: pointer;
+  transition:
+    border-color var(--z-duration-fast) var(--z-ease-standard),
+    background var(--z-duration-fast) var(--z-ease-standard),
+    color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-upload-dragzone[data-dragover='true'] {
+  color: var(--z-color-primary);
+  background: color-mix(in oklch, var(--z-color-primary) 8%, var(--z-upload-dragzone-bg));
+  border-color: var(--z-upload-dragzone-border-hover);
+}
+
+.z-upload-dragzone:focus-within {
+  outline: 2px solid var(--z-upload-focus-ring);
+  outline-offset: 2px;
+}
+
+/* ------------------------------- 禁用态 --------------------------------- */
+
+.z-upload[data-disabled='true'] .z-upload-button {
+  color: var(--z-color-disabled-fg);
+  background: var(--z-color-disabled-bg);
+  cursor: not-allowed;
+}
+
+.z-upload-dragzone[data-disabled='true'] {
+  color: var(--z-color-disabled-fg);
+  background: var(--z-color-disabled-bg);
+  border-color: var(--z-color-disabled-border);
+  cursor: not-allowed;
+}
+
+/* ------------------------------- 文件列表 ------------------------------- */
+
+.z-upload-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--z-upload-list-gap);
+  max-height: var(--z-upload-list-max-height);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.z-upload-item {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--z-space-1);
+  padding: var(--z-upload-item-padding);
+  background: var(--z-upload-item-bg);
+  border-radius: var(--z-upload-item-radius);
+}
+
+.z-upload-item-main {
+  display: flex;
+  align-items: center;
+  gap: var(--z-upload-item-gap);
+  min-width: 0;
+}
+
+.z-upload-item-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--z-upload-icon-uploading);
+}
+
+.z-upload-item[data-status='uploading'] .z-upload-item-icon {
+  color: var(--z-upload-icon-uploading);
+}
+
+.z-upload-item[data-status='success'] .z-upload-item-icon {
+  color: var(--z-upload-icon-success);
+}
+
+.z-upload-item[data-status='error'] .z-upload-item-icon {
+  color: var(--z-upload-icon-error);
+}
+
+.z-upload-item-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--z-text-sm);
+  line-height: var(--z-leading-normal);
+  color: var(--z-upload-item-fg);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.z-upload-item[data-status='error'] .z-upload-item-name {
+  color: var(--z-color-danger);
+}
+
+.z-upload-item-size {
+  flex-shrink: 0;
+  font-size: var(--z-text-xs);
+  line-height: var(--z-leading-normal);
+  color: var(--z-upload-size-color);
+}
+
+.z-upload-item-remove {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  color: var(--z-upload-remove-color);
+  background: transparent;
+  border: none;
+  border-radius: var(--z-upload-item-radius);
+  cursor: pointer;
+  transition: color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-upload-item-remove:hover {
+  color: var(--z-upload-remove-hover-color);
+}
+
+.z-upload-item-remove:focus-visible {
+  outline: 2px solid var(--z-upload-focus-ring);
+  outline-offset: 1px;
+}
+
+.z-upload[data-disabled='true'] .z-upload-item-remove {
+  color: var(--z-color-disabled-fg);
+  cursor: not-allowed;
+}
+
+/* ------------------------------ 上传进度条 ------------------------------ */
+
+.z-upload-item-progress {
+  display: block;
+  height: var(--z-upload-progress-height);
+  overflow: hidden;
+  background: var(--z-upload-progress-bg);
+  border-radius: var(--z-radius-full);
+}
+
+.z-upload-item-progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--z-upload-progress-fill);
+  border-radius: var(--z-radius-full);
+  transition: width var(--z-duration-normal) var(--z-ease-standard);
+}

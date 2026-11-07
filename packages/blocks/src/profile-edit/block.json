@@ -1,0 +1,6 @@
+{
+  "name": "profile-edit",
+  "description": "资料编辑区块：Row/Col 栅格表单布局（姓名/昵称/邮箱/手机/岗位/简介）+ Upload 头像上传 + DateRangePicker 任职时间",
+  "dependencies": ["Row", "Col", "Input", "Upload", "DateRangePicker", "Avatar", "Card", "Button"],
+  "category": "业务块"
+}

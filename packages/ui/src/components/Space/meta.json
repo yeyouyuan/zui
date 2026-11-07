@@ -1,0 +1,20 @@
+{
+  "name": "Space",
+  "description": "间距容器：inline-flex + gap，为相邻子元素提供统一间距（水平/垂直）",
+  "category": "布局",
+  "useCase": ["按钮组/标签组的统一间距", "纵向堆叠卡片列表（direction=vertical）", "徽标、文本等碎片元素的快速排列"],
+  "dontUse": ["需要主轴对齐控制的布局用 Flex", "24 栅格分列用 Row/Col"],
+  "props": {
+    "size": { "type": "'sm' | 'md' | 'lg' | number", "default": "'md'（8px，--z-space-2）", "desc": "间距尺寸；sm/md/lg 取相邻令牌 --z-space-1/2/3，number → px" },
+    "direction": { "type": "'horizontal' | 'vertical'", "default": "'horizontal'", "desc": "排列方向（data-direction）" },
+    "wrap": { "type": "boolean", "default": "false", "desc": "是否允许换行（data-wrap）" },
+    "align": { "type": "'start' | 'center' | 'end' | 'baseline'", "default": "'start'", "desc": "交叉轴对齐方式（data-align）" },
+    "classNames": { "type": "{ root? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "纯布局容器：无 role，gap 间距不影响读屏内容流",
+    "inline-flex 保持行内排版语境，不破坏相邻文本基线（align=baseline 可对齐）",
+    "排列仅改变视觉顺序，读屏按 DOM 顺序读取"
+  ],
+  "related": ["Flex", "Button", "Tag"]
+}

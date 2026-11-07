@@ -1,0 +1,6 @@
+{
+  "name": "search-result",
+  "description": "搜索结果页区块：Input 搜索 + Tabs 类型切换 + List 结果列表 + Empty 无结果，演示数据客户端过滤",
+  "dependencies": ["Button", "Empty", "Input", "List", "Tabs"],
+  "category": "业务块"
+}

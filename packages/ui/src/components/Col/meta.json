@@ -1,0 +1,19 @@
+{
+  "name": "Col",
+  "description": "24 栅格列：span/offset 定宽定偏移，flex 弹性覆盖（必须是 Row 直接子级）",
+  "category": "布局",
+  "useCase": ["Row 内的分列（span 1-24）", "列偏移排版（offset）", "弹性列（flex 覆盖 span）"],
+  "dontUse": ["脱离 Row 单独使用（栅格语境失效，宽度回落 100%）", "需要等距间隔而非分列时用 Space"],
+  "props": {
+    "span": { "type": "number", "default": "24", "desc": "占 1-24 格，宽度 calc(span/24*100%)（内联 --z-col-span + CSS calc）" },
+    "offset": { "type": "number", "default": "0", "desc": "左侧偏移 0-23 格（margin-left）" },
+    "flex": { "type": "string | number | 'auto' | 'none'", "default": "—", "desc": "弹性布局（flex-basis 语义），提供时覆盖 span" },
+    "classNames": { "type": "{ root? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "纯布局元素：无 role、不承载语义",
+    "水平 gutter 由 Row 经 Context 注入 padding-inline，无 Context 时默认 0",
+    "栅格仅影响视觉列序，读屏按 DOM 顺序读取；重要内容勿依赖 offset 打乱源顺序"
+  ],
+  "related": ["Row", "Flex", "Space"]
+}

@@ -1,7 +1,7 @@
 # ZUI registry
 
 `registry.json` 从组件、业务块和公共源码生成，供 CLI 复制与 MCP 查询。
-当前包含 57 个组件、4 个业务块，共 61 个条目。
+当前包含 66 个组件、16 个业务块，共 82 个条目。
 
 ```bash
 node registry/scripts/generate.mjs
@@ -14,12 +14,12 @@ node registry/scripts/generate.mjs --check
 
 清单顶层字段：
 
-| 字段 | 用途 |
-|---|---|
-| `items` | 组件或业务块条目 |
-| `sharedFiles` | utils、config、styles 公共源码 |
-| `dependencies` | 公共源码所需 npm 依赖，包括 CSS 中的令牌包 |
-| `exports` | 公开符号到组件 barrel 的映射，供业务块本地化导入 |
+| 字段           | 用途                                             |
+| -------------- | ------------------------------------------------ |
+| `items`        | 组件或业务块条目                                 |
+| `sharedFiles`  | utils、config、styles 公共源码                   |
+| `dependencies` | 公共源码所需 npm 依赖，包括 CSS 中的令牌包       |
+| `exports`      | 公开符号到组件 barrel 的映射，供业务块本地化导入 |
 
 每条目包含 `name`、`type`（`registry:component` / `registry:block`）、`title`、
 `description`、`dependencies`、`registryDependencies`、`files`、`cssVars`、`meta`。

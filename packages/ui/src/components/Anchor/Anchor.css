@@ -1,0 +1,80 @@
+/* Anchor —— 组件级变量定义在根选择器上，用户可任意覆盖 */
+
+.z-anchor {
+  --z-anchor-font-size: var(--z-text-sm);
+  --z-anchor-link-color: var(--z-color-fg-muted);
+  --z-anchor-link-hover-color: var(--z-color-fg);
+  --z-anchor-link-active-color: var(--z-color-primary);
+  --z-anchor-link-bg: transparent;
+  --z-anchor-link-active-bg: transparent;
+  --z-anchor-link-padding-x: var(--z-space-3);
+  --z-anchor-link-padding-y: var(--z-space-1);
+  --z-anchor-indicator-width: 2px;
+  --z-anchor-indicator-color: var(--z-color-primary);
+  --z-anchor-sublist-indent: var(--z-space-6);
+  --z-anchor-transition: var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-anchor-list,
+.z-anchor-sublist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.z-anchor-sublist {
+  padding-left: var(--z-anchor-sublist-indent);
+}
+
+.z-anchor-item {
+  list-style: none;
+}
+
+.z-anchor-link {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  padding: var(--z-anchor-link-padding-y) var(--z-anchor-link-padding-x);
+  border-radius: var(--z-radius-sm);
+  background: var(--z-anchor-link-bg);
+  color: var(--z-anchor-link-color);
+  font-size: var(--z-anchor-font-size);
+  line-height: var(--z-leading-normal);
+  text-decoration: none;
+  transition:
+    color var(--z-anchor-transition),
+    background var(--z-anchor-transition);
+}
+
+/* 左侧 2px 激活指示条 */
+.z-anchor-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: var(--z-anchor-indicator-width);
+  height: 1.25em;
+  border-radius: var(--z-radius-full);
+  background: var(--z-anchor-indicator-color);
+  transform: translateY(-50%) scaleY(0);
+  transition: transform var(--z-anchor-transition);
+}
+
+.z-anchor-link:hover {
+  color: var(--z-anchor-link-hover-color);
+}
+
+.z-anchor-link[data-active='true'] {
+  color: var(--z-anchor-link-active-color);
+  background: var(--z-anchor-link-active-bg);
+  font-weight: var(--z-weight-medium);
+}
+
+.z-anchor-link[data-active='true']::before {
+  transform: translateY(-50%) scaleY(1);
+}
+
+.z-anchor-link:focus-visible {
+  outline: 2px solid var(--z-color-border-focus);
+  outline-offset: 2px;
+}

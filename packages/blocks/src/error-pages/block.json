@@ -1,0 +1,6 @@
+{
+  "name": "error-pages",
+  "description": "错误页集区块：Result 403/404/500 三态，同一区块内通过 props 切换，含返回上一页 / 回到首页操作",
+  "dependencies": ["Button", "Result", "Segmented"],
+  "category": "业务块"
+}

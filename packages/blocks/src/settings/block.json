@@ -1,0 +1,6 @@
+{
+  "name": "settings",
+  "description": "系统设置区块：左侧锚点式分组导航（基本/通知/安全）+ 分区表单（Input/Select）+ Switch 偏好开关",
+  "dependencies": ["Card", "Input", "Select", "Switch", "Button"],
+  "category": "业务块"
+}

@@ -298,7 +298,7 @@ function useAutoTranslate(config: TranslateConfig): {
 
 ## meta.json — per-component AI metadata (CONTRACTS-V3 §2)
 
-Path: `packages/ui/src/components/<Name>/meta.json` (all 57 components ship metadata). Consumed by `@zui/mcp` tools
+Path: `packages/ui/src/components/<Name>/meta.json` (all 66 Registry components ship metadata). Consumed by `@zui/mcp` tools
 and the registry generator.
 
 ```json
@@ -327,7 +327,7 @@ Field meaning:
 
 ## Registry & CLI (packages/cli + registry/)
 
-The registry (`registry/registry.json`) contains 57 components and 4 blocks, generated from sources +
+The registry (`registry/registry.json`) contains 66 components and 16 blocks, generated from sources +
 `meta.json`; `@zui/cli` copies component source into your project (free to edit) with an
 upstream update channel.
 
@@ -385,3 +385,55 @@ Example request line (one JSON per line on stdin):
 
 Raw JSON-RPC methods supported: `initialize`, `notifications/initialized`, `ping`,
 `tools/list`, `tools/call`.
+
+## Design Assets (设计资源) — docs DesignAssetsPage
+
+Design-token source of truth: `packages/tokens/src/tokens.json` (DTCG format;
+`$type` / `$value`; the semantic layer's `$value` is ALWAYS an alias chain like
+`{zui.primitives.brand.600}`, never a bare color). CSS layering:
+`base.css` (primitives `--z-neutral-*`, `--z-brand-*`, ...) → `semantic.css`
+(`--z-color-*`, light values) → `dark.css` (remaps ONLY `--z-color-*` under
+`[data-theme='dark']` + a `prefers-color-scheme` fallback; dimension tokens are
+never remapped). Contrast is WCAG AA calibrated in both themes.
+
+- Figma: open Tokens Studio for Figma → Settings → Load from file → paste
+  `tokens.json` → two token sets import automatically (primitives + semantic).
+  Bind component styles to the SEMANTIC layer only.
+- Three token layers: primitive (`zui.primitives.brand.600` ↔ `--z-brand-600`,
+  the only place raw values live) → semantic (`zui.semantic.color.primary` ↔
+  `--z-color-primary`, the only layer components consume) → component-level
+  (`--z-<name>-*`, e.g. `--z-button-bg`, runtime-derived from semantic).
+- Re-branding (3 steps, semantic layer ONLY):
+  1) create `brand-skin.css` overriding semantic `--z-color-*` vars, values must
+     reference primitive scales (e.g. `--z-color-primary: var(--z-success-600)`,
+     hover 700, active 800, subtle 50/700, link/focus 600);
+  2) import after `@zui/react/styles.css` and mount the class on a container or
+     `:root`; `ConfigProvider` (locale/translate) is orthogonal to theming;
+  3) add dark values under `[data-theme='dark'] .brand-spring` mirroring
+     dark.css rules (600→500, fg inverted, subtle 900/300) plus a
+     `:root:not([data-theme='light'])` media fallback.
+- CDN (no-build): `pnpm --filter @zui/react build:browser` →
+  `packages/ui/dist/browser/zui.global.js` + `zui.css` (+ LICENSE.txt), synced
+  to `docs/dist/cdn/v<v>/` (version from package.json, currently v0.2.0).
+  The current public Pages path remains `cdn/v0.1.0/` until v0.2.0 is deployed.
+  Usage after deployment: `<link rel="stylesheet" href="cdn/v0.2.0/zui.css">` +
+  `<script src="cdn/v0.2.0/zui.global.js">`; the IIFE bundles React 19 under
+  the global namespace `ZUI` (`ZUI.React`, `ZUI.createRoot`, `ZUI.hydrateRoot`,
+  every component). Live example: `/cdn-demo.html`.
+- Naming map (Figma path ↔ CSS variable): `zui.primitives.brand.600` ↔
+  `--z-brand-600`; `zui.semantic.color.primary` ↔ `--z-color-primary`;
+  `zui.semantic.radius.lg` ↔ `--z-radius-lg` (single source `--z-radius`,
+  sm/md/lg/xl derive via calc); `zui.semantic.shadow.md` ↔ `--z-shadow-md`;
+  `zui.semantic.font.sans` ↔ `--z-font-sans`. Dimension tokens (`--z-radius`,
+  `--z-space-1..12`, `--z-text-xs..2xl`, `--z-shadow-xs..lg`, `--z-duration-*`,
+  `--z-z-*`) are theme-agnostic. Semantic color matrix (light/dark, per
+  semantic.css/dark.css): bg 50/950, bg-subtle 100/900, bg-muted 200/800,
+  bg-elevated 50/900, bg-inverse 900/50; fg 950/50, fg-muted 600/300,
+  fg-subtle 500/400, fg-inverse 50/950, fg-on-primary 50/950; border 300/700,
+  border-subtle 200/800, border-strong 500/400, border-focus brand 600/500;
+  primary brand 600/500 (+hover 700/400, active 800/300, fg neutral 50/950,
+  subtle brand 50/900, subtle-fg brand 700/300); `{danger,success,warning,info}`
+  600/500 (+hover 700/400, fg neutral 50/950, subtle {role} 50/900, subtle-fg
+  {role} 700/300); link brand 600/500, link-hover brand 700/400, focus-ring
+  brand 600/500; overlay neutral-950 @45%/65% (color-mix), disabled-bg 100/800,
+  disabled-fg 400/500, disabled-border 200/800.

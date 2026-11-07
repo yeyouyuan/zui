@@ -4,6 +4,7 @@ packages/cli/data/
 packages/mcp/data/
 .DS_Store
 coverage
+test-results/
 *.local
 *.log
 .zcode/

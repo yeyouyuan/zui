@@ -29,7 +29,7 @@
 </script>
 ```
 
-[在线脚本演示](https://yeyouyuan.github.io/zui/cdn-demo.html)。版本路径固定为 `v0.1.0`；升级时请改用相应版本目录。
+[在线脚本演示](https://yeyouyuan.github.io/zui/cdn-demo.html)。当前公开路径为 `v0.1.0`；`v0.2.0` 的脚本将在本次发布后提供。
 
 ### 包管理器安装
 
@@ -81,14 +81,14 @@ document.documentElement.style.setProperty('--z-color-primary', 'oklch(0.55 0.2 
 | 包            | 说明                                                                        |
 | ------------- | --------------------------------------------------------------------------- |
 | `@zui/tokens` | 设计令牌：三层 CSS 变量 + TS 常量 + DTCG JSON（Figma/Tokens Studio 可消费） |
-| `@zui/react`  | 组件库（57 组件）                                                           |
-| `@zui/icons`  | 图标：24 枚线性图标组件（Feather/Lucide 风格，React 19）                    |
+| `@zui/react`  | 组件库（66 个 Registry 组件条目）                                           |
+| `@zui/icons`  | 图标：142 枚线性图标组件（Feather/Lucide 风格，React 19）                   |
 | `@zui/i18n`   | AI 翻译：`useAutoTranslate` 组件内置文案自动翻译                            |
 | `@zui/cli`    | registry CLI：`zui init / add / diff / list`                                |
 | `@zui/mcp`    | MCP server：给 AI 编码工具暴露 ZUI 组件检索/生成能力                        |
-| `@zui/blocks` | 业务区块：登录 / 仪表盘 / 表格页 / 表单页                                   |
+| `@zui/blocks` | 业务区块：16 个页面级区块，涵盖登录、仪表盘、设置与数据展示等场景           |
 
-## 组件清单（v0.3，57 个）
+## 组件清单（v0.2.0，66 个）
 
 **基础**：Button · Input · InputNumber · Checkbox · Radio/RadioGroup · Switch · Select · Cascader · Transfer · Mentions
 **表单**：Form · Rate · Slider · ColorPicker
@@ -97,10 +97,10 @@ document.documentElement.style.setProperty('--z-color-primary', 'oklch(0.55 0.2 
 **数据展示**：Table · VirtualTable · Tree · TreeSelect · List · Card · Avatar · Badge · Tag · Empty · Skeleton · Divider · Image · QRCode · Watermark · Descriptions · Statistic · Timeline
 **日期**：DatePicker · Calendar · TimePicker
 **反馈**：Alert · Spin · Progress · Result
-**其他**：Collapse · Segmented · App
-**配置**：ConfigProvider（locale 文案）
+**其他**：Collapse · Segmented · App · Upload · Steps · DateRangePicker · Anchor · Typography · Row · Col · Flex · Space
+**配置**：ConfigProvider（locale 文案，内置 10 套语言包）
 
-配套：`@zui/icons`（24 枚线性图标，组件内图标已全面接入）、`@zui/tokens`（三层令牌 + DTCG JSON）
+配套：`@zui/icons`（142 枚线性图标，组件内图标已全面接入）、`@zui/tokens`（三层令牌 + DTCG JSON）
 
 ## AI 翻译（`@zui/i18n`）
 
@@ -126,7 +126,7 @@ const placeholder = tSync('请选择', { component: 'Select', role: 'placeholder
 ## registry / CLI / MCP
 
 - **registry**（`registry/`）：机器可读的组件目录（`registry.json` + schema），记录每个组件的 API、依赖与源码位置
-- **CLI**（`@zui/cli`）：`zui init` 初始化、`zui add <component>` 把组件源码复制进你的项目并列出所需依赖、`zui diff` 对比本地与 registry 版本、`zui list` 浏览 57 个组件与 4 个业务区块
+- **CLI**（`@zui/cli`）：`zui init` 初始化、`zui add <component>` 把组件源码复制进你的项目并列出所需依赖、`zui diff` 对比本地与 registry 版本、`zui list` 浏览 66 个组件与 16 个业务区块
 - **MCP**（`@zui/mcp`）：以 stdio JSON-RPC 暴露 `search` / `api` / `generate` 三个工具，让 AI 编码助手按你的项目上下文检索 ZUI API 并生成组件代码
 
 ## 开发
@@ -144,7 +144,7 @@ pnpm --filter @zui/docs dev       # 文档站 http://localhost:5173
 
 - 语义化版本：破坏性变更只随 major 版本发布，废弃 API 跨一个大版本后才移除
 - API 命名规范见 `CONTRACTS.md`（唯一事实来源）
-- 版本历史见 `CHANGELOG.md`；v0.3 起随包提供 57 组件、AI 翻译与 registry/CLI/MCP 分发生态；SSR/Next.js 接入见 `docs/SSR.md`
+- 版本历史见 `CHANGELOG.md`；当前待发布的 v0.2.0 包含 66 个 Registry 组件条目、AI 翻译与 registry/CLI/MCP 分发生态；SSR/Next.js 接入见 `docs/SSR.md`
 
 ## License
 

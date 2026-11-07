@@ -1,0 +1,46 @@
+/* Row —— 24 栅格水平容器（纯布局，无 role）。
+   gutter 是运行时值：水平走自身负 margin-inline、垂直走 row-gap（经内联样式注入）；
+   --z-row-gutter-* 为无 JS 兜底与用户静态覆盖出口（有内联 gutter 时内联值优先）。 */
+
+.z-row {
+  --z-row-gutter-x: 0px;
+  --z-row-gutter-y: 0px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-inline: calc(var(--z-row-gutter-x) * -1);
+  row-gap: var(--z-row-gutter-y);
+}
+
+.z-row[data-wrap='false'] {
+  flex-wrap: nowrap;
+}
+
+/* justify：水平排列（start 为默认，无规则） */
+.z-row[data-justify='end'] {
+  justify-content: flex-end;
+}
+
+.z-row[data-justify='center'] {
+  justify-content: center;
+}
+
+.z-row[data-justify='space-between'] {
+  justify-content: space-between;
+}
+
+.z-row[data-justify='space-around'] {
+  justify-content: space-around;
+}
+
+.z-row[data-justify='space-evenly'] {
+  justify-content: space-evenly;
+}
+
+/* align：垂直对齐（top 为默认，无规则） */
+.z-row[data-align='middle'] {
+  align-items: center;
+}
+
+.z-row[data-align='bottom'] {
+  align-items: flex-end;
+}

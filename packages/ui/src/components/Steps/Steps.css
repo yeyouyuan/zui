@@ -1,0 +1,266 @@
+/* ZUI Steps —— 步骤条（派生状态 + 显式 status 覆盖 + 可点击键盘导航）。
+   组件级变量定义在根选择器上，可被用户任意覆盖；颜色一律消费语义令牌。 */
+
+.z-steps {
+  /* 组件级变量（用户可覆盖） */
+  --z-steps-icon-size: 2rem;
+  --z-steps-icon-font-size: var(--z-text-sm);
+  --z-steps-icon-svg-size: calc(var(--z-steps-icon-size) * 0.5625);
+  --z-steps-line-width: 2px;
+  --z-steps-line-color: var(--z-color-border);
+  --z-steps-line-finish-color: var(--z-color-primary);
+  --z-steps-item-gap: var(--z-space-4);
+  --z-steps-gap: var(--z-space-3);
+  --z-steps-vertical-line-gap: var(--z-space-2);
+  --z-steps-title-font-size: var(--z-text-md);
+  --z-steps-description-font-size: var(--z-text-sm);
+  --z-steps-title-fg: var(--z-color-fg);
+  --z-steps-description-fg: var(--z-color-fg-muted);
+  --z-steps-icon-bg: var(--z-color-bg-muted);
+  --z-steps-icon-fg: var(--z-color-fg-muted);
+  --z-steps-icon-border: transparent;
+  --z-steps-icon-border-width: 1px;
+  --z-steps-transition: var(--z-duration-fast) var(--z-ease-standard);
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--z-steps-item-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--z-font-sans);
+  color: var(--z-color-fg);
+}
+
+/* ---------------------------------- item ---------------------------------- */
+
+.z-steps-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--z-steps-item-gap);
+  min-width: 0;
+}
+
+/* --------------------------------- trigger -------------------------------- */
+
+.z-steps-trigger {
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--z-steps-gap);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+button.z-steps-trigger {
+  cursor: pointer;
+  transition: color var(--z-steps-transition);
+}
+
+button.z-steps-trigger:focus-visible {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--z-radius-sm);
+}
+
+.z-steps[data-clickable='true'] button.z-steps-trigger:hover .z-steps-title {
+  color: var(--z-color-primary);
+}
+
+/* disabled（仅 onChange 模式渲染 span，原生不可聚焦、不可点击） */
+.z-steps-trigger-disabled,
+.z-steps-item[data-disabled='true'] {
+  cursor: not-allowed;
+}
+
+.z-steps-item[data-disabled='true'] {
+  --z-steps-icon-bg: var(--z-color-disabled-bg);
+  --z-steps-icon-fg: var(--z-color-disabled-fg);
+  --z-steps-icon-border: var(--z-color-disabled-border);
+  --z-steps-title-fg: var(--z-color-disabled-fg);
+  --z-steps-description-fg: var(--z-color-disabled-fg);
+}
+
+/* ---------------------------------- icon ---------------------------------- */
+
+.z-steps-icon {
+  box-sizing: border-box;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--z-steps-icon-size);
+  height: var(--z-steps-icon-size);
+  border: var(--z-steps-icon-border-width) solid var(--z-steps-icon-border);
+  border-radius: var(--z-radius-full);
+  background: var(--z-steps-icon-bg);
+  color: var(--z-steps-icon-fg);
+  font-size: var(--z-steps-icon-font-size);
+  font-weight: var(--z-weight-medium);
+  line-height: 1;
+  transition:
+    background-color var(--z-steps-transition),
+    color var(--z-steps-transition),
+    border-color var(--z-steps-transition);
+}
+
+.z-steps-icon-svg {
+  width: var(--z-steps-icon-svg-size);
+  height: var(--z-steps-icon-svg-size);
+}
+
+/* 派生状态 → 图标节点配色（显式 status 覆盖走同一 data-status 出口） */
+
+/* wait：默认（muted） */
+.z-steps-item[data-status='wait'] {
+  --z-steps-title-fg: var(--z-color-fg-muted);
+}
+
+/* process：主色描边 + 填充 */
+.z-steps-item[data-status='process'] {
+  --z-steps-icon-bg: var(--z-color-primary);
+  --z-steps-icon-fg: var(--z-color-primary-fg);
+  --z-steps-icon-border: var(--z-color-primary);
+  --z-steps-title-fg: var(--z-color-fg);
+}
+
+.z-steps-item[data-status='process'] .z-steps-title {
+  font-weight: var(--z-weight-semibold);
+}
+
+/* finish：主色对勾 */
+.z-steps-item[data-status='finish'] {
+  --z-steps-icon-bg: var(--z-color-primary-subtle);
+  --z-steps-icon-fg: var(--z-color-primary);
+  --z-steps-icon-border: transparent;
+  --z-steps-title-fg: var(--z-color-fg);
+}
+
+/* error：danger 色 */
+.z-steps-item[data-status='error'] {
+  --z-steps-icon-bg: var(--z-color-danger-subtle);
+  --z-steps-icon-fg: var(--z-color-danger);
+  --z-steps-icon-border: transparent;
+  --z-steps-title-fg: var(--z-color-danger);
+}
+
+/* --------------------------------- content -------------------------------- */
+
+.z-steps-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--z-space-1);
+  min-width: 0;
+  /* 标题首行与图标圆心对齐 */
+  padding-top: calc((var(--z-steps-icon-size) - 1.25em) / 2);
+}
+
+.z-steps-title {
+  font-size: var(--z-steps-title-font-size);
+  font-weight: var(--z-weight-medium);
+  line-height: var(--z-leading-normal);
+  color: var(--z-steps-title-fg);
+  transition: color var(--z-steps-transition);
+}
+
+.z-steps-description {
+  font-size: var(--z-steps-description-font-size);
+  line-height: var(--z-leading-normal);
+  color: var(--z-steps-description-fg);
+}
+
+/* -------------------------------- connector ------------------------------- */
+
+/* 连接线：元素本体占位（水平 flex:1），线体由 ::after 绘制；最后一个无线（不渲染） */
+.z-steps-connector {
+  position: relative;
+  flex: 1 1 0;
+  min-width: var(--z-space-4);
+  align-self: flex-start;
+  height: var(--z-steps-icon-size);
+}
+
+.z-steps-connector::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: var(--z-steps-line-width);
+  transform: translateY(-50%);
+  border-radius: var(--z-radius-full);
+  background: var(--z-steps-line-color);
+  transition: background var(--z-steps-transition);
+}
+
+/* 已完成步骤之后的连接线呈主色（进度感） */
+.z-steps-item[data-status='finish'] .z-steps-connector::after {
+  background: var(--z-steps-line-finish-color);
+}
+
+/* -------------------------------- vertical -------------------------------- */
+
+.z-steps[data-direction='vertical'] {
+  flex-direction: column;
+}
+
+.z-steps[data-direction='vertical'] .z-steps-item {
+  display: block;
+  position: relative;
+}
+
+.z-steps[data-direction='vertical'] .z-steps-trigger {
+  min-height: var(--z-steps-icon-size);
+}
+
+/* 垂直连接线：绝对定位在左侧图标列下方，延伸到下一项图标顶部（含行间距） */
+.z-steps[data-direction='vertical'] .z-steps-connector {
+  position: absolute;
+  flex: none;
+  left: 0;
+  width: var(--z-steps-icon-size);
+  top: calc(var(--z-steps-icon-size) + var(--z-steps-vertical-line-gap));
+  bottom: calc(-1 * var(--z-steps-item-gap));
+  height: auto;
+  min-width: 0;
+}
+
+.z-steps[data-direction='vertical'] .z-steps-connector::after {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  right: auto;
+  width: var(--z-steps-line-width);
+  height: auto;
+  transform: translateX(-50%);
+}
+
+/* ---------------------------------- size ---------------------------------- */
+
+.z-steps[data-size='sm'] {
+  --z-steps-icon-size: 1.5rem;
+  --z-steps-icon-font-size: var(--z-text-xs);
+  --z-steps-item-gap: var(--z-space-3);
+  --z-steps-gap: var(--z-space-2);
+  --z-steps-title-font-size: var(--z-text-sm);
+  --z-steps-description-font-size: var(--z-text-xs);
+}
+
+/* --------------------------------- motion --------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .z-steps,
+  .z-steps-icon,
+  .z-steps-title,
+  .z-steps-connector::after {
+    transition: none;
+  }
+}

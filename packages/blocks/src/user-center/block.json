@@ -1,0 +1,6 @@
+{
+  "name": "user-center",
+  "description": "个人中心区块：Avatar 头像 + Descriptions 基本资料 + Tabs（资料/安全/偏好）+ Upload 头像上传 + Switch 偏好开关",
+  "dependencies": ["Avatar", "Descriptions", "Tabs", "Upload", "Switch", "Card"],
+  "category": "业务块"
+}

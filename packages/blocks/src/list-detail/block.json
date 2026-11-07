@@ -1,0 +1,6 @@
+{
+  "name": "list-detail",
+  "description": "列表详情区块：左列表（List）右详情（Descriptions + Card）双栏 Row/Col 布局，支持受控选中项",
+  "dependencies": ["Card", "Col", "Descriptions", "Empty", "List", "Row", "Tag"],
+  "category": "业务块"
+}

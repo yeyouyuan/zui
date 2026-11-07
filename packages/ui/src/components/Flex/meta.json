@@ -1,0 +1,23 @@
+{
+  "name": "Flex",
+  "description": "万能弹性容器：方向、主轴/交叉轴排列、间距、换行与语义标签切换",
+  "category": "布局",
+  "useCase": ["工具栏/操作条排列（justify + gap）", "纵向堆叠布局（vertical）", "需要语义标签的弹性列表（component=ul/ol）"],
+  "dontUse": ["24 栅格分列布局用 Row/Col", "仅左右留白排版用普通块级元素 + margin"],
+  "props": {
+    "vertical": { "type": "boolean", "default": "false", "desc": "主轴垂直（flex-direction: column）" },
+    "justify": { "type": "'start' | 'end' | 'center' | 'space-between' | 'space-around' | 'space-evenly'", "default": "'start'", "desc": "主轴排列方式（data-justify）" },
+    "align": { "type": "'start' | 'center' | 'end' | 'baseline' | 'stretch'", "default": "'start'", "desc": "交叉轴对齐方式（data-align）" },
+    "gap": { "type": "'sm' | 'md' | 'lg' | number | string", "default": "—", "desc": "间距：sm/md/lg 映射 --z-space-2/3/4；number → px；string 原样内联" },
+    "wrap": { "type": "boolean", "default": "false", "desc": "是否允许换行（data-wrap）" },
+    "flex": { "type": "string | number", "default": "—", "desc": "flex 属性内联覆盖" },
+    "component": { "type": "'div' | 'span' | 'ul' | 'ol'", "default": "'div'", "desc": "渲染的语义标签" },
+    "classNames": { "type": "{ root? }", "default": "—", "desc": "slot 级类名追加" }
+  },
+  "a11yNotes": [
+    "纯布局容器：无 role；需要列表语义时用 component='ul'/'ol' 配合 li 子级",
+    "component='span' 时保持行内语义，注意不要把块级交互元素嵌进 span",
+    "排列仅改变视觉顺序，读屏按 DOM 顺序读取"
+  ],
+  "related": ["Space", "Row", "Col"]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "timeline-feed",
+  "description": "时间线信息流区块：Timeline + Avatar + Card 组成的事件流，Skeleton 加载占位与加载更多",
+  "dependencies": ["Avatar", "Button", "Card", "Skeleton", "Timeline"],
+  "category": "业务块"
+}

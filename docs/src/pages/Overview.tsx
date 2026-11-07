@@ -21,7 +21,7 @@ const ARCH_DIAGRAM = `┌──────────────────�
 └───────────────▲──────────────────────────────────────────┘
                 │  import { Button, Input … } from '@zui/react'
 ┌───────────────┴──────────────────────────────────────────┐
-│  组件层  @zui/react（57 个组件）                            │
+│  组件层  @zui/react（66 个组件）                            │
 │    · 零运行时样式：纯 CSS 文件 + CSS 变量                     │
 │    · 无障碍优先：键盘可达 / 焦点管理 / ARIA 一票否决            │
 │    · 定制出口三件套：data-part + classNames + --z-<name>-*   │
@@ -41,8 +41,8 @@ export default function Overview(): React.ReactNode {
     <div className="doc-page">
       <h1 className="doc-h1">ZUI 组件库</h1>
       <p className="doc-lead">
-        ZUI 是一套令牌驱动、零运行时样式、无障碍优先且对 AI 友好的现代 React 19 组件库。
-        样式全部由 CSS 变量令牌承载，组件只暴露语义化定制出口，不泄露任何内部实现细节。
+        ZUI 是一套令牌驱动、零运行时样式、无障碍优先且对 AI 友好的现代 React 19 组件库。 样式全部由
+        CSS 变量令牌承载，组件只暴露语义化定制出口，不泄露任何内部实现细节。
       </p>
 
       <h2 className="doc-h2">核心理念</h2>
@@ -107,9 +107,11 @@ export default function Overview(): React.ReactNode {
       <p className="doc-p">引入样式并使用 Button：</p>
       <CodeBlock code={USAGE_CODE} />
       <div className="doc-note">
-        样式文件 <code className="doc-code-inline">@zui/react/styles.css</code> 内含令牌、重置样式与全部组件样式，
-        应用中只需引入一次。暗色模式切换{' '}
-        <code className="doc-code-inline">document.documentElement.dataset.theme = &#39;dark&#39;</code>{' '}
+        样式文件 <code className="doc-code-inline">@zui/react/styles.css</code>{' '}
+        内含令牌、重置样式与全部组件样式， 应用中只需引入一次。暗色模式切换{' '}
+        <code className="doc-code-inline">
+          document.documentElement.dataset.theme = &#39;dark&#39;
+        </code>{' '}
         即可生效（跟随系统为默认行为）。
       </div>
 

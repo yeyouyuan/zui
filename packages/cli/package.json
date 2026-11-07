@@ -1,6 +1,6 @@
 {
   "name": "@zui/cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "ZUI registry CLI：init / add / diff / list，把 registry 组件源码复制进你的项目",
   "type": "module",
   "bin": {

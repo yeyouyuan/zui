@@ -1,0 +1,6 @@
+{
+  "name": "permission",
+  "description": "权限管理区块：Tree 角色权限树（checkable 父子联动）+ Table 成员列表 + Switch 启用开关列",
+  "dependencies": ["Tree", "Table", "Switch", "Tag", "Card"],
+  "category": "业务块"
+}

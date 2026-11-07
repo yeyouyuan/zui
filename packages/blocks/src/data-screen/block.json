@@ -1,0 +1,6 @@
+{
+  "name": "data-screen",
+  "description": "数据大屏区块：深色底自适应，Statistic 统计卡行 + CSS 柱状图 + Progress 资源指标，支持时间维度切换与刷新回调",
+  "dependencies": ["Progress", "Segmented", "Statistic"],
+  "category": "业务块"
+}

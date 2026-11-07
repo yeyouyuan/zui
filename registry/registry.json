@@ -29,6 +29,11 @@
     "Alert": "packages/ui/src/components/Alert/index.ts",
     "AlertProps": "packages/ui/src/components/Alert/index.ts",
     "AlertType": "packages/ui/src/components/Alert/index.ts",
+    "Anchor": "packages/ui/src/components/Anchor/index.ts",
+    "AnchorLink": "packages/ui/src/components/Anchor/index.ts",
+    "AnchorProps": "packages/ui/src/components/Anchor/index.ts",
+    "AnchorLinkProps": "packages/ui/src/components/Anchor/index.ts",
+    "AnchorLinkInfo": "packages/ui/src/components/Anchor/index.ts",
     "App": "packages/ui/src/components/App/index.ts",
     "AppProps": "packages/ui/src/components/App/index.ts",
     "useApp": "packages/ui/src/components/App/index.ts",
@@ -61,6 +66,8 @@
     "CascaderOption": "packages/ui/src/components/Cascader/index.ts",
     "Checkbox": "packages/ui/src/components/Checkbox/index.ts",
     "CheckboxProps": "packages/ui/src/components/Checkbox/index.ts",
+    "Col": "packages/ui/src/components/Col/index.ts",
+    "ColProps": "packages/ui/src/components/Col/index.ts",
     "Collapse": "packages/ui/src/components/Collapse/index.ts",
     "CollapseProps": "packages/ui/src/components/Collapse/index.ts",
     "ColorPicker": "packages/ui/src/components/ColorPicker/index.ts",
@@ -68,6 +75,8 @@
     "ColorPickerSize": "packages/ui/src/components/ColorPicker/index.ts",
     "DatePicker": "packages/ui/src/components/DatePicker/index.ts",
     "DatePickerProps": "packages/ui/src/components/DatePicker/index.ts",
+    "DateRangePicker": "packages/ui/src/components/DateRangePicker/index.ts",
+    "DateRangePickerProps": "packages/ui/src/components/DateRangePicker/index.ts",
     "Descriptions": "packages/ui/src/components/Descriptions/index.ts",
     "DescriptionsRoot": "packages/ui/src/components/Descriptions/index.ts",
     "DescriptionsItem": "packages/ui/src/components/Descriptions/index.ts",
@@ -109,6 +118,12 @@
     "DropdownMenuLabelProps": "packages/ui/src/components/DropdownMenu/index.ts",
     "Empty": "packages/ui/src/components/Empty/index.ts",
     "EmptyProps": "packages/ui/src/components/Empty/index.ts",
+    "Flex": "packages/ui/src/components/Flex/index.ts",
+    "FlexProps": "packages/ui/src/components/Flex/index.ts",
+    "FlexJustify": "packages/ui/src/components/Flex/index.ts",
+    "FlexAlign": "packages/ui/src/components/Flex/index.ts",
+    "FlexGap": "packages/ui/src/components/Flex/index.ts",
+    "FlexComponent": "packages/ui/src/components/Flex/index.ts",
     "FloatButton": "packages/ui/src/components/FloatButton/index.ts",
     "FloatButtonProps": "packages/ui/src/components/FloatButton/index.ts",
     "FloatButtonMenuItem": "packages/ui/src/components/FloatButton/index.ts",
@@ -194,6 +209,12 @@
     "Result": "packages/ui/src/components/Result/index.ts",
     "ResultProps": "packages/ui/src/components/Result/index.ts",
     "ResultStatus": "packages/ui/src/components/Result/index.ts",
+    "Row": "packages/ui/src/components/Row/index.ts",
+    "RowGutterContext": "packages/ui/src/components/Row/index.ts",
+    "RowProps": "packages/ui/src/components/Row/index.ts",
+    "RowJustify": "packages/ui/src/components/Row/index.ts",
+    "RowAlign": "packages/ui/src/components/Row/index.ts",
+    "RowGutterValue": "packages/ui/src/components/Row/index.ts",
     "Segmented": "packages/ui/src/components/Segmented/index.ts",
     "SegmentedProps": "packages/ui/src/components/Segmented/index.ts",
     "SegmentedOption": "packages/ui/src/components/Segmented/index.ts",
@@ -204,12 +225,21 @@
     "SkeletonProps": "packages/ui/src/components/Skeleton/index.ts",
     "Slider": "packages/ui/src/components/Slider/index.ts",
     "SliderProps": "packages/ui/src/components/Slider/index.ts",
+    "Space": "packages/ui/src/components/Space/index.ts",
+    "SpaceProps": "packages/ui/src/components/Space/index.ts",
+    "SpaceSize": "packages/ui/src/components/Space/index.ts",
+    "SpaceDirection": "packages/ui/src/components/Space/index.ts",
+    "SpaceAlign": "packages/ui/src/components/Space/index.ts",
     "Spin": "packages/ui/src/components/Spin/index.ts",
     "SpinProps": "packages/ui/src/components/Spin/index.ts",
     "SpinSize": "packages/ui/src/components/Spin/index.ts",
     "Statistic": "packages/ui/src/components/Statistic/index.ts",
     "formatStatisticValue": "packages/ui/src/components/Statistic/index.ts",
     "StatisticProps": "packages/ui/src/components/Statistic/index.ts",
+    "Steps": "packages/ui/src/components/Steps/index.ts",
+    "StepsProps": "packages/ui/src/components/Steps/index.ts",
+    "StepsItem": "packages/ui/src/components/Steps/index.ts",
+    "StepStatus": "packages/ui/src/components/Steps/index.ts",
     "Switch": "packages/ui/src/components/Switch/index.ts",
     "SwitchProps": "packages/ui/src/components/Switch/index.ts",
     "Table": "packages/ui/src/components/Table/index.ts",
@@ -259,11 +289,54 @@
     "TreeSelect": "packages/ui/src/components/TreeSelect/index.ts",
     "TreeSelectProps": "packages/ui/src/components/TreeSelect/index.ts",
     "TreeSelectNode": "packages/ui/src/components/TreeSelect/index.ts",
+    "Typography": "packages/ui/src/components/Typography/index.ts",
+    "TypographyTitle": "packages/ui/src/components/Typography/index.ts",
+    "TypographyParagraph": "packages/ui/src/components/Typography/index.ts",
+    "TypographyText": "packages/ui/src/components/Typography/index.ts",
+    "TitleProps": "packages/ui/src/components/Typography/index.ts",
+    "ParagraphProps": "packages/ui/src/components/Typography/index.ts",
+    "TextProps": "packages/ui/src/components/Typography/index.ts",
+    "TypographyBaseProps": "packages/ui/src/components/Typography/index.ts",
+    "TypographyType": "packages/ui/src/components/Typography/index.ts",
+    "CopyConfig": "packages/ui/src/components/Typography/index.ts",
+    "Upload": "packages/ui/src/components/Upload/index.ts",
+    "UploadProps": "packages/ui/src/components/Upload/index.ts",
+    "UploadFile": "packages/ui/src/components/Upload/index.ts",
+    "UploadChangeInfo": "packages/ui/src/components/Upload/index.ts",
+    "CustomRequestOptions": "packages/ui/src/components/Upload/index.ts",
     "VirtualTable": "packages/ui/src/components/VirtualTable/index.ts",
     "VirtualTableProps": "packages/ui/src/components/VirtualTable/index.ts",
     "VirtualTableColumn": "packages/ui/src/components/VirtualTable/index.ts",
     "Watermark": "packages/ui/src/components/Watermark/index.ts",
-    "WatermarkProps": "packages/ui/src/components/Watermark/index.ts"
+    "WatermarkProps": "packages/ui/src/components/Watermark/index.ts",
+    "cx": "packages/ui/src/utils/cx.ts",
+    "Portal": "packages/ui/src/utils/portal.ts",
+    "useControllableState": "packages/ui/src/utils/useControllableState.ts",
+    "useFocusTrap": "packages/ui/src/utils/useFocusTrap.ts",
+    "useScrollLock": "packages/ui/src/utils/useScrollLock.ts",
+    "useOnClickOutside": "packages/ui/src/utils/useOnClickOutside.ts",
+    "floatingPosition": "packages/ui/src/utils/floatingPosition.ts",
+    "FloatingPanel": "packages/ui/src/utils/FloatingPanel.tsx",
+    "ConfigProvider": "packages/ui/src/config/ConfigProvider.tsx",
+    "ConfigProviderProps": "packages/ui/src/config/ConfigProvider.tsx",
+    "useZuiConfig": "packages/ui/src/config/useZuiConfig.ts",
+    "ZuiConfigContext": "packages/ui/src/config/useZuiConfig.ts",
+    "ZuiConfig": "packages/ui/src/config/useZuiConfig.ts",
+    "zhCN": "packages/ui/src/config/locale.ts",
+    "enUS": "packages/ui/src/config/locale.ts",
+    "zhTW": "packages/ui/src/config/locale.ts",
+    "jaJP": "packages/ui/src/config/locale.ts",
+    "koKR": "packages/ui/src/config/locale.ts",
+    "frFR": "packages/ui/src/config/locale.ts",
+    "deDE": "packages/ui/src/config/locale.ts",
+    "esES": "packages/ui/src/config/locale.ts",
+    "ruRU": "packages/ui/src/config/locale.ts",
+    "ptBR": "packages/ui/src/config/locale.ts",
+    "mergeLocale": "packages/ui/src/config/locale.ts",
+    "DeepPartial": "packages/ui/src/config/locale.ts",
+    "ZuiLocale": "packages/ui/src/config/locale.ts",
+    "TranslateConfig": "packages/ui/src/config/translate.ts",
+    "TranslateProvider": "packages/ui/src/config/translate.ts"
   },
   "items": [
     {
@@ -320,6 +393,34 @@
         "--z-alert-transition": "var(--z-duration-fast) var(--z-ease-standard)"
       },
       "meta": "packages/ui/src/components/Alert/meta.json"
+    },
+    {
+      "name": "anchor",
+      "type": "registry:component",
+      "title": "Anchor 锚点",
+      "description": "锚点导航：rAF 节流滚动侦测高亮当前章节，点击平滑滚动到目标位置且不改写 location.hash，支持嵌套缩进目录",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        "packages/ui/src/components/Anchor/Anchor.css",
+        "packages/ui/src/components/Anchor/Anchor.tsx",
+        "packages/ui/src/components/Anchor/index.ts"
+      ],
+      "cssVars": {
+        "--z-anchor-font-size": "var(--z-text-sm)",
+        "--z-anchor-link-color": "var(--z-color-fg-muted)",
+        "--z-anchor-link-hover-color": "var(--z-color-fg)",
+        "--z-anchor-link-active-color": "var(--z-color-primary)",
+        "--z-anchor-link-bg": "transparent",
+        "--z-anchor-link-active-bg": "transparent",
+        "--z-anchor-link-padding-x": "var(--z-space-3)",
+        "--z-anchor-link-padding-y": "var(--z-space-1)",
+        "--z-anchor-indicator-width": "2px",
+        "--z-anchor-indicator-color": "var(--z-color-primary)",
+        "--z-anchor-sublist-indent": "var(--z-space-6)",
+        "--z-anchor-transition": "var(--z-duration-fast) var(--z-ease-standard)"
+      },
+      "meta": "packages/ui/src/components/Anchor/meta.json"
     },
     {
       "name": "app",
@@ -659,6 +760,27 @@
       "meta": "packages/ui/src/components/Checkbox/meta.json"
     },
     {
+      "name": "col",
+      "type": "registry:component",
+      "title": "Col",
+      "description": "24 栅格列：span/offset 定宽定偏移，flex 弹性覆盖（必须是 Row 直接子级）",
+      "dependencies": [],
+      "registryDependencies": [
+        "row"
+      ],
+      "files": [
+        "packages/ui/src/components/Col/Col.css",
+        "packages/ui/src/components/Col/Col.tsx",
+        "packages/ui/src/components/Col/index.ts"
+      ],
+      "cssVars": {
+        "--z-col-span": "24",
+        "--z-col-offset": "0",
+        "--z-col-gutter-x": "0px"
+      },
+      "meta": "packages/ui/src/components/Col/meta.json"
+    },
+    {
       "name": "collapse",
       "type": "registry:component",
       "title": "Collapse 折叠面板",
@@ -803,6 +925,76 @@
         "--z-datepicker-transition": "var(--z-duration-fast) var(--z-ease-standard)"
       },
       "meta": "packages/ui/src/components/DatePicker/meta.json"
+    },
+    {
+      "name": "date-range-picker",
+      "type": "registry:component",
+      "title": "DateRangePicker 日期范围选择器",
+      "description": "日期范围选择器，双月并排日历面板选择 [start, end] 区间（ISO YYYY-MM-DD 二元组）。区间版；月份选择器粒度留待后续",
+      "dependencies": [
+        "@zui/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        "packages/ui/src/components/DateRangePicker/DateRangePicker.css",
+        "packages/ui/src/components/DateRangePicker/DateRangePicker.tsx",
+        "packages/ui/src/components/DateRangePicker/index.ts"
+      ],
+      "cssVars": {
+        "--z-date-range-trigger-height": "2rem",
+        "--z-date-range-trigger-padding-x": "var(--z-space-3)",
+        "--z-date-range-trigger-font-size": "var(--z-text-sm)",
+        "--z-date-range-trigger-radius": "var(--z-radius-sm)",
+        "--z-date-range-trigger-bg": "var(--z-color-bg-elevated)",
+        "--z-date-range-trigger-fg": "var(--z-color-fg)",
+        "--z-date-range-trigger-border": "var(--z-color-border)",
+        "--z-date-range-trigger-hover-border": "var(--z-color-border-focus)",
+        "--z-date-range-trigger-focus-border": "var(--z-color-border-focus)",
+        "--z-date-range-trigger-focus-ring": "var(--z-color-focus-ring)",
+        "--z-date-range-error-border": "var(--z-color-danger)",
+        "--z-date-range-success-border": "var(--z-color-success)",
+        "--z-date-range-placeholder-fg": "var(--z-color-fg-subtle)",
+        "--z-date-range-separator-fg": "var(--z-color-fg-muted)",
+        "--z-date-range-icon-color": "var(--z-color-fg-muted)",
+        "--z-date-range-clear-fg": "var(--z-color-fg-muted)",
+        "--z-date-range-clear-hover-fg": "var(--z-color-fg)",
+        "--z-date-range-clear-hover-bg": "var(--z-color-bg-muted)",
+        "--z-date-range-disabled-bg": "var(--z-color-disabled-bg)",
+        "--z-date-range-disabled-fg": "var(--z-color-disabled-fg)",
+        "--z-date-range-disabled-border": "var(--z-color-disabled-border)",
+        "--z-date-range-panel-width": "33rem",
+        "--z-date-range-panel-bg": "var(--z-color-bg-elevated)",
+        "--z-date-range-panel-border": "var(--z-color-border-subtle)",
+        "--z-date-range-panel-radius": "0.5rem",
+        "--z-date-range-panel-shadow": "var(--z-shadow-lg)",
+        "--z-date-range-panel-padding": "var(--z-space-3)",
+        "--z-date-range-panel-gap": "var(--z-space-2)",
+        "--z-date-range-header-gap": "var(--z-space-2)",
+        "--z-date-range-label-font-size": "var(--z-text-sm)",
+        "--z-date-range-label-font-weight": "var(--z-weight-medium)",
+        "--z-date-range-label-fg": "var(--z-color-fg)",
+        "--z-date-range-nav-size": "1.5rem",
+        "--z-date-range-nav-color": "var(--z-color-fg-muted)",
+        "--z-date-range-nav-hover-bg": "var(--z-color-bg-muted)",
+        "--z-date-range-months-gap": "var(--z-space-3)",
+        "--z-date-range-grid-gap": "2px",
+        "--z-date-range-day-size": "2rem",
+        "--z-date-range-day-font-size": "var(--z-text-sm)",
+        "--z-date-range-day-fg": "var(--z-color-fg)",
+        "--z-date-range-day-radius": "var(--z-radius-sm)",
+        "--z-date-range-day-hover-bg": "var(--z-color-bg-muted)",
+        "--z-date-range-day-selected-bg": "var(--z-color-primary)",
+        "--z-date-range-day-selected-fg": "var(--z-color-primary-fg)",
+        "--z-date-range-day-in-range-bg": "var(--z-color-primary-subtle)",
+        "--z-date-range-day-in-range-fg": "var(--z-color-primary-subtle-fg)",
+        "--z-date-range-day-today-border": "var(--z-color-primary)",
+        "--z-date-range-day-out-fg": "var(--z-color-fg-subtle)",
+        "--z-date-range-day-disabled-fg": "var(--z-color-disabled-fg)",
+        "--z-date-range-weekday-fg": "var(--z-color-fg-muted)",
+        "--z-date-range-weekday-font-size": "var(--z-text-xs)",
+        "--z-date-range-transition": "var(--z-duration-fast) var(--z-ease-standard)"
+      },
+      "meta": "packages/ui/src/components/DateRangePicker/meta.json"
     },
     {
       "name": "descriptions",
@@ -956,6 +1148,23 @@
         "--z-empty-actions-gap": "var(--z-space-3)"
       },
       "meta": "packages/ui/src/components/Empty/meta.json"
+    },
+    {
+      "name": "flex",
+      "type": "registry:component",
+      "title": "Flex",
+      "description": "万能弹性容器：方向、主轴/交叉轴排列、间距、换行与语义标签切换",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        "packages/ui/src/components/Flex/Flex.css",
+        "packages/ui/src/components/Flex/Flex.tsx",
+        "packages/ui/src/components/Flex/index.ts"
+      ],
+      "cssVars": {
+        "--z-flex-gap": "0px"
+      },
+      "meta": "packages/ui/src/components/Flex/meta.json"
     },
     {
       "name": "float-button",
@@ -1540,6 +1749,24 @@
       "meta": "packages/ui/src/components/Result/meta.json"
     },
     {
+      "name": "row",
+      "type": "registry:component",
+      "title": "Row",
+      "description": "24 栅格水平容器：gutter 间隔、水平排列与垂直对齐（与 Col 配套使用）",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        "packages/ui/src/components/Row/Row.css",
+        "packages/ui/src/components/Row/Row.tsx",
+        "packages/ui/src/components/Row/index.ts"
+      ],
+      "cssVars": {
+        "--z-row-gutter-x": "0px",
+        "--z-row-gutter-y": "0px"
+      },
+      "meta": "packages/ui/src/components/Row/meta.json"
+    },
+    {
       "name": "segmented",
       "type": "registry:component",
       "title": "Segmented 分段控制器",
@@ -1676,6 +1903,23 @@
       "meta": "packages/ui/src/components/Slider/meta.json"
     },
     {
+      "name": "space",
+      "type": "registry:component",
+      "title": "Space",
+      "description": "间距容器：inline-flex + gap，为相邻子元素提供统一间距（水平/垂直）",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        "packages/ui/src/components/Space/Space.css",
+        "packages/ui/src/components/Space/Space.tsx",
+        "packages/ui/src/components/Space/index.ts"
+      ],
+      "cssVars": {
+        "--z-space-gap": "var(--z-space-2)"
+      },
+      "meta": "packages/ui/src/components/Space/meta.json"
+    },
+    {
       "name": "spin",
       "type": "registry:component",
       "title": "Spin 加载中",
@@ -1731,6 +1975,42 @@
         "--z-statistic-prefix-margin-right": "var(--z-space-1)"
       },
       "meta": "packages/ui/src/components/Statistic/meta.json"
+    },
+    {
+      "name": "steps",
+      "type": "registry:component",
+      "title": "Steps 步骤条",
+      "description": "步骤条：引导用户按顺序完成多步流程，支持派生状态与显式 error 覆盖",
+      "dependencies": [
+        "@zui/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        "packages/ui/src/components/Steps/Steps.css",
+        "packages/ui/src/components/Steps/Steps.tsx",
+        "packages/ui/src/components/Steps/index.ts"
+      ],
+      "cssVars": {
+        "--z-steps-icon-size": "2rem",
+        "--z-steps-icon-font-size": "var(--z-text-sm)",
+        "--z-steps-icon-svg-size": "calc(var(--z-steps-icon-size) * 0.5625)",
+        "--z-steps-line-width": "2px",
+        "--z-steps-line-color": "var(--z-color-border)",
+        "--z-steps-line-finish-color": "var(--z-color-primary)",
+        "--z-steps-item-gap": "var(--z-space-4)",
+        "--z-steps-gap": "var(--z-space-3)",
+        "--z-steps-vertical-line-gap": "var(--z-space-2)",
+        "--z-steps-title-font-size": "var(--z-text-md)",
+        "--z-steps-description-font-size": "var(--z-text-sm)",
+        "--z-steps-title-fg": "var(--z-color-fg)",
+        "--z-steps-description-fg": "var(--z-color-fg-muted)",
+        "--z-steps-icon-bg": "var(--z-color-bg-muted)",
+        "--z-steps-icon-fg": "var(--z-color-fg-muted)",
+        "--z-steps-icon-border": "transparent",
+        "--z-steps-icon-border-width": "1px",
+        "--z-steps-transition": "var(--z-duration-fast) var(--z-ease-standard)"
+      },
+      "meta": "packages/ui/src/components/Steps/meta.json"
     },
     {
       "name": "switch",
@@ -2157,6 +2437,97 @@
       "meta": "packages/ui/src/components/TreeSelect/meta.json"
     },
     {
+      "name": "typography",
+      "type": "registry:component",
+      "title": "Typography 排版",
+      "description": "排版组件：标题、段落与文本的语义化呈现，支持语义标签切换、四色调色、多行省略与一键复制",
+      "dependencies": [
+        "@zui/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        "packages/ui/src/components/Typography/Typography.css",
+        "packages/ui/src/components/Typography/Typography.tsx",
+        "packages/ui/src/components/Typography/index.ts"
+      ],
+      "cssVars": {
+        "--z-typography-margin": "0 0 var(--z-space-3)",
+        "--z-typography-color": "var(--z-color-fg)",
+        "--z-typography-code-bg": "var(--z-color-bg-subtle)",
+        "--z-typography-code-fg": "var(--z-color-fg)",
+        "--z-typography-code-border": "var(--z-color-border)",
+        "--z-typography-code-border-width": "1px",
+        "--z-typography-code-radius": "var(--z-radius-sm)",
+        "--z-typography-kbd-bg": "var(--z-color-bg-muted)",
+        "--z-typography-kbd-border": "var(--z-color-border-strong)",
+        "--z-typography-mark-bg": "color-mix(in srgb, var(--z-color-warning) 28%, transparent)",
+        "--z-typography-mark-fg": "var(--z-color-fg)",
+        "--z-typography-copy-color": "var(--z-color-fg-muted)",
+        "--z-typography-copy-hover-color": "var(--z-color-primary)",
+        "--z-typography-copy-success-color": "var(--z-color-success)",
+        "--z-typography-copy-size": "1em",
+        "--z-typography-copy-gap": "var(--z-space-2)",
+        "--z-typography-ellipsis-rows": "1",
+        "--z-typography-h1-size": "var(--z-text-2xl)",
+        "--z-typography-h2-size": "var(--z-text-xl)",
+        "--z-typography-h3-size": "var(--z-text-lg)",
+        "--z-typography-h4-size": "var(--z-text-md)",
+        "--z-typography-h5-size": "var(--z-text-sm)",
+        "--z-typography-paragraph-size": "var(--z-text-md)"
+      },
+      "meta": "packages/ui/src/components/Typography/meta.json"
+    },
+    {
+      "name": "upload",
+      "type": "registry:component",
+      "title": "Upload 上传",
+      "description": "文件上传：隐藏 file input + 可见按钮/拖拽区，customRequest 或 XHR 引擎（进度/成功/失败/中止），带状态流转的文件列表",
+      "dependencies": [
+        "@zui/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        "packages/ui/src/components/Upload/Upload.css",
+        "packages/ui/src/components/Upload/Upload.tsx",
+        "packages/ui/src/components/Upload/index.ts"
+      ],
+      "cssVars": {
+        "--z-upload-gap": "var(--z-space-3)",
+        "--z-upload-button-height": "2.25rem",
+        "--z-upload-button-padding-x": "var(--z-space-4)",
+        "--z-upload-button-font-size": "var(--z-text-sm)",
+        "--z-upload-button-radius": "var(--z-radius)",
+        "--z-upload-button-bg": "var(--z-color-primary)",
+        "--z-upload-button-fg": "var(--z-color-primary-fg)",
+        "--z-upload-button-hover-bg": "var(--z-color-primary-hover)",
+        "--z-upload-dragzone-padding": "var(--z-space-6)",
+        "--z-upload-dragzone-radius": "var(--z-radius)",
+        "--z-upload-dragzone-bg": "var(--z-color-bg-subtle)",
+        "--z-upload-dragzone-fg": "var(--z-color-fg-muted)",
+        "--z-upload-dragzone-border": "var(--z-color-border-strong)",
+        "--z-upload-dragzone-border-hover": "var(--z-color-primary)",
+        "--z-upload-dragzone-font-size": "var(--z-text-sm)",
+        "--z-upload-list-gap": "var(--z-space-2)",
+        "--z-upload-list-max-height": "min(320px, calc(100dvh - 16px))",
+        "--z-upload-item-padding": "var(--z-space-2)",
+        "--z-upload-item-radius": "var(--z-radius-sm)",
+        "--z-upload-item-bg": "var(--z-color-bg-subtle)",
+        "--z-upload-item-fg": "var(--z-color-fg)",
+        "--z-upload-item-gap": "var(--z-space-2)",
+        "--z-upload-icon-uploading": "var(--z-color-primary)",
+        "--z-upload-icon-success": "var(--z-color-success)",
+        "--z-upload-icon-error": "var(--z-color-danger)",
+        "--z-upload-size-color": "var(--z-color-fg-subtle)",
+        "--z-upload-progress-height": "6px",
+        "--z-upload-progress-bg": "var(--z-color-bg-muted)",
+        "--z-upload-progress-fill": "var(--z-color-primary)",
+        "--z-upload-remove-color": "var(--z-color-fg-subtle)",
+        "--z-upload-remove-hover-color": "var(--z-color-danger)",
+        "--z-upload-focus-ring": "var(--z-color-focus-ring)"
+      },
+      "meta": "packages/ui/src/components/Upload/meta.json"
+    },
+    {
       "name": "virtual-table",
       "type": "registry:component",
       "title": "VirtualTable 虚拟滚动表格",
@@ -2226,6 +2597,40 @@
       "meta": "packages/blocks/src/dashboard/block.json"
     },
     {
+      "name": "data-screen",
+      "type": "registry:block",
+      "title": "data-screen",
+      "description": "数据大屏区块：深色底自适应，Statistic 统计卡行 + CSS 柱状图 + Progress 资源指标，支持时间维度切换与刷新回调",
+      "dependencies": [],
+      "registryDependencies": [
+        "progress",
+        "segmented",
+        "statistic"
+      ],
+      "files": [
+        "packages/blocks/src/data-screen/index.tsx"
+      ],
+      "cssVars": {},
+      "meta": "packages/blocks/src/data-screen/block.json"
+    },
+    {
+      "name": "error-pages",
+      "type": "registry:block",
+      "title": "error-pages",
+      "description": "错误页集区块：Result 403/404/500 三态，同一区块内通过 props 切换，含返回上一页 / 回到首页操作",
+      "dependencies": [],
+      "registryDependencies": [
+        "button",
+        "result",
+        "segmented"
+      ],
+      "files": [
+        "packages/blocks/src/error-pages/index.tsx"
+      ],
+      "cssVars": {},
+      "meta": "packages/blocks/src/error-pages/block.json"
+    },
+    {
       "name": "form-page",
       "type": "registry:block",
       "title": "form-page",
@@ -2250,6 +2655,43 @@
       "meta": "packages/blocks/src/form-page/block.json"
     },
     {
+      "name": "kanban",
+      "type": "registry:block",
+      "title": "kanban",
+      "description": "看板区块：三列静态看板，Card + Tag 优先级 + 计数徽标；静态展示不含拖拽能力（未引入拖拽库），卡片点击仅做高亮选中",
+      "dependencies": [],
+      "registryDependencies": [
+        "card",
+        "tag"
+      ],
+      "files": [
+        "packages/blocks/src/kanban/index.tsx"
+      ],
+      "cssVars": {},
+      "meta": "packages/blocks/src/kanban/block.json"
+    },
+    {
+      "name": "list-detail",
+      "type": "registry:block",
+      "title": "list-detail",
+      "description": "列表详情区块：左列表（List）右详情（Descriptions + Card）双栏 Row/Col 布局，支持受控选中项",
+      "dependencies": [],
+      "registryDependencies": [
+        "card",
+        "col",
+        "descriptions",
+        "empty",
+        "list",
+        "row",
+        "tag"
+      ],
+      "files": [
+        "packages/blocks/src/list-detail/index.tsx"
+      ],
+      "cssVars": {},
+      "meta": "packages/blocks/src/list-detail/block.json"
+    },
+    {
       "name": "login",
       "type": "registry:block",
       "title": "login",
@@ -2268,6 +2710,106 @@
       ],
       "cssVars": {},
       "meta": "packages/blocks/src/login/block.json"
+    },
+    {
+      "name": "order-list",
+      "type": "registry:block",
+      "title": "order-list",
+      "description": "订单列表区块：Table 订单表格 + Pagination 分页 + Select 状态筛选 + Tag 状态标签 + Popconfirm 取消订单确认",
+      "dependencies": [],
+      "registryDependencies": [
+        "button",
+        "card",
+        "pagination",
+        "popconfirm",
+        "select",
+        "table",
+        "tag"
+      ],
+      "files": [
+        "packages/blocks/src/order-list/index.tsx"
+      ],
+      "cssVars": {},
+      "meta": "packages/blocks/src/order-list/block.json"
+    },
+    {
+      "name": "permission",
+      "type": "registry:block",
+      "title": "permission",
+      "description": "权限管理区块：Tree 角色权限树（checkable 父子联动）+ Table 成员列表 + Switch 启用开关列",
+      "dependencies": [],
+      "registryDependencies": [
+        "card",
+        "switch",
+        "table",
+        "tag",
+        "tree"
+      ],
+      "files": [
+        "packages/blocks/src/permission/index.tsx"
+      ],
+      "cssVars": {},
+      "meta": "packages/blocks/src/permission/block.json"
+    },
+    {
+      "name": "profile-edit",
+      "type": "registry:block",
+      "title": "profile-edit",
+      "description": "资料编辑区块：Row/Col 栅格表单布局（姓名/昵称/邮箱/手机/岗位/简介）+ Upload 头像上传 + DateRangePicker 任职时间",
+      "dependencies": [],
+      "registryDependencies": [
+        "avatar",
+        "button",
+        "card",
+        "col",
+        "date-range-picker",
+        "input",
+        "row",
+        "upload"
+      ],
+      "files": [
+        "packages/blocks/src/profile-edit/index.tsx"
+      ],
+      "cssVars": {},
+      "meta": "packages/blocks/src/profile-edit/block.json"
+    },
+    {
+      "name": "search-result",
+      "type": "registry:block",
+      "title": "search-result",
+      "description": "搜索结果页区块：Input 搜索 + Tabs 类型切换 + List 结果列表 + Empty 无结果，演示数据客户端过滤",
+      "dependencies": [],
+      "registryDependencies": [
+        "button",
+        "empty",
+        "input",
+        "list",
+        "tabs"
+      ],
+      "files": [
+        "packages/blocks/src/search-result/index.tsx"
+      ],
+      "cssVars": {},
+      "meta": "packages/blocks/src/search-result/block.json"
+    },
+    {
+      "name": "settings",
+      "type": "registry:block",
+      "title": "settings",
+      "description": "系统设置区块：左侧锚点式分组导航（基本/通知/安全）+ 分区表单（Input/Select）+ Switch 偏好开关",
+      "dependencies": [],
+      "registryDependencies": [
+        "button",
+        "card",
+        "input",
+        "select",
+        "switch"
+      ],
+      "files": [
+        "packages/blocks/src/settings/index.tsx"
+      ],
+      "cssVars": {},
+      "meta": "packages/blocks/src/settings/block.json"
     },
     {
       "name": "table-page",
@@ -2290,6 +2832,65 @@
       ],
       "cssVars": {},
       "meta": "packages/blocks/src/table-page/block.json"
+    },
+    {
+      "name": "timeline-feed",
+      "type": "registry:block",
+      "title": "timeline-feed",
+      "description": "时间线信息流区块：Timeline + Avatar + Card 组成的事件流，Skeleton 加载占位与加载更多",
+      "dependencies": [],
+      "registryDependencies": [
+        "avatar",
+        "button",
+        "card",
+        "skeleton",
+        "timeline"
+      ],
+      "files": [
+        "packages/blocks/src/timeline-feed/index.tsx"
+      ],
+      "cssVars": {},
+      "meta": "packages/blocks/src/timeline-feed/block.json"
+    },
+    {
+      "name": "user-center",
+      "type": "registry:block",
+      "title": "user-center",
+      "description": "个人中心区块：Avatar 头像 + Descriptions 基本资料 + Tabs（资料/安全/偏好）+ Upload 头像上传 + Switch 偏好开关",
+      "dependencies": [],
+      "registryDependencies": [
+        "avatar",
+        "card",
+        "descriptions",
+        "switch",
+        "tabs",
+        "upload"
+      ],
+      "files": [
+        "packages/blocks/src/user-center/index.tsx"
+      ],
+      "cssVars": {},
+      "meta": "packages/blocks/src/user-center/block.json"
+    },
+    {
+      "name": "wizard",
+      "type": "registry:block",
+      "title": "wizard",
+      "description": "分步向导区块：Steps 步骤条 + 三步表单（基本信息/项目配置/确认创建），含必填校验、上一步/下一步与完成回调",
+      "dependencies": [],
+      "registryDependencies": [
+        "button",
+        "card",
+        "descriptions",
+        "input",
+        "select",
+        "steps"
+      ],
+      "files": [
+        "packages/blocks/src/wizard/index.tsx"
+      ],
+      "cssVars": {},
+      "meta": "packages/blocks/src/wizard/block.json"
     }
   ]
 }

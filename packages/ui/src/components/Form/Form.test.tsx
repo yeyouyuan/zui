@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -372,7 +373,9 @@ describe('Form', () => {
     await act(async () => {
       partial = await target.current?.validateFields(['user']);
     });
-    expect(partial?.errors).toEqual({ email: '请填写邮箱' });
+    // 局部校验只返回本次目标字段的错误（user 已填通过），不泄漏历史/未校验字段的错误
+    expect(partial?.errors).toEqual({});
+    expect(partial?.values).toEqual({ user: 'kobe' });
   });
 
   it('useForm：scrollToField 滚动并聚焦字段控件', () => {
@@ -460,5 +463,29 @@ describe('Form', () => {
       </Form>
     );
     expect(screen.getByRole('textbox')).toBeInTheDocument();
+  });
+});
+
+describe('Form StrictMode 双调用安全', () => {
+  it('StrictMode 下（setup→cleanup→setup）字段注册表保持完整，校验不静默失效', async () => {
+    const user = userEvent.setup();
+    const onFinish = vi.fn();
+    const onFinishFailed = vi.fn();
+    const { getByRole } = render(
+      <React.StrictMode>
+        <Form initialValues={{ username: '' }} onFinish={onFinish} onFinishFailed={onFinishFailed}>
+          <FormItem name="username" rules={[{ required: true, message: '必填' }]}>
+            <input aria-label="用户名" />
+          </FormItem>
+          <button type="submit">提交</button>
+        </Form>
+      </React.StrictMode>
+    );
+
+    // 不填写任何内容直接提交 → 必须触发 onFinishFailed（注册表完整时才会校验出必填错误）
+    await user.click(getByRole('button', { name: '提交' }));
+    expect(onFinish).not.toHaveBeenCalled();
+    expect(onFinishFailed).toHaveBeenCalledTimes(1);
+    expect(getByRole('button', { name: '提交' })).toBeInTheDocument();
   });
 });

@@ -1,6 +1,6 @@
 {
   "name": "@zui/react",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "ZUI — 现代 React 组件库：令牌驱动、零运行时样式、无障碍优先",
   "type": "module",
   "sideEffects": [
@@ -12,6 +12,7 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "unpkg": "./dist/browser/zui.global.js",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
@@ -311,6 +312,10 @@
   "files": [
     "dist"
   ],
+  "unpkg": "./dist/browser/zui.global.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "vite build",
     "build:browser": "vite build --config vite.browser.config.ts",
@@ -318,9 +323,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@zui/i18n": "workspace:*",
     "@zui/icons": "workspace:*",
-    "@zui/tokens": "workspace:*",
-    "@zui/i18n": "workspace:*"
+    "@zui/tokens": "workspace:*"
   },
   "peerDependencies": {
     "react": "^19.0.0",
@@ -333,6 +338,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "axe-core": "^4.14.0",
     "jsdom": "^25.0.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

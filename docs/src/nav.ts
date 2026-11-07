@@ -62,6 +62,14 @@ const BackTopPage = lazy(() => import('./pages/components/BackTopPage'));
 const FloatButtonPage = lazy(() => import('./pages/components/FloatButtonPage'));
 const ResultPage = lazy(() => import('./pages/components/ResultPage'));
 const AppPage = lazy(() => import('./pages/components/AppPage'));
+const UploadPage = lazy(() => import('./pages/components/UploadPage'));
+const StepsPage = lazy(() => import('./pages/components/StepsPage'));
+const DateRangePickerPage = lazy(() => import('./pages/components/DateRangePickerPage'));
+const AnchorPage = lazy(() => import('./pages/components/AnchorPage'));
+const TypographyPage = lazy(() => import('./pages/components/TypographyPage'));
+const LayoutPage = lazy(() => import('./pages/components/LayoutPage'));
+const DesignAssetsPage = lazy(() => import('./pages/design/DesignAssetsPage'));
+const IconGalleryPage = lazy(() => import('./pages/design/IconGalleryPage'));
 
 /** 导航分组：'start'（开始）/ 'components'（组件） */
 export type NavGroup = 'start' | 'components';
@@ -92,6 +100,8 @@ export const navItems: NavItem[] = [
   { title: '设计令牌', path: '/tokens', group: 'start' },
   { title: '主题调参', path: '/theme', group: 'start' },
   { title: '国际化与翻译', path: '/i18n', group: 'start' },
+  { title: '设计资源', path: '/design', group: 'start' },
+  { title: '图标库', path: '/icons', group: 'start' },
   { title: 'Button 按钮', path: '/components/button', group: 'components' },
   { title: 'Input 输入框', path: '/components/input', group: 'components' },
   { title: 'Checkbox 复选框', path: '/components/checkbox', group: 'components' },
@@ -150,6 +160,12 @@ export const navItems: NavItem[] = [
   { title: 'FloatButton 悬浮按钮', path: '/components/float-button', group: 'components' },
   { title: 'Result 结果', path: '/components/result', group: 'components' },
   { title: 'App 容器', path: '/components/app', group: 'components' },
+  { title: 'Upload 上传', path: '/components/upload', group: 'components' },
+  { title: 'Steps 步骤条', path: '/components/steps', group: 'components' },
+  { title: 'DateRangePicker 日期范围', path: '/components/date-range-picker', group: 'components' },
+  { title: 'Anchor 锚点', path: '/components/anchor', group: 'components' },
+  { title: 'Typography 排版', path: '/components/typography', group: 'components' },
+  { title: 'Layout 布局', path: '/components/layout', group: 'components' },
 ];
 
 /** 路由映射：path → 页面组件（与 navItems 同源，键必须与 navItems 的 path 一一对应） */
@@ -158,6 +174,8 @@ export const routeComponents: Record<string, ComponentType> = {
   '/tokens': TokensPage,
   '/theme': ThemePlayground,
   '/i18n': TranslateDemo,
+  '/design': DesignAssetsPage,
+  '/icons': IconGalleryPage,
   '/components/button': ButtonPage,
   '/components/input': InputPage,
   '/components/checkbox': CheckboxPage,
@@ -216,4 +234,10 @@ export const routeComponents: Record<string, ComponentType> = {
   '/components/float-button': FloatButtonPage,
   '/components/result': ResultPage,
   '/components/app': AppPage,
+  '/components/upload': UploadPage,
+  '/components/steps': StepsPage,
+  '/components/date-range-picker': DateRangePickerPage,
+  '/components/anchor': AnchorPage,
+  '/components/typography': TypographyPage,
+  '/components/layout': LayoutPage,
 };

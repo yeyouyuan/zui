@@ -3,8 +3,19 @@ import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/node_modules/**', 'packages/cli/data/**', 'packages/mcp/data/**'] },
-  { files: ['**/*.mjs', 'eslint.config.js'], languageOptions: { globals: { process: 'readonly', console: 'readonly' } } },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      'packages/cli/data/**',
+      'packages/mcp/data/**',
+      'test-results/**',
+    ],
+  },
+  {
+    files: ['**/*.mjs', 'eslint.config.js'],
+    languageOptions: { globals: { process: 'readonly', console: 'readonly' } },
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

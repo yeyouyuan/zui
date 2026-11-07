@@ -195,6 +195,12 @@ function exampleFor(name: string): Example {
     Affix: { children: '<button type="button">Pinned action</button>' }, BackTop: {},
     FloatButton: { props: { 'aria-label': 'Help' } }, Result: { props: { status: 'success' } },
     App: { children: '<div>Application content</div>' },
+    Upload: { props: { customRequest: '{({ file, onSuccess }) => { setTimeout(() => onSuccess(), 600); }}' } },
+    Steps: { props: { items: [{ title: 'Fill in information' }, { title: 'Confirm order' }, { title: 'Payment' }] } },
+    DateRangePicker: {},
+    Anchor: { children: '<Anchor.Link href="#intro" title="Introduction" />' },
+    // Typography 根是纯命名空间（Title/Paragraph/Text），不能直接作 JSX 标签
+    Typography: { tag: 'Typography.Text', props: { strong: true }, children: 'Content' },
   };
   if (name === 'Message' || name === 'Notification') {
     const hook = `use${name}`;

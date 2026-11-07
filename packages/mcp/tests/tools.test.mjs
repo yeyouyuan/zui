@@ -8,8 +8,8 @@ import { formatAttribute, generateCode } from '../dist/tools/generate.js';
 import { handleLine } from '../dist/index.js';
 
 const catalog = loadCatalog();
-test('catalog resolves all 57 shipped components from bundled data', () => {
-  assert.equal(catalog.size, 57);
+test('catalog resolves all 66 shipped components from bundled data', () => {
+  assert.equal(catalog.size, 66);
   assert.equal(resolveRepoRoot(), fileURLToPath(new URL('../data', import.meta.url)));
 });
 test('explicit false survives JSX generation', () => {
