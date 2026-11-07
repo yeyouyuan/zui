@@ -1,4 +1,5 @@
 import { expect, type Page, test } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 
 /**
  * ZUI 文档站冒烟用例（契约 §3）。
@@ -13,6 +14,14 @@ import { expect, type Page, test } from '@playwright/test';
 
 /** 错误边界的哨兵文案（App.tsx PageErrorBoundary） */
 const ERROR_SENTINEL = '页面出错了';
+
+/** nav.ts 是文档路由的唯一清单；布局审计直接从清单读取，新增页面不会漏测。 */
+const NAV_ROUTES = Array.from(
+  readFileSync(new URL('../docs/src/nav.ts', import.meta.url), 'utf8').matchAll(
+    /\{ title: '[^']+', path: '([^']+)', group: '[^']+' \}/g
+  ),
+  (match) => match[1]
+);
 
 /** 文档页标题（.doc-h1） */
 const H1 = {
@@ -47,7 +56,7 @@ test.beforeEach(({ page }) => {
 test.afterEach(async ({ page }) => {
   expect(pageErrors, '未捕获的页面异常').toEqual([]);
   expect(consoleErrors, 'console.error 输出').toEqual([]);
-  page.close();
+  await page.close();
 });
 
 /* --------------------------------- 工具函数 --------------------------------- */
@@ -58,17 +67,17 @@ test.afterEach(async ({ page }) => {
  */
 async function openRoute(page: Page, route: string, expectedH1: string): Promise<void> {
   await page.goto('/');
-  const overviewH1 = page.locator('.doc-h1');
+  const overviewH1 = page.getByRole('heading', { level: 1, name: H1.overview, exact: true });
   await expect(overviewH1).toHaveCount(1);
-  await expect(overviewH1).toHaveText(H1.overview);
+  await expect(overviewH1).toBeVisible();
   if (route !== '/') {
     await page.evaluate((path) => {
       window.location.hash = path;
     }, route);
   }
-  const h1 = page.locator('.doc-h1');
+  const h1 = page.getByRole('heading', { level: 1, name: expectedH1, exact: true });
   await expect(h1).toHaveCount(1);
-  await expect(h1).toHaveText(expectedH1);
+  await expect(h1).toBeVisible();
   await expect(page.getByText(ERROR_SENTINEL)).toHaveCount(0);
 }
 
@@ -344,6 +353,125 @@ test('暗色切换：data-theme="dark" 生效后切回', async ({ page }) => {
   await page.getByRole('button', { name: '切换浅色' }).click();
   await expect(html).toHaveAttribute('data-theme', 'light');
   await expect(page.getByRole('button', { name: '切换暗色' })).toHaveCount(1);
+});
+
+test('文档外壳：全部导航页在 320px 暗色视口无页面级横向溢出', async ({ page }) => {
+  test.setTimeout(120_000);
+  expect(NAV_ROUTES.length).toBeGreaterThan(60);
+  await page.setViewportSize({ width: 320, height: 600 });
+  await page.goto('/');
+  await page.getByRole('button', { name: '切换暗色' }).click();
+
+  const issues: string[] = [];
+  for (const route of NAV_ROUTES) {
+    const previousTitle = await page.title();
+    await page.evaluate((path) => {
+      window.location.hash = path;
+    }, route);
+    await expect(page.locator(`.doc-nav-link--active[href="#${route}"]`)).toHaveCount(1);
+    if (route !== '/') {
+      // 等 lazy 页面真正挂载（usePageTitle 已执行），避免连续切换时取消尚未完成的模块请求。
+      await expect.poll(() => page.title()).not.toBe(previousTitle);
+    }
+    // 区块文档会嵌入完整的页面级预览，预览本身可以包含 h1；这里只校验文档页主标题。
+    await expect(page.locator('.doc-page > .doc-h1, .doc-page > .doc-hero > h1')).toHaveCount(1);
+    await expect(page.getByText(ERROR_SENTINEL)).toHaveCount(0);
+
+    const result = await page.evaluate(() => {
+      const main = document.querySelector<HTMLElement>('.doc-main');
+      const pageEl = document.querySelector<HTMLElement>('.doc-page');
+      const topbar = document.querySelector<HTMLElement>('.doc-topbar');
+      if (!main || !pageEl || !topbar) return ['缺少文档外壳节点'];
+      const mainRect = main.getBoundingClientRect();
+      const pageRect = pageEl.getBoundingClientRect();
+      const topbarRect = topbar.getBoundingClientRect();
+      const found: string[] = [];
+      if (document.documentElement.scrollWidth > window.innerWidth + 1)
+        found.push(`页面宽 ${document.documentElement.scrollWidth} > 视口 ${window.innerWidth}`);
+      if (main.scrollWidth > main.clientWidth + 1)
+        found.push(`正文滚动宽 ${main.scrollWidth} > ${main.clientWidth}`);
+      if (pageRect.left < mainRect.left - 1 || pageRect.right > mainRect.right + 1)
+        found.push(`正文边界 ${pageRect.left}..${pageRect.right}`);
+      if (topbarRect.left < -1 || topbarRect.right > window.innerWidth + 1)
+        found.push(`顶栏边界 ${topbarRect.left}..${topbarRect.right}`);
+      return found;
+    });
+    issues.push(...result.map((issue) => `${route}: ${issue}`));
+  }
+
+  expect(issues).toEqual([]);
+});
+
+test('文档外壳：移动菜单管理焦点，桌面页内目录不改写 hash', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 600 });
+  await openRoute(page, '/', H1.overview);
+
+  const menu = page.getByRole('button', { name: '打开文档菜单' });
+  await menu.click();
+  const search = page.getByRole('searchbox', { name: '按名称过滤导航项' });
+  await expect(search).toBeFocused();
+  await expect(page.locator('#doc-sidebar')).toHaveClass(/doc-sidebar--open/);
+  await search.press('Escape');
+  await expect(page.locator('#doc-sidebar')).not.toHaveClass(/doc-sidebar--open/);
+  await expect(page.getByRole('button', { name: '打开文档菜单' })).toBeFocused();
+
+  // 首次请求 lazy 路由时，需等 Suspense 内容真正挂载后再把焦点交给页面标题。
+  await menu.click();
+  await page.getByRole('link', { name: 'TreeSelect 树选择', exact: true }).click();
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'TreeSelect 树选择', exact: true })
+  ).toBeFocused();
+  await page.evaluate(() => {
+    window.location.hash = '/';
+  });
+  await expect(
+    page.getByRole('heading', { level: 1, name: H1.overview, exact: true })
+  ).toBeVisible();
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  const toc = page.getByRole('navigation', { name: '页内导航' });
+  await expect(toc).toBeVisible();
+  const before = page.url();
+  await toc.getByRole('button', { name: '快速开始' }).click();
+  await expect(toc.getByRole('button', { name: '快速开始' })).toHaveAttribute(
+    'aria-current',
+    'location'
+  );
+  expect(page.url()).toBe(before);
+
+  const geometry = await page.evaluate(() => {
+    const main = document.querySelector<HTMLElement>('.doc-main')!.getBoundingClientRect();
+    const content = document.querySelector<HTMLElement>('.doc-page')!.getBoundingClientRect();
+    const tocRect = document.querySelector<HTMLElement>('.doc-toc')!.getBoundingClientRect();
+    return { main, content, toc: tocRect };
+  });
+  expect(geometry.content.right).toBeLessThanOrEqual(geometry.toc.left);
+  expect(geometry.toc.right).toBeLessThanOrEqual(geometry.main.right);
+});
+
+test('图标库：窄屏详情接管焦点，关闭后返回触发图标', async ({ page }) => {
+  await page.setViewportSize({ width: 1000, height: 800 });
+  await openRoute(page, '/icons', '图标库');
+
+  const trigger = page.getByRole('button', { name: 'Check', exact: true });
+  const detailClose = page.getByRole('button', { name: '关闭图标详情' });
+  await trigger.click();
+  await expect(detailClose).toBeFocused();
+
+  await detailClose.click();
+  await expect(trigger).toBeFocused();
+
+  await trigger.click();
+  await expect(detailClose).toBeFocused();
+  await page.getByRole('button', { name: '关闭详情', exact: true }).click();
+  await expect(trigger).toBeFocused();
+
+  await trigger.click();
+  await expect(detailClose).toBeFocused();
+  const directionFilter = page.getByRole('button', { name: /^方向 ·/ });
+  await directionFilter.click();
+  await expect(detailClose).toHaveCount(0);
+  await expect(directionFilter).toBeFocused();
 });
 
 test('console error 收集：全站页面 pageerror / console.error 为 0', async ({ page }) => {

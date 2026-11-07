@@ -19,9 +19,9 @@
 无需安装包，可在普通 HTML 页面中引用公开的浏览器版。它已包含 React 和 React DOM，适合演示或非构建项目；不要与页面现有的另一份 React 混用。
 
 ```html
-<link rel="stylesheet" href="https://yeyouyuan.github.io/zui/cdn/v0.1.0/zui.css" />
+<link rel="stylesheet" href="https://yeyouyuan.github.io/zui/cdn/v0.2.0/zui.css" />
 <div id="root"></div>
-<script src="https://yeyouyuan.github.io/zui/cdn/v0.1.0/zui.global.js"></script>
+<script src="https://yeyouyuan.github.io/zui/cdn/v0.2.0/zui.global.js"></script>
 <script>
   ZUI.createRoot(document.getElementById('root')).render(
     ZUI.React.createElement(ZUI.Button, { variant: 'primary' }, '你好，ZUI')
@@ -29,7 +29,7 @@
 </script>
 ```
 
-[在线脚本演示](https://yeyouyuan.github.io/zui/cdn-demo.html)。当前公开路径为 `v0.1.0`；`v0.2.0` 的脚本将在本次发布后提供。
+[在线脚本演示](https://yeyouyuan.github.io/zui/cdn-demo.html)。公开 Pages 已提供 `v0.2.0` 的 JS、CSS 与演示页；npm 包仍需单独发布。
 
 ### 包管理器安装
 

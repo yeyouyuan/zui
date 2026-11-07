@@ -28,7 +28,9 @@ describe('kanban block', () => {
     expect(card).toHaveAttribute('data-active', 'false');
     fireEvent.click(screen.getByText('看板拖拽交互调研').closest('.z-card')!);
     expect(onActiveCardChange).toHaveBeenCalledWith('k4');
-    expect(onCardClick).toHaveBeenCalledWith(expect.objectContaining({ key: 'k4', priority: 'high' }));
+    expect(onCardClick).toHaveBeenCalledWith(
+      expect.objectContaining({ key: 'k4', priority: 'high' })
+    );
     // 再次点击同一卡片取消高亮
     fireEvent.click(screen.getByText('看板拖拽交互调研').closest('.z-card')!);
     expect(onActiveCardChange).toHaveBeenLastCalledWith(null);
@@ -44,7 +46,25 @@ describe('kanban block', () => {
     fireEvent.click(other!);
     expect(onActiveCardChange).toHaveBeenCalledWith('k2');
     // 受控：值不内部翻转
-    expect(screen.getByText('数据大屏移动端适配').closest('.z-card')).toHaveAttribute('data-active', 'true');
+    expect(screen.getByText('数据大屏移动端适配').closest('.z-card')).toHaveAttribute(
+      'data-active',
+      'true'
+    );
+  });
+
+  it('activates focused cards with Enter and Space', () => {
+    const onActiveCardChange = vi.fn();
+    const onCardClick = vi.fn();
+    render(<KanbanBlock onActiveCardChange={onActiveCardChange} onCardClick={onCardClick} />);
+    const card = screen.getByRole('button', { name: '看板拖拽交互调研' });
+    expect(card).toHaveAttribute('tabindex', '0');
+    expect(card).toHaveAttribute('aria-pressed', 'false');
+    fireEvent.keyDown(card, { key: 'Enter' });
+    expect(onActiveCardChange).toHaveBeenLastCalledWith('k4');
+    expect(card).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.keyDown(card, { key: ' ' });
+    expect(onActiveCardChange).toHaveBeenLastCalledWith(null);
+    expect(onCardClick).toHaveBeenCalledTimes(2);
   });
 
   it('renders empty hint for an empty column', () => {

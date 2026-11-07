@@ -8,6 +8,7 @@
 ```
 pnpm add @zui/react          # components + bundled styles
 pnpm add @zui/tokens         # optional: TS constants + CSS variable references
+pnpm add @zui/blocks         # optional: 16 page-level business blocks
 ```
 
 ```tsx
@@ -20,6 +21,17 @@ import { Button, Input, Select, Modal, Tabs, Table, MessageProvider, useMessage 
 - Controlled convention (ALL stateful components): `value` / `defaultValue` / `onChange` (or `checked` / `defaultChecked` / `onChange` for boolean state; `open` / `defaultOpen` / `onOpenChange` for Modal).
 - Sizes: `size?: 'sm' | 'md' | 'lg'` default `'md'` (Switch: `'sm' | 'md'`; Table uses `density`; Message has no size).
 - `disabled?: boolean` everywhere. Every component forwards remaining props to its root element (className, style, aria-*, data-*, events) unless noted.
+
+## Business Blocks
+
+- Package: `@zui/blocks`; docs route: `#/blocks`.
+- 16 blocks: Login, Dashboard, TablePage, FormPage, UserCenter, Permission,
+  Settings, Wizard, ProfileEdit, OrderList, DataScreen, TimelineFeed, Kanban,
+  ErrorPages, SearchResult, ListDetail.
+- Import from the package root or a named subpath such as `@zui/blocks/table-page`.
+- Blocks use `@zui/react` styles; import `@zui/react/styles.css` once in the app.
+- Stateful blocks expose controlled values and callbacks. The docs route provides
+  live interactions, reset behavior, and copyable integration examples.
 
 ## Component API Signatures (one prop per line)
 
@@ -415,8 +427,8 @@ never remapped). Contrast is WCAG AA calibrated in both themes.
 - CDN (no-build): `pnpm --filter @zui/react build:browser` →
   `packages/ui/dist/browser/zui.global.js` + `zui.css` (+ LICENSE.txt), synced
   to `docs/dist/cdn/v<v>/` (version from package.json, currently v0.2.0).
-  The current public Pages path remains `cdn/v0.1.0/` until v0.2.0 is deployed.
-  Usage after deployment: `<link rel="stylesheet" href="cdn/v0.2.0/zui.css">` +
+  Public Pages currently serves `cdn/v0.2.0/` and the matching demo page.
+  Usage: `<link rel="stylesheet" href="cdn/v0.2.0/zui.css">` +
   `<script src="cdn/v0.2.0/zui.global.js">`; the IIFE bundles React 19 under
   the global namespace `ZUI` (`ZUI.React`, `ZUI.createRoot`, `ZUI.hydrateRoot`,
   every component). Live example: `/cdn-demo.html`.

@@ -130,17 +130,33 @@ export function ListDetailBlock({
         ...style,
       }}
     >
-      <h1 style={{ margin: 0, fontSize: 'var(--z-text-xl)', fontWeight: 'var(--z-weight-semibold)', color: 'var(--z-color-fg)' }}>
+      <h1
+        style={{
+          margin: 0,
+          fontSize: 'var(--z-text-xl)',
+          fontWeight: 'var(--z-weight-semibold)',
+          color: 'var(--z-color-fg)',
+        }}
+      >
         {title}
       </h1>
 
       {/* 左列表 + 右详情 双栏 */}
-      <Row gutter={[16, 16]} style={{ width: '100%' }}>
-        <Col span={24} style={{ minWidth: 0 }} className="zui-list-detail-col-list">
+      <Row gutter={[16, 16]}>
+        <Col
+          span={24}
+          flex="1 1 300px"
+          style={{ minWidth: 0 }}
+          className="zui-list-detail-col-list"
+        >
           <Card
             className={classNames?.list}
             title={listTitle}
-            extra={<span style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-fg-subtle)' }}>共 {items.length} 项</span>}
+            extra={
+              <span style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-fg-subtle)' }}>
+                共 {items.length} 项
+              </span>
+            }
           >
             <List
               bordered={false}
@@ -152,45 +168,88 @@ export function ListDetailBlock({
                     onClick={() => setCurrentKey(item.key)}
                     aria-current={currentKey === item.key ? 'true' : undefined}
                     style={{
-                      all: 'unset',
+                      font: 'inherit',
+                      border: 'none',
+                      borderRadius: 'var(--z-radius-sm)',
+                      background: 'transparent',
+                      padding: 'var(--z-space-1) 0',
+                      textAlign: 'left',
                       cursor: 'pointer',
                       display: 'inline-flex',
+                      flexWrap: 'wrap',
                       alignItems: 'center',
                       gap: 'var(--z-space-2)',
-                      color: currentKey === item.key ? 'var(--z-color-primary)' : 'var(--z-color-fg)',
+                      color:
+                        currentKey === item.key ? 'var(--z-color-primary)' : 'var(--z-color-fg)',
                       fontWeight: 'var(--z-weight-medium)',
                       fontSize: 'var(--z-text-sm)',
                     }}
                   >
                     {item.title}
-                    {item.status != null ? <Tag color={item.status.color}>{item.status.text}</Tag> : null}
+                    {item.status != null ? (
+                      <Tag color={item.status.color}>{item.status.text}</Tag>
+                    ) : null}
                   </button>
                 ),
                 description: item.description,
-                extra: item.extra != null ? (
-                  <span style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-fg-subtle)', whiteSpace: 'nowrap' }}>{item.extra}</span>
-                ) : undefined,
+                extra:
+                  item.extra != null ? (
+                    <span
+                      style={{
+                        fontSize: 'var(--z-text-xs)',
+                        color: 'var(--z-color-fg-subtle)',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {item.extra}
+                    </span>
+                  ) : undefined,
               }))}
             />
           </Card>
         </Col>
 
-        <Col span={24} style={{ minWidth: 0 }} className="zui-list-detail-col-detail">
+        <Col
+          span={24}
+          flex="2 1 400px"
+          style={{ minWidth: 0 }}
+          className="zui-list-detail-col-detail"
+        >
           <Card className={classNames?.detail} title={detailTitle ?? activeItem?.title ?? '详情'}>
             {activeItem == null ? (
               <Empty description="暂无选中项" />
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--z-space-4)' }}>
                 {activeItem.status != null || activeItem.extra != null ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--z-space-2)', flexWrap: 'wrap' }}>
-                    {activeItem.status != null ? <Tag color={activeItem.status.color}>{activeItem.status.text}</Tag> : null}
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--z-space-2)',
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    {activeItem.status != null ? (
+                      <Tag color={activeItem.status.color}>{activeItem.status.text}</Tag>
+                    ) : null}
                     {activeItem.extra != null ? (
-                      <span style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-fg-subtle)' }}>{activeItem.extra}</span>
+                      <span
+                        style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-fg-subtle)' }}
+                      >
+                        {activeItem.extra}
+                      </span>
                     ) : null}
                   </div>
                 ) : null}
                 {activeItem.description != null ? (
-                  <p style={{ margin: 0, fontSize: 'var(--z-text-sm)', color: 'var(--z-color-fg-muted)', lineHeight: 'var(--z-leading-relaxed)' }}>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: 'var(--z-text-sm)',
+                      color: 'var(--z-color-fg-muted)',
+                      lineHeight: 'var(--z-leading-relaxed)',
+                    }}
+                  >
                     {activeItem.description}
                   </p>
                 ) : null}

@@ -7,8 +7,8 @@
 - 七包版本和 CHANGELOG 已更新至 `0.2.0`，原 changeset 已消费。**不要再次执行 `changeset version`**。
 - Registry 为 66 个组件、16 个业务区块；Anchor 已有源码、导出、文档和 Registry 条目。
 - 七包已有独立 LICENSE，`@zui/react` 已有 README；`@zui/blocks` 对 `@zui/react` 的依赖已移入 `dependencies`。
-- GitHub `main` 仍是 `06dbaaa`，公开 Pages 脚本仍只有 `v0.1.0`。`@zui/react` 在 npm 查询为 404，当前机器 `npm whoami` 为 `ENEEDAUTH`。因此 unpkg 的 `v0.2.0` 脚本尚不可用。
-- 组件视觉验收仍在继续；自动测试通过不能代表 66 个组件的全部打开态、暗色和缩放状态已逐一验收。
+- GitHub `main` 当前为 `3ec226b`，公开 Pages 的 `v0.2.0` JS、CSS 与演示页均可访问；远端仍无 `v0.2.0` tag。`@zui/react@0.2.0` 在 npm 查询为 404，当前机器 `npm whoami` 为 `ENEEDAUTH`，因此 unpkg 尚不可用。
+- 文档 71 个导航路由已完成 320px 暗色静态布局审计；概览、图标库和 16 个业务区块另做桌面/窄屏/暗色及关键交互复核。66 个组件的全部打开态、长文案和原生 200% 缩放仍属于持续增强验收，不作为本次本地发布门禁的阻塞项。
 
 ## 1. 发布前验证
 
@@ -31,12 +31,12 @@ E2E 可用 `ZUI_E2E_PORT` 选空闲端口，避免复用已有文档服务。CI 
 
 ## 2. 检查发布产物
 
-- [ ] 七包 `package.json` 的版本均为 `0.2.0`，内部依赖解析到对应 `0.2.0` 包。
-- [ ] 七包 `CHANGELOG.md` 条目与实际功能一致，尤其核对原文中已过时的版本、组件、语言包、图标与业务区块计数。
-- [ ] 每包 tarball 包含构建产物、README、LICENSE；CLI/MCP 包还包含 `data/registry/registry.json`。
-- [ ] `@zui/react` tarball 包含 `dist/browser/zui.global.js`、`zui.css`、`LICENSE.txt`，`unpkg` 字段指向浏览器脚本。
-- [ ] `docs/dist/cdn/v0.2.0/` 有同一组三个浏览器产物。`docs/public/cdn-demo.html` 当前仍指向公开的 `v0.1.0`；Pages 部署 `v0.2.0` 后再同步更新演示页。
-- [ ] 七包 `npm pack --dry-run` 不含测试、stories、`node_modules` 等开发文件。`@zui/tokens` 与 `@zui/blocks` 当前仍将 `src` 列入 `files`；确认这是期望的源码分发后再发布。
+- [x] 七包 `package.json` 的版本均为 `0.2.0`，内部依赖可由 workspace 构建和消费者检查正确解析。
+- [x] 七包 `CHANGELOG.md` 条目已按 66 个组件、10 套语言包、142 枚图标和 16 个业务区块核对。
+- [x] 每包 tarball 包含构建产物、README、LICENSE；CLI/MCP 包还包含 `data/registry/registry.json`。
+- [x] `@zui/react` tarball 包含 `dist/browser/zui.global.js`、`zui.css`、`LICENSE.txt`，`unpkg` 字段指向浏览器脚本。
+- [x] `docs/dist/cdn/v0.2.0/` 有同一组三个浏览器产物，`docs/public/cdn-demo.html` 已指向公开的 `v0.2.0`。
+- [x] 七包 `npm pack --dry-run` 不含测试、stories、`node_modules` 等开发文件；`@zui/tokens` 的 CSS 导出和源码令牌、`@zui/blocks` 的源码分发均按包清单保留。
 
 ## 3. 发布 npm 与 unpkg
 
@@ -55,6 +55,6 @@ npm view @zui/react@0.2.0 version
 确认工作区改动和最终 diff 后，提交并推送 `main`，再创建并推送 `v0.2.0` tag。Pages 工作流在 `main` 推送后会重建文档和 `cdn/v0.2.0/`。
 
 - [ ] GitHub 上确认 `main` 包含本次提交、CI 全绿、Pages 部署成功。
-- [ ] 线上验证 `https://yeyouyuan.github.io/zui/cdn/v0.2.0/zui.global.js`、`zui.css` 和文档站页面均返回成功。
+- [ ] 当前 `v0.2.0` JS、CSS 与演示页返回成功；推送本次最终提交并等待 Pages 重建后再次验证。
 - [ ] 线上浏览器打开脚本演示，确认 `ZUI.createRoot` 与组件样式正常；随后更新 README/演示页的默认示例版本。
 - [ ] 发布完成后核对 Git tag、npm 七包版本、unpkg 和 Pages 版本一致。

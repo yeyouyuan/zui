@@ -46,9 +46,7 @@ describe('settings block', () => {
     const onChange = vi.fn();
     const onSave = vi.fn();
     const user = userEvent.setup();
-    render(
-      <SettingsBlock values={DEMO_SETTINGS_VALUES} onChange={onChange} onSave={onSave} />
-    );
+    render(<SettingsBlock values={DEMO_SETTINGS_VALUES} onChange={onChange} onSave={onSave} />);
     await user.click(screen.getByRole('button', { name: '通知设置' }));
     await user.click(screen.getByRole('switch', { name: '邮件通知' }));
     expect(onChange).toHaveBeenCalledWith('emailNotify', false);
@@ -62,5 +60,23 @@ describe('settings block', () => {
     render(<SettingsBlock values={DEMO_SETTINGS_VALUES} activeSection="security" />);
     expect(screen.getByRole('switch', { name: '登录二次验证' })).toBeInTheDocument();
     expect(screen.queryByLabelText('站点名称')).not.toBeInTheDocument();
+  });
+
+  it('keeps labels associated with their own inputs across multiple instances', () => {
+    const { container } = render(
+      <>
+        <SettingsBlock values={{ ...DEMO_SETTINGS_VALUES, siteName: '第一站点' }} />
+        <SettingsBlock values={{ ...DEMO_SETTINGS_VALUES, siteName: '第二站点' }} />
+      </>
+    );
+    const labels = Array.from(container.querySelectorAll('label')).filter(
+      (label) => label.textContent === '站点名称'
+    );
+    expect(labels).toHaveLength(2);
+    expect(labels[0].htmlFor).not.toBe(labels[1].htmlFor);
+    expect(labels.map((label) => (label.control as HTMLInputElement).value)).toEqual([
+      '第一站点',
+      '第二站点',
+    ]);
   });
 });

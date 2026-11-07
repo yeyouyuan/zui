@@ -1,15 +1,16 @@
 # ZUI 文档站 Playwright E2E 冒烟
 
-针对 `docs/`（hash 路由文档站，端口 **5174**）的浏览器冒烟测试，覆盖契约 §3 清单：
-四起始页 h1、Form 校验/成功提交、Select 选中、Modal Esc 关闭、DatePicker 选日、
-VirtualTable 虚拟滚动、暗色切换，以及全站 `pageerror` / `console.error` 收集断言为 0。
+针对 `docs/` hash 路由文档站的 16 条浏览器冒烟测试。默认端口为 **5174**，可用
+`ZUI_E2E_PORT` 指定独立端口。覆盖四个核心起始页、Form / Select / Modal / 日期范围 / VirtualTable
+交互、暗色切换、移动菜单与页内目录，以及 71 个导航路由在 320px 暗色视口下的横向溢出和
+全站 `pageerror` / `console.error` 检查。
 
 ## 文件
 
-| 文件 | 说明 |
-|---|---|
-| `playwright.config.ts` | 配置：`testDir: '.'`、baseURL `http://localhost:5174`、chromium project、viewport 1280x800、webServer 自动拉起/复用 5174 |
-| `docs-smoke.spec.ts` | 冒烟用例（13 条，含窄屏日期范围选择与 console error 监听） |
+| 文件                   | 说明                                                                                                |
+| ---------------------- | --------------------------------------------------------------------------------------------------- |
+| `playwright.config.ts` | 配置：`testDir: '.'`、可配置 baseURL 端口、Chromium、viewport 1280×800、webServer 自动拉起/本地复用 |
+| `docs-smoke.spec.ts`   | 16 条冒烟用例，含全路由 320px 布局审计、焦点管理与 console error 监听                               |
 
 ## 首次安装（一次性）
 
@@ -30,18 +31,20 @@ internal state」）：
 pnpm test:e2e                                              # 推荐入口（等价下行）
 npx playwright test --config e2e/playwright.config.ts --reporter=line
 npx playwright test --config e2e/playwright.config.ts -g "Select"   # 只跑匹配用例
+ZUI_E2E_PORT=5175 pnpm test:e2e                            # 指定空闲端口
 ```
 
-webServer 行为：Playwright 先探测 `http://localhost:5174`：
+webServer 行为：Playwright 先探测 `http://localhost:<ZUI_E2E_PORT>`（未设置时为 5174）：
 
-- **已有手动 dev server 在监听**（`pnpm dev` / `pnpm --filter @zui/docs dev`）→ 直接复用，不执行 webServer command，与手动 server 并存无冲突；
-- **5174 空闲** → 自动执行 `pnpm --filter @zui/docs dev --port 5174 --strictPort` 拉起，测试结束后关闭。
+- **已有手动 dev server 在监听**（`pnpm dev` / `pnpm --filter @zui/docs dev`）→ 本地直接复用，不执行 webServer command；
+- **目标端口空闲** → 自动执行 `pnpm --filter @zui/docs dev --port <port> --strictPort`，测试结束后关闭；
+- **CI** → 不复用已有服务，避免误测残留进程。
 
 只跑单条用例可加过滤：`npx playwright test -g "Select"`。
 
 ## 与手动 dev server 并存
 
-手动起的 5174 完全兼容：config 的 `reuseExistingServer: true` 使 Playwright 探测到
+手动起的目标端口完全兼容：本地 config 的 `reuseExistingServer: true` 使 Playwright 探测到
 url 已在监听就跳过 command（`--strictPort` 因此不会产生端口抢占）。反过来，
 先跑测试（自动拉起 server）再想手动开发，请等测试结束，或手动起 server 后再跑测试。
 
@@ -49,8 +52,8 @@ url 已在监听就跳过 command（`--strictPort` 因此不会产生端口抢�
 
 ```yaml
 - run: pnpm install
-- run: npx playwright install --with-deps chromium   # 容器内补系统依赖
-- run: pnpm test:e2e                                 # CI 中 retries=2、reporter=github
+- run: npx playwright install --with-deps chromium # 容器内补系统依赖
+- run: pnpm test:e2e # CI 中 retries=2、reporter=github
 ```
 
 要点：
@@ -58,7 +61,7 @@ url 已在监听就跳过 command（`--strictPort` 因此不会产生端口抢�
 - config 已按 `process.env.CI` 切换 `retries: 2` 与 `github` reporter，无需额外参数；
 - CI 环境通常无手动 dev server，webServer 会以 `--strictPort` 自动拉起并回收；
 - 失败时会保留 trace（`trace: 'retain-on-failure'`），用
-  `npx playwright show-trace e2e/test-results/<case>/trace.zip` 回放。
+  `npx playwright show-trace test-results/<case>/trace.zip` 回放。
 
 ## 用例纪律（约定）
 

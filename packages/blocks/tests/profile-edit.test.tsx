@@ -8,9 +8,7 @@ afterEach(cleanup);
 
 describe('profile-edit block', () => {
   it('renders the grid form with labeled fields, tenure range and avatar upload', () => {
-    const { container } = render(
-      <ProfileEditBlock values={DEMO_PROFILE} tenure={DEMO_TENURE} />
-    );
+    const { container } = render(<ProfileEditBlock values={DEMO_PROFILE} tenure={DEMO_TENURE} />);
     // 栅格布局
     expect(container.querySelector('.z-row')).toBeInTheDocument();
     expect(container.querySelector('.z-col')).toBeInTheDocument();
@@ -59,5 +57,41 @@ describe('profile-edit block', () => {
     await user.click(screen.getByRole('button', { name: '保存资料' }));
     expect(onSave).toHaveBeenCalledTimes(1);
     expect(onSave).toHaveBeenCalledWith(DEMO_PROFILE);
+  });
+
+  it('rejects invalid avatar type and files larger than the advertised 2MB limit', async () => {
+    const onAvatarFilesChange = vi.fn();
+    const { container } = render(
+      <ProfileEditBlock values={DEMO_PROFILE} onAvatarFilesChange={onAvatarFilesChange} />
+    );
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    fireEvent.change(input, {
+      target: { files: [new File(['gif'], 'avatar.gif', { type: 'image/gif' })] },
+    });
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent('请选择 JPG 或 PNG 图片')
+    );
+    const large = new File([new Uint8Array(2 * 1024 * 1024 + 1)], 'large.png', {
+      type: 'image/png',
+    });
+    fireEvent.change(input, { target: { files: [large] } });
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent('图片大小不能超过 2MB')
+    );
+    expect(onAvatarFilesChange).not.toHaveBeenCalled();
+  });
+
+  it('accepts jpg and png extensions when the browser cannot determine a MIME type', async () => {
+    const onAvatarFilesChange = vi.fn();
+    const { container } = render(
+      <ProfileEditBlock values={DEMO_PROFILE} onAvatarFilesChange={onAvatarFilesChange} />
+    );
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = new File(['avatar-bytes'], 'avatar.JPEG');
+    expect(file.type).toBe('');
+    fireEvent.change(input, { target: { files: [file] } });
+    await waitFor(() => expect(onAvatarFilesChange).toHaveBeenCalled());
+    expect(onAvatarFilesChange.mock.calls[0][0].file.name).toBe('avatar.JPEG');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });

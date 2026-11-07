@@ -1,15 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import {
-  Avatar,
-  Card,
-  Descriptions,
-  Switch,
-  Tabs,
-  Upload,
-  useControllableState,
-} from '@zui/react';
+import { Avatar, Card, Descriptions, Switch, Tabs, Upload, useControllableState } from '@zui/react';
 import type { UploadChangeInfo, UploadFile } from '@zui/react';
 
 /* ---------------------------------- 类型 ---------------------------------- */
@@ -87,7 +79,12 @@ export const DEMO_USER: UserCenterUser = {
 };
 
 export const DEMO_PREFERENCES: UserPreferenceItem[] = [
-  { key: 'emailNotify', label: '邮件通知', description: '系统公告与审批提醒发送到邮箱', checked: true },
+  {
+    key: 'emailNotify',
+    label: '邮件通知',
+    description: '系统公告与审批提醒发送到邮箱',
+    checked: true,
+  },
   { key: 'weeklyReport', label: '每周摘要', description: '每周一汇总上周工作动态', checked: false },
   { key: 'compactMode', label: '紧凑模式', description: '列表与表格使用更小的行高', checked: true },
 ];
@@ -96,7 +93,18 @@ export const DEMO_PREFERENCES: UserPreferenceItem[] = [
 
 function EditIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
       <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
       <path d="m15 5 4 4" />
     </svg>
@@ -105,7 +113,18 @@ function EditIcon() {
 
 function ShieldIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
       <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
     </svg>
   );
@@ -181,7 +200,7 @@ export function UserCenterBlock({
           }}
         >
           <Avatar src={user.avatarSrc} name={user.name} size={72} alt={user.name} />
-          <div style={{ flex: 1, minWidth: 200 }}>
+          <div style={{ flex: '1 1 200px', minWidth: 0, overflowWrap: 'anywhere' }}>
             <h2
               style={{
                 margin: 0,

@@ -5,6 +5,8 @@ import CustomizeOutlet from '../../components/CustomizeOutlet';
 import Demo from '../../components/Demo';
 import { usePageTitle } from '../../components/usePageTitle';
 
+const BROKEN_IMAGE_SRC = 'data:image/png;base64,invalid';
+
 const BASIC_CODE = `<Image
   src="https://picsum.photos/320/200"
   alt="示例图片"
@@ -13,7 +15,7 @@ const BASIC_CODE = `<Image
 />`;
 
 const FALLBACK_CODE = `<Image
-  src="https://invalid.example/missing.png"
+  src="data:image/png;base64,invalid"
   fallback="https://picsum.photos/320/200?fallback"
   alt="加载失败回退"
   width={320}
@@ -45,7 +47,11 @@ export default function ImagePage(): React.ReactNode {
 
       <h2 className="doc-h2">示例</h2>
 
-      <Demo title="基础用法" description="传入 src 与 alt，width/height 控制占位尺寸。" code={BASIC_CODE}>
+      <Demo
+        title="基础用法"
+        description="传入 src 与 alt，width/height 控制占位尺寸。"
+        code={BASIC_CODE}
+      >
         <Image src="https://picsum.photos/320/200" alt="示例图片" width={320} height={200} />
       </Demo>
 
@@ -55,7 +61,7 @@ export default function ImagePage(): React.ReactNode {
         code={FALLBACK_CODE}
       >
         <Image
-          src="https://invalid.example/missing.png"
+          src={BROKEN_IMAGE_SRC}
           fallback="https://picsum.photos/320/200?fallback"
           alt="加载失败回退"
           width={320}
@@ -63,7 +69,11 @@ export default function ImagePage(): React.ReactNode {
         />
       </Demo>
 
-      <Demo title="点击预览" description="preview 默认 true，点击打开全屏遮罩大图（Esc/点击关闭）；preview={false} 禁用。" code={PREVIEW_CODE}>
+      <Demo
+        title="点击预览"
+        description="preview 默认 true，点击打开全屏遮罩大图（Esc/点击关闭）；preview={false} 禁用。"
+        code={PREVIEW_CODE}
+      >
         <div className="doc-pg-preview-row">
           <Image
             src="https://picsum.photos/320/200"
@@ -125,7 +135,7 @@ export default function ImagePage(): React.ReactNode {
           {
             name: '...rest',
             type: "Omit<React.ComponentPropsWithRef<'img'>, 'onError'>",
-            description: "原生 img 属性透传（onError 除外，用于 fallback 逻辑）。",
+            description: '原生 img 属性透传（onError 除外，用于 fallback 逻辑）。',
           },
         ]}
       />

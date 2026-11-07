@@ -66,4 +66,19 @@ describe('permission block', () => {
     render(<PermissionBlock treeData={DEMO_PERMISSION_TREE} members={[]} />);
     expect(screen.getByText('暂无成员')).toBeInTheDocument();
   });
+
+  it('reports expansion changes for a controlled permission tree', () => {
+    const onExpandedKeysChange = vi.fn();
+    render(
+      <PermissionBlock
+        treeData={DEMO_PERMISSION_TREE}
+        members={[]}
+        expandedKeys={[]}
+        onExpandedKeysChange={onExpandedKeysChange}
+      />
+    );
+    const consoleNode = screen.getByText('控制台').closest('[role="treeitem"]')!;
+    fireEvent.keyDown(consoleNode, { key: 'ArrowRight' });
+    expect(onExpandedKeysChange).toHaveBeenCalledWith(['console']);
+  });
 });

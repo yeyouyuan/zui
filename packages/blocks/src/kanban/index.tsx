@@ -49,8 +49,22 @@ export const DEMO_KANBAN_COLUMNS: KanbanColumn[] = [
     key: 'todo',
     title: '待处理',
     cards: [
-      { key: 'k1', title: '数据大屏移动端适配', priority: 'high', assignee: '李梅', tags: ['前端'], dueDate: '11-12' },
-      { key: 'k2', title: '订单导出接口性能优化', priority: 'medium', assignee: '王强', tags: ['后端'], dueDate: '11-14' },
+      {
+        key: 'k1',
+        title: '数据大屏移动端适配',
+        priority: 'high',
+        assignee: '李梅',
+        tags: ['前端'],
+        dueDate: '11-12',
+      },
+      {
+        key: 'k2',
+        title: '订单导出接口性能优化',
+        priority: 'medium',
+        assignee: '王强',
+        tags: ['后端'],
+        dueDate: '11-14',
+      },
       { key: 'k3', title: '帮助中心文案修订', priority: 'low', assignee: '赵敏', dueDate: '11-20' },
     ],
   },
@@ -58,7 +72,14 @@ export const DEMO_KANBAN_COLUMNS: KanbanColumn[] = [
     key: 'doing',
     title: '进行中',
     cards: [
-      { key: 'k4', title: '看板拖拽交互调研', priority: 'high', assignee: '张晓明', tags: ['前端', '调研'], dueDate: '11-11' },
+      {
+        key: 'k4',
+        title: '看板拖拽交互调研',
+        priority: 'high',
+        assignee: '张晓明',
+        tags: ['前端', '调研'],
+        dueDate: '11-11',
+      },
       { key: 'k5', title: '权限树批量授权', priority: 'medium', assignee: '刘洋', tags: ['后端'] },
     ],
   },
@@ -72,7 +93,10 @@ export const DEMO_KANBAN_COLUMNS: KanbanColumn[] = [
   },
 ];
 
-const PRIORITY_META: Record<KanbanPriority, { label: string; color: 'error' | 'warning' | 'success' }> = {
+const PRIORITY_META: Record<
+  KanbanPriority,
+  { label: string; color: 'error' | 'warning' | 'success' }
+> = {
   high: { label: '高', color: 'error' },
   medium: { label: '中', color: 'warning' },
   low: { label: '低', color: 'success' },
@@ -127,15 +151,38 @@ export function KanbanBlock({
       <header
         data-part="header"
         className={classNames?.header}
-        style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--z-space-4)', flexWrap: 'wrap' }}
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: 'var(--z-space-4)',
+          flexWrap: 'wrap',
+        }}
       >
         <div>
-          <h1 style={{ margin: 0, fontSize: 'var(--z-text-xl)', fontWeight: 'var(--z-weight-semibold)', color: 'var(--z-color-fg)' }}>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: 'var(--z-text-xl)',
+              fontWeight: 'var(--z-weight-semibold)',
+              color: 'var(--z-color-fg)',
+            }}
+          >
             {title}
           </h1>
-          <p style={{ margin: 'var(--z-space-1) 0 0', fontSize: 'var(--z-text-sm)', color: 'var(--z-color-fg-muted)' }}>{subtitle}</p>
+          <p
+            style={{
+              margin: 'var(--z-space-1) 0 0',
+              fontSize: 'var(--z-text-sm)',
+              color: 'var(--z-color-fg-muted)',
+            }}
+          >
+            {subtitle}
+          </p>
         </div>
-        {actions != null ? <div style={{ display: 'flex', gap: 'var(--z-space-3)' }}>{actions}</div> : null}
+        {actions != null ? (
+          <div style={{ display: 'flex', gap: 'var(--z-space-3)' }}>{actions}</div>
+        ) : null}
       </header>
 
       {/* 三列看板 */}
@@ -144,7 +191,7 @@ export function KanbanBlock({
         className={classNames?.board}
         style={{
           display: 'grid',
-          gridTemplateColumns: `repeat(${Math.max(1, columns.length)}, minmax(260px, 1fr))`,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(260px, 100%), 1fr))',
           gap: 'var(--z-space-4)',
           alignItems: 'start',
         }}
@@ -152,7 +199,11 @@ export function KanbanBlock({
         {columns.map((column) => (
           <section
             key={column.key}
-            aria-label={typeof column.title === 'string' ? `${column.title}列，${column.cards.length} 张卡片` : undefined}
+            aria-label={
+              typeof column.title === 'string'
+                ? `${column.title}列，${column.cards.length} 张卡片`
+                : undefined
+            }
             data-part="column"
             className={classNames?.column}
             style={{
@@ -167,8 +218,22 @@ export function KanbanBlock({
             }}
           >
             {/* 列头：标题 + 计数徽标 */}
-            <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--z-space-2)' }}>
-              <h2 style={{ margin: 0, fontSize: 'var(--z-text-md)', fontWeight: 'var(--z-weight-semibold)', color: 'var(--z-color-fg)' }}>
+            <header
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 'var(--z-space-2)',
+              }}
+            >
+              <h2
+                style={{
+                  margin: 0,
+                  fontSize: 'var(--z-text-md)',
+                  fontWeight: 'var(--z-weight-semibold)',
+                  color: 'var(--z-color-fg)',
+                }}
+              >
                 {column.title}
               </h2>
               <span
@@ -202,6 +267,10 @@ export function KanbanBlock({
                   key={card.key}
                   hoverable
                   data-active={active ? 'true' : 'false'}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={card.title}
+                  aria-pressed={active}
                   style={{
                     cursor: 'pointer',
                     minWidth: 0,
@@ -210,22 +279,60 @@ export function KanbanBlock({
                       : null),
                   }}
                   onClick={() => handleCardClick(card)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      handleCardClick(card);
+                    }
+                  }}
                 >
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--z-space-2)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--z-space-2)' }}>
+                  <div
+                    style={{ display: 'flex', flexDirection: 'column', gap: 'var(--z-space-2)' }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 'var(--z-space-2)',
+                      }}
+                    >
                       <Tag color={priority.color}>{priority.label}</Tag>
                       {card.dueDate != null ? (
-                        <span style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-fg-subtle)', fontVariantNumeric: 'tabular-nums' }}>
+                        <span
+                          style={{
+                            fontSize: 'var(--z-text-xs)',
+                            color: 'var(--z-color-fg-subtle)',
+                            fontVariantNumeric: 'tabular-nums',
+                          }}
+                        >
                           截止 {card.dueDate}
                         </span>
                       ) : null}
                     </div>
-                    <div style={{ fontSize: 'var(--z-text-sm)', fontWeight: 'var(--z-weight-medium)', color: 'var(--z-color-fg)' }}>
+                    <div
+                      style={{
+                        fontSize: 'var(--z-text-sm)',
+                        fontWeight: 'var(--z-weight-medium)',
+                        color: 'var(--z-color-fg)',
+                      }}
+                    >
                       {card.title}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--z-space-2)', flexWrap: 'wrap' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 'var(--z-space-2)',
+                        flexWrap: 'wrap',
+                      }}
+                    >
                       {card.assignee != null ? (
-                        <span style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-fg-muted)' }}>{card.assignee}</span>
+                        <span
+                          style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-fg-muted)' }}
+                        >
+                          {card.assignee}
+                        </span>
                       ) : null}
                       {(card.tags ?? []).map((tag) => (
                         <span
@@ -248,7 +355,14 @@ export function KanbanBlock({
             })}
 
             {column.cards.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: 'var(--z-space-6) 0', color: 'var(--z-color-fg-subtle)', fontSize: 'var(--z-text-sm)' }}>
+              <div
+                style={{
+                  textAlign: 'center',
+                  padding: 'var(--z-space-6) 0',
+                  color: 'var(--z-color-fg-subtle)',
+                  fontSize: 'var(--z-text-sm)',
+                }}
+              >
                 暂无卡片
               </div>
             ) : null}

@@ -35,6 +35,9 @@ importers:
 
   docs:
     dependencies:
+      '@zui/blocks':
+        specifier: workspace:*
+        version: link:../packages/blocks
       '@zui/i18n':
         specifier: workspace:*
         version: link:../packages/i18n

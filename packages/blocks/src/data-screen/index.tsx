@@ -97,7 +97,7 @@ const RANGE_OPTIONS: { value: DataScreenRange; label: string }[] = [
  */
 export function DataScreenBlock({
   title = '实时数据大屏',
-  subtitle = '数据每 5 秒自动刷新',
+  subtitle = '实时数据概览',
   actions,
   stats = DEMO_SCREEN_STATS,
   bars = DEMO_SCREEN_BARS,
@@ -118,7 +118,10 @@ export function DataScreenBlock({
     onChange: onRangeChange,
   });
 
-  const maxBar = Math.max(...bars.map((bar) => (Number.isFinite(bar.value) ? Math.max(0, bar.value) : 0)), 1);
+  const maxBar = Math.max(
+    ...bars.map((bar) => (Number.isFinite(bar.value) ? Math.max(0, bar.value) : 0)),
+    1
+  );
 
   /* 深色底自适应：直接落在中性色阶 primitive 上，不随页面主题翻转 */
   const dark = {
@@ -129,12 +132,23 @@ export function DataScreenBlock({
     fgMuted: 'var(--z-neutral-400)',
     fgSubtle: 'var(--z-neutral-500)',
   };
+  const darkTokens = {
+    '--z-color-fg': dark.fg,
+    '--z-color-fg-muted': dark.fgMuted,
+    '--z-color-fg-subtle': dark.fgSubtle,
+    '--z-color-bg': dark.bg,
+    '--z-color-bg-muted': dark.panel,
+    '--z-color-bg-subtle': dark.panel,
+    '--z-color-border': dark.border,
+    '--z-color-border-subtle': dark.border,
+  } as React.CSSProperties;
 
   return (
     <div
       data-part="root"
       className={[className, classNames?.root].filter(Boolean).join(' ') || undefined}
       style={{
+        ...darkTokens,
         padding: 'clamp(var(--z-space-4), 3vw, var(--z-space-8))',
         background: dark.bg,
         color: dark.fg,
@@ -169,11 +183,24 @@ export function DataScreenBlock({
           >
             {title}
           </h1>
-          <p style={{ margin: 'var(--z-space-1) 0 0', fontSize: 'var(--z-text-sm)', color: dark.fgMuted }}>
+          <p
+            style={{
+              margin: 'var(--z-space-1) 0 0',
+              fontSize: 'var(--z-text-sm)',
+              color: dark.fgMuted,
+            }}
+          >
             {subtitle}
           </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--z-space-3)', flexWrap: 'wrap' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--z-space-3)',
+            flexWrap: 'wrap',
+          }}
+        >
           {actions ?? (
             <>
               <Segmented
@@ -198,7 +225,17 @@ export function DataScreenBlock({
                   cursor: 'pointer',
                 }}
               >
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <svg
+                  viewBox="0 0 24 24"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
                   <path d="M21 12a9 9 0 1 1-2.64-6.36" />
                   <path d="M21 3v6h-6" />
                 </svg>
@@ -237,7 +274,13 @@ export function DataScreenBlock({
               valueStyle={{ color: 'var(--z-brand-400)', fontSize: 'var(--z-text-2xl)' }}
             />
             {stat.trend != null ? (
-              <div style={{ marginTop: 'var(--z-space-2)', fontSize: 'var(--z-text-xs)', color: dark.fgSubtle }}>
+              <div
+                style={{
+                  marginTop: 'var(--z-space-2)',
+                  fontSize: 'var(--z-text-xs)',
+                  color: dark.fgSubtle,
+                }}
+              >
                 {stat.trend}
               </div>
             ) : null}
@@ -255,15 +298,53 @@ export function DataScreenBlock({
         }}
       >
         {/* CSS 柱状图 */}
-        <section aria-label={typeof barChartTitle === 'string' ? barChartTitle : '柱状图'} style={{ background: dark.panel, border: `1px solid ${dark.border}`, borderRadius: 'var(--z-radius-lg)', padding: 'var(--z-space-5)' }}>
-          <h2 style={{ margin: '0 0 var(--z-space-4)', fontSize: 'var(--z-text-md)', fontWeight: 'var(--z-weight-medium)', color: dark.fg }}>
+        <section
+          aria-label={typeof barChartTitle === 'string' ? barChartTitle : '柱状图'}
+          style={{
+            background: dark.panel,
+            border: `1px solid ${dark.border}`,
+            borderRadius: 'var(--z-radius-lg)',
+            padding: 'var(--z-space-5)',
+          }}
+        >
+          <h2
+            style={{
+              margin: '0 0 var(--z-space-4)',
+              fontSize: 'var(--z-text-md)',
+              fontWeight: 'var(--z-weight-medium)',
+              color: dark.fg,
+            }}
+          >
             {barChartTitle}
           </h2>
-          <div role="img" aria-label={typeof barChartTitle === 'string' ? `${barChartTitle}柱状图` : '柱状图'} style={{ display: 'flex', alignItems: 'flex-end', gap: 'var(--z-space-3)', height: 200 }}>
+          <div
+            role="img"
+            aria-label={typeof barChartTitle === 'string' ? `${barChartTitle}柱状图` : '柱状图'}
+            style={{
+              display: 'flex',
+              alignItems: 'flex-end',
+              gap: 'var(--z-space-3)',
+              height: 200,
+            }}
+          >
             {bars.map((bar, index) => {
-              const heightPercent = Number.isFinite(bar.value) ? Math.round((Math.max(0, bar.value) / maxBar) * 100) : 0;
+              const heightPercent = Number.isFinite(bar.value)
+                ? Math.round((Math.max(0, bar.value) / maxBar) * 100)
+                : 0;
               return (
-                <div key={`${bar.label}-${index}`} style={{ flex: 1, minWidth: 0, display: 'grid', gridTemplateRows: 'minmax(0, 1fr) auto', alignItems: 'end', justifyItems: 'center', gap: 'var(--z-space-2)', height: '100%' }}>
+                <div
+                  key={`${bar.label}-${index}`}
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    display: 'grid',
+                    gridTemplateRows: 'minmax(0, 1fr) auto',
+                    alignItems: 'end',
+                    justifyItems: 'center',
+                    gap: 'var(--z-space-2)',
+                    height: '100%',
+                  }}
+                >
                   <div
                     title={bar.tooltip ?? `${bar.label}: ${bar.value}`}
                     style={{
@@ -274,7 +355,16 @@ export function DataScreenBlock({
                       background: `linear-gradient(to top, var(--z-brand-600), var(--z-brand-400))`,
                     }}
                   />
-                  <span style={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 'var(--z-text-xs)', color: dark.fgSubtle }}>
+                  <span
+                    style={{
+                      maxWidth: '100%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      fontSize: 'var(--z-text-xs)',
+                      color: dark.fgSubtle,
+                    }}
+                  >
                     {bar.label}
                   </span>
                 </div>
@@ -284,16 +374,49 @@ export function DataScreenBlock({
         </section>
 
         {/* Progress 资源指标 */}
-        <section aria-label={typeof gaugeChartTitle === 'string' ? gaugeChartTitle : '资源监控'} style={{ background: dark.panel, border: `1px solid ${dark.border}`, borderRadius: 'var(--z-radius-lg)', padding: 'var(--z-space-5)' }}>
-          <h2 style={{ margin: '0 0 var(--z-space-4)', fontSize: 'var(--z-text-md)', fontWeight: 'var(--z-weight-medium)', color: dark.fg }}>
+        <section
+          aria-label={typeof gaugeChartTitle === 'string' ? gaugeChartTitle : '资源监控'}
+          style={{
+            background: dark.panel,
+            border: `1px solid ${dark.border}`,
+            borderRadius: 'var(--z-radius-lg)',
+            padding: 'var(--z-space-5)',
+          }}
+        >
+          <h2
+            style={{
+              margin: '0 0 var(--z-space-4)',
+              fontSize: 'var(--z-text-md)',
+              fontWeight: 'var(--z-weight-medium)',
+              color: dark.fg,
+            }}
+          >
             {gaugeChartTitle}
           </h2>
-          <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: 'var(--z-space-5)' }}>
+          <ul
+            style={{
+              listStyle: 'none',
+              margin: 0,
+              padding: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 'var(--z-space-5)',
+            }}
+          >
             {gauges.map((gauge) => (
               <li key={gauge.key}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--z-space-2)', fontSize: 'var(--z-text-sm)' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginBottom: 'var(--z-space-2)',
+                    fontSize: 'var(--z-text-sm)',
+                  }}
+                >
                   <span style={{ color: dark.fg }}>{gauge.label}</span>
-                  {gauge.hint != null ? <span style={{ color: dark.fgSubtle }}>{gauge.hint}</span> : null}
+                  {gauge.hint != null ? (
+                    <span style={{ color: dark.fgSubtle }}>{gauge.hint}</span>
+                  ) : null}
                 </div>
                 <Progress percent={gauge.percent} status={gauge.status} />
               </li>

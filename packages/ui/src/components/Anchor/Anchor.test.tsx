@@ -160,8 +160,7 @@ describe('Anchor 滚动侦测', () => {
       </Anchor>
     );
     expect(screen.getByRole('link', { name: '壹' })).toHaveAttribute('aria-current', 'true');
-    document.getElementById('r2')!.getBoundingClientRect = () =>
-      ({ top: 6 }) as DOMRect;
+    document.getElementById('r2')!.getBoundingClientRect = () => ({ top: 6 }) as DOMRect;
     await act(async () => {
       window.dispatchEvent(new Event('resize'));
     });
@@ -187,9 +186,60 @@ describe('Anchor 滚动侦测', () => {
     await fireScroll(scroller);
     expect(screen.getByRole('link', { name: '容器二' })).toHaveAttribute('aria-current', 'true');
   });
+
+  it('target 容器位于窗口中部时按容器顶部、边框和 offsetTop 判定章节', async () => {
+    const scroller = document.createElement('div');
+    setTop(scroller, 300);
+    Object.defineProperty(scroller, 'clientTop', { value: 2 });
+    document.body.appendChild(scroller);
+    scroller.appendChild(makeSection('relative-first', 200));
+    const second = makeSection('relative-second', 600);
+    scroller.appendChild(second);
+    render(
+      <Anchor offsetTop={20} target={() => scroller}>
+        <Anchor.Link href="#relative-first" title="容器第一节" />
+        <Anchor.Link href="#relative-second" title="容器第二节" />
+      </Anchor>
+    );
+    setTop(second, 330);
+    await fireScroll(scroller);
+    expect(screen.getByRole('link', { name: '容器第二节' })).toHaveAttribute(
+      'aria-current',
+      'true'
+    );
+    setTop(second, 331);
+    await fireScroll(scroller);
+    expect(screen.getByRole('link', { name: '容器第一节' })).toHaveAttribute(
+      'aria-current',
+      'true'
+    );
+  });
 });
 
 describe('Anchor 点击行为', () => {
+  it('自定义容器内点击只滚动该容器，保留窗口位置并抵消 offsetTop', async () => {
+    const user = userEvent.setup();
+    const scroller = document.createElement('div');
+    setTop(scroller, 300);
+    scroller.scrollTop = 40;
+    Object.defineProperty(scroller, 'clientTop', { value: 2 });
+    const scrollTo = vi.fn();
+    scroller.scrollTo = scrollTo;
+    document.body.appendChild(scroller);
+    const section = makeSection('container-click', 600);
+    scroller.appendChild(section);
+    render(
+      <Anchor offsetTop={20} target={() => scroller}>
+        <Anchor.Link href="#container-click" title="容器章节" />
+      </Anchor>
+    );
+    scrollIntoViewMock.mockClear();
+    await user.click(screen.getByRole('link', { name: '容器章节' }));
+    expect(scrollTo).toHaveBeenCalledWith({ top: 318, behavior: 'smooth' });
+    expect(scrollIntoViewMock).not.toHaveBeenCalled();
+    expect(window.location.hash).toBe('');
+  });
+
   it('点击 preventDefault + 不改写 location.hash + 立即激活 + 平滑滚动', async () => {
     const user = userEvent.setup();
     makeSection('k1', 100);

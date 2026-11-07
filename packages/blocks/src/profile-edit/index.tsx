@@ -68,7 +68,18 @@ export const DEMO_TENURE: [string, string] = ['2023-06-12', '2026-06-12'];
 
 function CalendarIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
       <rect x="3" y="4" width="18" height="18" rx="2" />
       <path d="M16 2v4M8 2v4M3 10h18" />
     </svg>
@@ -84,6 +95,12 @@ const fieldLabelStyle: React.CSSProperties = {
   color: 'var(--z-color-fg)',
   marginBottom: 'var(--z-space-2)',
 };
+
+function isSupportedAvatarFile(file: File): boolean {
+  const type = file.type.trim().toLowerCase();
+  if (type === 'image/jpeg' || type === 'image/png') return true;
+  return type === '' && /\.(?:jpe?g|png)$/i.test(file.name);
+}
 
 /** 资料编辑区块：Row/Col 表单布局 + Upload 头像上传 + DateRangePicker 任职时间 */
 export function ProfileEditBlock({
@@ -103,6 +120,7 @@ export function ProfileEditBlock({
   style,
   classNames,
 }: ProfileEditBlockProps) {
+  const [avatarError, setAvatarError] = React.useState('');
   const idPrefix = React.useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const fieldId = (name: string) => `profile-${idPrefix}-${name}`;
 
@@ -123,7 +141,11 @@ export function ProfileEditBlock({
     placeholder?: string,
     span = 12
   ) => (
-    <Col span={span} style={{ marginBottom: 'var(--z-space-4)' }}>
+    <Col
+      span={span}
+      flex={span === 24 ? '1 1 100%' : '1 1 200px'}
+      style={{ minWidth: 0, marginBottom: 'var(--z-space-4)' }}
+    >
       <label htmlFor={fieldId(name)} style={fieldLabelStyle}>
         {label}
       </label>
@@ -162,7 +184,7 @@ export function ProfileEditBlock({
 
         <Row gutter={[24, 0]} className={classNames?.form}>
           {/* 左：表单区 */}
-          <Col span={17}>
+          <Col span={17} flex="2 1 420px" style={{ minWidth: 0 }}>
             <Row gutter={[16, 0]}>
               {renderField('name', '姓名', '请输入姓名')}
               {renderField('nickname', '昵称', '请输入昵称')}
@@ -191,6 +213,7 @@ export function ProfileEditBlock({
                 </div>
                 <DateRangePicker
                   aria-label="任职时间"
+                  style={{ width: '100%', maxWidth: '100%' }}
                   value={tenure}
                   onChange={setTenure}
                 />
@@ -199,7 +222,12 @@ export function ProfileEditBlock({
           </Col>
 
           {/* 右：头像上传 */}
-          <Col span={7} className={classNames?.aside}>
+          <Col
+            span={7}
+            flex="1 1 200px"
+            className={classNames?.aside}
+            style={{ minWidth: 0, marginTop: 'var(--z-space-4)' }}
+          >
             <div
               style={{
                 display: 'flex',
@@ -223,12 +251,32 @@ export function ProfileEditBlock({
                 支持 JPG / PNG，不超过 2MB
               </div>
               <Upload
-                accept="image/*"
+                accept="image/jpeg,image/png"
                 maxCount={1}
+                beforeUpload={(file) => {
+                  if (!isSupportedAvatarFile(file)) {
+                    setAvatarError('请选择 JPG 或 PNG 图片');
+                    return false;
+                  }
+                  if (file.size > 2 * 1024 * 1024) {
+                    setAvatarError('图片大小不能超过 2MB');
+                    return false;
+                  }
+                  setAvatarError('');
+                  return true;
+                }}
                 fileList={avatarFileList}
                 defaultFileList={defaultAvatarFiles}
                 onChange={onAvatarFilesChange}
               />
+              {avatarError ? (
+                <span
+                  role="alert"
+                  style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-danger)' }}
+                >
+                  {avatarError}
+                </span>
+              ) : null}
             </div>
           </Col>
         </Row>

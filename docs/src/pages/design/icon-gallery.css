@@ -1,0 +1,131 @@
+.doc-icon-toolbar {
+  position: sticky;
+  top: 52px;
+  z-index: 5;
+  display: grid;
+  gap: 10px;
+  padding: 12px 0;
+  background: var(--z-color-bg);
+}
+
+.doc-icon-search {
+  flex: 1 1 240px;
+  min-width: 0;
+  max-width: 480px;
+}
+
+.doc-icon-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 280px);
+  gap: 20px;
+  align-items: start;
+}
+
+.doc-icon-layout[data-detail='closed'] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.doc-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(104px, 100%), 1fr));
+  gap: 8px;
+}
+
+.doc-icon-detail {
+  position: sticky;
+  top: 76px;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--z-color-border-subtle);
+  border-radius: var(--z-radius-lg);
+  background: var(--z-color-bg-elevated);
+  box-shadow: var(--z-shadow-sm);
+  scroll-margin-top: 80px;
+}
+
+.doc-icon-detail-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--z-color-fg-muted);
+  font-size: var(--z-text-xs);
+}
+
+.doc-icon-detail-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88px;
+  padding: 8px 0 16px;
+}
+
+.doc-icon-chip {
+  min-height: 32px;
+}
+
+.doc-icon-card,
+.doc-icon-chip,
+.doc-icon-code-chip {
+  font-family: inherit;
+}
+
+.doc-icon-card:focus-visible,
+.doc-icon-chip:focus-visible,
+.doc-icon-code-chip:focus-visible {
+  outline: 2px solid var(--z-color-primary);
+  outline-offset: 3px;
+}
+
+.doc-icon-card:hover,
+.doc-icon-code-chip:hover {
+  box-shadow: var(--z-shadow-sm);
+}
+
+.doc-icon-copy-status {
+  min-height: 1.4em;
+  margin: 8px 0 0;
+  color: var(--z-color-fg-muted);
+  font-size: var(--z-text-xs);
+  line-height: 1.4;
+}
+
+.doc-icon-empty {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 32px 12px;
+  text-align: center;
+  color: var(--z-color-fg-muted);
+}
+
+.doc-icon-empty .doc-p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1200px) {
+  .doc-icon-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .doc-icon-detail {
+    position: static;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .doc-icon-toolbar {
+    position: static;
+  }
+
+  .doc-icon-detail {
+    padding: 16px;
+    scroll-margin-top: 68px;
+  }
+
+  .doc-icon-chip {
+    min-height: 36px;
+  }
+}

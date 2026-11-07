@@ -40,6 +40,7 @@ export interface PermissionBlockProps {
   /** 树默认展开（演示/受控均可） */
   expandedKeys?: string[];
   defaultExpandedKeys?: string[];
+  onExpandedKeysChange?: (keys: string[]) => void;
   /** 成员列表 */
   members: PermissionMember[];
   /** 成员启用开关切换 */
@@ -89,9 +90,21 @@ export const DEMO_PERMISSION_TREE: TreeNode[] = [
 ];
 
 export const DEMO_MEMBERS: PermissionMember[] = [
-  { key: 'm-1', name: '林小满', role: '超级管理员', email: 'xiaoman.lin@example.com', enabled: true },
+  {
+    key: 'm-1',
+    name: '林小满',
+    role: '超级管理员',
+    email: 'xiaoman.lin@example.com',
+    enabled: true,
+  },
   { key: 'm-2', name: '陈默', role: '内容运营', email: 'mo.chen@example.com', enabled: true },
-  { key: 'm-3', name: '赵一鸣', role: '只读访客', email: 'yiming.zhao@example.com', enabled: false },
+  {
+    key: 'm-3',
+    name: '赵一鸣',
+    role: '只读访客',
+    email: 'yiming.zhao@example.com',
+    enabled: false,
+  },
 ];
 
 /* ---------------------------------- 区块 ---------------------------------- */
@@ -112,6 +125,7 @@ export function PermissionBlock({
   onCheckedKeysChange,
   expandedKeys,
   defaultExpandedKeys,
+  onExpandedKeysChange,
   members,
   onMemberToggle,
   className,
@@ -149,14 +163,14 @@ export function PermissionBlock({
         className={classNames?.layout}
         data-part="layout"
         style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(260px, 340px) minmax(0, 1fr)',
+          display: 'flex',
+          flexWrap: 'wrap',
           gap: 'var(--z-space-4)',
           alignItems: 'start',
         }}
       >
         {/* 左：角色权限树 */}
-        <Card className={classNames?.treeCard}>
+        <Card className={classNames?.treeCard} style={{ flex: '1 1 280px', minWidth: 0 }}>
           <h3
             style={{
               margin: '0 0 var(--z-space-3)',
@@ -174,11 +188,12 @@ export function PermissionBlock({
             onCheck={handleCheck}
             expandedKeys={expandedKeys}
             defaultExpandedKeys={defaultExpandedKeys}
+            onExpand={onExpandedKeysChange}
           />
         </Card>
 
         {/* 右：成员表格 */}
-        <Card className={classNames?.tableCard}>
+        <Card className={classNames?.tableCard} style={{ flex: '2 1 380px', minWidth: 0 }}>
           <h3
             style={{
               margin: '0 0 var(--z-space-3)',
@@ -203,7 +218,9 @@ export function PermissionBlock({
                 {members.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={4} align="center">
-                      <span style={{ color: 'var(--z-color-fg-muted)', fontSize: 'var(--z-text-sm)' }}>
+                      <span
+                        style={{ color: 'var(--z-color-fg-muted)', fontSize: 'var(--z-text-sm)' }}
+                      >
                         暂无成员
                       </span>
                     </TableCell>
@@ -230,7 +247,9 @@ export function PermissionBlock({
                         </Tag>
                       </TableCell>
                       <TableCell>
-                        <span style={{ color: 'var(--z-color-fg-muted)', fontSize: 'var(--z-text-sm)' }}>
+                        <span
+                          style={{ color: 'var(--z-color-fg-muted)', fontSize: 'var(--z-text-sm)' }}
+                        >
                           {member.email}
                         </span>
                       </TableCell>

@@ -86,10 +86,13 @@ describe('@zui/icons 关键 SVG 属性', () => {
     expect(html).toContain('M20.59 13.41');
   });
 
-  it('spin 仅 Loading 有旋转动画：Loading 默认带 animateTransform，其余图标忽略 spin', () => {
-    expect(htmlOf('Loading')).toMatch(/animatetransform/i);
-    expect(htmlOf('Loading', { spin: false })).not.toMatch(/animatetransform/i);
+  it('spin 仅 Loading 有旋转：Loading 用 <g> 包裹（Web Animations API 在 useEffect 驱动），其余图标忽略 spin', () => {
+    // Loading 用 <g> 包裹 path（旋转目标），其余图标直接渲染 path
+    expect(htmlOf('Loading')).toContain('<g>');
+    expect(htmlOf('Check')).not.toContain('<g>');
+    // spin={false} 不改变静态渲染结构（旋转由 useEffect + WAAPI 驱动，非 SMIL/DOM 属性）
+    expect(htmlOf('Loading', { spin: false })).toContain('<g>');
     // RefreshCw 无旋转语义：接受 spin 但不产生动画
-    expect(htmlOf('RefreshCw', { spin: true })).not.toMatch(/animatetransform/i);
+    expect(htmlOf('RefreshCw', { spin: true })).not.toContain('<g>');
   });
 });

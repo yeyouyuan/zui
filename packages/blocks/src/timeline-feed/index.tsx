@@ -85,6 +85,17 @@ export const DEMO_FEED_ENTRIES: TimelineFeedEntry[] = [
   },
 ];
 
+const INTERACTIVE_DESCENDANT_SELECTOR =
+  'a[href], area[href], button, input, select, textarea, label, summary, audio[controls], video[controls], iframe, [contenteditable]:not([contenteditable="false"]), [role="button"], [role="link"], [role="checkbox"], [role="radio"], [role="switch"], [role="menuitem"], [role="option"], [tabindex]:not([tabindex="-1"])';
+
+function isInteractiveDescendant(target: EventTarget | null, currentTarget: HTMLElement): boolean {
+  if (!(target instanceof Element) || target === currentTarget) return false;
+  const interactive = target.closest(INTERACTIVE_DESCENDANT_SELECTOR);
+  return (
+    interactive != null && interactive !== currentTarget && currentTarget.contains(interactive)
+  );
+}
+
 /* ---------------------------------- 区块 ---------------------------------- */
 
 /** 时间线信息流区块：Timeline + Avatar + Card 组成的事件流，Skeleton 加载占位 + 加载更多 */
@@ -105,19 +116,37 @@ export function TimelineFeedBlock({
 }: TimelineFeedBlockProps) {
   const timelineItems = entries.map((entry) => ({
     key: entry.key,
-    label: entry.time,
     color: entry.color ?? 'neutral',
     children: (
       <Card
         hoverable
         style={{ cursor: onEntryClick ? 'pointer' : undefined, minWidth: 0 }}
-        onClick={onEntryClick ? () => onEntryClick(entry) : undefined}
+        onClick={
+          onEntryClick
+            ? (event) => {
+                if (isInteractiveDescendant(event.target, event.currentTarget)) return;
+                onEntryClick(entry);
+              }
+            : undefined
+        }
       >
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--z-space-3)' }}>
           <Avatar name={entry.author} src={entry.avatarSrc} size="md" />
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--z-space-2)', flexWrap: 'wrap' }}>
-              <span style={{ fontWeight: 'var(--z-weight-medium)', color: 'var(--z-color-fg)' }}>{entry.author}</span>
+          <div style={{ minWidth: 0, flex: 1, overflowWrap: 'anywhere' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--z-space-2)',
+                flexWrap: 'wrap',
+              }}
+            >
+              <span style={{ fontWeight: 'var(--z-weight-medium)', color: 'var(--z-color-fg)' }}>
+                {entry.author}
+              </span>
+              <span style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-fg-muted)' }}>
+                {entry.time}
+              </span>
               {entry.type != null ? (
                 <span
                   style={{
@@ -131,12 +160,53 @@ export function TimelineFeedBlock({
                   {entry.type}
                 </span>
               ) : null}
+              {onEntryClick ? (
+                <button
+                  type="button"
+                  aria-label={
+                    typeof entry.title === 'string'
+                      ? `${entry.author}：${entry.title}`
+                      : `查看 ${entry.author} 的动态`
+                  }
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onEntryClick(entry);
+                  }}
+                  style={{
+                    marginLeft: 'auto',
+                    padding: '2px var(--z-space-2)',
+                    border: '1px solid var(--z-color-border-subtle)',
+                    borderRadius: 'var(--z-radius-sm)',
+                    background: 'transparent',
+                    color: 'var(--z-color-fg-muted)',
+                    font: 'inherit',
+                    fontSize: 'var(--z-text-xs)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  查看
+                </button>
+              ) : null}
             </div>
-            <div style={{ marginTop: 'var(--z-space-1)', color: 'var(--z-color-fg)', fontSize: 'var(--z-text-sm)', fontWeight: 'var(--z-weight-medium)' }}>
+            <div
+              style={{
+                marginTop: 'var(--z-space-1)',
+                color: 'var(--z-color-fg)',
+                fontSize: 'var(--z-text-sm)',
+                fontWeight: 'var(--z-weight-medium)',
+              }}
+            >
               {entry.title}
             </div>
             {entry.content != null ? (
-              <div style={{ marginTop: 'var(--z-space-2)', color: 'var(--z-color-fg-muted)', fontSize: 'var(--z-text-sm)', lineHeight: 'var(--z-leading-relaxed)' }}>
+              <div
+                style={{
+                  marginTop: 'var(--z-space-2)',
+                  color: 'var(--z-color-fg-muted)',
+                  fontSize: 'var(--z-text-sm)',
+                  lineHeight: 'var(--z-leading-relaxed)',
+                }}
+              >
                 {entry.content}
               </div>
             ) : null}
@@ -164,24 +234,54 @@ export function TimelineFeedBlock({
       <header
         data-part="header"
         className={classNames?.header}
-        style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--z-space-4)', flexWrap: 'wrap' }}
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: 'var(--z-space-4)',
+          flexWrap: 'wrap',
+        }}
       >
         <div>
-          <h1 style={{ margin: 0, fontSize: 'var(--z-text-xl)', fontWeight: 'var(--z-weight-semibold)', color: 'var(--z-color-fg)' }}>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: 'var(--z-text-xl)',
+              fontWeight: 'var(--z-weight-semibold)',
+              color: 'var(--z-color-fg)',
+            }}
+          >
             {title}
           </h1>
-          <p style={{ margin: 'var(--z-space-1) 0 0', fontSize: 'var(--z-text-sm)', color: 'var(--z-color-fg-muted)' }}>{subtitle}</p>
+          <p
+            style={{
+              margin: 'var(--z-space-1) 0 0',
+              fontSize: 'var(--z-text-sm)',
+              color: 'var(--z-color-fg-muted)',
+            }}
+          >
+            {subtitle}
+          </p>
         </div>
-        {actions != null ? <div style={{ display: 'flex', gap: 'var(--z-space-3)' }}>{actions}</div> : null}
+        {actions != null ? (
+          <div style={{ display: 'flex', gap: 'var(--z-space-3)' }}>{actions}</div>
+        ) : null}
       </header>
 
-      {/* 信息流主体 */}
-      <Card>
+      {/* 信息流主体：时间并入卡片元信息，避免窄屏独立时间列挤压内容。 */}
+      <div>
         {loading ? (
           /* Skeleton 加载占位 */
-          <div data-part="loading" aria-busy="true" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--z-space-5)' }}>
+          <div
+            data-part="loading"
+            aria-busy="true"
+            style={{ display: 'flex', flexDirection: 'column', gap: 'var(--z-space-5)' }}
+          >
             {[0, 1, 2].map((index) => (
-              <div key={index} style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--z-space-3)' }}>
+              <div
+                key={index}
+                style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--z-space-3)' }}
+              >
                 <Skeleton circle width={32} height={32} />
                 <div style={{ flex: 1 }}>
                   <Skeleton lines={2} />
@@ -190,12 +290,26 @@ export function TimelineFeedBlock({
             ))}
           </div>
         ) : timelineItems.length === 0 ? (
-          <div style={{ textAlign: 'center', color: 'var(--z-color-fg-subtle)', padding: 'var(--z-space-8) 0' }}>{emptyText}</div>
+          <div
+            style={{
+              textAlign: 'center',
+              color: 'var(--z-color-fg-subtle)',
+              padding: 'var(--z-space-8) 0',
+            }}
+          >
+            {emptyText}
+          </div>
         ) : (
           <div data-part="feed" className={classNames?.timeline}>
             <Timeline items={timelineItems} />
             {hasMore ? (
-              <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 'var(--z-space-4)' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  paddingTop: 'var(--z-space-4)',
+                }}
+              >
                 <Button variant="outline" onClick={() => onLoadMore?.()}>
                   {loadMoreText}
                 </Button>
@@ -203,7 +317,7 @@ export function TimelineFeedBlock({
             ) : null}
           </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 }

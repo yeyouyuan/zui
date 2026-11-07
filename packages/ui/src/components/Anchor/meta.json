@@ -2,17 +2,41 @@
   "name": "Anchor",
   "description": "锚点导航：rAF 节流滚动侦测高亮当前章节，点击平滑滚动到目标位置且不改写 location.hash，支持嵌套缩进目录",
   "category": "导航",
-  "useCase": ["长文档/协议页的页内目录", "帮助中心章节导航", "带固定头部的文档站（offsetTop 抵消）"],
+  "useCase": [
+    "长文档/协议页的页内目录",
+    "帮助中心章节导航",
+    "带固定头部的文档站（offsetTop 抵消）"
+  ],
   "dontUse": ["页面间跳转用导航菜单/链接", "步骤流程指引用 Steps", "层级位置指示用 Breadcrumb"],
   "props": {
-    "offsetTop": { "type": "number", "default": "0", "desc": "激活判定阈值（px），判定 top ≤ offsetTop + 8；点击滚动用 scroll-margin-top 抵消" },
+    "offsetTop": {
+      "type": "number",
+      "default": "0",
+      "desc": "相对滚动容器顶部的激活判定阈值（px）；点击滚动抵消该偏移"
+    },
     "target": { "type": "() => HTMLElement | Window", "default": "window", "desc": "滚动容器" },
-    "onClick": { "type": "(event, link: { href; title }) => void", "default": "—", "desc": "链接点击回调（默认滚动已 preventDefault，不改写 location.hash）" },
+    "onClick": {
+      "type": "(event, link: { href; title }) => void",
+      "default": "—",
+      "desc": "链接点击回调（默认滚动已 preventDefault，不改写 location.hash）"
+    },
     "className": { "type": "string", "default": "—", "desc": "追加到根元素 nav" },
-    "classNames": { "type": "{ root?; link? }", "default": "—", "desc": "slot 级类名追加（root / link）" },
-    "Anchor.Link.href": { "type": "string", "default": "—", "desc": "目标锚点，#section-id（必须 # 开头）" },
+    "classNames": {
+      "type": "{ root?; link? }",
+      "default": "—",
+      "desc": "slot 级类名追加（root / link）"
+    },
+    "Anchor.Link.href": {
+      "type": "string",
+      "default": "—",
+      "desc": "目标锚点，#section-id（必须 # 开头）"
+    },
     "Anchor.Link.title": { "type": "React.ReactNode", "default": "—", "desc": "链接文本" },
-    "Anchor.Link.children": { "type": "React.ReactNode", "default": "—", "desc": "嵌套 Anchor.Link（ul 内嵌 ul 缩进）" }
+    "Anchor.Link.children": {
+      "type": "React.ReactNode",
+      "default": "—",
+      "desc": "嵌套 Anchor.Link（ul 内嵌 ul 缩进）"
+    }
   },
   "a11yNotes": [
     "nav aria-label=locale.accessibility.anchor + ul/li + 原生 <a href=\"#id\"> 锚点语义",

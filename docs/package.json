@@ -8,10 +8,11 @@
     "dev": "vite",
     "build": "vite build",
     "typecheck": "tsc --noEmit",
-    "test": "node --test translate-proxy.test.mjs",
+    "test": "node --test translate-proxy.test.mjs tests/*.test.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@zui/blocks": "workspace:*",
     "@zui/i18n": "workspace:*",
     "@zui/icons": "workspace:*",
     "@zui/react": "workspace:*",

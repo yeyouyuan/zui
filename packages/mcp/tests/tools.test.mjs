@@ -5,12 +5,17 @@ import { fileURLToPath } from 'node:url';
 import { URL } from 'node:url';
 import { loadCatalog, resolveRepoRoot } from '../dist/tools/search.js';
 import { formatAttribute, generateCode } from '../dist/tools/generate.js';
-import { handleLine } from '../dist/index.js';
+import { handleLine, SERVER_VERSION } from '../dist/index.js';
 
 const catalog = loadCatalog();
 test('catalog resolves all 66 shipped components from bundled data', () => {
   assert.equal(catalog.size, 66);
   assert.equal(resolveRepoRoot(), fileURLToPath(new URL('../data', import.meta.url)));
+});
+test('server reports the published package version', () => {
+  assert.equal(SERVER_VERSION, '0.2.0');
+  const initialized = JSON.parse(handleLine(JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize' })));
+  assert.equal(initialized.result.serverInfo.version, SERVER_VERSION);
 });
 test('explicit false survives JSX generation', () => {
   assert.equal(formatAttribute('preview', false), ' preview={false}');

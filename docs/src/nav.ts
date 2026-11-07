@@ -70,6 +70,7 @@ const TypographyPage = lazy(() => import('./pages/components/TypographyPage'));
 const LayoutPage = lazy(() => import('./pages/components/LayoutPage'));
 const DesignAssetsPage = lazy(() => import('./pages/design/DesignAssetsPage'));
 const IconGalleryPage = lazy(() => import('./pages/design/IconGalleryPage'));
+const BlocksPage = lazy(() => import('./pages/blocks/BlocksPage'));
 
 /** 导航分组：'start'（开始）/ 'components'（组件） */
 export type NavGroup = 'start' | 'components';
@@ -102,6 +103,7 @@ export const navItems: NavItem[] = [
   { title: '国际化与翻译', path: '/i18n', group: 'start' },
   { title: '设计资源', path: '/design', group: 'start' },
   { title: '图标库', path: '/icons', group: 'start' },
+  { title: '业务区块', path: '/blocks', group: 'start' },
   { title: 'Button 按钮', path: '/components/button', group: 'components' },
   { title: 'Input 输入框', path: '/components/input', group: 'components' },
   { title: 'Checkbox 复选框', path: '/components/checkbox', group: 'components' },
@@ -176,6 +178,7 @@ export const routeComponents: Record<string, ComponentType> = {
   '/i18n': TranslateDemo,
   '/design': DesignAssetsPage,
   '/icons': IconGalleryPage,
+  '/blocks': BlocksPage,
   '/components/button': ButtonPage,
   '/components/input': InputPage,
   '/components/checkbox': CheckboxPage,

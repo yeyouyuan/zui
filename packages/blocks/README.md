@@ -1,6 +1,6 @@
 # @zui/blocks
 
-ZUI 业务区块：4 个页面级区块（登录 / 仪表盘 / 表格页 / 表单页），用 `@zui/react` 现有组件拼装的高完成度页面骨架，可整体嵌入业务系统，也可拆改。
+ZUI 业务区块：16 个页面级区块，用 `@zui/react` 组件拼装，可整体嵌入业务系统，也可拆改。内置演示数据均可替换，业务请求由使用方的回调处理。
 
 - 每块是一个 React 组件（首行 `'use client'`，RSC/Next.js 友好），自带布局/间距/层次，直接像真实页面渲染。
 - 样式走 ZUI 语义令牌（`--z-color-*` / `--z-space-*` / `--z-text-*` 等），无硬编码色值；**块本身不引 CSS 文件**，由使用方全局引入 `@zui/react/styles.css`。
@@ -22,6 +22,36 @@ import { LoginBlock } from '@zui/blocks/login';
 ```
 
 ## 用法示例
+
+### 区块目录
+
+| 分类       | 区块                                                                                                                                                                                                        |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 数据展示   | DashboardBlock 仪表盘、DataScreenBlock 数据大屏、TablePageBlock 表格页、OrderListBlock 订单列表、SearchResultBlock 搜索结果、ListDetailBlock 列表详情、TimelineFeedBlock 时间线信息流、KanbanBlock 项目看板 |
+| 表单与账户 | LoginBlock 登录页、FormPageBlock 表单页、WizardBlock 分步向导、UserCenterBlock 个人中心、ProfileEditBlock 资料编辑                                                                                          |
+| 系统管理   | PermissionBlock 权限管理、SettingsBlock 系统设置、ErrorPagesBlock 错误页                                                                                                                                    |
+
+文档站的「业务区块」页（`#/blocks`）提供全部 16 个实际演示，可搜索、切换和重置。看板当前为静态分组与卡片选中，不包含拖拽。
+
+`SettingsBlock`、`WizardBlock`、`ProfileEditBlock` 的表单数据为受控值：
+
+```tsx
+import { useState } from 'react';
+import { SettingsBlock, DEMO_SETTINGS_VALUES } from '@zui/blocks';
+
+export default function SettingsPage() {
+  const [values, setValues] = useState({ ...DEMO_SETTINGS_VALUES });
+  return (
+    <SettingsBlock
+      values={values}
+      onChange={(key, value) => setValues((previous) => ({ ...previous, [key]: value }))}
+      onSave={(currentValues) => saveSettings(currentValues)}
+    />
+  );
+}
+```
+
+`DEMO_*` 数据与 props 类型可从包根或同名子路径导入。权限树受控展开可使用 `expandedKeys` 和 `onExpandedKeysChange`；订单取消与成员开关由回调更新 `orders` / `members`。
 
 ### LoginBlock 登录页
 
@@ -47,9 +77,17 @@ import { LoginBlock } from '@zui/blocks/login';
     { key: 'uv', label: '今日 UV', value: '48,210', trend: '较昨日 +12.4%', trendDirection: 'up' },
     // ...最多自定义任意数量统计卡
   ]}
-  trendData={[{ label: '周一', value: 42 }, /* ... */]}
-  channels={[{ key: 'direct', name: '直接访问', visits: '21,430', share: 44 }, /* ... */]}
-  activities={[{ key: 'a1', time: '09:24', event: '订单支付成功', status: 'success', statusText: '成功' }, /* ... */]}
+  trendData={[{ label: '周一', value: 42 } /* ... */]}
+  channels={[{ key: 'direct', name: '直接访问', visits: '21,430', share: 44 } /* ... */]}
+  activities={[
+    {
+      key: 'a1',
+      time: '09:24',
+      event: '订单支付成功',
+      status: 'success',
+      statusText: '成功',
+    } /* ... */,
+  ]}
   onTabChange={(tab) => console.log(tab)}
   actions={<Button>自定义操作</Button>}
 />
@@ -74,11 +112,15 @@ import { TablePageBlock, DEMO_COLUMNS, DEMO_DATA, DEMO_FILTERS } from '@zui/bloc
   onPageChange={(page) => console.log(page)}
   rowActions={(row) => (
     <>
-      <Button variant="ghost" size="sm">编辑</Button>
-      <Button variant="ghost" size="sm">删除</Button>
+      <Button variant="ghost" size="sm">
+        编辑
+      </Button>
+      <Button variant="ghost" size="sm">
+        删除
+      </Button>
     </>
   )}
-/>
+/>;
 ```
 
 结构：Card 容器 → 工具栏（标题 + 搜索框 + 下拉筛选 Select 组 + 已选计数 + 操作按钮）→ Table（可选行选择列 / 空态 / loading 半透明）→ 底部「共 N 条」+ Pagination（含跳页）。列定义 `TableColumn<T>` 支持 `render` 自定义单元格（内置 `Tag` 状态渲染示例）。
@@ -131,7 +173,7 @@ packages/blocks/
 ├── tsconfig.json
 ├── README.md
 └── src/
-    ├── index.ts          # 桶导出（4 块 + 类型 + 演示数据）
+    ├── index.ts          # 桶导出（16 块 + 类型 + 演示数据）
     ├── login/
     │   ├── index.tsx     # LoginBlock
     │   └── block.json
@@ -141,9 +183,21 @@ packages/blocks/
     ├── table-page/
     │   ├── index.tsx     # TablePageBlock + DEMO_* 演示数据
     │   └── block.json
-    └── form-page/
+    ├── form-page/
         ├── index.tsx     # FormPageBlock
         └── block.json
+    ├── user-center/
+    ├── permission/
+    ├── settings/
+    ├── wizard/
+    ├── profile-edit/
+    ├── order-list/
+    ├── data-screen/
+    ├── timeline-feed/
+    ├── kanban/
+    ├── error-pages/
+    ├── search-result/
+    └── list-detail/      # 以上均包含 index.tsx 与 block.json
 ```
 
 ## 开发与验证

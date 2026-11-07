@@ -1,7 +1,16 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Empty, Input, List, Tabs, TabsList, TabsTrigger, useControllableState } from '@zui/react';
+import {
+  Button,
+  Empty,
+  Input,
+  List,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  useControllableState,
+} from '@zui/react';
 
 /* ---------------------------------- 类型 ---------------------------------- */
 
@@ -166,7 +175,14 @@ export function SearchResultBlock({
           gap: 'var(--z-space-4)',
         }}
       >
-        <h1 style={{ margin: 0, fontSize: 'var(--z-text-xl)', fontWeight: 'var(--z-weight-semibold)', color: 'var(--z-color-fg)' }}>
+        <h1
+          style={{
+            margin: 0,
+            fontSize: 'var(--z-text-xl)',
+            fontWeight: 'var(--z-weight-semibold)',
+            color: 'var(--z-color-fg)',
+          }}
+        >
           {title}
         </h1>
         <div style={{ display: 'flex', gap: 'var(--z-space-3)', maxWidth: 640 }}>
@@ -181,7 +197,7 @@ export function SearchResultBlock({
             aria-label={searchPlaceholder}
             clearable
             onClear={() => setCurrentKeyword('')}
-            style={{ flex: 1 }}
+            style={{ flex: 1, minWidth: 0 }}
           />
           <Button onClick={() => onSearch?.(currentKeyword)}>搜索</Button>
         </div>
@@ -203,7 +219,11 @@ export function SearchResultBlock({
         {filtered.length === 0 ? (
           <Empty
             description={emptyText}
-            style={{ background: 'var(--z-color-bg-elevated)', border: '1px solid var(--z-color-border-subtle)', borderRadius: 'var(--z-radius-lg)' }}
+            style={{
+              background: 'var(--z-color-bg-elevated)',
+              border: '1px solid var(--z-color-border-subtle)',
+              borderRadius: 'var(--z-radius-lg)',
+            }}
           >
             <Button
               variant="outline"
@@ -233,16 +253,40 @@ export function SearchResultBlock({
                 </a>
               ),
               description: (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--z-space-2)', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 'var(--z-text-xs)', padding: '0 var(--z-space-2)', borderRadius: 'var(--z-radius-full)', border: '1px solid var(--z-color-border-subtle)', color: 'var(--z-color-fg-muted)' }}>
+                <span
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 'var(--z-space-2)',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 'var(--z-text-xs)',
+                      padding: '0 var(--z-space-2)',
+                      borderRadius: 'var(--z-radius-full)',
+                      border: '1px solid var(--z-color-border-subtle)',
+                      color: 'var(--z-color-fg-muted)',
+                    }}
+                  >
                     {types.find((t) => t.value === item.type)?.label ?? item.type}
                   </span>
                   {item.description}
                 </span>
               ),
-              extra: item.extra != null ? (
-                <span style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-fg-subtle)', whiteSpace: 'nowrap' }}>{item.extra}</span>
-              ) : undefined,
+              extra:
+                item.extra != null ? (
+                  <span
+                    style={{
+                      fontSize: 'var(--z-text-xs)',
+                      color: 'var(--z-color-fg-subtle)',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {item.extra}
+                  </span>
+                ) : undefined,
             }))}
           />
         )}

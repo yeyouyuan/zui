@@ -80,7 +80,10 @@ export const DEMO_COLUMNS: TableColumn<TablePageRow>[] = [
     width: 110,
     render: (row) => {
       const status = String(row.status);
-      const map: Record<string, { color: 'success' | 'warning' | 'neutral' | 'error'; text: string }> = {
+      const map: Record<
+        string,
+        { color: 'success' | 'warning' | 'neutral' | 'error'; text: string }
+      > = {
         onSale: { color: 'success', text: '在售' },
         draft: { color: 'neutral', text: '草稿' },
         lowStock: { color: 'warning', text: '缺货' },
@@ -96,14 +99,78 @@ export const DEMO_COLUMNS: TableColumn<TablePageRow>[] = [
 ];
 
 export const DEMO_DATA: TablePageRow[] = [
-  { key: '1', name: '无线蓝牙耳机 Pro', sku: 'SKU-1001', status: 'onSale', price: '¥ 399', stock: 1280, updatedAt: '2026-11-03 14:22' },
-  { key: '2', name: '便携式咖啡机', sku: 'SKU-1002', status: 'lowStock', price: '¥ 659', stock: 12, updatedAt: '2026-11-03 11:05' },
-  { key: '3', name: '人体工学椅 旗舰款', sku: 'SKU-1003', status: 'onSale', price: '¥ 1,899', stock: 342, updatedAt: '2026-11-02 18:47' },
-  { key: '4', name: '智能台灯 2S', sku: 'SKU-1004', status: 'draft', price: '¥ 259', stock: 0, updatedAt: '2026-11-02 09:30' },
-  { key: '5', name: '机械键盘 87 键', sku: 'SKU-1005', status: 'offShelf', price: '¥ 499', stock: 76, updatedAt: '2026-11-01 16:12' },
-  { key: '6', name: '4K 显示器 27 英寸', sku: 'SKU-1006', status: 'onSale', price: '¥ 2,299', stock: 519, updatedAt: '2026-11-01 10:08' },
-  { key: '7', name: '移动固态硬盘 1TB', sku: 'SKU-1007', status: 'onSale', price: '¥ 729', stock: 886, updatedAt: '2026-10-31 15:55' },
-  { key: '8', name: '桌面支架 铝合金', sku: 'SKU-1008', status: 'lowStock', price: '¥ 159', stock: 8, updatedAt: '2026-10-31 09:20' },
+  {
+    key: '1',
+    name: '无线蓝牙耳机 Pro',
+    sku: 'SKU-1001',
+    status: 'onSale',
+    price: '¥ 399',
+    stock: 1280,
+    updatedAt: '2026-11-03 14:22',
+  },
+  {
+    key: '2',
+    name: '便携式咖啡机',
+    sku: 'SKU-1002',
+    status: 'lowStock',
+    price: '¥ 659',
+    stock: 12,
+    updatedAt: '2026-11-03 11:05',
+  },
+  {
+    key: '3',
+    name: '人体工学椅 旗舰款',
+    sku: 'SKU-1003',
+    status: 'onSale',
+    price: '¥ 1,899',
+    stock: 342,
+    updatedAt: '2026-11-02 18:47',
+  },
+  {
+    key: '4',
+    name: '智能台灯 2S',
+    sku: 'SKU-1004',
+    status: 'draft',
+    price: '¥ 259',
+    stock: 0,
+    updatedAt: '2026-11-02 09:30',
+  },
+  {
+    key: '5',
+    name: '机械键盘 87 键',
+    sku: 'SKU-1005',
+    status: 'offShelf',
+    price: '¥ 499',
+    stock: 76,
+    updatedAt: '2026-11-01 16:12',
+  },
+  {
+    key: '6',
+    name: '4K 显示器 27 英寸',
+    sku: 'SKU-1006',
+    status: 'onSale',
+    price: '¥ 2,299',
+    stock: 519,
+    updatedAt: '2026-11-01 10:08',
+  },
+  {
+    key: '7',
+    name: '移动固态硬盘 1TB',
+    sku: 'SKU-1007',
+    status: 'onSale',
+    price: '¥ 729',
+    stock: 886,
+    updatedAt: '2026-10-31 15:55',
+  },
+  {
+    key: '8',
+    name: '桌面支架 铝合金',
+    sku: 'SKU-1008',
+    status: 'lowStock',
+    price: '¥ 159',
+    stock: 8,
+    updatedAt: '2026-10-31 09:20',
+  },
 ];
 
 export const DEMO_FILTERS: TablePageFilter[] = [
@@ -168,7 +235,16 @@ export function TablePageBlock<T extends TablePageRow = TablePageRow>({
   const someChecked = !allChecked && allKeys.some((k) => effectiveSelected.includes(k));
 
   const toggleAll = (checked: boolean) => {
-    setEffectiveSelected(checked ? allKeys : []);
+    const pageKeySet = new Set(allKeys);
+    if (checked) {
+      const next = [...effectiveSelected];
+      for (const key of allKeys) {
+        if (!next.includes(key)) next.push(key);
+      }
+      setEffectiveSelected(next);
+      return;
+    }
+    setEffectiveSelected(effectiveSelected.filter((key) => !pageKeySet.has(key)));
   };
 
   const toggleRow = (key: string, checked: boolean) => {
@@ -205,8 +281,22 @@ export function TablePageBlock<T extends TablePageRow = TablePageRow>({
             marginBottom: 'var(--z-space-4)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--z-space-3)', flexWrap: 'wrap' }}>
-            <h2 style={{ margin: 0, fontSize: 'var(--z-text-lg)', fontWeight: 'var(--z-weight-semibold)', color: 'var(--z-color-fg)' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--z-space-3)',
+              flexWrap: 'wrap',
+            }}
+          >
+            <h2
+              style={{
+                margin: 0,
+                fontSize: 'var(--z-text-lg)',
+                fontWeight: 'var(--z-weight-semibold)',
+                color: 'var(--z-color-fg)',
+              }}
+            >
               {title}
             </h2>
             {searchPlaceholder != null ? (
@@ -218,7 +308,7 @@ export function TablePageBlock<T extends TablePageRow = TablePageRow>({
                 }}
                 placeholder={searchPlaceholder}
                 aria-label={searchPlaceholder}
-                style={{ width: 220 }}
+                style={{ width: 220, maxWidth: '100%' }}
               />
             ) : null}
             {filters.map((filter) => (
@@ -232,7 +322,14 @@ export function TablePageBlock<T extends TablePageRow = TablePageRow>({
               </span>
             ))}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--z-space-3)', flexWrap: 'wrap' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--z-space-3)',
+              flexWrap: 'wrap',
+            }}
+          >
             {effectiveSelected.length > 0 ? (
               <span style={{ fontSize: 'var(--z-text-sm)', color: 'var(--z-color-fg-muted)' }}>
                 已选 {effectiveSelected.length} 项

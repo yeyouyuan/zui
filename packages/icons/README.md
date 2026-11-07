@@ -29,18 +29,18 @@ import { Check, Search, Loading, TagIcon } from '@zui/icons';
 
 ### 基础（24）
 
-| 图标 | 用途 | 图标 | 用途 |
-|---|---|---|---|
-| Check | 对勾 | Copy | 复制 |
-| Close | 关闭 | Eye | 可见 |
-| Search | 搜索 | EyeOff | 隐藏 |
-| ChevronDown / Up / Left / Right | V 形方向箭头 | Trash | 删除 |
-| ArrowRight | 右箭头（带杆） | Edit | 编辑 |
-| Plus / Minus | 加号 / 减号 | Calendar | 日历 |
-| Info | 信息 | User | 用户 |
-| CheckCircle | 成功 | Settings | 设置 |
-| XCircle | 错误 | MoreHorizontal | 更多（横向三点） |
-| AlertTriangle | 警告 | Loading | 加载中 |
+| 图标                            | 用途           | 图标           | 用途             |
+| ------------------------------- | -------------- | -------------- | ---------------- |
+| Check                           | 对勾           | Copy           | 复制             |
+| Close                           | 关闭           | Eye            | 可见             |
+| Search                          | 搜索           | EyeOff         | 隐藏             |
+| ChevronDown / Up / Left / Right | V 形方向箭头   | Trash          | 删除             |
+| ArrowRight                      | 右箭头（带杆） | Edit           | 编辑             |
+| Plus / Minus                    | 加号 / 减号    | Calendar       | 日历             |
+| Info                            | 信息           | User           | 用户             |
+| CheckCircle                     | 成功           | Settings       | 设置             |
+| XCircle                         | 错误           | MoreHorizontal | 更多（横向三点） |
+| AlertTriangle                   | 警告           | Loading        | 加载中           |
 
 ### 方向（14）
 
@@ -95,8 +95,8 @@ Sun / Moon（亮色 / 暗色）· Droplet（水滴）· Wind（风）· CloudRai
 ```ts
 interface IconProps extends React.ComponentPropsWithRef<'svg'> {
   size?: number | string; // 图标边长（同时作用于 width/height），默认 '1em'
-  color?: string;         // 描边颜色（stroke），默认 currentColor
-  spin?: boolean;         // 仅 Loading 有意义（见下），其它图标接受但忽略
+  color?: string; // 描边颜色（stroke），默认 currentColor
+  spin?: boolean; // 仅 Loading 有意义（见下），其它图标接受但忽略
 }
 ```
 
@@ -109,7 +109,9 @@ interface IconProps extends React.ComponentPropsWithRef<'svg'> {
 
 - `spin` 仅 `Loading` 有意义，**其它图标接受但忽略**（保证 props 类型统一；RefreshCw 等刷新类图标无旋转动画语义）。
 - `Loading` 的 `spin` 默认 `true`（加载图标默认旋转）；`spin={false}` 渲染静态环。
-- 旋转动画用 SVG 内嵌 `<animateTransform>`（rotate 360° 循环），**纯 SVG 实现、零 CSS 文件**。
+- 旋转动画用浏览器 Web Animations API（rotate 360° 循环），零 CSS 文件依赖；不支持该 API 的环境显示静态环。
+- 遵循系统“减少动态效果”设置，并在设置改变时自动停止或恢复；关闭 `spin` 或卸载时清理动画。
+- 服务端与复制出的原始 SVG 为静态图形；需要独立 SVG 动画时可自行添加 CSS 动画。
 
 ## 构建与测试
 

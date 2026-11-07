@@ -13,8 +13,10 @@ export interface AnchorLinkInfo {
   title: React.ReactNode;
 }
 
-export interface AnchorLinkProps
-  extends Omit<React.ComponentPropsWithRef<'a'>, 'href' | 'title' | 'children'> {
+export interface AnchorLinkProps extends Omit<
+  React.ComponentPropsWithRef<'a'>,
+  'href' | 'title' | 'children'
+> {
   /** 目标锚点，'#section-id'（必须 # 开头） */
   href: string;
   /** 链接文本 */
@@ -23,9 +25,11 @@ export interface AnchorLinkProps
   children?: React.ReactNode;
 }
 
-export interface AnchorProps
-  extends Omit<React.ComponentPropsWithRef<'nav'>, 'children' | 'className' | 'onClick'> {
-  /** 激活判定阈值（px），默认 0 */
+export interface AnchorProps extends Omit<
+  React.ComponentPropsWithRef<'nav'>,
+  'children' | 'className' | 'onClick'
+> {
+  /** 相对滚动容器顶部的激活判定阈值（px），默认 0 */
   offsetTop?: number;
   /** 滚动容器，默认 window */
   target?: () => HTMLElement | Window;
@@ -109,13 +113,18 @@ function Anchor(props: AnchorProps) {
       setActiveHref((prev) => (prev === null ? prev : null));
       return;
     }
-    const threshold = offsetTop + ACTIVATION_TOLERANCE;
+    const scroller = target ? target() : window;
+    const containerTop =
+      scroller instanceof window.HTMLElement
+        ? scroller.getBoundingClientRect().top + scroller.clientTop
+        : 0;
+    const threshold = containerTop + offsetTop + ACTIVATION_TOLERANCE;
     let next = sections[0].href;
     for (const section of sections) {
       if (section.top <= threshold) next = section.href;
     }
     setActiveHref((prev) => (prev === next ? prev : next));
-  }, [offsetTop]);
+  }, [offsetTop, target]);
 
   // rAF 节流监听 target 滚动 + resize，卸载清理
   React.useEffect(() => {
@@ -148,6 +157,20 @@ function Anchor(props: AnchorProps) {
       setActiveHref(link.href);
       const section = document.getElementById(link.href.slice(1));
       if (!section) return;
+      const scroller = target ? target() : window;
+      if (scroller instanceof window.HTMLElement) {
+        // 仅滚动指定容器，避免 scrollIntoView 同时移动外层页面。
+        scroller.scrollTo({
+          top:
+            scroller.scrollTop +
+            section.getBoundingClientRect().top -
+            scroller.getBoundingClientRect().top -
+            scroller.clientTop -
+            offsetTop,
+          behavior: 'smooth',
+        });
+        return;
+      }
       if (offsetTop > 0) {
         // offsetTop 用 scroll-margin-top 抵消（如固定头部高度），滚动目的地计算后还原
         const previousMargin = section.style.scrollMarginTop;
@@ -160,7 +183,7 @@ function Anchor(props: AnchorProps) {
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     },
-    [offsetTop, onClick]
+    [offsetTop, onClick, target]
   );
 
   const contextValue = React.useMemo<AnchorContextValue>(

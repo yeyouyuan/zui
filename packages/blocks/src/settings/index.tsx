@@ -135,6 +135,8 @@ export function SettingsBlock({
   style,
   classNames,
 }: SettingsBlockProps) {
+  const idPrefix = React.useId();
+  const fieldId = (name: string) => `settings-${idPrefix}-${name}`;
   const [activeSection, setActiveSection] = useControllableState<string>({
     value: activeSectionProp,
     defaultValue: defaultActiveSection ?? sections[0]?.key ?? 'basic',
@@ -169,8 +171,9 @@ export function SettingsBlock({
       data-part="root"
       className={[className, classNames?.root].filter(Boolean).join(' ') || undefined}
       style={{
-        display: 'grid',
-        gridTemplateColumns: '200px minmax(0, 1fr)',
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'flex-start',
         gap: 'var(--z-space-5)',
         maxWidth: 920,
         margin: '0 auto',
@@ -183,7 +186,13 @@ export function SettingsBlock({
         className={classNames?.nav}
         data-part="nav"
         aria-label="设置分组"
-        style={{ display: 'flex', flexDirection: 'column', gap: 'var(--z-space-1)' }}
+        style={{
+          display: 'flex',
+          flex: '1 1 180px',
+          minWidth: 0,
+          flexDirection: 'column',
+          gap: 'var(--z-space-1)',
+        }}
       >
         <h2
           style={{
@@ -224,17 +233,17 @@ export function SettingsBlock({
       </nav>
 
       {/* 右侧分区表单 */}
-      <Card className={classNames?.panel}>
+      <Card className={classNames?.panel} style={{ flex: '3 1 420px', minWidth: 0 }}>
         {activeSection === 'basic' ? (
           <section data-part="section" data-section="basic" aria-label="基本设置">
             <h3 style={sectionTitleStyle}>基本设置</h3>
             <p style={sectionDescStyle}>站点的公开名称与介绍文案。</p>
             <div style={{ marginBottom: 'var(--z-space-4)' }}>
-              <label htmlFor="settings-site-name" style={fieldLabelStyle}>
+              <label htmlFor={fieldId('site-name')} style={fieldLabelStyle}>
                 站点名称
               </label>
               <Input
-                id="settings-site-name"
+                id={fieldId('site-name')}
                 name="siteName"
                 value={values.siteName}
                 onChange={(event) => handleField('siteName', event.target.value)}
@@ -242,11 +251,11 @@ export function SettingsBlock({
               />
             </div>
             <div>
-              <label htmlFor="settings-site-description" style={fieldLabelStyle}>
+              <label htmlFor={fieldId('site-description')} style={fieldLabelStyle}>
                 站点描述
               </label>
               <Input
-                id="settings-site-description"
+                id={fieldId('site-description')}
                 name="siteDescription"
                 value={values.siteDescription}
                 onChange={(event) => handleField('siteDescription', event.target.value)}
@@ -303,12 +312,12 @@ export function SettingsBlock({
               className={classNames?.row}
             />
             <div style={{ paddingTop: 'var(--z-space-4)' }}>
-              <label htmlFor="settings-password-policy" style={fieldLabelStyle}>
+              <label htmlFor={fieldId('password-policy')} style={fieldLabelStyle}>
                 密码策略
               </label>
-              <span style={{ display: 'inline-block', width: 220 }}>
+              <span style={{ display: 'inline-block', width: 220, maxWidth: '100%' }}>
                 <Select
-                  id="settings-password-policy"
+                  id={fieldId('password-policy')}
                   aria-label="密码策略"
                   options={[
                     { value: 'basic', label: '基础（6 位以上）' },

@@ -1,7 +1,11 @@
 import { Suspense, Component, useEffect, useRef, useState } from 'react';
 
+import PageToc from './components/PageToc';
 import { useHashRoute, hrefFor } from './router';
 import { GROUP_LABELS, GROUP_ORDER, navItems, routeComponents, type NavItem } from './nav';
+
+/** 站点展示版本（后续可改为从 package.json 读取） */
+const SITE_VERSION = 'v0.2.0';
 
 function NotFound(): React.ReactNode {
   return (
@@ -51,6 +55,9 @@ export default function App(): React.ReactNode {
   const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const mainRef = useRef<HTMLElement | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null);
+  const navSearchRef = useRef<HTMLInputElement | null>(null);
+  const focusPageOnRouteRef = useRef(false);
 
   // 暗色切换：写 data-theme，文档 chrome 自身复用 z 令牌（docs.css 全部走 var(--z-*)）
   const toggleDark = () => {
@@ -64,16 +71,71 @@ export default function App(): React.ReactNode {
     setDark(document.documentElement.dataset.theme === 'dark');
     setMenuOpen(false);
     mainRef.current?.scrollTo({ top: 0 });
+    if (!focusPageOnRouteRef.current) return undefined;
+
+    focusPageOnRouteRef.current = false;
+    const main = mainRef.current;
+    if (!main) return undefined;
+
+    let focusFrame = 0;
+    let focusTimeout = 0;
+    const cleanup = () => {
+      window.cancelAnimationFrame(focusFrame);
+      window.clearTimeout(focusTimeout);
+      headingObserver.disconnect();
+    };
+    const focusHeading = (): boolean => {
+      const heading = main.querySelector<HTMLHeadingElement>('h1');
+      if (!heading) return false;
+      heading.tabIndex = -1;
+      heading.focus();
+      cleanup();
+      return true;
+    };
+    const scheduleFocus = () => {
+      if (focusFrame !== 0) return;
+      focusFrame = window.requestAnimationFrame(() => {
+        focusFrame = 0;
+        focusHeading();
+      });
+    };
+    const headingObserver = new MutationObserver(scheduleFocus);
+
+    // 已缓存的页面可能同步挂载；首次加载的 lazy 页面则等待 Suspense 内容真正进入 DOM。
+    if (focusHeading()) return cleanup;
+    headingObserver.observe(main, { childList: true, subtree: true });
+    focusTimeout = window.setTimeout(cleanup, 10_000);
+    return cleanup;
   }, [route]);
+
+  // ⌘K / Ctrl+K 聚焦侧栏搜索（与搜索框 placeholder 提示一致）
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        navSearchRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   // 移动端菜单：Esc 关闭
   useEffect(() => {
     if (!menuOpen) return;
+    const focusFrame = window.requestAnimationFrame(() => navSearchRef.current?.focus());
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMenuOpen(false);
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setMenuOpen(false);
+        window.requestAnimationFrame(() => menuButtonRef.current?.focus());
+      }
     };
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      window.removeEventListener('keydown', onKeyDown);
+    };
   }, [menuOpen]);
 
   // 侧栏搜索过滤：按名称即时过滤导航项
@@ -97,10 +159,12 @@ export default function App(): React.ReactNode {
       <header className="doc-topbar">
         <div className="doc-topbar-left">
           <button
+            ref={menuButtonRef}
             type="button"
             className="doc-menu-btn"
             aria-expanded={menuOpen}
             aria-controls="doc-sidebar"
+            aria-label={menuOpen ? '关闭文档菜单' : '打开文档菜单'}
             onClick={() => setMenuOpen((prev) => !prev)}
           >
             菜单
@@ -108,7 +172,7 @@ export default function App(): React.ReactNode {
           <a className="doc-brand" href={hrefFor('/')}>
             <span className="doc-brand-mark">Z</span>
             <span className="doc-brand-name">ZUI</span>
-            <span className="doc-brand-tag">文档</span>
+            <span className="doc-version">{SITE_VERSION}</span>
           </a>
         </div>
         <div className="doc-topbar-actions">
@@ -141,9 +205,10 @@ export default function App(): React.ReactNode {
       >
         <div className="doc-nav-search">
           <input
+            ref={navSearchRef}
             type="search"
             className="doc-nav-search-input"
-            placeholder="搜索文档…"
+            placeholder="搜索文档… ⌘K"
             aria-label="按名称过滤导航项"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -165,6 +230,21 @@ export default function App(): React.ReactNode {
                       }
                       href={hrefFor(item.path)}
                       aria-current={item.path === route ? 'page' : undefined}
+                      onClick={() => {
+                        if (!menuOpen) return;
+                        setMenuOpen(false);
+                        if (item.path === route) {
+                          window.requestAnimationFrame(() => {
+                            const heading =
+                              mainRef.current?.querySelector<HTMLHeadingElement>('h1');
+                            if (!heading) return;
+                            heading.tabIndex = -1;
+                            heading.focus();
+                          });
+                        } else {
+                          focusPageOnRouteRef.current = true;
+                        }
+                      }}
                     >
                       {item.title}
                     </a>
@@ -192,6 +272,8 @@ export default function App(): React.ReactNode {
         ) : (
           <NotFound />
         )}
+        {/* 页内目录：DOM 为 main > (.doc-page + nav.doc-toc)，供 docs.css 做 grid 多列布局 */}
+        <PageToc containerRef={mainRef} />
       </main>
     </div>
   );
