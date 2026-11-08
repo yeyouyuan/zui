@@ -1,0 +1,55 @@
+{
+  "name": "Combobox",
+  "description": "自动完成：可编辑单选、严格选项、外部异步结果与完整 IME/键盘支持",
+  "category": "数据录入",
+  "useCase": [
+    "输入关键词并从本地列表选择一个实体",
+    "搜索用户、客户、商品、城市或远程字典",
+    "需要把搜索草稿与表单提交值分离"
+  ],
+  "dontUse": [
+    "静态枚举且无需输入搜索时用 Select",
+    "自由文本或允许创建新值时用 Input",
+    "多选标签、树形或级联数据使用对应专用组件"
+  ],
+  "props": {
+    "options": {
+      "type": "readonly ComboboxOption[]",
+      "default": "（必填）",
+      "desc": "候选项；复杂 label 必须提供 textValue"
+    },
+    "value": { "type": "string | null", "default": "null", "desc": "受控 committed value" },
+    "inputValue": { "type": "string", "default": "—", "desc": "受控编辑草稿" },
+    "open": { "type": "boolean", "default": "false", "desc": "受控面板状态" },
+    "onChange": {
+      "type": "(value, option, details) => void",
+      "default": "—",
+      "desc": "选择或清除 committed value"
+    },
+    "onInputValueChange": {
+      "type": "(inputValue, details) => void",
+      "default": "—",
+      "desc": "编辑文本变化；组合输入期间仍同步"
+    },
+    "onSearch": {
+      "type": "(query: string) => void",
+      "default": "—",
+      "desc": "仅在非组合输入或 compositionend 后触发"
+    },
+    "filterOption": {
+      "type": "false | ((option, query) => boolean)",
+      "default": "contains",
+      "desc": "false 表示 options 已由调用方过滤"
+    },
+    "loading": { "type": "boolean", "default": "false", "desc": "远程结果加载状态" },
+    "clearable": { "type": "boolean", "default": "false", "desc": "显示键盘可达的清除按钮" },
+    "readOnly": { "type": "boolean", "default": "false", "desc": "只读复制，不打开或选择" }
+  },
+  "a11yNotes": [
+    "真实 input 使用 role=combobox、aria-autocomplete=list、aria-expanded/controls/activedescendant",
+    "面板 role=listbox，选项 role=option；active 与 selected 独立",
+    "clear 进入 Tab 顺序，toggle 不进入；IME 组合期间不搜索、不导航、不提交",
+    "严格模式下未匹配草稿不会写入隐藏表单字段"
+  ],
+  "related": ["Select", "Input", "Form", "Mentions"]
+}

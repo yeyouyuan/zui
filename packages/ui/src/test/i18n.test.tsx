@@ -34,6 +34,7 @@ describe('i18n 语言包结构完整性', () => {
 
   const requiredSections = [
     'select',
+    'combobox',
     'input',
     'modal',
     'drawer',
@@ -54,6 +55,8 @@ describe('i18n 语言包结构完整性', () => {
       });
       expect(data.date.weekdays).toHaveLength(7);
       expect(typeof data.select.placeholder).toBe('string');
+      expect(Object.values(data.combobox).every((value) => typeof value === 'string')).toBe(true);
+      expect(data.combobox.results).toContain('{count}');
       expect(typeof data.empty.description).toBe('string');
       expect(typeof data.popconfirm.ok).toBe('string');
       expect(typeof data.popconfirm.cancel).toBe('string');
@@ -66,9 +69,12 @@ describe('i18n 语言包结构完整性', () => {
   it('mergeLocale 深合并能够局部覆盖特定文案', () => {
     const custom = mergeLocale(enUS, {
       select: { placeholder: 'Pick one' },
+      combobox: { placeholder: 'Find a city' },
     });
     expect(custom.select.placeholder).toBe('Pick one');
     expect(custom.select.empty).toBe('No options'); // 保留原有未覆盖项
+    expect(custom.combobox.placeholder).toBe('Find a city');
+    expect(custom.combobox.clear).toBe('Clear selection');
     expect(custom.popconfirm.ok).toBe('OK');
   });
 });
@@ -167,11 +173,46 @@ describe('ConfigProvider 动态切换语言', () => {
 
 describe('i18n 扩展语言包（frFR/deDE/esES/ruRU/ptBR）结构完整性', () => {
   const extendedLocales = [
-    { name: 'frFR', data: frFR, placeholder: 'Sélectionner...', empty: 'Aucune donnée', prev: 'Précédent', next: 'Suivant' },
-    { name: 'deDE', data: deDE, placeholder: 'Auswählen...', empty: 'Keine Daten', prev: 'Zurück', next: 'Weiter' },
-    { name: 'esES', data: esES, placeholder: 'Seleccionar...', empty: 'Sin datos', prev: 'Anterior', next: 'Siguiente' },
-    { name: 'ruRU', data: ruRU, placeholder: 'Выберите...', empty: 'Нет данных', prev: 'Назад', next: 'Вперёд' },
-    { name: 'ptBR', data: ptBR, placeholder: 'Selecione...', empty: 'Sem dados', prev: 'Anterior', next: 'Próximo' },
+    {
+      name: 'frFR',
+      data: frFR,
+      placeholder: 'Sélectionner...',
+      empty: 'Aucune donnée',
+      prev: 'Précédent',
+      next: 'Suivant',
+    },
+    {
+      name: 'deDE',
+      data: deDE,
+      placeholder: 'Auswählen...',
+      empty: 'Keine Daten',
+      prev: 'Zurück',
+      next: 'Weiter',
+    },
+    {
+      name: 'esES',
+      data: esES,
+      placeholder: 'Seleccionar...',
+      empty: 'Sin datos',
+      prev: 'Anterior',
+      next: 'Siguiente',
+    },
+    {
+      name: 'ruRU',
+      data: ruRU,
+      placeholder: 'Выберите...',
+      empty: 'Нет данных',
+      prev: 'Назад',
+      next: 'Вперёд',
+    },
+    {
+      name: 'ptBR',
+      data: ptBR,
+      placeholder: 'Selecione...',
+      empty: 'Sem dados',
+      prev: 'Anterior',
+      next: 'Próximo',
+    },
   ];
 
   /** 递归收集对象键路径（数组视为叶子） */
@@ -194,6 +235,8 @@ describe('i18n 扩展语言包（frFR/deDE/esES/ruRU/ptBR）结构完整性', ()
       expect(data.date.weekdays).toHaveLength(7);
       expect(data.date.weekdays.every((w) => typeof w === 'string' && w.length > 0)).toBe(true);
       expect(typeof data.select.placeholder).toBe('string');
+      expect(Object.values(data.combobox).every((value) => typeof value === 'string')).toBe(true);
+      expect(data.combobox.results).toContain('{count}');
       expect(typeof data.input.clear).toBe('string');
       expect(typeof data.modal.close).toBe('string');
       expect(typeof data.drawer.close).toBe('string');

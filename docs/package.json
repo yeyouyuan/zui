@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@puckeditor/core": "^0.24.0",
     "@zui/blocks": "workspace:*",
     "@zui/i18n": "workspace:*",
     "@zui/icons": "workspace:*",

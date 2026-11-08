@@ -23,6 +23,12 @@ const NAV_ROUTES = Array.from(
   (match) => match[1]
 );
 
+/** 注入 Puck 的 srcdoc iframe，避免只扫描到外层文档而漏掉画布内容。 */
+const AXE_SOURCE = readFileSync(
+  new URL('../packages/ui/node_modules/axe-core/axe.min.js', import.meta.url),
+  'utf8'
+);
+
 /** 文档页标题（.doc-h1） */
 const H1 = {
   overview: 'ZUI 组件库',
@@ -31,6 +37,7 @@ const H1 = {
   i18n: '国际化 i18n 与 AI 翻译',
   form: 'Form 表单',
   select: 'Select 选择器',
+  combobox: 'Combobox 自动完成',
   modal: 'Modal 对话框',
   datePicker: 'DatePicker 日期选择器',
   virtualTable: 'VirtualTable 虚拟滚动表格',
@@ -192,6 +199,226 @@ test('Select 页：Esc 关闭列表，焦点留在触发器上', async ({ page }
   await expect(trigger).toBeFocused();
 });
 
+test('Combobox 页：严格选择、回退与 320px 暗色浮层可用', async ({ page }) => {
+  await openRoute(page, '/components/combobox', H1.combobox);
+
+  const combobox = page.locator('.z-combobox').first();
+  const input = combobox.getByRole('combobox', { name: '城市' });
+  await expect(input).toHaveCount(1);
+  await expect(input).toHaveValue('上海');
+
+  await input.fill('深');
+  const listbox = page.getByRole('listbox');
+  await expect(listbox).toHaveCount(1);
+  await expect(listbox.getByRole('option')).toHaveCount(1);
+  await expect(listbox.getByRole('option')).toContainText('深圳');
+  await input.press('Enter');
+  await expect(input).toHaveValue('深圳');
+  await expect(input).toHaveAttribute('aria-expanded', 'false');
+
+  await input.fill('不存在');
+  await expect(page.locator('[data-part="empty"]')).toContainText('暂无匹配选项');
+  await input.press('Escape');
+  await expect(input).toHaveValue('深圳');
+
+  await page.setViewportSize({ width: 320, height: 640 });
+  await page.getByRole('button', { name: '切换暗色' }).click();
+  await input.press('ArrowDown');
+  const panel = page.locator('.z-combobox-panel');
+  await expect(panel).toHaveCount(1);
+  await expect(panel).toBeVisible();
+  const geometry = await panel.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    const style = getComputedStyle(node);
+    return {
+      left: rect.left,
+      right: rect.right,
+      background: style.backgroundColor,
+      foreground: style.color,
+    };
+  });
+  expect(geometry.left).toBeGreaterThanOrEqual(0);
+  expect(geometry.right).toBeLessThanOrEqual(320);
+  expect(geometry.background).not.toBe('rgba(0, 0, 0, 0)');
+  expect(geometry.background).not.toBe(geometry.foreground);
+});
+
+test('页面搭建器：宽画布、第三方控件可访问名与窄屏边界可用', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await openRoute(page, '/builder', '页面搭建器');
+
+  const editor = page.locator('.doc-builder-editor');
+  await expect(editor).toHaveCount(1);
+  await expect(editor.locator('select[aria-label="画布缩放"]')).toHaveCount(1);
+  await expect(editor.locator('iframe#preview-frame')).toHaveAttribute('title', '页面画布预览');
+  await expect(editor.getByRole('status', { name: '正在加载页面画布' })).toHaveCount(1);
+  await expect(page.locator('.doc-builder-json')).toHaveAttribute('tabindex', '0');
+
+  const canvas = page.frameLocator('iframe#preview-frame');
+  await expect(canvas.locator('html')).toHaveAttribute('lang', 'zh-CN');
+  await expect
+    .poll(() =>
+      editor
+        .locator('iframe#preview-frame')
+        .evaluate((frame) => (frame as HTMLIFrameElement).contentDocument?.title)
+    )
+    .toBe('页面搭建器画布');
+  await expect(canvas.getByRole('main')).toHaveCount(1);
+  await expect(
+    canvas.getByRole('heading', { level: 1, name: '页面搭建器画布', exact: true })
+  ).toHaveCount(1);
+  await expect(canvas.getByRole('progressbar', { name: '任务进度' })).toHaveCount(1);
+
+  const canvasA11yIssues = await canvas.locator('body').evaluate((body) => {
+    const interactiveSelector =
+      'a[href], button, input, select, textarea, summary, [role="button"], [role="link"], [role="checkbox"], [role="radio"], [role="switch"], [role="menuitem"], [role="option"], [tabindex]:not([tabindex="-1"])';
+    const interactive = Array.from(body.querySelectorAll<HTMLElement>(interactiveSelector));
+    const nested = interactive.filter((element) =>
+      interactive.some((candidate) => candidate !== element && element.contains(candidate))
+    );
+    const unnamedButtons = Array.from(
+      body.querySelectorAll<HTMLElement>('button, [role="button"]')
+    ).filter((element) => {
+      const labelledBy = element.getAttribute('aria-labelledby');
+      const referencedText = labelledBy
+        ?.split(/\s+/)
+        .map((id) => element.ownerDocument.getElementById(id)?.textContent ?? '')
+        .join(' ');
+      return !(
+        element.getAttribute('aria-label')?.trim() ||
+        referencedText?.trim() ||
+        element.textContent?.trim() ||
+        element.getAttribute('title')?.trim()
+      );
+    });
+    return {
+      nested: nested.map((element) => element.outerHTML.slice(0, 180)),
+      unnamedButtons: unnamedButtons.map((element) => element.outerHTML.slice(0, 180)),
+    };
+  });
+  expect(canvasA11yIssues).toEqual({ nested: [], unnamedButtons: [] });
+
+  const axeViolations = await editor
+    .locator('iframe#preview-frame')
+    .evaluate(async (frame, axeSource) => {
+      type AxeResult = {
+        violations: Array<{
+          id: string;
+          impact: string | null;
+          nodes: Array<{ target: string[] }>;
+        }>;
+      };
+      type AxeApi = {
+        run(root: Document, options: { resultTypes: string[] }): Promise<AxeResult>;
+      };
+
+      const iframe = frame as HTMLIFrameElement;
+      const frameDocument = iframe.contentDocument;
+      const frameWindow = iframe.contentWindow;
+      if (!frameDocument || !frameWindow) throw new Error('页面画布 iframe 尚未就绪');
+
+      (frameWindow as unknown as { eval(source: string): void }).eval(axeSource);
+      const axe = (frameWindow as unknown as { axe?: AxeApi }).axe;
+      if (!axe) throw new Error('axe-core 未能注入页面画布 iframe');
+
+      const results = await axe.run(frameDocument, { resultTypes: ['violations'] });
+      return results.violations.map((violation) => ({
+        id: violation.id,
+        impact: violation.impact,
+        targets: violation.nodes.map((node) => node.target.join(' > ')),
+      }));
+    }, AXE_SOURCE);
+  expect(axeViolations).toEqual([]);
+
+  const desktopCanvasWidth = await editor
+    .locator('[class*="PuckCanvas"]')
+    .first()
+    .evaluate((node) => node.getBoundingClientRect().width);
+  expect(desktopCanvasWidth).toBeGreaterThan(500);
+
+  await editor.getByRole('button', { name: '切换组件面板' }).click();
+  const structureTab = editor.getByRole('button', { name: '结构', exact: true });
+  await expect(structureTab).toHaveCount(1);
+  await structureTab.focus();
+  await expect(structureTab).toBeFocused();
+  await structureTab.press('Enter');
+  await expect(structureTab).toHaveAttribute('aria-pressed', 'true');
+
+  const outlineButton = editor
+    .locator('li[data-puck-layer-tree-id="submit-button"] button')
+    .filter({ hasText: '按钮' });
+  await expect(outlineButton).toHaveCount(1);
+  await outlineButton.focus();
+  await expect(outlineButton).toBeFocused();
+  await outlineButton.press('Enter');
+
+  await page.addScriptTag({ content: AXE_SOURCE });
+  const editorAxeViolations = await editor.evaluate(async (root) => {
+    type AxeResult = {
+      violations: Array<{
+        id: string;
+        impact: string | null;
+        nodes: Array<{ target: string[] }>;
+      }>;
+    };
+    type AxeApi = {
+      run(root: Element, options: { resultTypes: string[] }): Promise<AxeResult>;
+    };
+
+    const axe = (window as unknown as { axe?: AxeApi }).axe;
+    if (!axe) throw new Error('axe-core 未能注入页面搭建器');
+    const results = await axe.run(root, { resultTypes: ['violations'] });
+    return results.violations.map((violation) => ({
+      id: violation.id,
+      impact: violation.impact,
+      targets: violation.nodes.map((node) => node.target.join(' > ')),
+    }));
+  });
+  expect(editorAxeViolations).toEqual([]);
+
+  await page.setViewportSize({ width: 320, height: 640 });
+  await page.reload();
+  await page.getByRole('heading', { level: 1, name: '页面搭建器', exact: true }).waitFor();
+  await expect(page.locator('.doc-builder-editor')).toHaveCount(1);
+
+  const narrowGeometry = await page.locator('.doc-builder-editor').evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return {
+      left: rect.left,
+      right: rect.right,
+      documentWidth: document.documentElement.scrollWidth,
+      viewportWidth: window.innerWidth,
+    };
+  });
+  expect(narrowGeometry.left).toBeGreaterThanOrEqual(0);
+  expect(narrowGeometry.right).toBeLessThanOrEqual(320);
+  expect(narrowGeometry.documentWidth).toBe(narrowGeometry.viewportWidth);
+
+  const narrowToolbar = page
+    .locator('.doc-builder-editor')
+    .locator('[class*="ViewportControls-actionsInner"]');
+  const narrowToolbarGeometry = await narrowToolbar.evaluate((node) => {
+    const firstControl = node.querySelector('button');
+    const lastControl = node.querySelector('select');
+    if (!firstControl) throw new Error('窄屏画布工具条缺少按钮');
+    if (!lastControl) throw new Error('窄屏画布工具条缺少缩放选择框');
+    const toolbarRect = node.getBoundingClientRect();
+    const firstRect = firstControl.getBoundingClientRect();
+    const lastRect = lastControl.getBoundingClientRect();
+    return {
+      toolbarHeight: toolbarRect.height,
+      firstHeight: firstRect.height,
+      firstLeft: firstRect.left,
+      lastRight: lastRect.right,
+      toolbarLeft: toolbarRect.left,
+      toolbarRight: toolbarRect.right,
+    };
+  });
+  expect(narrowToolbarGeometry.toolbarHeight).toBeGreaterThan(narrowToolbarGeometry.firstHeight);
+  expect(narrowToolbarGeometry.firstLeft).toBeGreaterThanOrEqual(narrowToolbarGeometry.toolbarLeft);
+  expect(narrowToolbarGeometry.lastRight).toBeLessThanOrEqual(narrowToolbarGeometry.toolbarRight);
+});
+
 test('Modal 页：打开后 role=dialog 可见，Esc 关闭', async ({ page }) => {
   await openRoute(page, '/components/modal', H1.modal);
 
@@ -338,21 +565,50 @@ test('VirtualTable 页：行点击回显所选行', async ({ page }) => {
   await expect(echo).toContainText('研发');
 });
 
-test('暗色切换：data-theme="dark" 生效后切回', async ({ page }) => {
+test('暗色切换：跟随系统且可显式切换浅色与暗色', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
   await openRoute(page, '/', H1.overview);
 
   const html = page.locator('html');
   await expect(html).not.toHaveAttribute('data-theme', 'dark');
 
-  const toDark = page.getByRole('button', { name: '切换暗色' });
-  await expect(toDark).toHaveCount(1);
-  await toDark.click();
-  await expect(html).toHaveAttribute('data-theme', 'dark');
-  await expect(page.getByRole('button', { name: '切换浅色' })).toHaveCount(1);
+  const systemColors = await page.locator('body').evaluate((node) => {
+    const style = getComputedStyle(node);
+    return { background: style.backgroundColor, foreground: style.color };
+  });
+  expect(systemColors.background).not.toBe('rgb(255, 255, 255)');
+  expect(systemColors.background).not.toBe(systemColors.foreground);
 
-  await page.getByRole('button', { name: '切换浅色' }).click();
+  await page.addScriptTag({ content: AXE_SOURCE });
+  const versionContrastViolations = await page.locator('.doc-version').evaluate(async (version) => {
+    type AxeApi = {
+      run(
+        root: Element,
+        options: {
+          resultTypes: string[];
+          runOnly: { type: string; values: string[] };
+        }
+      ): Promise<{ violations: Array<{ id: string }> }>;
+    };
+    const axe = (window as unknown as { axe?: AxeApi }).axe;
+    if (!axe) throw new Error('axe-core 未能注入文档页面');
+    const results = await axe.run(version, {
+      resultTypes: ['violations'],
+      runOnly: { type: 'rule', values: ['color-contrast'] },
+    });
+    return results.violations.map((violation) => violation.id);
+  });
+  expect(versionContrastViolations).toEqual([]);
+
+  const toLight = page.getByRole('button', { name: '切换浅色' });
+  await expect(toLight).toHaveCount(1);
+  await toLight.click();
   await expect(html).toHaveAttribute('data-theme', 'light');
   await expect(page.getByRole('button', { name: '切换暗色' })).toHaveCount(1);
+
+  await page.getByRole('button', { name: '切换暗色' }).click();
+  await expect(html).toHaveAttribute('data-theme', 'dark');
+  await expect(page.getByRole('button', { name: '切换浅色' })).toHaveCount(1);
 });
 
 test('文档外壳：全部导航页在 320px 暗色视口无页面级横向溢出', async ({ page }) => {

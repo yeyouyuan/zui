@@ -135,7 +135,7 @@ describe('渲染与语义', () => {
     expect(items[0]).toHaveAttribute('data-status', 'success');
     expect(items[1]).toHaveAttribute('data-status', 'error');
     expect(items[2]).toHaveAttribute('data-status', 'uploading');
-    expect(items[2].querySelector('[role="progressbar"]')).not.toBeNull();
+    expect(screen.getByRole('progressbar', { name: 'c.mp4' })).toBeInTheDocument();
   });
 });
 

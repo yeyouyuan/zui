@@ -73,6 +73,14 @@
     "ColorPicker": "packages/ui/src/components/ColorPicker/index.ts",
     "ColorPickerProps": "packages/ui/src/components/ColorPicker/index.ts",
     "ColorPickerSize": "packages/ui/src/components/ColorPicker/index.ts",
+    "Combobox": "packages/ui/src/components/Combobox/index.ts",
+    "ComboboxChangeDetails": "packages/ui/src/components/Combobox/index.ts",
+    "ComboboxInputChangeDetails": "packages/ui/src/components/Combobox/index.ts",
+    "ComboboxInputChangeReason": "packages/ui/src/components/Combobox/index.ts",
+    "ComboboxOpenChangeDetails": "packages/ui/src/components/Combobox/index.ts",
+    "ComboboxOpenChangeReason": "packages/ui/src/components/Combobox/index.ts",
+    "ComboboxOption": "packages/ui/src/components/Combobox/index.ts",
+    "ComboboxProps": "packages/ui/src/components/Combobox/index.ts",
     "DatePicker": "packages/ui/src/components/DatePicker/index.ts",
     "DatePickerProps": "packages/ui/src/components/DatePicker/index.ts",
     "DateRangePicker": "packages/ui/src/components/DateRangePicker/index.ts",
@@ -864,6 +872,53 @@
         "--z-color-picker-transition": "var(--z-duration-fast) var(--z-ease-standard)"
       },
       "meta": "packages/ui/src/components/ColorPicker/meta.json"
+    },
+    {
+      "name": "combobox",
+      "type": "registry:component",
+      "title": "Combobox 自动完成",
+      "description": "自动完成：可编辑单选、严格选项、外部异步结果与完整 IME/键盘支持",
+      "dependencies": [
+        "@zui/icons"
+      ],
+      "registryDependencies": [],
+      "files": [
+        "packages/ui/src/components/Combobox/Combobox.css",
+        "packages/ui/src/components/Combobox/Combobox.tsx",
+        "packages/ui/src/components/Combobox/index.ts"
+      ],
+      "cssVars": {
+        "--z-combobox-control-height": "2rem",
+        "--z-combobox-control-padding-x": "var(--z-space-3)",
+        "--z-combobox-control-gap": "var(--z-space-1)",
+        "--z-combobox-font-size": "var(--z-text-sm)",
+        "--z-combobox-radius": "var(--z-radius-sm)",
+        "--z-combobox-bg": "var(--z-color-bg-elevated)",
+        "--z-combobox-fg": "var(--z-color-fg)",
+        "--z-combobox-border": "var(--z-color-border)",
+        "--z-combobox-hover-border": "var(--z-color-border-focus)",
+        "--z-combobox-focus-ring": "var(--z-color-focus-ring)",
+        "--z-combobox-placeholder-fg": "var(--z-color-fg-subtle)",
+        "--z-combobox-icon-fg": "var(--z-color-fg-muted)",
+        "--z-combobox-clear-hover-bg": "var(--z-color-bg-muted)",
+        "--z-combobox-panel-bg": "var(--z-color-bg-elevated)",
+        "--z-combobox-panel-border": "var(--z-color-border-subtle)",
+        "--z-combobox-panel-radius": "0.5rem",
+        "--z-combobox-panel-shadow": "var(--z-shadow-lg)",
+        "--z-combobox-panel-max-height": "16rem",
+        "--z-combobox-panel-margin-top": "var(--z-space-1)",
+        "--z-combobox-panel-padding": "var(--z-space-1)",
+        "--z-combobox-option-height": "2rem",
+        "--z-combobox-option-padding-x": "var(--z-space-3)",
+        "--z-combobox-option-radius": "var(--z-radius-sm)",
+        "--z-combobox-option-fg": "var(--z-color-fg)",
+        "--z-combobox-option-active-bg": "var(--z-color-primary-subtle)",
+        "--z-combobox-option-active-fg": "var(--z-color-primary-subtle-fg)",
+        "--z-combobox-option-disabled-fg": "var(--z-color-disabled-fg)",
+        "--z-combobox-status-fg": "var(--z-color-fg-muted)",
+        "--z-combobox-animation-duration": "var(--z-duration-fast)"
+      },
+      "meta": "packages/ui/src/components/Combobox/meta.json"
     },
     {
       "name": "date-picker",

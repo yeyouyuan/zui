@@ -13,13 +13,14 @@
 
 **APG 合规**：所有交互模式对齐 WAI-ARIA Authoring Practices Guide（APG），不做自创模式：
 
-| 模式 | 组件 | APG 对应 |
-|---|---|---|
-| select-only combobox | Select | Listbox Popup（焦点保持触发器 + `aria-activedescendant` 虚拟活动项） |
-| dialog | Modal | Dialog（`aria-modal` + 焦点陷阱 + 关闭归还焦点） |
-| tabs | Tabs | Tabs（roving tabindex + ←→/↑↓ + Home/End） |
-| switch / checkbox / radio | Switch / Checkbox / Radio | 官方对应模式，优先原生元素 |
-| live region 通知 | Message | `role="status"` + `aria-live`（error 用 assertive） |
+| 模式                      | 组件                      | APG 对应                                                                                   |
+| ------------------------- | ------------------------- | ------------------------------------------------------------------------------------------ |
+| editable combobox         | Combobox                  | Listbox Popup（输入框保留焦点 + `aria-activedescendant`；输入草稿与 committed value 分离） |
+| select-only combobox      | Select                    | Listbox Popup（焦点保持触发器 + `aria-activedescendant` 虚拟活动项）                       |
+| dialog                    | Modal                     | Dialog（`aria-modal` + 焦点陷阱 + 关闭归还焦点）                                           |
+| tabs                      | Tabs                      | Tabs（roving tabindex + ←→/↑↓ + Home/End）                                                 |
+| switch / checkbox / radio | Switch / Checkbox / Radio | 官方对应模式，优先原生元素                                                                 |
+| live region 通知          | Message                   | `role="status"` + `aria-live`（error 用 assertive）                                        |
 
 **实现策略**：
 
@@ -40,20 +41,21 @@
 分级依据：交互模式复杂度 × 需要人工实测的读屏风险面。
 S = 高难度（组合模式 + 焦点管理 + 多读屏坑）；A = 中难度（复合组件或 live region 语义）；
 B = 低难度（原生语义为主）。A 级以浮层/菜单类复合组件为主（DropdownMenu、Tooltip、Popover 等
-新组件将落在此级，不在本轮范围）；下表只列本轮负责的现有 10 个组件。
+新组件将落在此级）；下表覆盖基线组件与新增的高风险交互模式。
 
-| 组件 | 等级 | a11y 关键点 | 风险说明 |
-|---|---|---|---|
-| Select | **S** | `aria-haspopup="listbox"`/`aria-expanded`、listbox/option、`aria-activedescendant`、typeahead、Esc 回焦 | aria-activedescendant 在 VoiceOver+Safari 播报不稳（§3.1）；disabled option「可导航不可选」易被实现吞掉 |
-| Modal | **S** | `role="dialog"`/`aria-modal="true"`/`aria-labelledby`、焦点陷阱、Esc 关闭+焦点归还、Portal | Portal 破坏 DOM 兄弟关系（§3.3）；NVDA 开场吞朗读（§3.2）；焦点归还/Tab 陷阱漏一处即键盘困死 |
-| Tabs | **A** | `tablist`/`tab`/`tabpanel`、roving tabindex、←→/↑↓ 环形移动、Home/End、`aria-controls` 双向 | manual 模式「移动焦点 ≠ 选中」易与 automatic 混淆；未激活 panel 卸载后 `aria-controls` 悬空是已知取舍 |
-| Message | **A** | `role="status"` + `aria-live`（error assertive）、可关闭按钮可访问名 | live region 双重播报、assertive 覆盖不生效（§3.4）；自动关闭消息播报时机不可控 |
-| Button | **B** | 原生 button、可访问名、loading 时 `aria-busy`/`aria-disabled` 且保留可聚焦 | 纯图标按钮必须由调用方给 `aria-label`（组件无法猜测） |
-| Input | **B** | 原生 input、label 关联、清除按钮 `aria-label="清除"` | label 关联由调用方（`aria-label`/`<label>`）负责，组件不做隐式包裹 |
-| Checkbox | **B** | 原生 checkbox、`indeterminate` → `aria-checked="mixed"` + DOM `indeterminate` | mixed 态的视觉与朗读需一致；原生 `checked` 与 `aria-checked` 混用时只在 mixed 态显式声明 |
-| Radio / RadioGroup | **B** | `role="radiogroup"` + `aria-orientation`、原生 radio 分组 | 无 Group 时回退 `name` 分组，朗读「x of n」依赖调用方给 `name` |
-| Switch | **B** | `role="switch"` + `aria-checked`、Space/Enter 切换 | label 在按钮内充当可访问名；无 label 时必须 `aria-label` |
-| Table | **B** | 纯语义 `<table>/<th scope="col">` | `scope="col"` 由 Table.HeaderCell 强制；行内交互单元格需调用方自补语义 |
+| 组件               | 等级  | a11y 关键点                                                                                             | 风险说明                                                                                                          |
+| ------------------ | ----- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Combobox           | **S** | 可编辑 input + listbox/option、`aria-activedescendant`、IME、严格值回退、clear 可 Tab                   | 组合输入期间误提交、input→clear 被误判真实 blur、异步结果令活动 id 悬空，以及 VoiceOver+Safari 虚拟活动项播报不稳 |
+| Select             | **S** | `aria-haspopup="listbox"`/`aria-expanded`、listbox/option、`aria-activedescendant`、typeahead、Esc 回焦 | aria-activedescendant 在 VoiceOver+Safari 播报不稳（§3.1）；disabled option「可导航不可选」易被实现吞掉           |
+| Modal              | **S** | `role="dialog"`/`aria-modal="true"`/`aria-labelledby`、焦点陷阱、Esc 关闭+焦点归还、Portal              | Portal 破坏 DOM 兄弟关系（§3.3）；NVDA 开场吞朗读（§3.2）；焦点归还/Tab 陷阱漏一处即键盘困死                      |
+| Tabs               | **A** | `tablist`/`tab`/`tabpanel`、roving tabindex、←→/↑↓ 环形移动、Home/End、`aria-controls` 双向             | manual 模式「移动焦点 ≠ 选中」易与 automatic 混淆；未激活 panel 卸载后 `aria-controls` 悬空是已知取舍             |
+| Message            | **A** | `role="status"` + `aria-live`（error assertive）、可关闭按钮可访问名                                    | live region 双重播报、assertive 覆盖不生效（§3.4）；自动关闭消息播报时机不可控                                    |
+| Button             | **B** | 原生 button、可访问名、loading 时 `aria-busy`/`aria-disabled` 且保留可聚焦                              | 纯图标按钮必须由调用方给 `aria-label`（组件无法猜测）                                                             |
+| Input              | **B** | 原生 input、label 关联、清除按钮 `aria-label="清除"`                                                    | label 关联由调用方（`aria-label`/`<label>`）负责，组件不做隐式包裹                                                |
+| Checkbox           | **B** | 原生 checkbox、`indeterminate` → `aria-checked="mixed"` + DOM `indeterminate`                           | mixed 态的视觉与朗读需一致；原生 `checked` 与 `aria-checked` 混用时只在 mixed 态显式声明                          |
+| Radio / RadioGroup | **B** | `role="radiogroup"` + `aria-orientation`、原生 radio 分组                                               | 无 Group 时回退 `name` 分组，朗读「x of n」依赖调用方给 `name`                                                    |
+| Switch             | **B** | `role="switch"` + `aria-checked`、Space/Enter 切换                                                      | label 在按钮内充当可访问名；无 label 时必须 `aria-label`                                                          |
+| Table              | **B** | 纯语义 `<table>/<th scope="col">`                                                                       | `scope="col"` 由 Table.HeaderCell 强制；行内交互单元格需调用方自补语义                                            |
 
 ## 3. 读屏怪癖清单（已知问题与规避）
 
@@ -65,14 +67,14 @@ B = 低难度（原生语义为主）。A 级以浮层/菜单类复合组件为�
 - **现象**：焦点保持在触发器、仅靠 `aria-activedescendant` 指示虚拟活动项的 combobox/listbox
   模式下，VoiceOver+Safari 对活动项移动的播报时灵时不灵——朗读游标不跟随虚拟活动项、
   只读出首个选项后不再更新，或与 Chrome 下的行为不一致。
-- **影响**：Select 打开后按 ↑↓，VO 用户可能「静默移动」，不知道当前停在哪一项。
+- **影响**：Select 或 Combobox 打开后按 ↑↓，VO 用户可能「静默移动」，不知道当前停在哪一项。
 - **ZUI 的规避**：
-  - Select 坚持 APG 标准实现（`aria-activedescendant` 是 combobox 规范做法，不因单平台缺陷降级成
+  - Select 与 Combobox 坚持 APG 标准实现（`aria-activedescendant` 是 combobox 规范做法，不因单平台缺陷降级成
     自创模式）；
-  - 保证「最终状态一定可感知」：Esc 必定回焦触发器、Enter/Space 选中后触发器文本更新（VO 读焦点
-    元素时拿到的是新值）、typeahead/方向键不改变焦点位置本身；
-  - 该「VO + Safari + Select」组合列为人工实测清单第一优先项（§4）；若实测确认持续不可用，
-    备选逃生门是给 Select 增加 roving-focus 模式（选项真实聚焦），留待后续评估。
+  - 保证「最终状态一定可感知」：Select 选中后触发器文本更新；Combobox 的 committed 文本更新并保留
+    input 焦点，Escape 恢复 committed 文本；两者的方向键都不改变真实焦点位置；
+  - 该「VO + Safari + Select/Combobox」组合列为人工实测清单第一优先项（§4）；若实测确认持续不可用，
+    再评估真实聚焦选项的兼容模式，不在单个平台上临时自创语义。
 
 ### 3.2 NVDA：打开即聚焦会吞掉开场朗读
 
@@ -124,9 +126,9 @@ ARIA 关联 id 正确性、键盘事件流（按键 → 状态/焦点变化）�
 
 **发布前人工实测清单**：
 
-1. **VoiceOver + Safari**：Select ↑↓ 是否播报活动项（§3.1 重点）；Modal 打开是否播报标题；
+1. **VoiceOver + Safari**：Select / Combobox ↑↓ 是否播报活动项，Combobox 输入、清除与严格回退是否播报最终文本（§3.1 重点）；Modal 打开是否播报标题；
    Tab 陷阱是否可用；Message 是否被读出、读几遍。
-2. **NVDA + Chrome/Firefox**：Modal 开场是否吞朗读（§3.2）；Message error 是否 assertive 播报、
+2. **NVDA + Chrome/Firefox**：Combobox loading/results live status 是否只播报一次、IME 组合中 Enter 是否不提交；Modal 开场是否吞朗读（§3.2）；Message error 是否 assertive 播报、
    是否双重播报（§3.4）；Tabs 方向键移动时 tab 名 + 选中态是否播报。
 3. **纯键盘**：全部组件 Tab 可达、`:focus-visible` 焦点环清晰可见、Esc 行为与契约一致
    （Select/Modal 关闭且焦点归还、Message 不吞 Esc）。
@@ -142,6 +144,7 @@ ARIA 关联 id 正确性、键盘事件流（按键 → 状态/焦点变化）�
 
 **扫描矩阵**：每棵树独立 `axe.run(container)` 并断言 violations = 0——Button 全变体
 （含 loading/disabled/纯图标）、Input+label（clearable/状态）、Select 关闭态（选中/占位/禁用）、
+Combobox 关闭态（选中/占位/只读/禁用）与打开态 listbox/option 关联、
 Checkbox（选中/未选/禁用/半选 mixed）、RadioGroup（选中/禁用项）、Switch（选中/禁用/无文字）、
 Tabs（tablist/tab/tabpanel 含 disabled tab）、Table（scope 表头/选中行）、Alert 四态（含 closable）、
 Empty、Card、Pagination（省略号/aria-current/跳页输入）、Badge（独立数字/圆点/包裹角标）。
@@ -157,8 +160,8 @@ Empty、Card、Pagination（省略号/aria-current/跳页输入）、Badge（独
 
 **显式禁用的规则（豁免清单）**：
 
-| 规则 | 原因 | 替代覆盖 |
-|---|---|---|
+| 规则             | 原因                                                                                     | 替代覆盖                                                         |
+| ---------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | `color-contrast` | jsdom 不做真实布局与绘制，拿不到最终前景/背景色，该规则在 jsdom 下只会产出大量不可靠结果 | 发布前人工实测（§4 清单第 4 项）+ 真实浏览器阶段（后续可入 E2E） |
 
 **已知限制与 harness 自证**：

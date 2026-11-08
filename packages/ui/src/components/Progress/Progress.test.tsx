@@ -67,6 +67,19 @@ describe('Progress ARIA', () => {
     expect(bar).toHaveAttribute('aria-valuemax', '100');
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
   });
+
+  it('支持 aria-label 与 aria-labelledby 为进度条提供名称', () => {
+    const { rerender } = render(<Progress percent={42} aria-label="上传进度" />);
+    expect(screen.getByRole('progressbar', { name: '上传进度' })).toBeInTheDocument();
+
+    rerender(
+      <>
+        <span id="progress-label">任务进度</span>
+        <Progress percent={42} aria-labelledby="progress-label" />
+      </>
+    );
+    expect(screen.getByRole('progressbar', { name: '任务进度' })).toBeInTheDocument();
+  });
 });
 
 describe('Progress status', () => {
@@ -92,7 +105,10 @@ describe('Progress 定制出口', () => {
     );
     const root = container.querySelector('[data-part="root"]') as HTMLElement;
     expect(root).toHaveClass('z-progress', 'my-root', 'c-root');
-    expect(container.querySelector('[data-part="track"]')).toHaveClass('z-progress-track', 'c-track');
+    expect(container.querySelector('[data-part="track"]')).toHaveClass(
+      'z-progress-track',
+      'c-track'
+    );
 
     const fill = getFill(container);
     expect(fill).toHaveClass('z-progress-fill', 'c-fill');

@@ -140,6 +140,33 @@ Keyboard: Enter/Space/ArrowDown/ArrowUp open (closed); ArrowUp/ArrowDown move; H
 Parts: root | trigger | value | listbox | option | empty
 ```
 
+### Combobox (editable, strict-option autocomplete)
+```
+ComboboxOption: { value: string; label: React.ReactNode; textValue?: string; keywords?: string[]; disabled?: boolean }
+Combobox: (props: ComboboxProps) => JSX.Element
+  options: readonly ComboboxOption[]                                  // REQUIRED
+  value?: string | null
+  defaultValue?: string | null
+  onChange?: (value, option, { reason: 'selection' | 'clear' }) => void
+  inputValue?: string
+  defaultInputValue?: string
+  onInputValueChange?: (inputValue, { reason, isComposing }) => void
+  onSearch?: (query: string) => void                                  // never fires mid-composition
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open, { reason }) => void
+  filterOption?: false | ((option, query) => boolean)                 // false for externally filtered results
+  loading?: boolean
+  clearable?: boolean
+  openOnFocus?: boolean
+  autoHighlight?: boolean
+  readOnly?: boolean
+  name?: string                                                       // committed value is serialized by a hidden input
+Input keeps DOM focus; popup is a listbox with aria-activedescendant. Typing changes only the draft;
+selection or clear changes the committed value. Escape/real blur restores strict committed text.
+Parts: root | control | input | clear | toggle | panel | listbox | option | loading | empty | error | status
+```
+
 ### Modal (compound)
 ```
 Modal: (props: ModalProps) => JSX.Element
@@ -310,7 +337,7 @@ function useAutoTranslate(config: TranslateConfig): {
 
 ## meta.json — per-component AI metadata (CONTRACTS-V3 §2)
 
-Path: `packages/ui/src/components/<Name>/meta.json` (all 66 Registry components ship metadata). Consumed by `@zui/mcp` tools
+Path: `packages/ui/src/components/<Name>/meta.json` (all 67 source Registry components ship metadata). Consumed by `@zui/mcp` tools
 and the registry generator.
 
 ```json
@@ -339,7 +366,7 @@ Field meaning:
 
 ## Registry & CLI (packages/cli + registry/)
 
-The registry (`registry/registry.json`) contains 66 components and 16 blocks, generated from sources +
+The registry (`registry/registry.json`) contains 67 source components and 16 blocks, generated from sources +
 `meta.json`; `@zui/cli` copies component source into your project (free to edit) with an
 upstream update channel.
 

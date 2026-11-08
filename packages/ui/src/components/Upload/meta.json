@@ -3,10 +3,17 @@
   "description": "文件上传：隐藏 file input + 可见按钮/拖拽区，customRequest 或 XHR 引擎（进度/成功/失败/中止），带状态流转的文件列表",
   "category": "数据录入",
   "useCase": ["头像/附件上传", "批量导入文件", "带进度反馈的上传任务"],
-  "dontUse": ["纯展示已有文件列表用 List/Table", "富媒体选择（图片裁剪预览）用 Image + 自定义业务层"],
+  "dontUse": [
+    "纯展示已有文件列表用 List/Table",
+    "富媒体选择（图片裁剪预览）用 Image + 自定义业务层"
+  ],
   "props": {
     "action": { "type": "string", "default": "—", "desc": "上传 URL；与 customRequest 二选一" },
-    "customRequest": { "type": "(options: CustomRequestOptions) => { abort?: () => void } | void", "default": "—", "desc": "自定义上传实现（提供时优先于 action）" },
+    "customRequest": {
+      "type": "(options: CustomRequestOptions) => { abort?: () => void } | void",
+      "default": "—",
+      "desc": "自定义上传实现（提供时优先于 action）"
+    },
     "method": { "type": "string", "default": "'post'", "desc": "HTTP 方法（XHR 模式）" },
     "name": { "type": "string", "default": "'file'", "desc": "表单字段名" },
     "headers": { "type": "Record<string, string>", "default": "—", "desc": "请求头（XHR 模式）" },
@@ -19,15 +26,31 @@
     "draggable": { "type": "boolean", "default": "false", "desc": "拖拽区模式（默认按钮模式）" },
     "fileList": { "type": "UploadFile[]", "default": "—", "desc": "受控文件列表" },
     "defaultFileList": { "type": "UploadFile[]", "default": "[]", "desc": "非受控初始列表" },
-    "onChange": { "type": "(info: UploadChangeInfo) => void", "default": "—", "desc": "每次状态变化（新增/进度/成功/失败/移除）触发" },
-    "onRemove": { "type": "(file: UploadFile) => boolean | Promise<boolean> | void", "default": "—", "desc": "返回 false 阻止移除" },
-    "beforeUpload": { "type": "(file: File, fileList: File[]) => boolean | Promise<boolean>", "default": "—", "desc": "返回 false 完全跳过（不入列表）" },
-    "classNames": { "type": "{ root?; trigger?; list?; item?; dragzone? }", "default": "—", "desc": "slot 级类名追加" }
+    "onChange": {
+      "type": "(info: UploadChangeInfo) => void",
+      "default": "—",
+      "desc": "每次状态变化（新增/进度/成功/失败/移除）触发"
+    },
+    "onRemove": {
+      "type": "(file: UploadFile) => boolean | Promise<boolean> | void",
+      "default": "—",
+      "desc": "返回 false 阻止移除"
+    },
+    "beforeUpload": {
+      "type": "(file: File, fileList: File[]) => boolean | Promise<boolean>",
+      "default": "—",
+      "desc": "返回 false 完全跳过（不入列表）"
+    },
+    "classNames": {
+      "type": "{ root?; trigger?; list?; item?; dragzone? }",
+      "default": "—",
+      "desc": "slot 级类名追加"
+    }
   },
   "a11yNotes": [
     "隐藏 file input 保持可聚焦（opacity 0 + 绝对定位），触发按钮与 input 均带 aria-label",
     "文件列表 role=\"list\"，列表项 role=\"listitem\"，文件名超长省略并有 title",
-    "上传中进度条 role=\"progressbar\" + aria-valuenow/min/max；图标状态（Loading 旋转/CheckCircle/XCircle）辅助色不只靠颜色表达",
+    "上传中进度条以文件名作为可访问名称，并提供 role=\"progressbar\" + aria-valuenow/min/max；图标状态（Loading 旋转/CheckCircle/XCircle）辅助色不只靠颜色表达",
     "移除按钮 aria-label 使用 locale.upload.remove；:focus-within 提供可见焦点环"
   ],
   "related": ["Button", "Progress", "Message"]

@@ -10,12 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
-import {
-  createContext,
-  parseArgs,
-  readConfig,
-  toKebab,
-} from './index.js';
+import { createContext, parseArgs, readConfig, toKebab } from './index.js';
 import { add, resolveItems } from './commands/add.js';
 import { diff, unifiedDiff } from './commands/diff.js';
 import { detectFramework, init } from './commands/init.js';
@@ -60,10 +55,7 @@ function buildMockRegistry(root: string): string {
         description: 'mock 组件 foo',
         dependencies: ['lodash'],
         registryDependencies: ['bar'],
-        files: [
-          'packages/ui/src/components/Foo/Foo.tsx',
-          'packages/ui/src/components/Foo/Foo.css',
-        ],
+        files: ['packages/ui/src/components/Foo/Foo.tsx', 'packages/ui/src/components/Foo/Foo.css'],
         cssVars: { '--z-foo-gap': '4px' },
         meta: 'packages/ui/src/components/Foo/meta.json',
       },
@@ -159,9 +151,7 @@ describe('init', () => {
   it('已存在时拒绝覆盖，--force 允许', async () => {
     const cwd = tmpDir();
     await init({ cwd, components: 'a', yes: true, log: silent });
-    await expect(init({ cwd, components: 'b', yes: true, log: silent })).rejects.toThrow(
-      /已存在/
-    );
+    await expect(init({ cwd, components: 'b', yes: true, log: silent })).rejects.toThrow(/已存在/);
     await init({ cwd, components: 'b', yes: true, force: true, log: silent });
     expect(readConfig(cwd).components).toBe('b');
   });
@@ -233,10 +223,7 @@ describe('add', () => {
     const root = tmpDir();
     const registryPath = buildMockRegistry(root);
     const project = tmpDir();
-    fs.writeFileSync(
-      path.join(project, '.zurc.json'),
-      JSON.stringify({ components: 'app/ui' })
-    );
+    fs.writeFileSync(path.join(project, '.zurc.json'), JSON.stringify({ components: 'app/ui' }));
     const ctx = createContext({ cwd: project, registryPath, log: silent });
     await add({ ctx, names: ['bar'] });
     expect(fs.existsSync(path.join(project, 'app', 'ui', 'bar', 'Bar.tsx'))).toBe(true);
@@ -345,7 +332,7 @@ describe('registry 定位', () => {
   });
 });
 
-describe('真实 registry 契约校验（66 组件 + 16 业务块）', () => {
+describe('真实 registry 契约校验（67 组件 + 16 业务块）', () => {
   const realRegistry = path.resolve(
     fileURLToPath(new URL('../../../registry/registry.json', import.meta.url))
   );
@@ -359,7 +346,7 @@ describe('真实 registry 契约校验（66 组件 + 16 业务块）', () => {
     };
     expect(registry.name).toBe('zui');
     expect(registry.homepage).toBe('https://zui.dev');
-    expect(registry.items.filter((item) => item.type === 'registry:component')).toHaveLength(66);
+    expect(registry.items.filter((item) => item.type === 'registry:component')).toHaveLength(67);
     expect(registry.items.filter((item) => item.type === 'registry:block')).toHaveLength(16);
     for (const item of registry.items) {
       expect(item.name).toMatch(/^[a-z0-9-]+$/);
@@ -375,7 +362,9 @@ describe('真实 registry 契约校验（66 组件 + 16 业务块）', () => {
     const button = registry.items.find((i) => i.name === 'button');
     expect(button).toBeTruthy();
     expect((button as { files: string[] }).files.length).toBeGreaterThanOrEqual(2);
-    expect((button as { cssVars: Record<string, string> })['cssVars']['--z-button-height']).toBeTruthy();
+    expect(
+      (button as { cssVars: Record<string, string> })['cssVars']['--z-button-height']
+    ).toBeTruthy();
   });
 
   it('add button 端到端（真实 registry）', async () => {
@@ -396,13 +385,16 @@ describe('真实 registry 契约校验（66 组件 + 16 业务块）', () => {
     const project = tmpDir();
     const ctx = createContext({ cwd: project, registryPath: realRegistry, log: silent });
     const result = await add({ ctx, names: ['form-page'] });
-    const local = (file: string) => fs.readFileSync(path.join(project, 'src/components/ui', file), 'utf8');
+    const local = (file: string) =>
+      fs.readFileSync(path.join(project, 'src/components/ui', file), 'utf8');
     expect(local('blocks/form-page/index.tsx')).not.toMatch(/from ['"]@zui\/react['"]/);
     expect(local('blocks/form-page/index.tsx')).toContain("from '../../form'");
     expect(local('form/Form.tsx')).toContain("import('../_zui/config')");
     expect(local('input/Input.css')).toContain("@import '../_zui/styles/tokens.css'");
     expect(local('_zui/utils/floatingPosition.ts')).toContain('floatingPosition');
-    expect(result.dependencies).toEqual(expect.arrayContaining(['@zui/icons', '@zui/tokens', '@zui/i18n']));
+    expect(result.dependencies).toEqual(
+      expect.arrayContaining(['@zui/icons', '@zui/tokens', '@zui/i18n'])
+    );
     const d = await diff({ ctx, names: ['form-page'] });
     expect(d.files.every((file) => file.state === 'same')).toBe(true);
   });

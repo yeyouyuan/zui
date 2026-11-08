@@ -17,14 +17,17 @@ import { Badge } from '../components/Badge';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Checkbox } from '../components/Checkbox';
+import { Combobox } from '../components/Combobox';
 import { Empty } from '../components/Empty';
 import { Input } from '../components/Input';
 import { Pagination } from '../components/Pagination';
+import { Progress } from '../components/Progress';
 import { Radio, RadioGroup } from '../components/Radio';
 import { Select, type SelectOption } from '../components/Select';
 import { Switch } from '../components/Switch';
 import { Table } from '../components/Table';
 import { Tabs } from '../components/Tabs';
+import { Upload } from '../components/Upload';
 
 /* ------------------------------ jsdom 环境补丁 ----------------------------- */
 
@@ -144,6 +147,31 @@ describe('axe-core 组件矩阵扫描', () => {
         <Select options={fruitOptions} defaultValue="apple" aria-label="水果选择" />
         <Select options={fruitOptions} aria-label="占位选择" />
         <Select options={fruitOptions} disabled aria-label="禁用选择" />
+      </>
+    );
+    await expectNoViolations(host);
+  });
+
+  it('Combobox：关闭态（选中可清除 / 只读）', async () => {
+    const host = renderForAxe(
+      <>
+        <label htmlFor="axe-combobox-fruit">水果搜索</label>
+        <Combobox id="axe-combobox-fruit" options={fruitOptions} defaultValue="apple" clearable />
+        <Combobox options={fruitOptions} defaultValue="banana" readOnly aria-label="只读水果" />
+      </>
+    );
+    await expectNoViolations(host);
+  });
+
+  it('Progress / Upload：进度条均有描述具体任务的可访问名称', async () => {
+    const host = renderForAxe(
+      <>
+        <Progress percent={60} aria-label="任务进度" />
+        <Upload
+          defaultFileList={[
+            { uid: 'axe-upload', name: 'report.pdf', status: 'uploading', percent: 40 },
+          ]}
+        />
       </>
     );
     await expectNoViolations(host);

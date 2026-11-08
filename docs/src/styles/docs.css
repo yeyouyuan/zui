@@ -32,6 +32,14 @@
   --doc-border: oklch(0.24 0.005 260);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --doc-bg: oklch(0.145 0.005 260);
+    --doc-bg-elevated: oklch(0.178 0.005 260);
+    --doc-border: oklch(0.24 0.005 260);
+  }
+}
+
 /* ============================================================
  * 1. 全局基础
  * ============================================================ */
@@ -206,7 +214,8 @@ a:hover {
   padding: 1px 6px;
   border-radius: 4px;
   background: var(--z-color-primary-subtle);
-  color: var(--z-color-primary);
+  /* 11px 的辅助徽标需要普通文本 4.5:1；暗色品牌 300/900 组合略低于阈值。 */
+  color: var(--z-color-fg);
   font-size: 11px;
   font-weight: var(--z-weight-medium);
   line-height: 1.6;
@@ -383,6 +392,76 @@ a:hover {
   min-width: 0;
   margin: 0 auto;
   animation: doc-page-in var(--z-duration-normal) var(--z-ease-entrance);
+}
+
+.doc-main--wide {
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: stretch;
+  padding-inline: 24px;
+}
+
+.doc-main--wide .doc-page {
+  max-width: none;
+  margin-inline: 0;
+}
+
+.doc-main--wide .doc-toc {
+  display: none;
+}
+
+.doc-builder-intro {
+  max-width: 800px;
+}
+
+.doc-builder-editor {
+  overflow: hidden;
+  border: 1px solid var(--z-color-border);
+  border-radius: var(--z-radius-lg);
+  background: var(--z-color-bg);
+  box-shadow: var(--z-shadow-sm);
+}
+
+.doc-builder-editor nav > ul > li > [role='button']:focus-visible {
+  outline: 2px solid var(--z-color-primary);
+  outline-offset: 2px;
+}
+
+.doc-builder-json-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--z-space-4);
+  margin-top: 48px;
+}
+
+.doc-builder-json-heading .doc-h2 {
+  margin: 0;
+}
+
+.doc-builder-copy-status {
+  margin: var(--z-space-2) 0 0;
+  color: var(--z-color-fg-muted);
+  font-size: var(--z-text-sm);
+}
+
+.doc-builder-json {
+  max-height: 300px;
+  margin: 16px 0 0;
+  overflow: auto;
+  padding: 16px;
+  border: 1px solid transparent;
+  border-radius: var(--z-radius-md);
+  background: var(--z-color-bg-muted);
+  color: var(--z-color-fg);
+  font-family: var(--z-font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.doc-builder-json:focus-visible {
+  border-color: var(--z-color-primary);
+  outline: 2px solid var(--z-color-primary);
+  outline-offset: 2px;
 }
 
 @keyframes doc-page-in {
@@ -1354,6 +1433,53 @@ a:hover {
 }
 
 @media (max-width: 900px) {
+  .doc-shell--builder {
+    grid-template-columns: 1fr;
+    grid-template-rows: 52px 1fr;
+  }
+
+  .doc-shell--builder .doc-menu-btn {
+    display: inline-flex;
+  }
+
+  .doc-shell--builder .doc-sidebar {
+    position: fixed;
+    top: 52px;
+    bottom: 0;
+    left: 0;
+    z-index: var(--z-z-overlay);
+    width: min(320px, 85vw);
+    visibility: hidden;
+    border-right: 1px solid var(--doc-border);
+    box-shadow: var(--z-shadow-lg);
+    transform: translateX(-100%);
+    transition:
+      transform var(--z-duration-fast) var(--z-ease-standard),
+      visibility 0s linear var(--z-duration-fast);
+  }
+
+  .doc-shell--builder .doc-sidebar--open {
+    visibility: visible;
+    transform: translateX(0);
+    transition:
+      transform var(--z-duration-fast) var(--z-ease-standard),
+      visibility 0s;
+  }
+
+  .doc-shell--builder .doc-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 52px 0 0;
+    z-index: var(--z-z-overlay);
+    background: var(--z-color-overlay);
+  }
+
+  .doc-shell--builder .doc-main {
+    grid-column: 1;
+    grid-template-columns: minmax(0, 1fr);
+    padding: 24px 16px 64px;
+  }
+
   .doc-pg-layout {
     grid-template-columns: 1fr;
   }
@@ -1449,5 +1575,27 @@ a:hover {
 
   .doc-chip-btn {
     padding-inline: var(--z-space-2);
+  }
+
+  .doc-builder-editor {
+    margin-inline: -16px;
+    border-inline: 0;
+    border-radius: 0;
+  }
+
+  .doc-builder-editor [class*='ViewportControls-actionsInner'] {
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow: visible;
+  }
+
+  .doc-builder-editor
+    [class*='ViewportControls-actionsInner']
+    > [class*='ViewportControls-divider'] {
+    flex-basis: 100%;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
   }
 }

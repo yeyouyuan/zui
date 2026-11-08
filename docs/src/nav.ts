@@ -10,6 +10,7 @@ const CheckboxPage = lazy(() => import('./pages/components/CheckboxPage'));
 const RadioPage = lazy(() => import('./pages/components/RadioPage'));
 const SwitchPage = lazy(() => import('./pages/components/SwitchPage'));
 const SelectPage = lazy(() => import('./pages/components/SelectPage'));
+const ComboboxPage = lazy(() => import('./pages/components/ComboboxPage'));
 const ModalPage = lazy(() => import('./pages/components/ModalPage'));
 const TabsPage = lazy(() => import('./pages/components/TabsPage'));
 const TablePage = lazy(() => import('./pages/components/TablePage'));
@@ -70,6 +71,7 @@ const TypographyPage = lazy(() => import('./pages/components/TypographyPage'));
 const LayoutPage = lazy(() => import('./pages/components/LayoutPage'));
 const DesignAssetsPage = lazy(() => import('./pages/design/DesignAssetsPage'));
 const IconGalleryPage = lazy(() => import('./pages/design/IconGalleryPage'));
+const BuilderPage = lazy(() => import('./pages/builder/BuilderPage'));
 const BlocksPage = lazy(() => import('./pages/blocks/BlocksPage'));
 
 /** 导航分组：'start'（开始）/ 'components'（组件） */
@@ -103,6 +105,7 @@ export const navItems: NavItem[] = [
   { title: '国际化与翻译', path: '/i18n', group: 'start' },
   { title: '设计资源', path: '/design', group: 'start' },
   { title: '图标库', path: '/icons', group: 'start' },
+  { title: '页面搭建器', path: '/builder', group: 'start' },
   { title: '业务区块', path: '/blocks', group: 'start' },
   { title: 'Button 按钮', path: '/components/button', group: 'components' },
   { title: 'Input 输入框', path: '/components/input', group: 'components' },
@@ -110,6 +113,7 @@ export const navItems: NavItem[] = [
   { title: 'Radio 单选框', path: '/components/radio', group: 'components' },
   { title: 'Switch 开关', path: '/components/switch', group: 'components' },
   { title: 'Select 选择器', path: '/components/select', group: 'components' },
+  { title: 'Combobox 自动完成', path: '/components/combobox', group: 'components' },
   { title: 'Modal 对话框', path: '/components/modal', group: 'components' },
   { title: 'Tabs 标签页', path: '/components/tabs', group: 'components' },
   { title: 'Table 表格', path: '/components/table', group: 'components' },
@@ -178,6 +182,7 @@ export const routeComponents: Record<string, ComponentType> = {
   '/i18n': TranslateDemo,
   '/design': DesignAssetsPage,
   '/icons': IconGalleryPage,
+  '/builder': BuilderPage,
   '/blocks': BlocksPage,
   '/components/button': ButtonPage,
   '/components/input': InputPage,
@@ -185,6 +190,7 @@ export const routeComponents: Record<string, ComponentType> = {
   '/components/radio': RadioPage,
   '/components/switch': SwitchPage,
   '/components/select': SelectPage,
+  '/components/combobox': ComboboxPage,
   '/components/modal': ModalPage,
   '/components/tabs': TabsPage,
   '/components/table': TablePage,

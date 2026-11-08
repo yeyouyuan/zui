@@ -18,6 +18,7 @@ export * from './components/Checkbox';
 export * from './components/Radio';
 export * from './components/Switch';
 export * from './components/Select';
+export * from './components/Combobox';
 export * from './components/Modal';
 export * from './components/Tabs';
 export * from './components/Table';

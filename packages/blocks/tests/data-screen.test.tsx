@@ -17,6 +17,10 @@ describe('data-screen block', () => {
     const progress = container.querySelectorAll('.z-progress');
     expect(progress.length).toBeGreaterThanOrEqual(4);
     expect(screen.getByText('CPU 使用率')).toBeInTheDocument();
+    expect(screen.getByRole('progressbar', { name: 'CPU 使用率' })).toHaveAttribute(
+      'aria-valuenow',
+      '62'
+    );
   });
 
   it('switches time range through Segmented and fires onRangeChange', () => {

@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { renderToString } from 'react-dom/server';
 
 import { Button } from '../components/Button';
+import { Combobox } from '../components/Combobox';
 import { Input } from '../components/Input';
 import { Select } from '../components/Select';
 import { Tabs } from '../components/Tabs';
@@ -21,9 +22,7 @@ import { MessageProvider } from '../components/Message';
 /** renderToString 并收集 console 输出，同时断言无 useLayoutEffect 服务端警告 */
 function renderSSR(node: React.ReactNode): string {
   const logs: string[] = [];
-  const capture =
-    (...args: unknown[]) =>
-      void logs.push(args.map(String).join(' '));
+  const capture = (...args: unknown[]) => void logs.push(args.map(String).join(' '));
   const errorSpy = vi.spyOn(console, 'error').mockImplementation(capture);
   const warnSpy = vi.spyOn(console, 'warn').mockImplementation(capture);
   try {
@@ -67,6 +66,23 @@ describe('SSR renderToString 冒烟', () => {
     // 关闭态：root/listbox 均为 data-open="false"，触发器 aria-expanded="false"
     expect(html).toContain('data-open="false"');
     expect(html).toContain('aria-expanded="false"');
+  });
+
+  it('Combobox 关闭态渲染为文本输入且不输出 listbox', () => {
+    const html = renderSSR(
+      <Combobox
+        options={[
+          { value: 'a', label: '选项 A' },
+          { value: 'b', label: '选项 B' },
+        ]}
+        aria-label="选项搜索"
+      />
+    );
+    expect(html).toContain('z-combobox');
+    expect(html).toContain('type="text"');
+    expect(html).toContain('role="combobox"');
+    expect(html).toContain('aria-expanded="false"');
+    expect(html).not.toContain('role="listbox"');
   });
 
   it('Tabs 渲染不抛错，输出含 z- 类名', () => {

@@ -9,7 +9,10 @@ import './Progress.css';
 export type ProgressSize = 'sm' | 'md';
 export type ProgressStatus = 'normal' | 'active' | 'success' | 'error';
 
-export interface ProgressProps {
+export interface ProgressProps extends Pick<
+  React.AriaAttributes,
+  'aria-label' | 'aria-labelledby'
+> {
   percent: number; // 0-100，必填
   size?: ProgressSize; // 默认 'md'（sm 6px / md 8px 高）
   status?: ProgressStatus; // 默认 'normal'
@@ -29,6 +32,8 @@ export function Progress({
   color,
   className,
   classNames,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
 }: ProgressProps) {
   // 夹取到 [0, 100]，非法值按 0 处理
   const clamped = Number.isFinite(percent) ? Math.min(100, Math.max(0, percent)) : 0;
@@ -48,11 +53,15 @@ export function Progress({
           aria-valuemax={100}
           aria-valuenow={displayPercent}
           aria-valuetext={`${displayPercent}%`}
+          aria-label={ariaLabel}
+          aria-labelledby={ariaLabelledBy}
           data-part="fill"
           className={cx('z-progress-fill', classNames?.fill)}
           style={{
             width: `${clamped}%`,
-            ...(color != null ? ({ ['--z-progress-color' as string]: color } as React.CSSProperties) : null),
+            ...(color != null
+              ? ({ ['--z-progress-color' as string]: color } as React.CSSProperties)
+              : null),
           }}
         />
       </div>

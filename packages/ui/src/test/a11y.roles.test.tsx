@@ -9,6 +9,7 @@ import { act, cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
 import { Checkbox } from '../components/Checkbox';
+import { Combobox } from '../components/Combobox';
 import { DatePicker } from '../components/DatePicker';
 import { MessageProvider, useMessage, type MessageApi } from '../components/Message';
 import { Modal } from '../components/Modal';
@@ -27,6 +28,69 @@ const fruitOptions: SelectOption[] = [
   { value: 'banana', label: 'Banana' },
   { value: 'cherry', label: 'Cherry' },
 ];
+
+describe('Combobox ARIA 角色与状态', () => {
+  it('关闭态不引用未挂载列表，打开后关联 listbox 与活动 option', async () => {
+    const user = userEvent.setup();
+    render(<Combobox options={fruitOptions} aria-label="水果搜索" />);
+    const input = screen.getByRole('combobox', { name: '水果搜索' });
+
+    expect(input).toHaveAttribute('aria-expanded', 'false');
+    expect(input).not.toHaveAttribute('aria-controls');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+    input.focus();
+    await user.keyboard('{ArrowDown}');
+    const listbox = screen.getByRole('listbox');
+    const options = within(listbox).getAllByRole('option');
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+    expect(input).toHaveAttribute('aria-controls', listbox.id);
+    expect(input).toHaveAttribute('aria-activedescendant', options[0].id);
+  });
+
+  it('active 与 selected 分离，loading 同步 aria-busy', async () => {
+    const user = userEvent.setup();
+    render(
+      <Combobox
+        options={fruitOptions}
+        defaultValue="banana"
+        defaultOpen
+        loading
+        aria-label="加载中的水果"
+      />
+    );
+    const input = screen.getByRole('combobox', { name: '加载中的水果' });
+    const listbox = screen.getByRole('listbox');
+    const options = within(listbox).getAllByRole('option');
+
+    expect(input).toHaveAttribute('aria-busy', 'true');
+    expect(listbox).toHaveAttribute('aria-busy', 'true');
+    expect(options[1]).toHaveAttribute('aria-selected', 'true');
+    input.focus();
+    await user.keyboard('{ArrowDown}');
+    expect(input).toHaveAttribute('aria-activedescendant', options[2].id);
+    expect(options[1]).toHaveAttribute('aria-selected', 'true');
+    expect(options[2]).toHaveAttribute('aria-selected', 'false');
+  });
+
+  it('readOnly 暴露只读状态且不挂载 listbox', () => {
+    render(
+      <Combobox
+        options={fruitOptions}
+        defaultValue="apple"
+        defaultOpen
+        readOnly
+        aria-label="只读水果"
+      />
+    );
+    const input = screen.getByRole('combobox', { name: '只读水果' });
+    expect(input).toHaveAttribute('readonly');
+    expect(input).toHaveAttribute('aria-readonly', 'true');
+    expect(input).toHaveAttribute('aria-expanded', 'false');
+    expect(input).not.toHaveAttribute('aria-controls');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+});
 
 describe('Select ARIA 角色与状态', () => {
   it('触发器：aria-haspopup="listbox" + aria-expanded + aria-controls 关联列表', async () => {
@@ -240,7 +304,9 @@ describe('Checkbox aria-checked 状态', () => {
   });
 
   it('普通态不带 aria-checked="mixed"（true/false 交给原生 checked）', () => {
-    const { rerender } = render(<Checkbox label="同意" checked={false} onChange={() => undefined} />);
+    const { rerender } = render(
+      <Checkbox label="同意" checked={false} onChange={() => undefined} />
+    );
     let box = screen.getByRole('checkbox') as HTMLInputElement;
     expect(box).not.toHaveAttribute('aria-checked', 'mixed');
     expect(box.checked).toBe(false);
@@ -321,9 +387,7 @@ describe('DatePicker ARIA 角色与状态', () => {
     expect(cells).toHaveLength(42);
 
     // 唯一选中格 = 默认值当天
-    const selectedCells = cells.filter(
-      (cell) => cell.getAttribute('aria-selected') === 'true'
-    );
+    const selectedCells = cells.filter((cell) => cell.getAttribute('aria-selected') === 'true');
     expect(selectedCells).toHaveLength(1);
     expect(selectedCells[0]).toHaveTextContent('11');
   });

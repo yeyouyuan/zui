@@ -1,7 +1,7 @@
 # ZUI registry
 
 `registry.json` 从组件、业务块和公共源码生成，供 CLI 复制与 MCP 查询。
-当前包含 66 个组件、16 个业务块，共 82 个条目。
+当前源码包含 67 个组件、16 个业务块，共 83 个条目；其中 Combobox 属于下一版本内容。
 
 ```bash
 node registry/scripts/generate.mjs

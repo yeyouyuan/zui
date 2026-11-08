@@ -67,6 +67,15 @@ export interface ZuiLocale {
   };
 
   select: { placeholder: string; empty: string }; // '请选择' / '暂无选项'
+  combobox: {
+    placeholder: string;
+    clear: string;
+    showOptions: string;
+    hideOptions: string;
+    loading: string;
+    empty: string;
+    results: string;
+  };
   input: { clear: string }; // '清除'
   modal: { close: string }; // '关闭'
   drawer: { close: string }; // '关闭'
@@ -204,6 +213,15 @@ export const zhCN: ZuiLocale = {
   },
 
   select: { placeholder: '请选择', empty: '暂无选项' },
+  combobox: {
+    placeholder: '请输入或选择',
+    clear: '清除选择',
+    showOptions: '展开选项',
+    hideOptions: '收起选项',
+    loading: '加载中',
+    empty: '暂无匹配选项',
+    results: '找到 {count} 项',
+  },
   input: { clear: '清除' },
   modal: { close: '关闭' },
   drawer: { close: '关闭' },
@@ -315,6 +333,15 @@ export const enUS: ZuiLocale = {
   },
 
   select: { placeholder: 'Select...', empty: 'No options' },
+  combobox: {
+    placeholder: 'Type or select...',
+    clear: 'Clear selection',
+    showOptions: 'Show options',
+    hideOptions: 'Hide options',
+    loading: 'Loading',
+    empty: 'No matching options',
+    results: '{count} results',
+  },
   input: { clear: 'Clear' },
   modal: { close: 'Close' },
   drawer: { close: 'Close' },
@@ -426,6 +453,15 @@ export const zhTW: ZuiLocale = {
   },
 
   select: { placeholder: '請選擇', empty: '暫無選項' },
+  combobox: {
+    placeholder: '請輸入或選擇',
+    clear: '清除選擇',
+    showOptions: '展開選項',
+    hideOptions: '收起選項',
+    loading: '載入中',
+    empty: '暫無符合的選項',
+    results: '找到 {count} 項',
+  },
   input: { clear: '清除' },
   modal: { close: '關閉' },
   drawer: { close: '關閉' },
@@ -532,6 +568,15 @@ export const jaJP: ZuiLocale = {
   },
 
   select: { placeholder: '選択してください', empty: 'データがありません' },
+  combobox: {
+    placeholder: '入力または選択してください',
+    clear: '選択をクリア',
+    showOptions: '選択肢を表示',
+    hideOptions: '選択肢を非表示',
+    loading: '読み込み中',
+    empty: '一致する選択肢がありません',
+    results: '{count} 件の結果',
+  },
   input: { clear: 'クリア' },
   modal: { close: '閉じる' },
   drawer: { close: '閉じる' },
@@ -642,6 +687,15 @@ export const koKR: ZuiLocale = {
   },
 
   select: { placeholder: '선택하세요', empty: '옵션 없음' },
+  combobox: {
+    placeholder: '입력하거나 선택하세요',
+    clear: '선택 지우기',
+    showOptions: '옵션 표시',
+    hideOptions: '옵션 숨기기',
+    loading: '불러오는 중',
+    empty: '일치하는 옵션 없음',
+    results: '{count}개 결과',
+  },
   input: { clear: '지우기' },
   modal: { close: '닫기' },
   drawer: { close: '닫기' },
@@ -757,6 +811,15 @@ export const frFR: ZuiLocale = {
   },
 
   select: { placeholder: 'Sélectionner...', empty: 'Aucune option' },
+  combobox: {
+    placeholder: 'Saisir ou sélectionner...',
+    clear: 'Effacer la sélection',
+    showOptions: 'Afficher les options',
+    hideOptions: 'Masquer les options',
+    loading: 'Chargement',
+    empty: 'Aucune option correspondante',
+    results: '{count} résultats',
+  },
   input: { clear: 'Effacer' },
   modal: { close: 'Fermer' },
   drawer: { close: 'Fermer' },
@@ -872,6 +935,15 @@ export const deDE: ZuiLocale = {
   },
 
   select: { placeholder: 'Auswählen...', empty: 'Keine Optionen' },
+  combobox: {
+    placeholder: 'Eingeben oder auswählen...',
+    clear: 'Auswahl löschen',
+    showOptions: 'Optionen anzeigen',
+    hideOptions: 'Optionen ausblenden',
+    loading: 'Laden',
+    empty: 'Keine passenden Optionen',
+    results: '{count} Ergebnisse',
+  },
   input: { clear: 'Löschen' },
   modal: { close: 'Schließen' },
   drawer: { close: 'Schließen' },
@@ -987,6 +1059,15 @@ export const esES: ZuiLocale = {
   },
 
   select: { placeholder: 'Seleccionar...', empty: 'Sin opciones' },
+  combobox: {
+    placeholder: 'Escriba o seleccione...',
+    clear: 'Borrar selección',
+    showOptions: 'Mostrar opciones',
+    hideOptions: 'Ocultar opciones',
+    loading: 'Cargando',
+    empty: 'No hay opciones coincidentes',
+    results: '{count} resultados',
+  },
   input: { clear: 'Borrar' },
   modal: { close: 'Cerrar' },
   drawer: { close: 'Cerrar' },
@@ -1102,6 +1183,15 @@ export const ruRU: ZuiLocale = {
   },
 
   select: { placeholder: 'Выберите...', empty: 'Нет вариантов' },
+  combobox: {
+    placeholder: 'Введите или выберите...',
+    clear: 'Очистить выбор',
+    showOptions: 'Показать варианты',
+    hideOptions: 'Скрыть варианты',
+    loading: 'Загрузка',
+    empty: 'Нет подходящих вариантов',
+    results: 'Результатов: {count}',
+  },
   input: { clear: 'Очистить' },
   modal: { close: 'Закрыть' },
   drawer: { close: 'Закрыть' },
@@ -1217,6 +1307,15 @@ export const ptBR: ZuiLocale = {
   },
 
   select: { placeholder: 'Selecione...', empty: 'Sem opções' },
+  combobox: {
+    placeholder: 'Digite ou selecione...',
+    clear: 'Limpar seleção',
+    showOptions: 'Mostrar opções',
+    hideOptions: 'Ocultar opções',
+    loading: 'Carregando',
+    empty: 'Nenhuma opção correspondente',
+    results: '{count} resultados',
+  },
   input: { clear: 'Limpar' },
   modal: { close: 'Fechar' },
   drawer: { close: 'Fechar' },
@@ -1287,6 +1386,7 @@ export function mergeLocale(base: ZuiLocale, override?: DeepPartial<ZuiLocale>):
     form: { ...base.form, ...override.form },
     result: { ...base.result, ...override.result },
     select: { ...base.select, ...override.select },
+    combobox: { ...base.combobox, ...override.combobox },
     input: { ...base.input, ...override.input },
     modal: { ...base.modal, ...override.modal },
     drawer: { ...base.drawer, ...override.drawer },

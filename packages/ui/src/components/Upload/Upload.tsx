@@ -422,6 +422,7 @@ export function Upload(props: UploadProps) {
                   <span
                     className="z-upload-item-progress-fill"
                     role="progressbar"
+                    aria-label={file.name}
                     aria-valuemin={0}
                     aria-valuemax={100}
                     aria-valuenow={file.percent ?? 0}

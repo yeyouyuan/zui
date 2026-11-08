@@ -7,13 +7,24 @@
   "props": {
     "percent": { "type": "number", "default": "（必填，0-100）", "desc": "进度百分比" },
     "size": { "type": "'sm' | 'md'", "default": "'md'", "desc": "条高（sm 6px / md 8px）" },
-    "status": { "type": "'normal' | 'active' | 'success' | 'error'", "default": "'normal'", "desc": "状态（active 扫光动画）" },
+    "status": {
+      "type": "'normal' | 'active' | 'success' | 'error'",
+      "default": "'normal'",
+      "desc": "状态（active 扫光动画）"
+    },
     "showInfo": { "type": "boolean", "default": "true", "desc": "右侧百分比文字" },
     "color": { "type": "string", "default": "—", "desc": "自定义填充色" },
-    "classNames": { "type": "{ root?; track?; fill?; info? }", "default": "—", "desc": "slot 级类名追加" }
+    "aria-label": { "type": "string", "default": "—", "desc": "进度条的可访问名称" },
+    "aria-labelledby": { "type": "string", "default": "—", "desc": "引用进度条名称元素的 id" },
+    "classNames": {
+      "type": "{ root?; track?; fill?; info? }",
+      "default": "—",
+      "desc": "slot 级类名追加"
+    }
   },
   "a11yNotes": [
     "role=\"progressbar\" + aria-valuenow/min/max + aria-valuetext（如\"60%\"）",
+    "在页面中通过 aria-label 或 aria-labelledby 提供描述该任务的可访问名称",
     "百分比文字与 aria-valuetext 保持一致",
     "status 用语义色（success/error/warning），不要只靠颜色表达状态"
   ],

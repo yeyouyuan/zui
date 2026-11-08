@@ -10,6 +10,7 @@ import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Checkbox } from '../components/Checkbox';
+import { Combobox } from '../components/Combobox';
 import { MessageProvider, useMessage, type MessageApi } from '../components/Message';
 import { Modal } from '../components/Modal';
 import { Select, type SelectOption } from '../components/Select';
@@ -33,6 +34,33 @@ const fruitOptions: SelectOption[] = [
   { value: 'banana', label: 'Banana' },
   { value: 'cherry', label: 'Cherry' },
 ];
+
+describe('Combobox 键盘流', () => {
+  it('输入 → Enter 提交 → 无匹配草稿 → Esc 严格回退并保持焦点', async () => {
+    const user = userEvent.setup();
+    render(<Combobox options={fruitOptions} aria-label="水果搜索" />);
+    const input = screen.getByRole('combobox', { name: '水果搜索' });
+
+    await user.type(input, 'Ban');
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('option', { name: 'Banana' })).toBeInTheDocument();
+
+    await user.keyboard('{Enter}');
+    expect(input).toHaveValue('Banana');
+    expect(input).toHaveAttribute('aria-expanded', 'false');
+    expect(input).toHaveFocus();
+
+    await user.clear(input);
+    await user.type(input, '不存在');
+    expect(input).toHaveValue('不存在');
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+
+    await user.keyboard('{Escape}');
+    expect(input).toHaveValue('Banana');
+    expect(input).toHaveAttribute('aria-expanded', 'false');
+    expect(input).toHaveFocus();
+  });
+});
 
 describe('Tabs 键盘流', () => {
   function BasicTabs() {

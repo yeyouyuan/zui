@@ -418,7 +418,7 @@ export function DataScreenBlock({
                     <span style={{ color: dark.fgSubtle }}>{gauge.hint}</span>
                   ) : null}
                 </div>
-                <Progress percent={gauge.percent} status={gauge.status} />
+                <Progress percent={gauge.percent} status={gauge.status} aria-label={gauge.label} />
               </li>
             ))}
           </ul>

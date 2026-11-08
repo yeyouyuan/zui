@@ -1,8 +1,8 @@
 # ZUI 文档站 Playwright E2E 冒烟
 
-针对 `docs/` hash 路由文档站的 16 条浏览器冒烟测试。默认端口为 **5174**，可用
-`ZUI_E2E_PORT` 指定独立端口。覆盖四个核心起始页、Form / Select / Modal / 日期范围 / VirtualTable
-交互、暗色切换、移动菜单与页内目录，以及 71 个导航路由在 320px 暗色视口下的横向溢出和
+针对 `docs/` hash 路由文档站的 19 条浏览器冒烟测试。默认端口为 **5174**，可用
+`ZUI_E2E_PORT` 指定独立端口。覆盖四个核心起始页、Form / Select / Combobox / Modal / 日期范围 / VirtualTable
+交互、暗色切换、移动菜单与页内目录，以及 73 个导航路由在 320px 暗色视口下的横向溢出和
 全站 `pageerror` / `console.error` 检查。
 
 ## 文件
@@ -10,7 +10,7 @@
 | 文件                   | 说明                                                                                                |
 | ---------------------- | --------------------------------------------------------------------------------------------------- |
 | `playwright.config.ts` | 配置：`testDir: '.'`、可配置 baseURL 端口、Chromium、viewport 1280×800、webServer 自动拉起/本地复用 |
-| `docs-smoke.spec.ts`   | 16 条冒烟用例，含全路由 320px 布局审计、焦点管理与 console error 监听                               |
+| `docs-smoke.spec.ts`   | 19 条冒烟用例，含全路由 320px 布局审计、焦点管理与 console error 监听                               |
 
 ## 首次安装（一次性）
 

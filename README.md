@@ -81,7 +81,7 @@ document.documentElement.style.setProperty('--z-color-primary', 'oklch(0.55 0.2 
 | 包            | 说明                                                                        |
 | ------------- | --------------------------------------------------------------------------- |
 | `@zui/tokens` | 设计令牌：三层 CSS 变量 + TS 常量 + DTCG JSON（Figma/Tokens Studio 可消费） |
-| `@zui/react`  | 组件库（66 个 Registry 组件条目）                                           |
+| `@zui/react`  | 组件库（当前源码 67 个 Registry 组件条目；v0.2.0 基线为 66 个）             |
 | `@zui/icons`  | 图标：142 枚线性图标组件（Feather/Lucide 风格，React 19）                   |
 | `@zui/i18n`   | AI 翻译：`useAutoTranslate` 组件内置文案自动翻译                            |
 | `@zui/cli`    | registry CLI：`zui init / add / diff / list`                                |
@@ -102,7 +102,7 @@ document.documentElement.style.setProperty('--z-color-primary', 'oklch(0.55 0.2 
 
 配套：`@zui/icons`（142 枚线性图标，组件内图标已全面接入）、`@zui/tokens`（三层令牌 + DTCG JSON）
 
-后续组件不按数量扩张；已完成缺口审计与 [组件路线图](./docs/COMPONENT-ROADMAP.md)，首个候选为 [Combobox RFC](./docs/rfcs/combobox.md)，实现前先评审 API、IME、Form 和无障碍边界。
+后续组件不按数量扩张；[Combobox RFC](./docs/rfcs/combobox.md) 已完成实现并留在下一版本分支，当前源码共 67 个组件。[SideNav RFC](./docs/rfcs/sidenav.md) 已完成设计审查，下一步先验证文档站与路由型后台壳两个迁移原型，不直接扩张发布范围。
 
 ## AI 翻译（`@zui/i18n`）
 
@@ -128,7 +128,7 @@ const placeholder = tSync('请选择', { component: 'Select', role: 'placeholder
 ## registry / CLI / MCP
 
 - **registry**（`registry/`）：机器可读的组件目录（`registry.json` + schema），记录每个组件的 API、依赖与源码位置
-- **CLI**（`@zui/cli`）：`zui init` 初始化、`zui add <component>` 把组件源码复制进你的项目并列出所需依赖、`zui diff` 对比本地与 registry 版本、`zui list` 浏览 66 个组件与 16 个业务区块
+- **CLI**（`@zui/cli`）：`zui init` 初始化、`zui add <component>` 把组件源码复制进你的项目并列出所需依赖、`zui diff` 对比本地与 registry 版本、`zui list` 浏览当前源码的 67 个组件与 16 个业务区块
 - **MCP**（`@zui/mcp`）：以 stdio JSON-RPC 暴露 `search` / `api` / `generate` 三个工具，让 AI 编码助手按你的项目上下文检索 ZUI API 并生成组件代码
 
 ## 开发

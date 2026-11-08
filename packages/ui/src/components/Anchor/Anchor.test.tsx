@@ -282,11 +282,23 @@ describe('Anchor 点击行为', () => {
       </Anchor>
     );
     scrollIntoViewMock.mockClear();
-    await user.click(screen.getByRole('link', { name: '乙' }));
-    expect(s2.style.scrollMarginTop).toBe('80px');
-    expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
-    await flushRaf();
-    expect(s2.style.scrollMarginTop).toBe('');
+    const restoreFrames: FrameRequestCallback[] = [];
+    const rafSpy = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback: FrameRequestCallback) => {
+        restoreFrames.push(callback);
+        return restoreFrames.length;
+      });
+    try {
+      await user.click(screen.getByRole('link', { name: '乙' }));
+      expect(s2.style.scrollMarginTop).toBe('80px');
+      expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+      expect(restoreFrames).toHaveLength(1);
+      act(() => restoreFrames[0](performance.now()));
+      expect(s2.style.scrollMarginTop).toBe('');
+    } finally {
+      rafSpy.mockRestore();
+    }
   });
 
   it('onClick 回调收到 event 与 { href, title }', async () => {

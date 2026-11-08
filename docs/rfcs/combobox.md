@@ -1,6 +1,7 @@
 # RFC-001：Combobox 自动完成
 
-- 状态：设计完成，待实现评审
+状态：2026-11-08 已实现并完成自动化验收，作为下一版本候选；不属于 v0.2.0 的 66 组件发布基线，待下一版本发布评审。
+
 - 目标包：`@zui/react`
 - 优先级：P1，不阻塞 v0.2.0 发布
 - 依赖：`FloatingPanel`、`Portal`、`useControllableState`、ConfigProvider locale
@@ -474,12 +475,12 @@ docs/src/pages/components/ComboboxPage.tsx
 
 多选不通过 `multiple: boolean` 加入本组件。它会改变 value 类型、DOM、键盘、Backspace、Form 值和标签删除行为，应新增独立 `MultiCombobox`，复用内部选项、过滤和浮层控制器。
 
-## 15. 实现前评审门槛
+## 15. 实现验收结果
 
-- API 不再新增首版非目标能力。
-- Form 对 committed value 与草稿的处理有集成测试方案。
-- VoiceOver + Safari 的 `aria-activedescendant` 人工验证设备可用。
-- 异步示例具备 AbortController 与 request id 双重竞态保护。
-- `Select` 与 `Combobox` 的 useCase / dontUse 文案不会互相重叠。
+- API 未加入首版非目标能力。
+- Form 对 committed value 与草稿的处理已有集成测试。
+- 异步示例已使用 AbortController 与 request id 双重竞态保护。
+- `Select` 与 `Combobox` 的使用边界已在文档中区分。
+- VoiceOver + Safari 与 NVDA + Chrome 仍作为发布前人工辅助技术清单，不由自动化验收替代。
 
 参考：[WAI-ARIA APG Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)。

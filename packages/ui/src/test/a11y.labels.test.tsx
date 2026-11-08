@@ -7,8 +7,10 @@
  * Message closable "关闭"，并抽样 Tabs/Switch/Select/Modal.Trigger。
  */
 import { act, cleanup, render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
 import { Button } from '../components/Button';
+import { Combobox } from '../components/Combobox';
 import { Input } from '../components/Input';
 import { MessageProvider, useMessage, type MessageApi } from '../components/Message';
 import { Modal } from '../components/Modal';
@@ -23,6 +25,45 @@ const fruitOptions: SelectOption[] = [
   { value: 'apple', label: 'Apple' },
   { value: 'banana', label: 'Banana' },
 ];
+
+describe('Combobox 可访问名', () => {
+  it('原生 label 命名输入，clear/toggle 暴露本地化名称', async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <label htmlFor="fruit-combobox">水果</label>
+        <Combobox id="fruit-combobox" options={fruitOptions} defaultValue="apple" clearable />
+      </>
+    );
+
+    expect(screen.getByRole('combobox', { name: '水果' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '清除选择' })).toBeInTheDocument();
+    const toggle = screen.getByRole('button', { name: '展开选项' });
+    await user.click(toggle);
+    expect(screen.getByRole('button', { name: '收起选项' })).toBeInTheDocument();
+  });
+
+  it('复杂 option label 使用 textValue 作为可访问名', () => {
+    render(
+      <Combobox
+        aria-label="复杂选项"
+        defaultOpen
+        options={[
+          {
+            value: 'shanghai',
+            label: (
+              <span>
+                上海 <small>SHA</small>
+              </span>
+            ),
+            textValue: '上海市',
+          },
+        ]}
+      />
+    );
+    expect(screen.getByRole('option', { name: '上海市' })).toBeInTheDocument();
+  });
+});
 
 describe('Button 可访问名', () => {
   it('纯文本按钮：可访问名 = 文本', () => {

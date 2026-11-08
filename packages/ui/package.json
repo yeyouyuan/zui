@@ -51,6 +51,11 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./combobox": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
     "./divider": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",

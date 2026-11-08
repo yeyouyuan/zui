@@ -7,6 +7,12 @@ import { GROUP_LABELS, GROUP_ORDER, navItems, routeComponents, type NavItem } fr
 /** 站点展示版本（后续可改为从 package.json 读取） */
 const SITE_VERSION = 'v0.2.0';
 
+function getEffectiveDarkTheme(): boolean {
+  const explicit = document.documentElement.dataset.theme;
+  if (explicit) return explicit === 'dark';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
 function NotFound(): React.ReactNode {
   return (
     <div className="doc-page">
@@ -49,9 +55,7 @@ class PageErrorBoundary extends Component<{ children: React.ReactNode }, { error
 
 export default function App(): React.ReactNode {
   const route = useHashRoute();
-  const [dark, setDark] = useState<boolean>(
-    () => document.documentElement.dataset.theme === 'dark'
-  );
+  const [dark, setDark] = useState<boolean>(getEffectiveDarkTheme);
   const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const mainRef = useRef<HTMLElement | null>(null);
@@ -61,14 +65,14 @@ export default function App(): React.ReactNode {
 
   // 暗色切换：写 data-theme，文档 chrome 自身复用 z 令牌（docs.css 全部走 var(--z-*)）
   const toggleDark = () => {
-    const next = !(document.documentElement.dataset.theme === 'dark');
+    const next = !getEffectiveDarkTheme();
     document.documentElement.dataset.theme = next ? 'dark' : 'light';
     setDark(next);
   };
 
   // 路由变化：同步主题状态（主题调参页也会写 data-theme）、关移动端菜单、回到顶部
   useEffect(() => {
-    setDark(document.documentElement.dataset.theme === 'dark');
+    setDark(getEffectiveDarkTheme());
     setMenuOpen(false);
     mainRef.current?.scrollTo({ top: 0 });
     if (!focusPageOnRouteRef.current) return undefined;
@@ -107,6 +111,16 @@ export default function App(): React.ReactNode {
     focusTimeout = window.setTimeout(cleanup, 10_000);
     return cleanup;
   }, [route]);
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const syncSystemTheme = () => {
+      if (document.documentElement.dataset.theme) return;
+      setDark(media.matches);
+    };
+    media.addEventListener('change', syncSystemTheme);
+    return () => media.removeEventListener('change', syncSystemTheme);
+  }, []);
 
   // ⌘K / Ctrl+K 聚焦侧栏搜索（与搜索框 placeholder 提示一致）
   useEffect(() => {
@@ -153,9 +167,10 @@ export default function App(): React.ReactNode {
   // 路由映射走 nav.ts 注册表
   const current = navItems.find((item) => item.path === route);
   const Page = current ? routeComponents[route] : undefined;
+  const isBuilderRoute = route === '/builder';
 
   return (
-    <div className="doc-shell">
+    <div className={isBuilderRoute ? 'doc-shell doc-shell--builder' : 'doc-shell'}>
       <header className="doc-topbar">
         <div className="doc-topbar-left">
           <button
@@ -256,7 +271,11 @@ export default function App(): React.ReactNode {
         )}
       </nav>
 
-      <main className="doc-main" id="doc-main" ref={mainRef}>
+      <main
+        className={isBuilderRoute ? 'doc-main doc-main--wide' : 'doc-main'}
+        id="doc-main"
+        ref={mainRef}
+      >
         {Page ? (
           <PageErrorBoundary key={route}>
             <Suspense
