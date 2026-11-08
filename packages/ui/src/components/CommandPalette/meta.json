@@ -1,0 +1,102 @@
+{
+  "name": "CommandPalette",
+  "description": "命令面板：具备受控查询、异步结果、可取消选择和跨平台热键仲裁的全局命令入口",
+  "category": "导航",
+  "useCase": [
+    "后台或文档站的全局命令搜索",
+    "路由、主题与业务动作的统一入口",
+    "需要服务端搜索或动态权限结果的命令入口"
+  ],
+  "dontUse": [
+    "表单字段内的搜索选择用 Combobox",
+    "按钮触发的局部动作菜单用 DropdownMenu",
+    "需要原生链接与修饰键语义的持久导航用 SideNav"
+  ],
+  "props": {
+    "commands": {
+      "type": "readonly CommandPaletteCommand[]",
+      "default": "（必填）",
+      "desc": "命令列表；支持 textValue、group、shortcut、keywords、disabled、meta 与可取消 onSelect"
+    },
+    "open / defaultOpen": {
+      "type": "boolean",
+      "default": "false",
+      "desc": "受控 / 非受控开关"
+    },
+    "onOpenChange": {
+      "type": "(open, details: { reason; originalEvent?; commandKey? }) => void",
+      "default": "—",
+      "desc": "只报告 hotkey、escape、overlay 或 select 产生的开关意图"
+    },
+    "query / defaultQuery": {
+      "type": "string",
+      "default": "''",
+      "desc": "受控 / 非受控查询文本；filter=false 时用于外部异步搜索"
+    },
+    "onQueryChange": {
+      "type": "(query, details: { reason: 'input' | 'close-reset' }) => void",
+      "default": "—",
+      "desc": "输入或实际关闭重置时回调"
+    },
+    "resetQueryOnClose": {
+      "type": "boolean",
+      "default": "true",
+      "desc": "仅在 open 实际从 true 变为 false 后重置 query"
+    },
+    "filter": {
+      "type": "false | ((command, query) => boolean)",
+      "default": "NFKC 包含匹配",
+      "desc": "false 关闭本地过滤，由 query + commands 驱动异步结果"
+    },
+    "loading / loadingContent": {
+      "type": "boolean / ReactNode",
+      "default": "false / locale 文案",
+      "desc": "异步加载状态；保留当前命令并设置 listbox aria-busy"
+    },
+    "emptyContent": {
+      "type": "ReactNode",
+      "default": "locale 空态",
+      "desc": "无可见命令时的状态内容"
+    },
+    "hotkey": {
+      "type": "string | false",
+      "default": "'mod+k'",
+      "desc": "精确跨平台热键；同一组合只有最后注册的实例响应"
+    },
+    "onCommandSelect": {
+      "type": "(command, event: CommandPaletteSelectEvent) => void",
+      "default": "—",
+      "desc": "根级选择回调；在命令自身 onSelect 后执行，可 preventDefault 取消自动关闭"
+    },
+    "inputAriaLabel / placeholder": {
+      "type": "string",
+      "default": "locale 文案",
+      "desc": "输入框名称与占位文案，彼此独立"
+    },
+    "returnFocusRef / restoreFocus": {
+      "type": "RefObject<HTMLElement | null> / boolean",
+      "default": "— / true",
+      "desc": "显式焦点归还目标与自动恢复开关"
+    },
+    "aria-label / aria-labelledby": {
+      "type": "string",
+      "default": "locale 标题 / —",
+      "desc": "dialog 名称；aria-labelledby 优先"
+    },
+    "classNames": {
+      "type": "{ dialog?; root?; input?; listbox?; group?; groupLabel?; option?; optionIcon?; optionLabel?; optionShortcut?; status?; empty?; loading? }",
+      "default": "—",
+      "desc": "dialog 与各内部 slot 的附加类名"
+    }
+  },
+  "a11yNotes": [
+    "复用 Modal 的 dialog、焦点陷阱、滚动锁、顶层 Escape 与焦点恢复；dialog 和 combobox 各自具名",
+    "combobox 通过 aria-activedescendant 指向 option；listbox 在零结果时仍挂载且 aria-expanded 保持 true",
+    "listbox 直接子级只包含 option 或 group；loading、empty 与结果数由外部单一 status live region 公告",
+    "上下箭头跨分组移动且跳过 disabled；Home、End、左右方向键与删除键保留给单行文本编辑",
+    "选择顺序固定为命令处理器、根处理器、默认关闭；preventDefault 只取消默认关闭",
+    "IME 组合中的 Enter、Escape 与热键不执行；热键忽略 repeat、defaultPrevented、Dead key 与 AltGraph",
+    "空或重复 key 被安全裁剪；没有任何选择处理器的 enabled 命令按 disabled 处理"
+  ],
+  "related": ["Modal", "Combobox", "DropdownMenu", "SideNav"]
+}

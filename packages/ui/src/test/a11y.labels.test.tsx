@@ -12,6 +12,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { Button } from '../components/Button';
 import { Combobox } from '../components/Combobox';
 import { Input } from '../components/Input';
+import { Statistic } from '../components/Statistic';
 import { MessageProvider, useMessage, type MessageApi } from '../components/Message';
 import { Modal } from '../components/Modal';
 import { Select, type SelectOption } from '../components/Select';
@@ -134,6 +135,36 @@ describe('Input 清除按钮可访问名', () => {
   it('无值时不渲染清除按钮，不产生无名按钮', () => {
     render(<Input clearable />);
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+});
+
+describe('Statistic.CountDown 可访问名', () => {
+  it('role=timer 默认可访问名取 locale.statistic.countdown，可被 aria-label 覆盖', () => {
+    const { unmount } = render(<Statistic.CountDown value={Date.now() + 60_000} />);
+    expect(screen.getByRole('timer')).toHaveAttribute('aria-label', '倒计时');
+    unmount();
+    render(<Statistic.CountDown value={Date.now() + 60_000} aria-label="活动结束" />);
+    expect(screen.getByRole('timer')).toHaveAttribute('aria-label', '活动结束');
+  });
+});
+
+describe('Input 子组件按钮可访问名', () => {
+  it('Password 切换按钮可访问名随状态切换', async () => {
+    const user = userEvent.setup();
+    render(<Input.Password aria-label="密码" />);
+    expect(screen.getByRole('button', { name: '显示密码' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: '显示密码' }));
+    expect(screen.getByRole('button', { name: '隐藏密码' })).toBeInTheDocument();
+  });
+
+  it('Search 按钮可访问名 "搜索"', () => {
+    render(<Input.Search aria-label="搜索" />);
+    expect(screen.getByRole('button', { name: '搜索' })).toBeInTheDocument();
+  });
+
+  it('Textarea 清除按钮复用 "清除" 可访问名', () => {
+    render(<Input.Textarea clearable defaultValue="内容" />);
+    expect(screen.getByRole('button', { name: '清除' })).toBeInTheDocument();
   });
 });
 

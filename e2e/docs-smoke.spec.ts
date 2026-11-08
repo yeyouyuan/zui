@@ -38,6 +38,7 @@ const H1 = {
   form: 'Form 表单',
   select: 'Select 选择器',
   combobox: 'Combobox 自动完成',
+  adminShellPrototype: '工作台',
   modal: 'Modal 对话框',
   datePicker: 'DatePicker 日期选择器',
   virtualTable: 'VirtualTable 虚拟滚动表格',
@@ -241,6 +242,80 @@ test('Combobox 页：严格选择、回退与 320px 暗色浮层可用', async (
   expect(geometry.right).toBeLessThanOrEqual(320);
   expect(geometry.background).not.toBe('rgba(0, 0, 0, 0)');
   expect(geometry.background).not.toBe(geometry.foreground);
+});
+
+test('MultiCombobox 页：多选标签、面板保持打开与 320px 可用', async ({ page }) => {
+  await openRoute(page, '/components/combobox', H1.combobox);
+
+  const multi = page.locator('.z-multicombobox').first();
+  const multiInput = multi.getByRole('combobox', { name: '出差城市' });
+  await expect(multiInput).toHaveCount(1);
+  await expect(multi.getByRole('button', { name: '移除 上海' })).toHaveCount(1);
+
+  await multiInput.fill('深');
+  const multiListbox = page.getByRole('listbox');
+  await expect(multiListbox).toHaveCount(1);
+  await multiListbox.getByRole('option').first().click();
+  await expect(multi.getByRole('button', { name: '移除 深圳' })).toHaveCount(1);
+  await expect(multiInput).toHaveValue('');
+  await expect(multiInput).toHaveAttribute('aria-expanded', 'true');
+  await expect(multiListbox).toHaveCount(1);
+
+  await multiInput.press('Escape');
+  await expect(multiListbox).toHaveCount(0);
+
+  await page.setViewportSize({ width: 320, height: 640 });
+  await multiInput.press('ArrowDown');
+  const multiPanel = page.locator('.z-multicombobox-panel');
+  await expect(multiPanel).toHaveCount(1);
+  await expect(multiPanel).toBeVisible();
+  const multiGeometry = await multiPanel.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return { left: rect.left, right: rect.right };
+  });
+  expect(multiGeometry.left).toBeGreaterThanOrEqual(0);
+  expect(multiGeometry.right).toBeLessThanOrEqual(320);
+});
+
+test('SideNav 后台壳原型：分组展开、aria-current 深链与 320px 抽屉', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await openRoute(page, '/prototype/admin-shell', H1.adminShellPrototype);
+
+  const nav = page.getByRole('navigation', { name: '星河管理平台主导航' });
+  await expect(nav).toHaveCount(1);
+
+  // 深链子页：aria-current 落在叶子链接，父分组呈现当前后代标记
+  await page.evaluate((path) => {
+    window.location.hash = path;
+  }, '/prototype/admin-shell/team/members');
+  await expect(
+    page.getByRole('heading', { level: 1, name: '团队成员', exact: true })
+  ).toBeVisible();
+  const currentLink = nav.locator('[data-part="link"][aria-current="page"]');
+  await expect(currentLink).toHaveCount(1);
+  await expect(currentLink).toHaveAttribute('href', '#/prototype/admin-shell/team/members');
+  await expect(nav.locator('li[data-current-descendant="true"]')).toHaveCount(1);
+
+  // 分组 disclosure：受控初值已展开 → 点击收起 → 再点击展开，子链接可见性跟随
+  const groupToggle = nav.getByRole('button', { name: /项目管理/ });
+  await expect(groupToggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(nav.getByRole('link', { name: '进行中的项目' })).toBeVisible();
+  await groupToggle.click();
+  await expect(groupToggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(nav.getByRole('link', { name: '进行中的项目' })).toHaveCount(0);
+  await groupToggle.click();
+  await expect(groupToggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(nav.getByRole('link', { name: '进行中的项目' })).toBeVisible();
+
+  // disabled 叶子不输出 <a href>
+  await expect(nav.getByRole('link', { name: '数据导出' })).toHaveCount(0);
+
+  // 320px：移动端走 Drawer 组合（SideNav 固定宽态）
+  await page.setViewportSize({ width: 320, height: 640 });
+  await page.getByRole('button', { name: '打开主导航' }).click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByRole('navigation', { name: '星河管理平台主导航' })).toHaveCount(1);
+  await expect(dialog.locator('[data-part="link"][aria-current="page"]')).toHaveCount(1);
 });
 
 test('页面搭建器：宽画布、第三方控件可访问名与窄屏边界可用', async ({ page }) => {
@@ -624,13 +699,20 @@ test('文档外壳：全部导航页在 320px 暗色视口无页面级横向溢�
     await page.evaluate((path) => {
       window.location.hash = path;
     }, route);
-    await expect(page.locator(`.doc-nav-link--active[href="#${route}"]`)).toHaveCount(1);
+    await expect(
+      page.locator(`#doc-sidebar [data-part="link"][aria-current="page"][href="#${route}"]`)
+    ).toHaveCount(1);
     if (route !== '/') {
       // 等 lazy 页面真正挂载（usePageTitle 已执行），避免连续切换时取消尚未完成的模块请求。
       await expect.poll(() => page.title()).not.toBe(previousTitle);
     }
     // 区块文档会嵌入完整的页面级预览，预览本身可以包含 h1；这里只校验文档页主标题。
-    await expect(page.locator('.doc-page > .doc-h1, .doc-page > .doc-hero > h1')).toHaveCount(1);
+    // SideNav 后台壳原型是全幅应用壳，没有 .doc-page 结构，校验它自己的 h1。
+    if (route.startsWith('/prototype/')) {
+      await expect(page.locator('.admin-prototype h1')).toHaveCount(1);
+    } else {
+      await expect(page.locator('.doc-page > .doc-h1, .doc-page > .doc-hero > h1')).toHaveCount(1);
+    }
     await expect(page.getByText(ERROR_SENTINEL)).toHaveCount(0);
 
     const result = await page.evaluate(() => {
@@ -664,16 +746,37 @@ test('文档外壳：移动菜单管理焦点，桌面页内目录不改写 hash
 
   const menu = page.getByRole('button', { name: '打开文档菜单' });
   await menu.click();
-  const search = page.getByRole('searchbox', { name: '按名称过滤导航项' });
+  const dialog = page.getByRole('dialog', { name: '文档菜单', exact: true });
+  await expect(dialog).toHaveCount(1);
+  await expect(dialog).toHaveAttribute('aria-modal', 'true');
+  const navigation = dialog.getByRole('navigation', { name: '文档导航', exact: true });
+  await expect(navigation).toHaveCount(1);
+  await expect(page.getByRole('navigation', { name: '文档导航', exact: true })).toHaveCount(1);
+  await expect(navigation).toHaveAttribute('data-collapsed', 'false');
+  const search = dialog.getByRole('searchbox', { name: '按名称过滤导航项' });
   await expect(search).toBeFocused();
-  await expect(page.locator('#doc-sidebar')).toHaveClass(/doc-sidebar--open/);
+  await search.press('Shift+Tab');
+  await expect(dialog.getByRole('button', { name: '关闭文档菜单', exact: true })).toBeFocused();
+  await dialog.getByRole('button', { name: '关闭文档菜单', exact: true }).press('Shift+Tab');
+  await expect(navigation.locator('[data-part="link"]').last()).toBeFocused();
+  await navigation.locator('[data-part="link"]').last().press('Tab');
+  await expect(dialog.getByRole('button', { name: '关闭文档菜单', exact: true })).toBeFocused();
+  await dialog.getByRole('button', { name: '关闭文档菜单', exact: true }).press('Tab');
+  await expect(search).toBeFocused();
   await search.press('Escape');
-  await expect(page.locator('#doc-sidebar')).not.toHaveClass(/doc-sidebar--open/);
+  await expect(dialog).toHaveCount(0);
   await expect(page.getByRole('button', { name: '打开文档菜单' })).toBeFocused();
 
   // 首次请求 lazy 路由时，需等 Suspense 内容真正挂载后再把焦点交给页面标题。
   await menu.click();
   await page.getByRole('link', { name: 'TreeSelect 树选择', exact: true }).click();
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'TreeSelect 树选择', exact: true })
+  ).toBeFocused();
+  await expect(dialog).toHaveCount(0);
+  await menu.click();
+  await navigation.getByRole('link', { name: 'TreeSelect 树选择', exact: true }).click();
+  await expect(dialog).toHaveCount(0);
   await expect(
     page.getByRole('heading', { level: 1, name: 'TreeSelect 树选择', exact: true })
   ).toBeFocused();
@@ -703,6 +806,52 @@ test('文档外壳：移动菜单管理焦点，桌面页内目录不改写 hash
   });
   expect(geometry.content.right).toBeLessThanOrEqual(geometry.toc.left);
   expect(geometry.toc.right).toBeLessThanOrEqual(geometry.main.right);
+});
+
+test('文档外壳：SideNav 搜索保留路由语义，移动快捷键与搭建器断点可用', async ({ page }) => {
+  await openRoute(page, '/', H1.overview);
+  const navigation = page.getByRole('navigation', { name: '文档导航', exact: true });
+  await expect(navigation).toHaveCount(1);
+  await expect(navigation.getByRole('list')).toHaveCount(2);
+  await expect(navigation.getByRole('link', { name: '概览', exact: true })).toHaveAttribute(
+    'aria-current',
+    'page'
+  );
+  await page.keyboard.press('Control+k');
+  const search = page.getByRole('searchbox', { name: '按名称过滤导航项' });
+  await expect(search).toBeFocused();
+  await search.fill('TreeSelect');
+  await expect(navigation.getByRole('list')).toHaveCount(1);
+  await expect(navigation.getByRole('link')).toHaveCount(1);
+  await expect(navigation.locator('[aria-current]')).toHaveCount(0);
+  await expect(page).toHaveURL(/#\/$|\/$/);
+  await search.fill('没有这个页面');
+  await expect(navigation.getByRole('list')).toHaveCount(0);
+  await expect(page.getByText('没有匹配「没有这个页面」的页面', { exact: true })).toBeVisible();
+  await search.fill('');
+
+  await page.setViewportSize({ width: 320, height: 600 });
+  await page.keyboard.press('Meta+k');
+  const dialog = page.getByRole('dialog', { name: '文档菜单', exact: true });
+  await expect(dialog).toBeVisible();
+  const mobileSearch = dialog.getByRole('searchbox', { name: '按名称过滤导航项' });
+  await expect(mobileSearch).toBeFocused();
+  await mobileSearch.press('Escape');
+  await expect(dialog).toHaveCount(0);
+
+  await page.setViewportSize({ width: 850, height: 800 });
+  await page.evaluate(() => {
+    window.location.hash = '/builder';
+  });
+  const menu = page.getByRole('button', { name: '打开文档菜单', exact: true });
+  await expect(menu).toBeVisible();
+  await expect(navigation).toHaveCount(0);
+  await menu.click();
+  await expect(dialog.getByRole('navigation', { name: '文档导航', exact: true })).toHaveCount(1);
+  await page.setViewportSize({ width: 1000, height: 800 });
+  await expect(dialog).toHaveCount(0);
+  await expect(navigation).toHaveCount(1);
+  await expect(menu).toHaveCount(0);
 });
 
 test('图标库：窄屏详情接管焦点，关闭后返回触发图标', async ({ page }) => {

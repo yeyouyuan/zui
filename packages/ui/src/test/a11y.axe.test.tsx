@@ -9,7 +9,7 @@
  * 与 a11y.roles / a11y.keyboard / a11y.labels 的分工：那三套断言我们「声明的语义」，
  * 本套用 axe-core 独立规则引擎反向验证「实际 DOM 是否有未声明的缺陷」。
  */
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import axe from 'axe-core';
 import { Alert } from '../components/Alert';
@@ -18,6 +18,10 @@ import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Checkbox } from '../components/Checkbox';
 import { Combobox } from '../components/Combobox';
+import { CommandPalette } from '../components/CommandPalette';
+import { MultiCombobox } from '../components/MultiCombobox';
+import { SideNav } from '../components/SideNav';
+import { Splitter } from '../components/Splitter';
 import { Empty } from '../components/Empty';
 import { Input } from '../components/Input';
 import { Pagination } from '../components/Pagination';
@@ -141,6 +145,18 @@ describe('axe-core 组件矩阵扫描', () => {
     await expectNoViolations(host);
   });
 
+  it('Input 子组件：Textarea / Password / Search', async () => {
+    const host = renderForAxe(
+      <>
+        <label htmlFor="axe-textarea-bio">简介</label>
+        <Input.Textarea id="axe-textarea-bio" clearable defaultValue="介绍文案" />
+        <Input.Password aria-label="密码" defaultValue="secret" />
+        <Input.Search aria-label="搜索" defaultValue="关键词" clearable />
+      </>
+    );
+    await expectNoViolations(host);
+  });
+
   it('Select：关闭态（选中 / 占位 / 禁用）', async () => {
     const host = renderForAxe(
       <>
@@ -161,6 +177,70 @@ describe('axe-core 组件矩阵扫描', () => {
       </>
     );
     await expectNoViolations(host);
+  });
+
+  it('MultiCombobox：多选标签 + 异步 loading', async () => {
+    const host = renderForAxe(
+      <>
+        <label htmlFor="axe-multicombobox-tags">水果标签</label>
+        <MultiCombobox
+          id="axe-multicombobox-tags"
+          options={fruitOptions}
+          defaultValue={['apple']}
+          clearable
+        />
+        <MultiCombobox options={fruitOptions} loading aria-label="加载中的水果标签" />
+      </>
+    );
+    await expectNoViolations(host);
+  });
+
+  it('SideNav：当前页 + 分组展开 + disabled 叶子', async () => {
+    const host = renderForAxe(
+      <SideNav
+        sections={[
+          {
+            key: 'workspace',
+            label: '工作区',
+            items: [
+              { key: 'overview', label: '概览', href: '#/overview', icon: <i>◎</i> },
+              {
+                key: 'settings',
+                label: '设置',
+                icon: <i>⚙</i>,
+                children: [
+                  { key: 'profile', label: '资料', href: '#/settings/profile' },
+                  { key: 'billing', label: '计费', href: '#/settings/billing', disabled: true },
+                ],
+              },
+            ],
+          },
+        ]}
+        currentKey="profile"
+        defaultExpandedKeys={['settings']}
+        aria-label="主导航"
+      />
+    );
+    await expectNoViolations(host);
+  });
+
+  it('Splitter：焦点在 separator 上', async () => {
+    const host = renderForAxe(
+      <Splitter aria-label="工作台" defaultSizes={[40, 60]}>
+        <Splitter.Panel key="left">左</Splitter.Panel>
+        <Splitter.Panel key="right">右</Splitter.Panel>
+      </Splitter>
+    );
+    host.querySelector<HTMLElement>('[data-part="handle"]')?.focus();
+    await expectNoViolations(host);
+  });
+
+  it('CommandPalette：零结果 listbox 与外置 live status', async () => {
+    renderForAxe(<CommandPalette defaultOpen commands={[]} aria-label="全局命令" />);
+    await waitFor(() => expect(screen.getByRole('dialog', { name: '全局命令' })).toBeVisible());
+    const results = await axe.run(document.body, AXE_RUN_OPTIONS);
+    const summary = summarize(results);
+    expect(summary, `axe 发现违规:\n${summary}`).toBe('');
   });
 
   it('Progress / Upload：进度条均有描述具体任务的可访问名称', async () => {

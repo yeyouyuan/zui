@@ -19,6 +19,7 @@ import {
   Popconfirm,
   Pagination,
   Button,
+  Splitter,
 } from '../index';
 
 afterEach(cleanup);
@@ -30,10 +31,19 @@ describe('i18n 语言包结构完整性', () => {
     { name: 'zhTW', data: zhTW },
     { name: 'jaJP', data: jaJP },
     { name: 'koKR', data: koKR },
+    { name: 'frFR', data: frFR },
+    { name: 'deDE', data: deDE },
+    { name: 'esES', data: esES },
+    { name: 'ruRU', data: ruRU },
+    { name: 'ptBR', data: ptBR },
   ];
 
   const requiredSections = [
     'select',
+    'sideNav',
+    'splitter',
+    'commandPalette',
+    'statistic',
     'combobox',
     'input',
     'modal',
@@ -57,6 +67,11 @@ describe('i18n 语言包结构完整性', () => {
       expect(typeof data.select.placeholder).toBe('string');
       expect(Object.values(data.combobox).every((value) => typeof value === 'string')).toBe(true);
       expect(data.combobox.results).toContain('{count}');
+      expect(Object.values(data.commandPalette).every((value) => typeof value === 'string')).toBe(
+        true
+      );
+      expect(data.commandPalette.results).toContain('{count}');
+      expect(data.splitter.panelLabel).toContain('{index}');
       expect(typeof data.empty.description).toBe('string');
       expect(typeof data.popconfirm.ok).toBe('string');
       expect(typeof data.popconfirm.cancel).toBe('string');
@@ -70,11 +85,14 @@ describe('i18n 语言包结构完整性', () => {
     const custom = mergeLocale(enUS, {
       select: { placeholder: 'Pick one' },
       combobox: { placeholder: 'Find a city' },
+      commandPalette: { search: 'Find a command' },
     });
     expect(custom.select.placeholder).toBe('Pick one');
     expect(custom.select.empty).toBe('No options'); // 保留原有未覆盖项
     expect(custom.combobox.placeholder).toBe('Find a city');
     expect(custom.combobox.clear).toBe('Clear selection');
+    expect(custom.commandPalette.search).toBe('Find a command');
+    expect(custom.commandPalette.loading).toBe('Loading commands');
     expect(custom.popconfirm.ok).toBe('OK');
   });
 });
@@ -97,12 +115,19 @@ describe('ConfigProvider 动态切换语言', () => {
         <Select options={[]} />
         <Empty />
         <Pagination total={50} defaultPage={1} />
+        <Splitter aria-label="Workspace">
+          <Splitter.Panel key="left">Left</Splitter.Panel>
+          <Splitter.Panel key="right">Right</Splitter.Panel>
+        </Splitter>
       </ConfigProvider>
     );
     expect(container.querySelector('[data-part="trigger"]')).toHaveTextContent('Select...');
     expect(screen.getByText('No data')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Previous' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Next' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('separator', { name: 'Resize panel: Panel 1 / Panel 2' })
+    ).toBeInTheDocument();
   });
 
   it('切换到 jaJP 显示日语', () => {

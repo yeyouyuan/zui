@@ -22,6 +22,9 @@
   --z-input-disabled-fg: var(--z-color-disabled-fg);
   --z-input-disabled-border: var(--z-color-disabled-border);
   --z-input-transition: var(--z-duration-fast) var(--z-ease-standard);
+  --z-input-textarea-min-height: 4.5rem; /* 约 3 行 */
+  --z-input-action-color: var(--z-input-clear-color);
+  --z-input-action-hover-color: var(--z-input-clear-hover-color);
 }
 
 /* 尺寸：仅覆盖尺寸类变量（sm 24px / md 32px / lg 40px，与 Button 对齐） */
@@ -111,29 +114,62 @@
   font-size: var(--z-input-affix-font-size);
 }
 
-.z-input-clear {
+.z-input-clear,
+.z-input-toggle,
+.z-input-search-button {
   display: inline-flex;
   flex: none;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
   align-items: center;
   justify-content: center;
   padding: 0;
   border: none;
   border-radius: var(--z-radius-full);
   background: transparent;
-  color: var(--z-input-clear-color);
+  color: var(--z-input-action-color);
   font-size: var(--z-input-affix-font-size);
   line-height: 1;
   cursor: pointer;
   transition: color var(--z-input-transition);
 }
 
-.z-input-clear:hover {
-  color: var(--z-input-clear-hover-color);
+.z-input-clear:hover,
+.z-input-toggle:hover:not(:disabled),
+.z-input-search-button:hover:not(:disabled) {
+  color: var(--z-input-action-hover-color);
 }
 
-.z-input-clear:focus-visible {
+.z-input-clear:focus-visible,
+.z-input-toggle:focus-visible,
+.z-input-search-button:focus-visible {
   outline: 2px solid var(--z-input-focus-ring);
   outline-offset: 2px;
+}
+
+.z-input-toggle:disabled,
+.z-input-search-button:disabled {
+  color: var(--z-input-disabled-fg);
+  cursor: not-allowed;
+}
+
+/* Textarea：解除固定高度，允许纵向拖拽 */
+.z-input-textarea {
+  height: auto;
+  align-items: flex-start;
+  padding: var(--z-space-2) var(--z-input-padding-x);
+}
+
+.z-input-textarea .z-input-field {
+  height: auto;
+  min-height: var(--z-input-textarea-min-height);
+  resize: vertical;
+}
+
+/* type=search 的 WebKit 原生清除按钮与 clearable 冲突，隐藏之 */
+.z-input-search .z-input-field::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .z-input:has(.z-input-field:disabled) {
@@ -149,7 +185,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .z-input,
-  .z-input-clear {
+  .z-input-clear,
+  .z-input-toggle,
+  .z-input-search-button {
     transition: none;
   }
 }

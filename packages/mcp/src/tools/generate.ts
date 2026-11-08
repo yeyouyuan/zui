@@ -165,6 +165,31 @@ function exampleFor(name: string): Example {
     Combobox: {
       props: { options: [{ value: 'a', label: 'Option A' }], 'aria-label': 'Search options' },
     },
+    MultiCombobox: {
+      props: {
+        options: [{ value: 'a', label: 'Option A' }],
+        'aria-label': 'Search multiple options',
+      },
+    },
+    SideNav: {
+      props: {
+        sections: [
+          { key: 'main', label: 'Main', items: [{ key: 'home', label: 'Home', href: '/home' }] },
+        ],
+        'aria-label': 'Main navigation',
+      },
+    },
+    Splitter: {
+      children:
+        '<Splitter.Panel key="left" label="Left">Left</Splitter.Panel>\n<Splitter.Panel key="right" label="Right">Right</Splitter.Panel>',
+      props: { 'aria-label': 'Resizable workspace' },
+    },
+    CommandPalette: {
+      props: {
+        commands: [{ key: 'home', label: 'Home', onSelect: () => {} }],
+        'aria-label': 'Command palette',
+      },
+    },
     Modal: {
       children:
         '<Modal.Trigger>Open</Modal.Trigger>\n<Modal.Content><Modal.Title>Title</Modal.Title><Modal.Body>Content</Modal.Body><Modal.Close /></Modal.Content>',

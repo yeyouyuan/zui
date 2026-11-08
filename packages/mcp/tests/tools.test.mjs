@@ -8,8 +8,8 @@ import { formatAttribute, generateCode } from '../dist/tools/generate.js';
 import { handleLine, SERVER_VERSION } from '../dist/index.js';
 
 const catalog = loadCatalog();
-test('catalog resolves all 67 shipped components from bundled data', () => {
-  assert.equal(catalog.size, 67);
+test('catalog resolves all 71 shipped components from bundled data', () => {
+  assert.equal(catalog.size, 71);
   assert.equal(resolveRepoRoot(), fileURLToPath(new URL('../data', import.meta.url)));
 });
 test('server reports the published package version', () => {

@@ -11,6 +11,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Checkbox } from '../components/Checkbox';
 import { Combobox } from '../components/Combobox';
+import { MultiCombobox } from '../components/MultiCombobox';
 import { MessageProvider, useMessage, type MessageApi } from '../components/Message';
 import { Modal } from '../components/Modal';
 import { Select, type SelectOption } from '../components/Select';
@@ -58,6 +59,31 @@ describe('Combobox 键盘流', () => {
     await user.keyboard('{Escape}');
     expect(input).toHaveValue('Banana');
     expect(input).toHaveAttribute('aria-expanded', 'false');
+    expect(input).toHaveFocus();
+  });
+});
+
+describe('MultiCombobox 键盘流', () => {
+  it('连续 Enter 添加多个、空输入 Backspace 删最后标签、Esc 清草稿', async () => {
+    const user = userEvent.setup();
+    render(<MultiCombobox options={fruitOptions} aria-label="水果标签" />);
+    const input = screen.getByRole('combobox', { name: '水果标签' });
+
+    await user.type(input, 'Apple{Enter}');
+    await user.type(input, 'Ban{Enter}');
+    expect(screen.getAllByRole('button', { name: '移除 Apple' })).toHaveLength(1);
+    expect(screen.getByRole('button', { name: '移除 Banana' })).toBeInTheDocument();
+    expect(input).toHaveValue('');
+    expect(input).toHaveAttribute('aria-expanded', 'true');
+
+    await user.keyboard('{Escape}');
+    expect(input).toHaveValue('');
+    expect(input).toHaveAttribute('aria-expanded', 'false');
+
+    input.focus();
+    await user.keyboard('{Backspace}');
+    expect(screen.queryByRole('button', { name: '移除 Banana' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '移除 Apple' })).toBeInTheDocument();
     expect(input).toHaveFocus();
   });
 });

@@ -10,6 +10,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
 import { Checkbox } from '../components/Checkbox';
 import { Combobox } from '../components/Combobox';
+import { MultiCombobox } from '../components/MultiCombobox';
 import { DatePicker } from '../components/DatePicker';
 import { MessageProvider, useMessage, type MessageApi } from '../components/Message';
 import { Modal } from '../components/Modal';
@@ -89,6 +90,41 @@ describe('Combobox ARIA 角色与状态', () => {
     expect(input).toHaveAttribute('aria-expanded', 'false');
     expect(input).not.toHaveAttribute('aria-controls');
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+});
+
+describe('MultiCombobox ARIA 角色与状态', () => {
+  it('多选 listbox 带 aria-multiselectable，多个 option 可同时 selected', async () => {
+    const user = userEvent.setup();
+    render(
+      <MultiCombobox
+        options={fruitOptions}
+        defaultValue={['apple', 'banana']}
+        aria-label="水果标签"
+      />
+    );
+    const input = screen.getByRole('combobox', { name: '水果标签' });
+    input.focus();
+    await user.keyboard('{ArrowDown}');
+    const listbox = screen.getByRole('listbox');
+    expect(listbox).toHaveAttribute('aria-multiselectable', 'true');
+    const options = within(listbox).getAllByRole('option');
+    expect(options[0]).toHaveAttribute('aria-selected', 'true');
+    expect(options[1]).toHaveAttribute('aria-selected', 'true');
+    expect(options[2]).toHaveAttribute('aria-selected', 'false');
+    expect(input).toHaveAttribute('aria-activedescendant', options[0].id);
+  });
+
+  it('标签删除按钮有"移除 {item}"可访问名且不进 Tab 序', () => {
+    render(
+      <MultiCombobox
+        options={fruitOptions}
+        defaultValue={['apple']}
+        aria-label="水果标签"
+      />
+    );
+    const remove = screen.getByRole('button', { name: '移除 Apple' });
+    expect(remove).toHaveAttribute('tabindex', '-1');
   });
 });
 

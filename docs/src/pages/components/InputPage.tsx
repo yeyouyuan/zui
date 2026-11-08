@@ -29,20 +29,35 @@ const SIZE_CODE = `<Input size="sm" placeholder="小尺寸" />
 <Input size="lg" placeholder="大尺寸" />
 <Input disabled placeholder="禁用" />`;
 
+const SUB_CODE = `<Input.Textarea placeholder="多行说明" clearable />
+<Input.Password placeholder="请输入密码" />
+<Input.Search
+  placeholder="搜索关键词"
+  clearable
+  onSearch={(value) => console.log(value)}
+/>`;
+
 export default function InputPage(): React.ReactNode {
   usePageTitle('Input 输入框');
   const [value, setValue] = useState('');
+  const [keyword, setKeyword] = useState('');
 
   return (
     <div className="doc-page">
       <h1 className="doc-h1">Input 输入框</h1>
       <p className="doc-lead">
-        文本输入基础组件：支持前后缀插槽、可清除按钮、三态校验反馈与三档尺寸，原生 input 属性全量透传。
+        文本输入基础组件：支持前后缀插槽、可清除按钮、三态校验反馈与三档尺寸，原生 input
+        属性全量透传； 并提供 Textarea / Password / Search 子组件。
       </p>
 
       <h2 className="doc-h2">示例</h2>
 
-      <Demo title="基础与前后缀" description="prefix / suffix 插槽放置图标或单位文本。" code={BASIC_CODE} stack>
+      <Demo
+        title="基础与前后缀"
+        description="prefix / suffix 插槽放置图标或单位文本。"
+        code={BASIC_CODE}
+        stack
+      >
         <Input placeholder="请输入用户名" />
         <Input prefix={<span aria-hidden="true">🔍</span>} placeholder="带前置内容" />
         <Input suffix="@zui.dev" placeholder="带后置内容" />
@@ -63,17 +78,45 @@ export default function InputPage(): React.ReactNode {
         />
       </Demo>
 
-      <Demo title="校验状态" description="status 通过根元素 data-status 暴露，错误态描边与文字颜色由语义令牌驱动。" code={STATUS_CODE} stack>
+      <Demo
+        title="校验状态"
+        description="status 通过根元素 data-status 暴露，错误态描边与文字颜色由语义令牌驱动。"
+        code={STATUS_CODE}
+        stack
+      >
         <Input status="default" placeholder="默认状态" />
         <Input status="error" defaultValue="格式不正确" />
         <Input status="success" defaultValue="校验通过" />
       </Demo>
 
-      <Demo title="尺寸与禁用" description="size 三档；禁用走原生 disabled。" code={SIZE_CODE} stack>
+      <Demo
+        title="尺寸与禁用"
+        description="size 三档；禁用走原生 disabled。"
+        code={SIZE_CODE}
+        stack
+      >
         <Input size="sm" placeholder="小尺寸" />
         <Input size="md" placeholder="中尺寸（默认）" />
         <Input size="lg" placeholder="大尺寸" />
         <Input disabled placeholder="禁用" />
+      </Demo>
+
+      <Demo
+        title="Textarea / Password / Search"
+        description="多行文本（可清除）、密码可见性切换（aria-label 随状态切换）、回车或按钮触发搜索（IME 组合中的 Enter 不触发）。"
+        code={SUB_CODE}
+        stack
+      >
+        <Input.Textarea placeholder="多行说明" clearable />
+        <Input.Password placeholder="请输入密码" />
+        <Input.Search
+          placeholder="搜索关键词"
+          clearable
+          value={keyword}
+          onChange={(event) => setKeyword(event.target.value)}
+          onSearch={(next) => setKeyword(next)}
+          style={{ width: 260 }}
+        />
       </Demo>
 
       <h2 className="doc-h2">API</h2>
@@ -125,10 +168,43 @@ export default function InputPage(): React.ReactNode {
         ]}
       />
       <p className="doc-p">
-        结构：<code className="doc-code-inline">root（z-input）&gt; prefix + input（z-input-field）+ clear（z-input-clear）+ suffix</code>；
-        清除按钮为 <code className="doc-code-inline">type=&quot;button&quot;</code>、
+        结构：
+        <code className="doc-code-inline">
+          root（z-input）&gt; prefix + input（z-input-field）+ clear（z-input-clear）+ suffix
+        </code>
+        ； 清除按钮为 <code className="doc-code-inline">type=&quot;button&quot;</code>、
         <code className="doc-code-inline">aria-label=&quot;清除&quot;</code>。
       </p>
+
+      <h2 className="doc-h2">子组件 API</h2>
+      <ApiTable
+        rows={[
+          {
+            name: 'Input.Textarea',
+            type: "React.ComponentPropsWithRef<'textarea'> + size / status / clearable / onClear",
+            description:
+              '多行输入，默认允许纵向调整高度；classNames 提供 root / textarea / clear。',
+          },
+          {
+            name: 'Input.Password.visibilityToggle',
+            type: 'boolean',
+            defaultValue: 'true',
+            description: '显示密码可见性按钮；type 固定由组件在 password / text 间切换。',
+          },
+          {
+            name: 'Input.Search.onSearch',
+            type: '(value: string) => void',
+            description:
+              '点击搜索按钮或非 IME 的 Enter 触发；调用方 onKeyDown 可 preventDefault 取消内部搜索。',
+          },
+          {
+            name: 'Input.Search ...rest',
+            type: "Omit<React.ComponentPropsWithRef<'input'>, 'type'>",
+            description:
+              '原生 input 属性透传，type 始终固定为 search；readOnly / disabled 时搜索按钮同步禁用。',
+          },
+        ]}
+      />
 
       <CustomizeOutlet
         name="Input"

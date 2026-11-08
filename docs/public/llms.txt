@@ -64,6 +64,11 @@ Input: (props: InputProps) => JSX.Element
 Structure: root(z-input) > prefix + input(z-input-field) + clear(z-input-clear) + suffix
 Clear button: type="button", aria-label="清除", hidden when readOnly; focuses input then calls onClear
 Parts: root | input | prefix | suffix | clear
+
+Sub-components (compound, also exported flat):
+Input.Textarea: <textarea> with same size/status/clearable; min-height instead of fixed height; vertical resize
+Input.Password: type toggles password/text; visibilityToggle?: boolean (default true); toggle button aria-label switches 显示密码/隐藏密码
+Input.Search: type="search"; onSearch?: (value) => void fires on button click or Enter (never mid-composition); clearable supported
 ```
 
 ### Checkbox
@@ -167,6 +172,90 @@ selection or clear changes the committed value. Escape/real blur restores strict
 Parts: root | control | input | clear | toggle | panel | listbox | option | loading | empty | error | status
 ```
 
+### MultiCombobox (editable, strict-option multi-select)
+```
+MultiComboboxOption = ComboboxOption                                  // identical shape, interchangeable
+MultiCombobox: (props: MultiComboboxProps) => JSX.Element
+  options: readonly MultiComboboxOption[]                             // REQUIRED
+  value?: string[]                                                    // controlled selected values
+  defaultValue?: string[]
+  onChange?: (value: string[], { reason: 'selection' | 'remove' | 'backspace' | 'clear' }) => void
+  inputValue?/defaultInputValue?/onInputValueChange?/onSearch?        // same async channel as Combobox
+  open?/defaultOpen?/onOpenChange?/filterOption?/loading?/clearable?/openOnFocus?/autoHighlight?
+  name?: string                                                       // ONE hidden input PER selected value (native multi-value)
+Selecting toggles the value, CLEARS the draft and KEEPS the panel open. Backspace at empty input
+removes the last tag; Escape closes and clears the draft. listbox has aria-multiselectable="true".
+Tag remove buttons are tabIndex={-1} with aria-label="移除 {item}".
+Parts: root | control | tag | tag-label | tag-remove | input | clear | toggle | panel | listbox | option | loading | empty | error | status
+```
+
+### SideNav (site navigation, disclosure groups, collapsible rail)
+```
+SideNavLinkItem: { key; label; textValue?; href; icon?; badge?; disabled?; linkProps? }
+SideNavGroupItem: { key; label; textValue?; icon?; badge?; disabled?; children: SideNavLinkItem[] }
+SideNavSection: { key; label?; items: (SideNavLinkItem | SideNavGroupItem)[] }
+SideNav: (props: SideNavProps) => JSX.Element
+  sections: readonly SideNavSection[]                                   // REQUIRED
+  currentKey?: string | null                                            // controlled, derived from Router location
+  onNavigate?: (key, item, event) => void                               // same-context plain clicks only; no preventDefault inside
+  expandedKeys?/defaultExpandedKeys?/onExpandedKeysChange?              // details.reason: toggle | current | items-change
+  collapsed?/defaultCollapsed?/onCollapsedChange?/collapsible?          // desktop rail mode (default collapsible=true)
+  renderLink?: (item, props) => ReactElement                            // Router adapter; must forward ref/ARIA/data-* to a native <a>
+Native nav/ul/li/a semantics (no role=menu/tree). Current leaf gets aria-current="page";
+parent group only data-current-descendant. Group toggles are disclosure buttons
+(aria-expanded + aria-controls). Collapsed rail opens flyouts through a portal that
+inherits theme tokens; keyboard open focuses first child, pointer open keeps trigger focus.
+disabled leaves render as aria-disabled spans without href.
+Parts: root | viewport | section | section-label | list | item | link | group-toggle | group-indicator | icon | label | badge | children | flyout | tooltip | collapse-toggle
+```
+
+### Splitter (resizable panes, focusable separators)
+```
+Splitter: (props: SplitterProps) => JSX.Element
+  orientation?: 'horizontal' | 'vertical'                               // default 'horizontal'
+  sizes?: number[]                                                      // controlled percentages (length = panel count)
+  defaultSizes?: number[]
+  onSizesChange?: (sizes, { reason, handleIndex }) => void              // pointer | keyboard | collapse | panels-change
+  onResizeEnd?: (actualSizes, details) => void                          // pointerup, cancel, keyup or blur; details includes requestedSizes
+  handleProps?: (context) => { disabled?; collapseTarget?; aria-label?; ...nativeProps }
+  classNames?: { root?: string; handle?: string; handleIndicator?: string }
+Splitter.Panel (config-only child; DOM rendered by Splitter):
+  label?/initialSize?/minSize?/maxSize? (percent) / collapsible?/collapsedSize? / collapsed?/defaultCollapsed?/onCollapsedChange?
+Handles are auto-generated between panels (role="separator", focusable,
+aria-controls both stable panel ids, aria-orientation complementary,
+aria-valuemin/max/now = preceding panel's effective paired range). Keyboard:
+arrows 1% (visual direction, RTL-aware), PageUp/PageDown 10%, Home/End to bounds;
+Enter only toggles handleProps.collapseTarget when that panel is collapsible.
+Panel percentages divide the container main axis after fixed handle tracks (C - H).
+pointerup commits; Escape, pointercancel and unexpected lostcapture restore the start
+snapshot and call onResizeEnd once with cancelled=true. Keyboard commits on keyup/blur.
+Collapsed content stays mounted with inert + aria-hidden and returns focus to a handle.
+Parts: root | panel | content | handle | handle-indicator
+```
+
+### CommandPalette (global command search, Modal + grouped listbox)
+```
+CommandPaletteCommand: { key; label; textValue?; group?; shortcut?; icon?; disabled?; keywords?; meta?; onSelect?(event) }
+CommandPaletteSelectEvent: { command; query; source: 'keyboard' | 'pointer'; originalEvent; preventDefault(); defaultPrevented }
+CommandPalette: (props: CommandPaletteProps) => JSX.Element
+  commands: readonly CommandPaletteCommand[]                            // REQUIRED (deduped by key, first wins)
+  open?/defaultOpen?/onOpenChange?(open, { reason: 'hotkey'|'escape'|'overlay'|'select', commandKey? })
+  query?/defaultQuery?/onQueryChange?(query, { reason: 'input'|'close-reset' })
+  resetQueryOnClose?: boolean                                           // default true, applies after actual close
+  hotkey?: string | false                                               // default 'mod+k'; platform-aware mod; exact modifiers; false disables
+  filter?: false | (command, query) => boolean                          // false = externally driven (async); default NFKC contains-match
+  loading?/loadingContent?/emptyContent?
+  onCommandSelect?: (command, event) => void                            // runs after command.onSelect; both observe preventDefault
+  inputAriaLabel?/placeholder?/aria-label?/aria-labelledby?             // dialog AND input each have accessible names
+  returnFocusRef?/restoreFocus?                                         // focus return on close (default true)
+Reuses Modal (role=dialog + aria-modal + focus trap). Input role=combobox keeps
+DOM focus; active option via aria-activedescendant; groups = role=group +
+aria-labelledby; listbox aria-busy while loading. status (loading/empty/result
+count) is a listbox SIBLING. Arrow keys move across groups (no wrap, no
+Home/End hijack); Enter runs selection (IME-safe); Escape during composition
+never closes. Shortcut kbd is display-only (dir=ltr, aria-hidden).
+Parts: dialog | root | input | listbox | group | group-label | option | option-icon | option-label | option-shortcut | status
+```
 ### Modal (compound)
 ```
 Modal: (props: ModalProps) => JSX.Element
@@ -337,7 +426,7 @@ function useAutoTranslate(config: TranslateConfig): {
 
 ## meta.json — per-component AI metadata (CONTRACTS-V3 §2)
 
-Path: `packages/ui/src/components/<Name>/meta.json` (all 67 source Registry components ship metadata). Consumed by `@zui/mcp` tools
+Path: `packages/ui/src/components/<Name>/meta.json` (all 71 source Registry components ship metadata). Consumed by `@zui/mcp` tools
 and the registry generator.
 
 ```json
@@ -366,7 +455,7 @@ Field meaning:
 
 ## Registry & CLI (packages/cli + registry/)
 
-The registry (`registry/registry.json`) contains 67 source components and 16 blocks, generated from sources +
+The registry (`registry/registry.json`) contains 71 source components and 16 blocks, generated from sources +
 `meta.json`; `@zui/cli` copies component source into your project (free to edit) with an
 upstream update channel.
 

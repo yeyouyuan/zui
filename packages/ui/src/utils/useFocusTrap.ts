@@ -33,6 +33,18 @@ interface UseFocusTrapOptions {
   initialFocusSelector?: string;
   /** 关闭时是否归还焦点到之前元素 */
   returnFocus?: boolean;
+  /** 优先归还焦点的显式目标 */
+  returnFocusRef?: React.RefObject<HTMLElement | null>;
+}
+
+function canRestoreFocus(
+  element: HTMLElement | null,
+  container: HTMLElement
+): element is HTMLElement {
+  if (!element?.isConnected || container.contains(element)) return false;
+  if (element.hidden || element.getAttribute('aria-hidden') === 'true') return false;
+  const style = window.getComputedStyle(element);
+  return style.display !== 'none' && style.visibility !== 'hidden';
 }
 
 /**
@@ -43,7 +55,12 @@ interface UseFocusTrapOptions {
  */
 export function useFocusTrap(
   containerRef: React.RefObject<HTMLElement | null>,
-  { active, initialFocusSelector = '[data-autofocus]', returnFocus = true }: UseFocusTrapOptions
+  {
+    active,
+    initialFocusSelector = '[data-autofocus]',
+    returnFocus = true,
+    returnFocusRef,
+  }: UseFocusTrapOptions
 ) {
   React.useEffect(() => {
     if (!active) return;
@@ -51,6 +68,8 @@ export function useFocusTrap(
     if (!container) return;
 
     const previouslyFocused = document.activeElement as HTMLElement | null;
+    // cleanup 里读取 ref 会拿到过期值；effect 建立时固定一次
+    const explicitReturnTarget = returnFocusRef?.current ?? null;
 
     const focusInitial = () => {
       // A child may have received focus before the queued frame (including a
@@ -92,15 +111,33 @@ export function useFocusTrap(
       cancelAnimationFrame(raf);
       container.removeEventListener('keydown', onKeyDown);
       if (returnFocus) {
-        const layers = document.querySelectorAll<HTMLElement>('[data-zui-modal-layer][data-state="open"]');
+        const activeElement = document.activeElement as HTMLElement | null;
+        // 业务回调可能已经把焦点交给新页面标题或另一个界面；不要抢回旧触发点。
+        if (
+          activeElement &&
+          activeElement !== document.body &&
+          activeElement !== document.documentElement &&
+          canRestoreFocus(activeElement, container)
+        ) {
+          return;
+        }
+        const layers = document.querySelectorAll<HTMLElement>(
+          '[data-zui-modal-layer][data-state="open"]'
+        );
         const outer = container.closest('[data-zui-modal-layer]')
           ? layers[layers.length - 1]?.querySelector<HTMLElement>('[role="dialog"]')
           : null;
-        const target = outer && !outer.contains(previouslyFocused)
-          ? outer
-          : previouslyFocused;
-        if (target?.isConnected) target.focus();
+        const explicitTarget = explicitReturnTarget;
+        const target = canRestoreFocus(explicitTarget, container)
+          ? explicitTarget
+          : outer && canRestoreFocus(outer, container) && !outer.contains(previouslyFocused)
+            ? outer
+            : canRestoreFocus(previouslyFocused, container)
+              ? previouslyFocused
+              : null;
+        if (target) target.focus();
+        else document.body.focus();
       }
     };
-  }, [active, containerRef, initialFocusSelector, returnFocus]);
+  }, [active, containerRef, initialFocusSelector, returnFocus, returnFocusRef]);
 }

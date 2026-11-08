@@ -1,0 +1,62 @@
+{
+  "name": "SideNav",
+  "description": "侧边导航：原生 nav/ul/li/a 语义 + 分组 disclosure + 桌面收窄与 flyout，路由无关",
+  "category": "导航",
+  "useCase": [
+    "后台与设置中心的持久侧栏",
+    "文档站分区导航",
+    "需要当前页 aria-current 与分组展开的站点导航"
+  ],
+  "dontUse": ["按钮触发的动作菜单用 DropdownMenu", "同页面板切换用 Tabs", "页内锚点用 Anchor"],
+  "props": {
+    "sections": {
+      "type": "SideNavSection[]",
+      "default": "（必填）",
+      "desc": "分区列表；section { key; label?; items }，item 为叶子 { key; label; href; icon?; badge?; disabled?; linkProps? } 或分组 { key; label; children }"
+    },
+    "currentKey": {
+      "type": "string | null",
+      "default": "—",
+      "desc": "当前路由对应的叶子项 key；受控，由 Router 或位置状态推导"
+    },
+    "onNavigate": {
+      "type": "(key, item, event) => void",
+      "default": "—",
+      "desc": "同上下文普通导航意图（不 preventDefault；修饰键/新窗口/下载不触发）"
+    },
+    "expandedKeys": { "type": "string[]", "default": "—", "desc": "受控展开分组" },
+    "defaultExpandedKeys": {
+      "type": "string[]",
+      "default": "[]",
+      "desc": "非受控初始展开；当前项父组会自动并入"
+    },
+    "onExpandedKeysChange": {
+      "type": "(keys, details) => void",
+      "default": "—",
+      "desc": "details.reason: toggle | current | items-change"
+    },
+    "collapsed": { "type": "boolean", "default": "—", "desc": "受控桌面收窄态" },
+    "defaultCollapsed": { "type": "boolean", "default": "false", "desc": "非受控初始收窄态" },
+    "collapsible": { "type": "boolean", "default": "true", "desc": "是否渲染内置收窄按钮" },
+    "renderLink": {
+      "type": "(item, props) => ReactElement",
+      "default": "—",
+      "desc": "接入 Router 链接；必须返回落到原生 <a> 的元素并完整转发 ref/ARIA/data-*"
+    },
+    "classNames": {
+      "type": "{ root?; viewport?; section?; sectionLabel?; list?; item?; link?; groupToggle?; groupIndicator?; icon?; label?; badge?; children?; flyout?; tooltip?; collapseToggle? }",
+      "default": "—",
+      "desc": "slot 级类名追加"
+    }
+  },
+  "a11yNotes": [
+    "原生 nav/ul/li/a 语义，不用 role=menu/tree；当前叶子 aria-current=page，父分组仅 data-current-descendant",
+    "分组按钮为 disclosure（aria-expanded + aria-controls）；Enter/Space 切换，焦点留在按钮",
+    "收窄按钮 aria-controls 指向稳定 viewport id，aria-expanded 反映实际 collapsed",
+    "收窄态 flyout 经 Portal 渲染并继承主题令牌；键盘打开聚焦首个子链接，指针打开保留触发器焦点",
+    "flyout 内逻辑 Tab 顺序：触发器 → 子链接 → 后续顶层项 → 收窄按钮 → 导航外；Shift+Tab 逆向",
+    "disabled 叶子渲染为 aria-disabled span（无 href）；全子项禁用的分组整体禁用",
+    "label/icon/badge 禁止交互内容；复杂 label 必须提供 textValue"
+  ],
+  "related": ["DropdownMenu", "Tabs", "Anchor", "Breadcrumb"]
+}

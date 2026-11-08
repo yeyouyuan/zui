@@ -1,0 +1,109 @@
+{
+  "name": "Splitter",
+  "description": "可调分栏：自动生成相邻面板分隔条，支持 Pointer Capture、键盘调整、受控/非受控尺寸与可访问折叠",
+  "category": "布局",
+  "useCase": ["主从详情分栏", "编辑器与侧栏可调宽度", "仪表盘可调面板", "上下分栏的工作台布局"],
+  "dontUse": [
+    "静态布局用 Row/Col/Flex",
+    "内容折叠手风琴用 Collapse",
+    "自由窗口或任意深度停靠布局不在首版范围"
+  ],
+  "props": {
+    "orientation": {
+      "type": "'horizontal' | 'vertical'",
+      "default": "'horizontal'",
+      "desc": "分栏方向；vertical 表示上下分栏"
+    },
+    "sizes": {
+      "type": "number[]",
+      "default": "—",
+      "desc": "受控尺寸百分比数组；长度必须等于 Panel 数量且总和为 100"
+    },
+    "defaultSizes": {
+      "type": "number[]",
+      "default": "—",
+      "desc": "非受控初始尺寸；缺省项结合 Panel.initialSize 与剩余空间归一化"
+    },
+    "onSizesChange": {
+      "type": "(sizes, details: { reason; handleIndex }) => void",
+      "default": "—",
+      "desc": "尺寸请求回调；reason 为 pointer、keyboard、collapse 或 panels-change"
+    },
+    "onResizeEnd": {
+      "type": "(actualSizes, details: { handleIndex; input; cancelled; requestedSizes }) => void",
+      "default": "—",
+      "desc": "Pointer 的提交/取消边界或键盘 keyup/blur 时触发一次；区分实际值与最后请求值"
+    },
+    "handleProps": {
+      "type": "(context: SplitterHandleContext) => SplitterHandleProps",
+      "default": "—",
+      "desc": "定制自动生成的 Handle；可提供名称、原生属性、disabled、collapseTarget 与事件"
+    },
+    "classNames": {
+      "type": "{ root?; handle?; handleIndicator? }",
+      "default": "—",
+      "desc": "根节点、分隔条和视觉指示条的 slot 类名"
+    },
+    "Splitter.Panel.label": {
+      "type": "string",
+      "default": "本地化序号名称",
+      "desc": "用于相邻 Handle 可访问名称的面板名称"
+    },
+    "Splitter.Panel.initialSize": {
+      "type": "number",
+      "default": "均分剩余",
+      "desc": "初始尺寸百分比"
+    },
+    "Splitter.Panel.minSize": {
+      "type": "number",
+      "default": "0",
+      "desc": "最小尺寸百分比"
+    },
+    "Splitter.Panel.maxSize": {
+      "type": "number",
+      "default": "100",
+      "desc": "最大尺寸百分比"
+    },
+    "Splitter.Panel.collapsible": {
+      "type": "boolean",
+      "default": "false",
+      "desc": "是否允许被 Handle 的明确 collapseTarget 折叠"
+    },
+    "Splitter.Panel.collapsedSize": {
+      "type": "number",
+      "default": "0",
+      "desc": "折叠后的尺寸百分比"
+    },
+    "Splitter.Panel.collapsed": {
+      "type": "boolean",
+      "default": "—",
+      "desc": "受控折叠状态"
+    },
+    "Splitter.Panel.defaultCollapsed": {
+      "type": "boolean",
+      "default": "false",
+      "desc": "非受控初始折叠状态"
+    },
+    "Splitter.Panel.onCollapsedChange": {
+      "type": "(collapsed: boolean) => void",
+      "default": "—",
+      "desc": "Handle 请求切换折叠状态时触发；外部直接修改受控值不反向触发"
+    },
+    "Splitter.Panel.classNames": {
+      "type": "{ root?; content? }",
+      "default": "—",
+      "desc": "Panel 外层与内容包装器的 slot 类名"
+    }
+  },
+  "a11yNotes": [
+    "相邻 Panel 间自动生成具名 role=separator；aria-controls 同时关联前后稳定 Panel id",
+    "aria-valuemin/max 使用相邻两块的成对有效约束，aria-valuenow 始终反映前一 Panel 的实际尺寸",
+    "方向键步进 1%，PageUp/PageDown 步进 10%，Home/End 到有效边界；RTL 水平方向按视觉方向翻转",
+    "Enter 只操作 handleProps 明确指定且 collapsible 的 collapseTarget；disabled Handle 移出 Tab 序并停止交互",
+    "用户事件先执行，preventDefault 可取消对应的拖动、键盘或折叠内部行为",
+    "折叠内容保留 DOM，同时设置 inert、aria-hidden 与 pointer-events:none；内容内焦点会回退到相邻可用 Handle",
+    "拖动必须成功取得 Pointer Capture；pointerup 提交，Escape、pointercancel 或意外 lostcapture 恢复起点并以 cancelled=true 结束一次",
+    "固定 Handle grid 轨道不计入 Panel 的 100% 可分配空间；24px 命中区使用绝对热区扩展"
+  ],
+  "related": ["Flex", "Row", "Col", "Collapse"]
+}

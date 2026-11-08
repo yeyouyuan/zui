@@ -4,8 +4,13 @@ import { renderToString } from 'react-dom/server';
 
 import { Button } from '../components/Button';
 import { Combobox } from '../components/Combobox';
+import { CommandPalette } from '../components/CommandPalette';
+import { MultiCombobox } from '../components/MultiCombobox';
 import { Input } from '../components/Input';
 import { Select } from '../components/Select';
+import { SideNav } from '../components/SideNav';
+import { Splitter } from '../components/Splitter';
+import { Statistic } from '../components/Statistic';
 import { Tabs } from '../components/Tabs';
 import { Table } from '../components/Table';
 import { Alert } from '../components/Alert';
@@ -52,6 +57,22 @@ describe('SSR renderToString 冒烟', () => {
     expect(html).toContain('z-input-field');
   });
 
+  it('Input 子组件渲染不抛错，输出含 z- 类名', () => {
+    const textarea = renderSSR(<Input.Textarea placeholder="请输入" />);
+    expect(textarea).toContain('z-input-textarea');
+    const password = renderSSR(<Input.Password placeholder="请输入" />);
+    expect(password).toContain('type="password"');
+    expect(password).toContain('z-input-toggle');
+    const search = renderSSR(<Input.Search placeholder="请输入" />);
+    expect(search).toContain('z-input-search-button');
+  });
+
+  it('Statistic.CountDown 渲染不抛错，输出 role=timer 与 z- 类名', () => {
+    const html = renderSSR(<Statistic.CountDown value={Date.now() + 60_000} title="活动结束" />);
+    expect(html).toContain('z-statistic');
+    expect(html).toContain('role="timer"');
+  });
+
   it('Select 关闭态渲染不抛错，输出含 z- 类名', () => {
     const html = renderSSR(
       <Select
@@ -83,6 +104,78 @@ describe('SSR renderToString 冒烟', () => {
     expect(html).toContain('role="combobox"');
     expect(html).toContain('aria-expanded="false"');
     expect(html).not.toContain('role="listbox"');
+  });
+
+  it('MultiCombobox 关闭态渲染标签与 hidden input 且不输出 listbox', () => {
+    const html = renderSSR(
+      <MultiCombobox
+        options={[
+          { value: 'a', label: '选项 A' },
+          { value: 'b', label: '选项 B' },
+        ]}
+        defaultValue={['a']}
+        name="tags"
+        aria-label="多选搜索"
+      />
+    );
+    expect(html).toContain('z-multicombobox');
+    expect(html).toContain('z-multicombobox-tag');
+    expect(html).toContain('type="hidden"');
+    expect(html).toContain('aria-expanded="false"');
+    expect(html).not.toContain('role="listbox"');
+  });
+
+  it('SideNav SSR 渲染语义结构与当前页标记', () => {
+    const html = renderSSR(
+      <SideNav
+        sections={[
+          {
+            key: 'workspace',
+            label: '工作区',
+            items: [
+              { key: 'overview', label: '概览', href: '#/overview' },
+              {
+                key: 'settings',
+                label: '设置',
+                children: [{ key: 'profile', label: '资料', href: '#/settings/profile' }],
+              },
+            ],
+          },
+        ]}
+        currentKey="profile"
+        aria-label="主导航"
+      />
+    );
+    expect(html).toContain('z-sidenav');
+    expect(html).toContain('aria-current="page"');
+    expect(html).toContain('data-part="children"');
+    expect(html).toContain('aria-label="主导航"');
+  });
+
+  it('Splitter SSR 渲染 separator 与不占用 Handle 宽度的百分比轨道', () => {
+    const html = renderSSR(
+      <Splitter aria-label="工作台" defaultSizes={[40, 60]}>
+        <Splitter.Panel>左</Splitter.Panel>
+        <Splitter.Panel>右</Splitter.Panel>
+      </Splitter>
+    );
+    expect(html).toContain('z-splitter');
+    expect(html).toContain('role="separator"');
+    expect(html).toContain('grid-template-columns:40fr var(--z-splitter-handle-size) 60fr');
+    expect(html).toContain('aria-valuenow="40"');
+  });
+
+  it('CommandPalette SSR 不访问 DOM，Portal 首帧保持 hydration 稳定', () => {
+    const closed = renderSSR(
+      <CommandPalette commands={[{ key: 'open', label: '打开', onSelect: () => {} }]} />
+    );
+    expect(closed).toBe('');
+
+    const initiallyOpen = renderSSR(
+      <CommandPalette defaultOpen commands={[{ key: 'open', label: '打开', onSelect: () => {} }]} />
+    );
+    expect(initiallyOpen).toContain('data-zui-portal-source');
+    expect(initiallyOpen).not.toContain('role="dialog"');
   });
 
   it('Tabs 渲染不抛错，输出含 z- 类名', () => {

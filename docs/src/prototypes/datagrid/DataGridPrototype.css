@@ -1,0 +1,134 @@
+/* DataGrid 性能原型 —— 一次性测量脚手架样式（不进入组件库） */
+
+.datagrid-prototype {
+  display: flex;
+  flex-direction: column;
+  gap: var(--z-space-4);
+  padding: var(--z-space-5);
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: var(--z-font-sans);
+  color: var(--z-color-fg);
+}
+
+.datagrid-prototype h1 {
+  font-size: var(--z-text-xl);
+  font-weight: var(--z-weight-semibold);
+}
+
+.datagrid-prototype-lead {
+  color: var(--z-color-fg-muted);
+  font-size: var(--z-text-sm);
+}
+
+.datagrid-prototype-hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--z-space-4);
+  padding: var(--z-space-3) var(--z-space-4);
+  font-size: var(--z-text-xs);
+  color: var(--z-color-fg-muted);
+  background: var(--z-color-bg-muted);
+  border-radius: var(--z-radius-md);
+}
+
+.datagrid-prototype-grid {
+  border: 1px solid var(--z-color-border);
+  border-radius: var(--z-radius-md);
+  overflow: hidden;
+}
+
+.datagrid-prototype-header,
+.datagrid-prototype-row {
+  display: grid;
+  align-items: center;
+  min-width: max-content;
+}
+
+.datagrid-prototype-header {
+  position: relative;
+  z-index: 2;
+  background: var(--z-color-bg-muted);
+  border-bottom: 1px solid var(--z-color-border);
+  font-weight: var(--z-weight-medium);
+}
+
+.datagrid-prototype-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--z-space-2);
+  height: 100%;
+  padding: 0 var(--z-space-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--z-text-sm);
+}
+
+.datagrid-prototype-cell--sticky {
+  position: sticky;
+  z-index: 1;
+  background: var(--z-color-bg-elevated);
+}
+
+.datagrid-prototype-header .datagrid-prototype-cell--sticky {
+  background: var(--z-color-bg-muted);
+}
+
+.datagrid-prototype-cell--sticky-second {
+  border-inline-end: 1px solid var(--z-color-border);
+}
+
+.datagrid-prototype-row[data-selected='true'] .datagrid-prototype-cell {
+  background: var(--z-color-primary-subtle);
+}
+
+.datagrid-prototype-sort {
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--z-space-1);
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.datagrid-prototype-sort-arrow {
+  color: var(--z-color-primary);
+}
+
+.datagrid-prototype-resize {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  width: 0.5rem;
+  height: 100%;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.datagrid-prototype-resize:hover {
+  background: color-mix(in srgb, var(--z-color-primary) 30%, transparent);
+}
+
+.datagrid-prototype-viewport {
+  height: 480px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+html[data-z-datagrid-resizing] * {
+  cursor: col-resize !important;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .datagrid-prototype-resize:hover {
+    background: transparent;
+  }
+}

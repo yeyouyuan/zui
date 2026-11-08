@@ -21,6 +21,10 @@ export interface ModalContentProps extends React.ComponentPropsWithRef<'div'> {
   size?: 'sm' | 'md' | 'lg'; // 默认 'md'
   closeOnOverlay?: boolean; // 默认 true
   closeOnEsc?: boolean; // 默认 true
+  restoreFocus?: boolean; // 默认 true
+  returnFocusRef?: React.RefObject<HTMLElement | null>;
+  onEscapeKeyDown?: (event: KeyboardEvent) => void;
+  onOverlayMouseDown?: (event: React.MouseEvent<HTMLDivElement>) => void;
   classNames?: { overlay?: string; content?: string };
 }
 
@@ -158,10 +162,17 @@ function ModalContentInner(props: ModalContentProps) {
     size = 'md',
     closeOnOverlay = true,
     closeOnEsc = true,
+    restoreFocus = true,
+    returnFocusRef,
+    onEscapeKeyDown,
+    onOverlayMouseDown,
     classNames,
     className,
     children,
     ref: userRef,
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledBy,
+    'aria-describedby': ariaDescribedBy,
     ...rest
   } = props;
   const ctx = useModalContext('Modal.Content');
@@ -187,7 +198,8 @@ function ModalContentInner(props: ModalContentProps) {
   useFocusTrap(dialogRef, {
     active: ctx.open && dialogNode !== null,
     initialFocusSelector: '[data-autofocus]',
-    returnFocus: true,
+    returnFocus: restoreFocus,
+    returnFocusRef,
   });
 
   // Esc 关闭（document 级监听，焦点在 Portal 内也可靠）
@@ -207,21 +219,27 @@ function ModalContentInner(props: ModalContentProps) {
       const popoverTrigger =
         event.target instanceof Element &&
         !!event.target.closest<HTMLElement>('[data-zui-popover-trigger="open"]');
+      const native = event as KeyboardEvent & { keyCode?: number };
       if (
         event.key === 'Escape' &&
         !event.defaultPrevented &&
+        !native.isComposing &&
+        native.keyCode !== 229 &&
         isTopmost &&
         !inNestedPopup &&
         !activePopup &&
         !popoverTrigger
       ) {
-        event.preventDefault();
-        setOpen(false);
+        onEscapeKeyDown?.(event);
+        if (!event.defaultPrevented) {
+          event.preventDefault();
+          setOpen(false);
+        }
       }
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [open, closeOnEsc, setOpen]);
+  }, [open, closeOnEsc, onEscapeKeyDown, setOpen]);
 
   // 关闭后：退场动画结束（或兜底计时）再卸载
   React.useEffect(() => {
@@ -255,7 +273,9 @@ function ModalContentInner(props: ModalContentProps) {
         data-size={size}
         className={cx('z-modal-overlay', classNames?.overlay)}
         onMouseDown={(event) => {
-          if (closeOnOverlay && event.target === event.currentTarget) ctx.setOpen(false);
+          if (event.target !== event.currentTarget) return;
+          onOverlayMouseDown?.(event);
+          if (closeOnOverlay && !event.defaultPrevented) ctx.setOpen(false);
         }}
       >
         <div
@@ -264,8 +284,9 @@ function ModalContentInner(props: ModalContentProps) {
           role="dialog"
           aria-modal="true"
           tabIndex={-1}
-          aria-labelledby={ctx.hasTitle ? ctx.titleId : undefined}
-          aria-describedby={ctx.hasDescription ? ctx.descriptionId : undefined}
+          aria-label={ariaLabelledBy ? undefined : ariaLabel}
+          aria-labelledby={ariaLabelledBy ?? (ctx.hasTitle ? ctx.titleId : undefined)}
+          aria-describedby={ariaDescribedBy ?? (ctx.hasDescription ? ctx.descriptionId : undefined)}
           data-part="content"
           data-state={state}
           data-size={size}

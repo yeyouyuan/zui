@@ -1,8 +1,21 @@
-import { Suspense, Component, useEffect, useRef, useState } from 'react';
+import { Suspense, Component, lazy, useEffect, useRef, useState } from 'react';
 
 import PageToc from './components/PageToc';
 import { useHashRoute, hrefFor } from './router';
 import { GROUP_LABELS, GROUP_ORDER, navItems, routeComponents, type NavItem } from './nav';
+import { ADMIN_SHELL_ROUTE_PREFIX } from './prototypes/admin-shell/routes';
+import { SPLITTER_DETAIL_ROUTE, SPLITTER_IDE_ROUTE } from './prototypes/splitter/routes';
+import { DATAGRID_ROUTE } from './prototypes/datagrid/routes';
+import type { SideNavSection } from '@zui/react';
+
+const AdminShellPrototype = lazy(() => import('./prototypes/admin-shell/AdminShellPrototype'));
+const SplitterPrototype = lazy(() => import('./prototypes/splitter/SplitterPrototype'));
+const DataGridPrototype = lazy(() => import('./prototypes/datagrid/DataGridPrototype'));
+const DocsNavigationDrawer = lazy(() => import('./components/DocsNavigationDrawer'));
+const SideNav = lazy(async () => {
+  const module = await import('@zui/react');
+  return { default: module.SideNav };
+});
 
 /** 站点展示版本（后续可改为从 package.json 读取） */
 const SITE_VERSION = 'v0.2.0';
@@ -55,13 +68,16 @@ class PageErrorBoundary extends Component<{ children: React.ReactNode }, { error
 
 export default function App(): React.ReactNode {
   const route = useHashRoute();
+  const isBuilderRoute = route === '/builder';
+  const mobileQuery = isBuilderRoute ? '(max-width: 900px)' : '(max-width: 767px)';
+  const [isMobile, setIsMobile] = useState(() => window.matchMedia(mobileQuery).matches);
   const [dark, setDark] = useState<boolean>(getEffectiveDarkTheme);
   const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const mainRef = useRef<HTMLElement | null>(null);
-  const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const navSearchRef = useRef<HTMLInputElement | null>(null);
-  const focusPageOnRouteRef = useRef(false);
+  const mobileSearchRef = useRef<HTMLInputElement | null>(null);
+  const focusPageOnRouteRef = useRef<string | null>(null);
 
   // 暗色切换：写 data-theme，文档 chrome 自身复用 z 令牌（docs.css 全部走 var(--z-*)）
   const toggleDark = () => {
@@ -75,9 +91,13 @@ export default function App(): React.ReactNode {
     setDark(getEffectiveDarkTheme());
     setMenuOpen(false);
     mainRef.current?.scrollTo({ top: 0 });
-    if (!focusPageOnRouteRef.current) return undefined;
+  }, [route]);
 
-    focusPageOnRouteRef.current = false;
+  // 导航关闭 Drawer 后，等其归还触发焦点，再把焦点交给已提交路由的标题。
+  useEffect(() => {
+    if (menuOpen || focusPageOnRouteRef.current !== route) return undefined;
+
+    focusPageOnRouteRef.current = null;
     const main = mainRef.current;
     if (!main) return undefined;
 
@@ -105,12 +125,23 @@ export default function App(): React.ReactNode {
     };
     const headingObserver = new MutationObserver(scheduleFocus);
 
-    // 已缓存的页面可能同步挂载；首次加载的 lazy 页面则等待 Suspense 内容真正进入 DOM。
-    if (focusHeading()) return cleanup;
+    // 已缓存的页面也延后一帧；首次加载的 lazy 页面等待 Suspense 内容真正进入 DOM。
     headingObserver.observe(main, { childList: true, subtree: true });
+    scheduleFocus();
     focusTimeout = window.setTimeout(cleanup, 10_000);
     return cleanup;
-  }, [route]);
+  }, [route, menuOpen]);
+
+  useEffect(() => {
+    const media = window.matchMedia(mobileQuery);
+    const syncViewport = () => {
+      setIsMobile(media.matches);
+      if (!media.matches) setMenuOpen(false);
+    };
+    syncViewport();
+    media.addEventListener('change', syncViewport);
+    return () => media.removeEventListener('change', syncViewport);
+  }, [mobileQuery]);
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)');
@@ -127,30 +158,20 @@ export default function App(): React.ReactNode {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
-        navSearchRef.current?.focus();
+        // resize 的媒体事件可能尚未提交；快捷键按当前视口选择搜索入口。
+        const mobile = window.matchMedia(mobileQuery).matches;
+        setIsMobile(mobile);
+        if (mobile) {
+          setMenuOpen(true);
+          mobileSearchRef.current?.focus();
+        } else {
+          navSearchRef.current?.focus();
+        }
       }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, []);
-
-  // 移动端菜单：Esc 关闭
-  useEffect(() => {
-    if (!menuOpen) return;
-    const focusFrame = window.requestAnimationFrame(() => navSearchRef.current?.focus());
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        setMenuOpen(false);
-        window.requestAnimationFrame(() => menuButtonRef.current?.focus());
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => {
-      window.cancelAnimationFrame(focusFrame);
-      window.removeEventListener('keydown', onKeyDown);
-    };
-  }, [menuOpen]);
+  }, [mobileQuery]);
 
   // 侧栏搜索过滤：按名称即时过滤导航项
   const keyword = query.trim().toLowerCase();
@@ -158,32 +179,145 @@ export default function App(): React.ReactNode {
     ? navItems.filter((item) => item.title.toLowerCase().includes(keyword))
     : navItems;
 
-  const groups = GROUP_ORDER.map((group) => ({
-    group,
-    title: GROUP_LABELS[group],
-    items: filtered.filter((item) => item.group === group),
+  const sections: SideNavSection[] = GROUP_ORDER.map((group) => ({
+    key: group,
+    label: GROUP_LABELS[group],
+    items: filtered
+      .filter((item) => item.group === group)
+      .map((item) => ({ key: item.path, label: item.title, href: hrefFor(item.path) })),
   })).filter((entry) => entry.items.length > 0);
 
-  // 路由映射走 nav.ts 注册表
+  // 公开文档路由走 nav.ts；SideNav 后台壳是隐藏直达原型，不进入公开导航。
+  const isAdminShellRoute =
+    route === ADMIN_SHELL_ROUTE_PREFIX || route.startsWith(`${ADMIN_SHELL_ROUTE_PREFIX}/`);
+  const splitterPrototypeVariant =
+    route === SPLITTER_IDE_ROUTE ? 'ide' : route === SPLITTER_DETAIL_ROUTE ? 'detail' : null;
+  const isDatagridRoute = route === DATAGRID_ROUTE;
   const current = navItems.find((item) => item.path === route);
   const Page = current ? routeComponents[route] : undefined;
-  const isBuilderRoute = route === '/builder';
+
+  const renderNavigation = (mobile: boolean) => (
+    <>
+      <div className="doc-nav-search" role="search" aria-label="搜索文档导航">
+        <input
+          ref={mobile ? mobileSearchRef : navSearchRef}
+          data-autofocus={mobile ? '' : undefined}
+          type="search"
+          className="doc-nav-search-input"
+          placeholder="搜索文档… ⌘K"
+          aria-label="按名称过滤导航项"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+      </div>
+      {sections.length === 0 ? (
+        <p className="doc-nav-empty">没有匹配「{query.trim()}」的页面</p>
+      ) : null}
+      <Suspense
+        fallback={
+          <div className="doc-nav-loading" aria-hidden="true">
+            {Array.from({ length: 8 }, (_, index) => (
+              <span key={index} />
+            ))}
+          </div>
+        }
+      >
+        <SideNav
+          className="doc-sidenav"
+          aria-label="文档导航"
+          sections={sections}
+          currentKey={route}
+          collapsed={false}
+          collapsible={false}
+          classNames={{
+            section: 'doc-nav-group',
+            sectionLabel: 'doc-nav-group-title',
+            list: 'doc-nav-list',
+            link: 'doc-nav-link',
+          }}
+          onNavigate={
+            mobile
+              ? (key) => {
+                  focusPageOnRouteRef.current = key;
+                  setMenuOpen(false);
+                }
+              : undefined
+          }
+        />
+      </Suspense>
+    </>
+  );
+
+  if (isAdminShellRoute) {
+    return (
+      <PageErrorBoundary key="admin-shell-prototype">
+        <Suspense
+          fallback={
+            <p className="doc-p" role="status">
+              正在加载后台壳原型…
+            </p>
+          }
+        >
+          <AdminShellPrototype />
+        </Suspense>
+      </PageErrorBoundary>
+    );
+  }
+
+  if (splitterPrototypeVariant) {
+    return (
+      <PageErrorBoundary key={`splitter-${splitterPrototypeVariant}-prototype`}>
+        <Suspense
+          fallback={
+            <p className="doc-p" role="status">
+              正在加载 Splitter 原型…
+            </p>
+          }
+        >
+          <SplitterPrototype variant={splitterPrototypeVariant} />
+        </Suspense>
+      </PageErrorBoundary>
+    );
+  }
+
+  if (isDatagridRoute) {
+    return (
+      <PageErrorBoundary key="datagrid-prototype">
+        <Suspense
+          fallback={
+            <p className="doc-p" role="status">
+              正在加载 DataGrid 性能原型…
+            </p>
+          }
+        >
+          <DataGridPrototype />
+        </Suspense>
+      </PageErrorBoundary>
+    );
+  }
 
   return (
     <div className={isBuilderRoute ? 'doc-shell doc-shell--builder' : 'doc-shell'}>
       <header className="doc-topbar">
         <div className="doc-topbar-left">
-          <button
-            ref={menuButtonRef}
-            type="button"
-            className="doc-menu-btn"
-            aria-expanded={menuOpen}
-            aria-controls="doc-sidebar"
-            aria-label={menuOpen ? '关闭文档菜单' : '打开文档菜单'}
-            onClick={() => setMenuOpen((prev) => !prev)}
-          >
-            菜单
-          </button>
+          {isMobile ? (
+            <Suspense
+              fallback={
+                <button
+                  type="button"
+                  className="doc-menu-btn"
+                  disabled
+                  aria-label="正在加载文档菜单"
+                >
+                  菜单
+                </button>
+              }
+            >
+              <DocsNavigationDrawer open={menuOpen} onOpenChange={setMenuOpen}>
+                {renderNavigation(true)}
+              </DocsNavigationDrawer>
+            </Suspense>
+          ) : null}
           <a className="doc-brand" href={hrefFor('/')}>
             <span className="doc-brand-mark">Z</span>
             <span className="doc-brand-name">ZUI</span>
@@ -205,71 +339,9 @@ export default function App(): React.ReactNode {
         </div>
       </header>
 
-      {menuOpen ? (
-        <div
-          className="doc-sidebar-backdrop"
-          aria-hidden="true"
-          onClick={() => setMenuOpen(false)}
-        />
-      ) : null}
-
-      <nav
-        id="doc-sidebar"
-        className={menuOpen ? 'doc-sidebar doc-sidebar--open' : 'doc-sidebar'}
-        aria-label="文档导航"
-      >
-        <div className="doc-nav-search">
-          <input
-            ref={navSearchRef}
-            type="search"
-            className="doc-nav-search-input"
-            placeholder="搜索文档… ⌘K"
-            aria-label="按名称过滤导航项"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-        </div>
-
-        {groups.length === 0 ? (
-          <p className="doc-nav-empty">没有匹配「{query.trim()}」的页面</p>
-        ) : (
-          groups.map((entry) => (
-            <div className="doc-nav-group" key={entry.group}>
-              <div className="doc-nav-group-title">{entry.title}</div>
-              <ul className="doc-nav-list">
-                {entry.items.map((item) => (
-                  <li key={item.path}>
-                    <a
-                      className={
-                        item.path === route ? 'doc-nav-link doc-nav-link--active' : 'doc-nav-link'
-                      }
-                      href={hrefFor(item.path)}
-                      aria-current={item.path === route ? 'page' : undefined}
-                      onClick={() => {
-                        if (!menuOpen) return;
-                        setMenuOpen(false);
-                        if (item.path === route) {
-                          window.requestAnimationFrame(() => {
-                            const heading =
-                              mainRef.current?.querySelector<HTMLHeadingElement>('h1');
-                            if (!heading) return;
-                            heading.tabIndex = -1;
-                            heading.focus();
-                          });
-                        } else {
-                          focusPageOnRouteRef.current = true;
-                        }
-                      }}
-                    >
-                      {item.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))
-        )}
-      </nav>
+      <div id="doc-sidebar" className="doc-sidebar">
+        {renderNavigation(false)}
+      </div>
 
       <main
         className={isBuilderRoute ? 'doc-main doc-main--wide' : 'doc-main'}

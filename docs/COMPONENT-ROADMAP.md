@@ -1,6 +1,6 @@
 # ZUI 后续组件路线图
 
-状态：2026-11-08 实施后复核。Combobox 已实现但尚未进入 v0.2.0 发布基线；其余候选仍只代表设计顺序。
+状态：2026-11-09 实施后复核。Combobox、MultiCombobox、SideNav、Splitter、CommandPalette 均已实现并进入 Registry（71 个组件 + 16 个业务块，共 87 个条目），随下一版本发布。DataGrid 立项前置已完成：性能原型实测达标（排序 23ms / 全选 10.9ms / 列宽最差帧 49.7ms，10k 行），独立大型 RFC 已起草（rfcs/datagrid.md），待评审后分期实现。
 
 ## 现状与判断标准
 
@@ -14,13 +14,14 @@ ZUI v0.2.0 已有 66 个 UI 组件，基础表单、日期、浮层、反馈和�
 
 ## 优先级
 
-| 顺序 | 候选             | 解决的问题                                                                         | 首版范围                                                      | 结论               |
-| ---- | ---------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------ |
-| 1    | `Combobox`       | `Select` 只能选择，缺少可编辑搜索、异步结果和严格选项型自动完成                    | 单选、输入过滤、外部异步 options、严格选项、完整 IME/键盘支持 | 已实现，待下一版本 |
-| 2    | `SideNav`        | 文档站与路由型后台壳重复手写持久侧栏、分组、展开与当前位置                         | 语义化 `nav/list/link`、分组、层级、折叠、路由适配            | RFC 修订，待双原型 |
-| 3    | `Splitter`       | Row/Col/Flex 只能静态布局，无法支持主从详情、编辑器和仪表盘可调分栏                | 水平/垂直、受控尺寸、min/max、折叠、键盘 separator            | 下一份 RFC         |
-| 4    | `DataGrid`       | `Table` 与 `VirtualTable` 缺少交互式列宽调整、排序、筛选、选择和完整 grid 键盘模型 | 先做能力拆分与性能原型，不直接实现                            | 独立大型 RFC       |
-| 5    | `CommandPalette` | 文档和后台缺少全局命令搜索                                                         | 复用未来的 `Combobox` + `Modal`，支持分组命令与快捷键         | Combobox 之后评估  |
+| 顺序 | 候选             | 解决的问题                                                                         | 首版范围                                                      | 结论                   |
+| ---- | ---------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------- | ---------------------- |
+| 1    | `Combobox`       | `Select` 只能选择，缺少可编辑搜索、异步结果和严格选项型自动完成                    | 单选、输入过滤、外部异步 options、严格选项、完整 IME/键盘支持 | 已实现，待下一版本     |
+| 1.5  | `MultiCombobox`  | 同构 options 的多选场景（标签、负责人、批量实体）                                  | RFC-001 §16 边界：toggle 多选、标签删除、异步通道同构         | 已实现，待下一版本     |
+| 2    | `SideNav`        | 文档站与路由型后台壳重复手写持久侧栏、分组、展开与当前位置                         | 语义化 `nav/list/link`、分组、层级、折叠、路由适配            | 已正式实现，待下一版本 |
+| 3    | `Splitter`       | Row/Col/Flex 只能静态布局，无法支持主从详情、编辑器和仪表盘可调分栏                | 水平/垂直、受控尺寸、min/max、折叠、键盘 separator            | 已正式实现，待下一版本 |
+| 4    | `DataGrid`       | `Table` 与 `VirtualTable` 缺少交互式列宽调整、排序、筛选、选择和完整 grid 键盘模型 | 先做能力拆分与性能原型，不直接实现                            | RFC 已起草（含实测），待评审   |
+| 5    | `CommandPalette` | 文档和后台缺少全局命令搜索                                                         | 复用未来的 `Combobox` + `Modal`，支持分组命令与快捷键         | 已正式实现，待下一版本 |
 
 ## 为什么先做 Combobox
 
@@ -35,6 +36,8 @@ ZUI v0.2.0 已有 66 个 UI 组件，基础表单、日期、浮层、反馈和�
 
 详细首版方案见 [SideNav RFC](./rfcs/sidenav.md)。
 
+**评审与正式化（2026-11-09）**：RFC §11 要求的两个迁移原型已完成并通过评审——评审证据为 `e2e/sidenav-prototype.spec.ts` 的 8 条自动化用例（宽态语义、收窄 flyout 键盘 Tab 链、链接取消组合、动态项焦点回退、RTL、320px Drawer、文档外壳过滤与 axe）。正式实现落在 `packages/ui/src/components/SideNav/`，文档站侧栏与后台壳原型页均已切换到公共导出，原型私有实现已删除。
+
 `SideNav` 面向站点和后台导航，不使用动作菜单的 `role="menu"` 模式：
 
 - 根结构优先为 `<nav><ul><li><a>`，当前页用 `aria-current="page"`。
@@ -42,18 +45,22 @@ ZUI v0.2.0 已有 66 个 UI 组件，基础表单、日期、浮层、反馈和�
 - 路由跳转由链接或调用方路由组件负责，ZUI 不绑定具体 Router。
 - 桌面折叠与移动端抽屉是不同布局职责；首版只提供导航本体，不内置 Drawer。
 - `DropdownMenu` 继续负责按钮触发的动作菜单，两者不合并。
-- 编码前先用文档站侧栏与真实路由型 `AdminShell` 做迁移原型；同页按钮切换的 `SettingsBlock` 不作为导航组件成立的证据。
+- 正式化前已用文档站侧栏与真实路由型 `AdminShell` 完成双迁移原型并通过 8 条 E2E；同页按钮切换的 `SettingsBlock` 不作为导航组件成立的证据。
 
 ## Splitter 设计边界
 
-建议采用 compound API：`Splitter`、`Splitter.Panel`、`Splitter.Handle`。
+详细首版方案见 [Splitter RFC](./rfcs/splitter.md)。
+
+**评审与正式化（2026-11-09）**：RFC §11 的 IDE 三栏壳与主从详情两个隐藏迁移原型已完成，浏览器证据收敛在 `e2e/splitter-prototype.spec.ts`。正式 API 只公开 `Splitter` 与 `Splitter.Panel`；相邻 Handle 自动生成，避免调用方数量与 Panel 轨道失配。
 
 - `orientation="horizontal | vertical"`。
-- `sizes/defaultSizes/onSizesChange/onResizeEnd`。
+- `sizes/defaultSizes/onSizesChange/onResizeEnd`，结束详情区分实际尺寸、请求尺寸与取消边界。
 - Panel 提供 `minSize/maxSize/collapsible/collapsedSize`。
-- Handle 使用 `role="separator"`，暴露 `aria-valuemin/max/now`。
-- Pointer Capture 处理拖动；方向键微调，Home/End 到边界。
-- ResizeObserver 处理容器变化；窄屏降级策略必须在 RFC 中明确。
+- `handleProps(context)` 定制自动 Handle 的名称、原生事件、disabled 与明确 `collapseTarget`。
+- Handle 使用具名 `role="separator"`，`aria-controls` 同时关联两侧稳定 Panel id，并暴露成对有效的 `aria-valuemin/max/now`。
+- Pointer Capture 处理拖动；pointerup 提交，Escape / pointercancel / 意外 lostcapture 恢复快照；键盘在 keyup / blur 提交。
+- Panel 百分比只分配 `容器主轴 - 固定 Handle 轨道`；ResizeObserver 跟随容器恢复，320px 下不产生文档横向溢出。
+- 折叠内容保持挂载，但同步 `inert + aria-hidden`；折叠前位于内容内的焦点回退到相关 Handle。
 
 ## DataGrid 立项前置条件
 

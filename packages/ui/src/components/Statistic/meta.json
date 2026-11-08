@@ -1,21 +1,55 @@
 {
   "name": "Statistic",
-  "description": "统计数值：标题 + 千分位数字 + 前后缀，大数字字重 600",
+  "description": "统计数值：标题 + 千分位数字 + 前后缀，大数字字重 600；含 CountDown 倒计时子组件",
   "category": "数据展示",
-  "useCase": ["仪表盘指标卡", "运营数据概览（金额/人数/增长率）", "详情页关键指标"],
+  "useCase": [
+    "仪表盘指标卡",
+    "运营数据概览（金额/人数/增长率）",
+    "详情页关键指标",
+    "秒杀/活动/审核倒计时（Statistic.CountDown）"
+  ],
   "dontUse": ["图表趋势用图表库", "多字段键值对用 Descriptions", "可编辑数字输入用 InputNumber"],
   "props": {
     "title": { "type": "React.ReactNode", "default": "—", "desc": "指标标题" },
-    "value": { "type": "number | string", "default": "—", "desc": "数值（number 千分位格式化；非数字字符串原样显示）" },
+    "value": {
+      "type": "number | string",
+      "default": "—",
+      "desc": "数值（number 千分位格式化；非数字字符串原样显示）"
+    },
     "precision": { "type": "number", "default": "—", "desc": "小数位（仅数字生效）" },
     "prefix": { "type": "React.ReactNode", "default": "—", "desc": "前置内容（如货币符号）" },
     "suffix": { "type": "React.ReactNode", "default": "—", "desc": "后置内容（如单位）" },
-    "valueStyle": { "type": "React.CSSProperties", "default": "—", "desc": "数值行内联样式（style 覆盖）" },
-    "classNames": { "type": "{ root?; title?; value?; suffix? }", "default": "—", "desc": "slot 级类名追加" }
+    "valueStyle": {
+      "type": "React.CSSProperties",
+      "default": "—",
+      "desc": "数值行内联样式（style 覆盖）"
+    },
+    "classNames": {
+      "type": "{ root?; title?; value?; suffix? }",
+      "default": "—",
+      "desc": "slot 级类名追加"
+    },
+    "Statistic.CountDown.value": {
+      "type": "number | string | Date",
+      "default": "（必填）",
+      "desc": "目标时间：毫秒时间戳、可解析时间字符串或 Date"
+    },
+    "Statistic.CountDown.onFinish": {
+      "type": "() => void",
+      "default": "—",
+      "desc": "每个目标时间倒计时到 0 时触发一次（StrictMode 重放不重复）"
+    },
+    "Statistic.CountDown.title": { "type": "React.ReactNode", "default": "—", "desc": "指标标题" },
+    "Statistic.CountDown.classNames": {
+      "type": "{ root?; title?; value?; suffix? }",
+      "default": "—",
+      "desc": "slot 级类名追加"
+    }
   },
   "a11yNotes": [
     "数字用 tabular-nums 等宽数字，避免跳动",
     "大数字字重 600（--z-statistic-value-font-weight），标题/前后缀弱化为 muted",
+    "CountDown 根元素 role=timer + 可访问名默认取 locale.statistic.countdown（可用 aria-label 覆盖），SSR/水合首帧为确定性占位，到点后停在 00:00:00",
     "aria-* / 事件等原生属性透传到根元素（div）"
   ],
   "related": ["Descriptions", "Table", "Card"]

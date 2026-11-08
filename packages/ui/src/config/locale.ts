@@ -67,6 +67,28 @@ export interface ZuiLocale {
   };
 
   select: { placeholder: string; empty: string }; // '请选择' / '暂无选项'
+  sideNav: {
+    navigation: string;
+    collapse: string;
+    expand: string;
+    expandGroup: string; // 支持 {label}
+    collapseGroup: string; // 支持 {label}
+  };
+  splitter: {
+    panelLabel: string; // 支持 {index}
+    resizeHandle: string;
+    expandPanel: string;
+    collapsePanel: string;
+  };
+  commandPalette: {
+    title: string;
+    search: string;
+    placeholder: string;
+    loading: string;
+    empty: string;
+    results: string;
+  };
+  statistic: { countdown: string }; // '倒计时'
   combobox: {
     placeholder: string;
     clear: string;
@@ -76,7 +98,7 @@ export interface ZuiLocale {
     empty: string;
     results: string;
   };
-  input: { clear: string }; // '清除'
+  input: { clear: string; showPassword: string; hidePassword: string; search: string }; // '清除' / '显示密码' / '隐藏密码' / '搜索'
   modal: { close: string }; // '关闭'
   drawer: { close: string }; // '关闭'
   message: { close: string }; // '关闭'
@@ -213,6 +235,28 @@ export const zhCN: ZuiLocale = {
   },
 
   select: { placeholder: '请选择', empty: '暂无选项' },
+  sideNav: {
+    navigation: '导航',
+    collapse: '收窄导航',
+    expand: '展开导航',
+    expandGroup: '展开分组 {label}',
+    collapseGroup: '收起分组 {label}',
+  },
+  splitter: {
+    panelLabel: '面板 {index}',
+    resizeHandle: '调整面板大小',
+    expandPanel: '展开面板',
+    collapsePanel: '折叠面板',
+  },
+  commandPalette: {
+    title: '命令面板',
+    search: '搜索命令',
+    placeholder: '搜索命令…',
+    loading: '正在加载命令',
+    empty: '没有匹配的命令',
+    results: '找到 {count} 条命令',
+  },
+  statistic: { countdown: '倒计时' },
   combobox: {
     placeholder: '请输入或选择',
     clear: '清除选择',
@@ -222,7 +266,7 @@ export const zhCN: ZuiLocale = {
     empty: '暂无匹配选项',
     results: '找到 {count} 项',
   },
-  input: { clear: '清除' },
+  input: { clear: '清除', showPassword: '显示密码', hidePassword: '隐藏密码', search: '搜索' },
   modal: { close: '关闭' },
   drawer: { close: '关闭' },
   message: { close: '关闭' },
@@ -333,6 +377,28 @@ export const enUS: ZuiLocale = {
   },
 
   select: { placeholder: 'Select...', empty: 'No options' },
+  sideNav: {
+    navigation: 'Navigation',
+    collapse: 'Collapse navigation',
+    expand: 'Expand navigation',
+    expandGroup: 'Expand group {label}',
+    collapseGroup: 'Collapse group {label}',
+  },
+  splitter: {
+    panelLabel: 'Panel {index}',
+    resizeHandle: 'Resize panel',
+    expandPanel: 'Expand panel',
+    collapsePanel: 'Collapse panel',
+  },
+  commandPalette: {
+    title: 'Command palette',
+    search: 'Search commands',
+    placeholder: 'Type a command…',
+    loading: 'Loading commands',
+    empty: 'No matching commands',
+    results: '{count} commands found',
+  },
+  statistic: { countdown: 'Countdown' },
   combobox: {
     placeholder: 'Type or select...',
     clear: 'Clear selection',
@@ -342,7 +408,12 @@ export const enUS: ZuiLocale = {
     empty: 'No matching options',
     results: '{count} results',
   },
-  input: { clear: 'Clear' },
+  input: {
+    clear: 'Clear',
+    showPassword: 'Show password',
+    hidePassword: 'Hide password',
+    search: 'Search',
+  },
   modal: { close: 'Close' },
   drawer: { close: 'Close' },
   message: { close: 'Close' },
@@ -453,6 +524,28 @@ export const zhTW: ZuiLocale = {
   },
 
   select: { placeholder: '請選擇', empty: '暫無選項' },
+  sideNav: {
+    navigation: '導覽',
+    collapse: '收窄導覽',
+    expand: '展開導覽',
+    expandGroup: '展開分組 {label}',
+    collapseGroup: '收起分組 {label}',
+  },
+  splitter: {
+    panelLabel: '面板 {index}',
+    resizeHandle: '調整面板大小',
+    expandPanel: '展開面板',
+    collapsePanel: '摺疊面板',
+  },
+  commandPalette: {
+    title: '命令面板',
+    search: '搜尋命令',
+    placeholder: '搜尋命令…',
+    loading: '正在載入命令',
+    empty: '沒有符合的命令',
+    results: '找到 {count} 個命令',
+  },
+  statistic: { countdown: '倒數計時' },
   combobox: {
     placeholder: '請輸入或選擇',
     clear: '清除選擇',
@@ -462,7 +555,7 @@ export const zhTW: ZuiLocale = {
     empty: '暫無符合的選項',
     results: '找到 {count} 項',
   },
-  input: { clear: '清除' },
+  input: { clear: '清除', showPassword: '顯示密碼', hidePassword: '隱藏密碼', search: '搜尋' },
   modal: { close: '關閉' },
   drawer: { close: '關閉' },
   message: { close: '關閉' },
@@ -568,6 +661,28 @@ export const jaJP: ZuiLocale = {
   },
 
   select: { placeholder: '選択してください', empty: 'データがありません' },
+  sideNav: {
+    navigation: 'ナビゲーション',
+    collapse: 'ナビゲーションを折りたたむ',
+    expand: 'ナビゲーションを展開',
+    expandGroup: 'グループを展開 {label}',
+    collapseGroup: 'グループを折りたたむ {label}',
+  },
+  splitter: {
+    panelLabel: 'パネル {index}',
+    resizeHandle: 'ペインのサイズを変更',
+    expandPanel: 'ペインを展開',
+    collapsePanel: 'ペインを折りたたむ',
+  },
+  commandPalette: {
+    title: 'コマンドパレット',
+    search: 'コマンドを検索',
+    placeholder: 'コマンドを検索…',
+    loading: 'コマンドを読み込み中',
+    empty: '一致するコマンドがありません',
+    results: '{count} 件のコマンド',
+  },
+  statistic: { countdown: 'カウントダウン' },
   combobox: {
     placeholder: '入力または選択してください',
     clear: '選択をクリア',
@@ -577,7 +692,12 @@ export const jaJP: ZuiLocale = {
     empty: '一致する選択肢がありません',
     results: '{count} 件の結果',
   },
-  input: { clear: 'クリア' },
+  input: {
+    clear: 'クリア',
+    showPassword: 'パスワードを表示',
+    hidePassword: 'パスワードを隠す',
+    search: '検索',
+  },
   modal: { close: '閉じる' },
   drawer: { close: '閉じる' },
   message: { close: '閉じる' },
@@ -687,6 +807,28 @@ export const koKR: ZuiLocale = {
   },
 
   select: { placeholder: '선택하세요', empty: '옵션 없음' },
+  sideNav: {
+    navigation: '탐색',
+    collapse: '탐색 축소',
+    expand: '탐색 펼치기',
+    expandGroup: '그룹 펼치기 {label}',
+    collapseGroup: '그룹 접기 {label}',
+  },
+  splitter: {
+    panelLabel: '패널 {index}',
+    resizeHandle: '패널 크기 조정',
+    expandPanel: '패널 펼치기',
+    collapsePanel: '패널 접기',
+  },
+  commandPalette: {
+    title: '명령 팔레트',
+    search: '명령 검색',
+    placeholder: '명령 검색…',
+    loading: '명령을 불러오는 중',
+    empty: '일치하는 명령이 없습니다',
+    results: '명령 {count}개',
+  },
+  statistic: { countdown: '카운트다운' },
   combobox: {
     placeholder: '입력하거나 선택하세요',
     clear: '선택 지우기',
@@ -696,7 +838,12 @@ export const koKR: ZuiLocale = {
     empty: '일치하는 옵션 없음',
     results: '{count}개 결과',
   },
-  input: { clear: '지우기' },
+  input: {
+    clear: '지우기',
+    showPassword: '비밀번호 표시',
+    hidePassword: '비밀번호 숨기기',
+    search: '검색',
+  },
   modal: { close: '닫기' },
   drawer: { close: '닫기' },
   message: { close: '닫기' },
@@ -811,6 +958,28 @@ export const frFR: ZuiLocale = {
   },
 
   select: { placeholder: 'Sélectionner...', empty: 'Aucune option' },
+  sideNav: {
+    navigation: 'Navigation',
+    collapse: 'Réduire la navigation',
+    expand: 'Développer la navigation',
+    expandGroup: 'Développer le groupe {label}',
+    collapseGroup: 'Réduire le groupe {label}',
+  },
+  splitter: {
+    panelLabel: 'Panneau {index}',
+    resizeHandle: 'Redimensionner le panneau',
+    expandPanel: 'Développer le panneau',
+    collapsePanel: 'Réduire le panneau',
+  },
+  commandPalette: {
+    title: 'Palette de commandes',
+    search: 'Rechercher des commandes',
+    placeholder: 'Rechercher une commande…',
+    loading: 'Chargement des commandes',
+    empty: 'Aucune commande correspondante',
+    results: '{count} commandes trouvées',
+  },
+  statistic: { countdown: 'Compte à rebours' },
   combobox: {
     placeholder: 'Saisir ou sélectionner...',
     clear: 'Effacer la sélection',
@@ -820,7 +989,12 @@ export const frFR: ZuiLocale = {
     empty: 'Aucune option correspondante',
     results: '{count} résultats',
   },
-  input: { clear: 'Effacer' },
+  input: {
+    clear: 'Effacer',
+    showPassword: 'Afficher le mot de passe',
+    hidePassword: 'Masquer le mot de passe',
+    search: 'Rechercher',
+  },
   modal: { close: 'Fermer' },
   drawer: { close: 'Fermer' },
   message: { close: 'Fermer' },
@@ -935,6 +1109,28 @@ export const deDE: ZuiLocale = {
   },
 
   select: { placeholder: 'Auswählen...', empty: 'Keine Optionen' },
+  sideNav: {
+    navigation: 'Navigation',
+    collapse: 'Navigation einklappen',
+    expand: 'Navigation ausklappen',
+    expandGroup: 'Gruppe aufklappen {label}',
+    collapseGroup: 'Gruppe zuklappen {label}',
+  },
+  splitter: {
+    panelLabel: 'Bereich {index}',
+    resizeHandle: 'Panelgröße ändern',
+    expandPanel: 'Panel ausklappen',
+    collapsePanel: 'Panel einklappen',
+  },
+  commandPalette: {
+    title: 'Befehlspalette',
+    search: 'Befehle suchen',
+    placeholder: 'Befehl suchen…',
+    loading: 'Befehle werden geladen',
+    empty: 'Keine passenden Befehle',
+    results: '{count} Befehle gefunden',
+  },
+  statistic: { countdown: 'Countdown' },
   combobox: {
     placeholder: 'Eingeben oder auswählen...',
     clear: 'Auswahl löschen',
@@ -944,7 +1140,12 @@ export const deDE: ZuiLocale = {
     empty: 'Keine passenden Optionen',
     results: '{count} Ergebnisse',
   },
-  input: { clear: 'Löschen' },
+  input: {
+    clear: 'Löschen',
+    showPassword: 'Passwort anzeigen',
+    hidePassword: 'Passwort verbergen',
+    search: 'Suchen',
+  },
   modal: { close: 'Schließen' },
   drawer: { close: 'Schließen' },
   message: { close: 'Schließen' },
@@ -1059,6 +1260,28 @@ export const esES: ZuiLocale = {
   },
 
   select: { placeholder: 'Seleccionar...', empty: 'Sin opciones' },
+  sideNav: {
+    navigation: 'Navegación',
+    collapse: 'Contraer navegación',
+    expand: 'Expandir navegación',
+    expandGroup: 'Expandir grupo {label}',
+    collapseGroup: 'Contraer grupo {label}',
+  },
+  splitter: {
+    panelLabel: 'Panel {index}',
+    resizeHandle: 'Cambiar tamaño del panel',
+    expandPanel: 'Expandir panel',
+    collapsePanel: 'Contraer panel',
+  },
+  commandPalette: {
+    title: 'Paleta de comandos',
+    search: 'Buscar comandos',
+    placeholder: 'Buscar comandos…',
+    loading: 'Cargando comandos',
+    empty: 'No hay comandos que coincidan',
+    results: '{count} comandos encontrados',
+  },
+  statistic: { countdown: 'Cuenta regresiva' },
   combobox: {
     placeholder: 'Escriba o seleccione...',
     clear: 'Borrar selección',
@@ -1068,7 +1291,12 @@ export const esES: ZuiLocale = {
     empty: 'No hay opciones coincidentes',
     results: '{count} resultados',
   },
-  input: { clear: 'Borrar' },
+  input: {
+    clear: 'Borrar',
+    showPassword: 'Mostrar contraseña',
+    hidePassword: 'Ocultar contraseña',
+    search: 'Buscar',
+  },
   modal: { close: 'Cerrar' },
   drawer: { close: 'Cerrar' },
   message: { close: 'Cerrar' },
@@ -1183,6 +1411,28 @@ export const ruRU: ZuiLocale = {
   },
 
   select: { placeholder: 'Выберите...', empty: 'Нет вариантов' },
+  sideNav: {
+    navigation: 'Навигация',
+    collapse: 'Свернуть навигацию',
+    expand: 'Развернуть навигацию',
+    expandGroup: 'Развернуть группу {label}',
+    collapseGroup: 'Свернуть группу {label}',
+  },
+  splitter: {
+    panelLabel: 'Панель {index}',
+    resizeHandle: 'Изменить размер панели',
+    expandPanel: 'Развернуть панель',
+    collapsePanel: 'Свернуть панель',
+  },
+  commandPalette: {
+    title: 'Палитра команд',
+    search: 'Поиск команд',
+    placeholder: 'Поиск команды…',
+    loading: 'Загрузка команд',
+    empty: 'Нет подходящих команд',
+    results: 'Найдено команд: {count}',
+  },
+  statistic: { countdown: 'Обратный отсчёт' },
   combobox: {
     placeholder: 'Введите или выберите...',
     clear: 'Очистить выбор',
@@ -1192,7 +1442,12 @@ export const ruRU: ZuiLocale = {
     empty: 'Нет подходящих вариантов',
     results: 'Результатов: {count}',
   },
-  input: { clear: 'Очистить' },
+  input: {
+    clear: 'Очистить',
+    showPassword: 'Показать пароль',
+    hidePassword: 'Скрыть пароль',
+    search: 'Найти',
+  },
   modal: { close: 'Закрыть' },
   drawer: { close: 'Закрыть' },
   message: { close: 'Закрыть' },
@@ -1307,6 +1562,28 @@ export const ptBR: ZuiLocale = {
   },
 
   select: { placeholder: 'Selecione...', empty: 'Sem opções' },
+  sideNav: {
+    navigation: 'Navegação',
+    collapse: 'Recolher navegação',
+    expand: 'Expandir navegação',
+    expandGroup: 'Expandir grupo {label}',
+    collapseGroup: 'Recolher grupo {label}',
+  },
+  splitter: {
+    panelLabel: 'Painel {index}',
+    resizeHandle: 'Redimensionar painel',
+    expandPanel: 'Expandir painel',
+    collapsePanel: 'Recolher painel',
+  },
+  commandPalette: {
+    title: 'Paleta de comandos',
+    search: 'Pesquisar comandos',
+    placeholder: 'Pesquisar comandos…',
+    loading: 'Carregando comandos',
+    empty: 'Nenhum comando correspondente',
+    results: '{count} comandos encontrados',
+  },
+  statistic: { countdown: 'Contagem regressiva' },
   combobox: {
     placeholder: 'Digite ou selecione...',
     clear: 'Limpar seleção',
@@ -1316,7 +1593,12 @@ export const ptBR: ZuiLocale = {
     empty: 'Nenhuma opção correspondente',
     results: '{count} resultados',
   },
-  input: { clear: 'Limpar' },
+  input: {
+    clear: 'Limpar',
+    showPassword: 'Mostrar senha',
+    hidePassword: 'Ocultar senha',
+    search: 'Pesquisar',
+  },
   modal: { close: 'Fechar' },
   drawer: { close: 'Fechar' },
   message: { close: 'Fechar' },
@@ -1386,6 +1668,10 @@ export function mergeLocale(base: ZuiLocale, override?: DeepPartial<ZuiLocale>):
     form: { ...base.form, ...override.form },
     result: { ...base.result, ...override.result },
     select: { ...base.select, ...override.select },
+    sideNav: { ...base.sideNav, ...override.sideNav },
+    splitter: { ...base.splitter, ...override.splitter },
+    commandPalette: { ...base.commandPalette, ...override.commandPalette },
+    statistic: { ...base.statistic, ...override.statistic },
     combobox: { ...base.combobox, ...override.combobox },
     input: { ...base.input, ...override.input },
     modal: { ...base.modal, ...override.modal },

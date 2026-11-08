@@ -13,14 +13,17 @@
 
 **APG 合规**：所有交互模式对齐 WAI-ARIA Authoring Practices Guide（APG），不做自创模式：
 
-| 模式                      | 组件                      | APG 对应                                                                                   |
-| ------------------------- | ------------------------- | ------------------------------------------------------------------------------------------ |
-| editable combobox         | Combobox                  | Listbox Popup（输入框保留焦点 + `aria-activedescendant`；输入草稿与 committed value 分离） |
-| select-only combobox      | Select                    | Listbox Popup（焦点保持触发器 + `aria-activedescendant` 虚拟活动项）                       |
-| dialog                    | Modal                     | Dialog（`aria-modal` + 焦点陷阱 + 关闭归还焦点）                                           |
-| tabs                      | Tabs                      | Tabs（roving tabindex + ←→/↑↓ + Home/End）                                                 |
-| switch / checkbox / radio | Switch / Checkbox / Radio | 官方对应模式，优先原生元素                                                                 |
-| live region 通知          | Message                   | `role="status"` + `aria-live`（error 用 assertive）                                        |
+| 模式                          | 组件                      | APG 对应                                                                                                                                             |
+| ----------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| editable combobox             | Combobox                  | Listbox Popup（输入框保留焦点 + `aria-activedescendant`；输入草稿与 committed value 分离）                                                           |
+| editable multiselect combobox | MultiCombobox             | Listbox Popup（`aria-multiselectable`；选中即 toggle + 清草稿 + 面板不关；空输入 Backspace 删标签）                                                  |
+| select-only combobox          | Select                    | Listbox Popup（焦点保持触发器 + `aria-activedescendant` 虚拟活动项）                                                                                 |
+| dialog                        | Modal                     | Dialog（`aria-modal` + 焦点陷阱 + 关闭归还焦点）                                                                                                     |
+| tabs                          | Tabs                      | Tabs（roving tabindex + ←→/↑↓ + Home/End）                                                                                                           |
+| switch / checkbox / radio     | Switch / Checkbox / Radio | 官方对应模式，优先原生元素                                                                                                                           |
+| live region 通知              | Message                   | `role="status"` + `aria-live`（error 用 assertive）                                                                                                  |
+| site navigation               | SideNav                   | 原生 `nav/ul/li/a` + `aria-current="page"`；分组为 disclosure 按钮；收窄态 flyout 走 Portal 逻辑 Tab 链                                              |
+| focusable separator           | Splitter                  | 具名 `role="separator"` + 双 Panel `aria-controls`；方向键 / PageUp/Down / Home/End；Enter 只折叠明确目标，折叠内容 `inert + aria-hidden` 并安全回焦 |
 
 **实现策略**：
 

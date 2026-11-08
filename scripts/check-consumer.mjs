@@ -17,7 +17,7 @@ try {
   const ctx = createContext({ cwd, log: () => {} });
   const added = await add({ ctx, names: [], all: true });
   assert.deepEqual(added.warnings, []);
-  assert.equal(added.items.length, 83);
+  assert.equal(added.items.length, 87);
   const compared = await diff({ ctx, names: ctx.allItems().map((item) => item.name) });
   assert.ok(compared.files.every((file) => file.state === 'same'));
 

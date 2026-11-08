@@ -1,2 +1,9 @@
-export { Input } from './Input';
-export type { InputProps, InputSize, InputStatus } from './Input';
+export { Input, InputTextarea, InputPassword, InputSearch } from './Input';
+export type {
+  InputProps,
+  InputSize,
+  InputStatus,
+  InputTextareaProps,
+  InputPasswordProps,
+  InputSearchProps,
+} from './Input';

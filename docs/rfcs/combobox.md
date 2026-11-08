@@ -484,3 +484,38 @@ docs/src/pages/components/ComboboxPage.tsx
 - VoiceOver + Safari 与 NVDA + Chrome 仍作为发布前人工辅助技术清单，不由自动化验收替代。
 
 参考：[WAI-ARIA APG Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/)。
+
+## 16. MultiCombobox 首版边界（2026-11-09 补充）
+
+按 §14 结论新增独立组件 `MultiCombobox`（`packages/ui/src/components/MultiCombobox/`），本节固化其首版边界。
+
+### API
+
+- `options`：与 `Combobox` 完全同构的 `MultiComboboxOption`（= `ComboboxOption`），两个组件可互换数据。
+- `value/defaultValue: string[]`；`onChange(value: string[], details: { reason: 'selection' | 'remove' | 'backspace' | 'clear' })`。
+- `inputValue/defaultInputValue/onInputValueChange/onSearch` 异步通道与 Combobox 同构；`filterOption: false | fn`。
+- `open/defaultOpen/onOpenChange`、`loading`、`loadingContent/emptyContent/errorContent`、`openOnFocus`、`autoHighlight`、`clearable`、`size/status/classNames`。
+- 首版不做 `maxTagCount` 与受控标签折叠（与 `TreeSelect` 保持一致）。
+
+### 与单选 Combobox 相反的交互
+
+- 选中 = **toggle**：加入或移除该值；随后**清空草稿**、**面板保持打开**，继续输入即可继续搜索。
+- 草稿即搜索文本，不承担已选值展示（已选值渲染为标签），因此没有单选的 `displayValue`/严格回退复杂度。
+- input 为空时 `Backspace` 删除最后一个标签；有草稿时 `Backspace` 保持原生文本编辑。
+- `Escape` 关闭面板并清空草稿；blur/outside 关闭时同样清空草稿。
+
+### DOM 与 ARIA
+
+- `input` 保留 `role="combobox"` + `aria-activedescendant`（editable combobox 模式，与 Combobox 一致）；标签与删除按钮是 input 的兄弟节点，不破坏 input 焦点模型。
+- `listbox` 带 `aria-multiselectable="true"`；option `aria-selected` 反映数组包含关系。
+- 标签删除按钮 `tabIndex={-1}` 不进 Tab 序，`aria-label` 复用 `accessibility.removeItem`（'移除 {item}'，十套语言包已有）。
+
+### Form
+
+- `name` 下**每个选中值渲染一个同名 hidden input**（原生多值语义），与 Combobox 的单 hidden input 区分。
+- `required` 语义为"至少选中一项"，未选时 `setCustomValidity`；监听原生 `form reset` 恢复 `defaultValue`。
+- 不承诺 `Form.Item` 注入式集成（同 Combobox 的边界）。
+
+### 实现说明
+
+- 首版**不重构 Combobox 抽取共享 hooks**（其 API 尚在发布评审期）；MultiCombobox 复用 `useControllableState`、`FloatingPanel`、`useOnClickOutside`、`useZuiConfig` 基础设施，过滤/浮层/IME 处理按 Combobox 模式实现。待 Combobox 发布稳定后再评估抽取共享选项控制器。

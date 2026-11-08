@@ -261,22 +261,55 @@ a:hover {
 .doc-sidebar {
   grid-column: 1;
   grid-row: 2;
-  overflow-y: auto;
-  /* 56 个组件需要滚动：细滚动条弱化视觉噪音 */
-  scrollbar-width: thin;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
   padding: 12px 8px 24px;
   /* 与主区域同底色，右侧仅一条近不可见分隔 */
   border-right: 1px solid var(--doc-border);
   background: var(--doc-bg);
 }
 
-.doc-sidebar-backdrop {
+.doc-sidebar .doc-sidenav,
+.doc-nav-drawer .doc-sidenav {
+  --z-sidenav-width: 100%;
+  --z-sidenav-padding: 0;
+  --z-sidenav-item-height: 0;
+  --z-sidenav-bg: var(--doc-bg);
+  --z-sidenav-fg: var(--z-color-fg-muted);
+  --z-sidenav-active-bg: var(--z-color-bg-muted);
+  --z-sidenav-active-fg: var(--z-color-fg);
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+.doc-sidenav [data-part='viewport'] {
+  scrollbar-width: thin;
+}
+
+.doc-sidenav [data-part='icon'] {
   display: none;
+}
+
+.doc-nav-drawer {
+  --z-drawer-content-bg: var(--doc-bg);
+  --z-drawer-content-padding: 16px;
+}
+
+.doc-nav-drawer-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: 12px 8px 24px;
 }
 
 /* ---------------- 侧栏搜索过滤：无边框设计 ---------------- */
 
 .doc-nav-search {
+  flex-shrink: 0;
   margin: 0 4px 12px;
 }
 
@@ -319,12 +352,32 @@ a:hover {
   line-height: var(--z-leading-relaxed);
 }
 
-.doc-nav-group + .doc-nav-group {
+.doc-nav-loading {
+  display: grid;
+  gap: 10px;
+  padding: 6px 8px;
+}
+
+.doc-nav-loading span {
+  display: block;
+  inline-size: min(100%, 10rem);
+  block-size: 10px;
+  border-radius: 999px;
+  background: var(--z-color-bg-muted);
+  opacity: 0.65;
+}
+
+.doc-nav-loading span:nth-child(3n + 1) {
+  inline-size: min(70%, 7rem);
+}
+
+.doc-sidenav .doc-nav-group + .doc-nav-group {
   margin-top: var(--z-space-5);
 }
 
-.doc-nav-group-title {
-  padding-left: 8px;
+.doc-sidenav .doc-nav-group-title {
+  padding-block: 0;
+  padding-inline-start: 8px;
   margin: 20px 0 4px;
   font-size: 11px;
   font-weight: var(--z-weight-medium);
@@ -333,7 +386,7 @@ a:hover {
   letter-spacing: 0.08em;
 }
 
-.doc-nav-list {
+.doc-sidenav .doc-nav-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -342,8 +395,9 @@ a:hover {
   gap: 1px;
 }
 
-.doc-nav-link {
-  display: block;
+.doc-sidenav .doc-nav-link {
+  display: flex;
+  inline-size: calc(100% - 8px);
   margin: 0 4px;
   padding: 5px 8px;
   border-radius: 6px;
@@ -353,15 +407,15 @@ a:hover {
   text-decoration: none;
 }
 
-.doc-nav-link:hover {
+.doc-sidenav .doc-nav-link:hover {
   background: var(--z-color-bg-muted);
   color: var(--z-color-fg);
   text-decoration: none;
 }
 
-/* 激活态：不加左竖线、不加主色，用灰底 + 深字 + 中字重区分 */
-.doc-nav-link--active,
-.doc-nav-link--active:hover {
+/* 当前页语义由 SideNav 持有；文档 chrome 只负责视觉定制。 */
+.doc-sidenav .doc-nav-link[aria-current='page'],
+.doc-sidenav .doc-nav-link[aria-current='page']:hover {
   background: var(--z-color-bg-muted);
   color: var(--z-color-fg);
   font-weight: var(--z-weight-medium);
@@ -1384,7 +1438,7 @@ a:hover {
 @media print {
   .doc-topbar,
   .doc-sidebar,
-  .doc-sidebar-backdrop,
+  .doc-nav-drawer-overlay,
   .doc-toc,
   .doc-copy-btn {
     display: none !important;
@@ -1443,35 +1497,7 @@ a:hover {
   }
 
   .doc-shell--builder .doc-sidebar {
-    position: fixed;
-    top: 52px;
-    bottom: 0;
-    left: 0;
-    z-index: var(--z-z-overlay);
-    width: min(320px, 85vw);
-    visibility: hidden;
-    border-right: 1px solid var(--doc-border);
-    box-shadow: var(--z-shadow-lg);
-    transform: translateX(-100%);
-    transition:
-      transform var(--z-duration-fast) var(--z-ease-standard),
-      visibility 0s linear var(--z-duration-fast);
-  }
-
-  .doc-shell--builder .doc-sidebar--open {
-    visibility: visible;
-    transform: translateX(0);
-    transition:
-      transform var(--z-duration-fast) var(--z-ease-standard),
-      visibility 0s;
-  }
-
-  .doc-shell--builder .doc-sidebar-backdrop {
-    display: block;
-    position: fixed;
-    inset: 52px 0 0;
-    z-index: var(--z-z-overlay);
-    background: var(--z-color-overlay);
+    display: none;
   }
 
   .doc-shell--builder .doc-main {
@@ -1517,37 +1543,7 @@ a:hover {
   }
 
   .doc-sidebar {
-    position: fixed;
-    top: 52px;
-    left: 0;
-    bottom: 0;
-    width: min(320px, 85vw);
-    z-index: var(--z-z-overlay);
-    border-right: 1px solid var(--doc-border);
-    box-shadow: var(--z-shadow-lg);
-    transform: translateX(-100%);
-    visibility: hidden;
-    transition:
-      transform var(--z-duration-fast) var(--z-ease-standard),
-      visibility 0s linear var(--z-duration-fast);
-  }
-
-  .doc-sidebar--open {
-    transform: translateX(0);
-    visibility: visible;
-    transition:
-      transform var(--z-duration-fast) var(--z-ease-standard),
-      visibility 0s;
-  }
-
-  .doc-sidebar-backdrop {
-    display: block;
-    position: fixed;
-    inset: 52px 0 0 0;
-    z-index: var(--z-z-overlay);
-    background: var(--z-color-overlay);
-    border: none;
-    padding: 0;
+    display: none;
   }
 
   .doc-main {

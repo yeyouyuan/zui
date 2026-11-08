@@ -1,0 +1,218 @@
+/* ZUI CommandPalette —— Modal 内的 editable combobox + listbox */
+
+.z-command-palette-dialog.z-modal {
+  --z-command-palette-width: 42rem;
+  --z-command-palette-max-height: min(70dvh, 42rem);
+
+  width: min(var(--z-command-palette-width), calc(100vw - 2rem));
+  max-width: none;
+  max-height: var(--z-command-palette-max-height);
+  padding: 0;
+  overflow: hidden;
+}
+
+.z-command-palette {
+  --z-command-palette-input-height: 3.25rem;
+  --z-command-palette-option-height: 2.75rem;
+  --z-command-palette-gap: var(--z-space-2);
+  --z-command-palette-padding: var(--z-space-2);
+  --z-command-palette-bg: var(--z-color-bg-elevated);
+  --z-command-palette-fg: var(--z-color-fg);
+  --z-command-palette-muted-fg: var(--z-color-fg-muted);
+  --z-command-palette-hover-bg: var(--z-color-bg-muted);
+  --z-command-palette-active-bg: var(--z-color-primary-subtle);
+  --z-command-palette-active-fg: var(--z-color-primary-subtle-fg);
+  --z-command-palette-focus-ring: var(--z-color-focus-ring);
+  --z-command-palette-border: var(--z-color-border-subtle);
+  --z-command-palette-disabled-fg: var(--z-color-disabled-fg);
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-height: var(--z-command-palette-max-height);
+  overflow: hidden;
+  color: var(--z-command-palette-fg);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-text-md);
+  background: var(--z-command-palette-bg);
+}
+
+.z-command-palette-input {
+  box-sizing: border-box;
+  flex: none;
+  width: 100%;
+  height: var(--z-command-palette-input-height);
+  padding-inline: calc(var(--z-command-palette-padding) + var(--z-space-2));
+  color: var(--z-command-palette-fg);
+  font: inherit;
+  background: transparent;
+  border: 0;
+  border-block-end: 1px solid var(--z-command-palette-border);
+  outline: 0;
+}
+
+.z-command-palette-input::placeholder {
+  color: var(--z-command-palette-muted-fg);
+}
+
+.z-command-palette-input:focus-visible {
+  box-shadow: inset 0 -2px 0 var(--z-command-palette-focus-ring);
+}
+
+.z-command-palette-listbox {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: calc(
+    var(--z-command-palette-max-height) - var(--z-command-palette-input-height) - 2.5rem
+  );
+  padding: var(--z-command-palette-padding);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.z-command-palette-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.z-command-palette-group + .z-command-palette-group,
+.z-command-palette-option + .z-command-palette-group {
+  margin-block-start: var(--z-command-palette-gap);
+}
+
+.z-command-palette-group-label {
+  padding: var(--z-space-2) var(--z-space-3) var(--z-space-1);
+  overflow-wrap: anywhere;
+  color: var(--z-command-palette-muted-fg);
+  font-size: var(--z-text-xs);
+  font-weight: var(--z-weight-medium);
+  line-height: var(--z-leading-normal);
+}
+
+.z-command-palette-option {
+  box-sizing: border-box;
+  display: flex;
+  min-height: var(--z-command-palette-option-height);
+  align-items: center;
+  gap: var(--z-command-palette-gap);
+  padding: var(--z-space-2) var(--z-space-3);
+  border-radius: var(--z-radius-md);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    color var(--z-duration-fast) var(--z-ease-standard),
+    background-color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-command-palette-option[data-active] {
+  color: var(--z-command-palette-active-fg);
+  background: var(--z-command-palette-active-bg);
+}
+
+.z-command-palette-option:hover:not([data-disabled]):not([data-active]) {
+  background: var(--z-command-palette-hover-bg);
+}
+
+.z-command-palette-option[data-disabled] {
+  color: var(--z-command-palette-disabled-fg);
+  cursor: not-allowed;
+}
+
+.z-command-palette-option-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  color: var(--z-command-palette-muted-fg);
+}
+
+.z-command-palette-option[data-active] .z-command-palette-option-icon {
+  color: inherit;
+}
+
+.z-command-palette-option-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.z-command-palette-option-shortcut {
+  flex: none;
+  max-width: 42%;
+  padding-inline: var(--z-space-2);
+  overflow: hidden;
+  color: var(--z-command-palette-muted-fg);
+  font-family: var(--z-font-sans);
+  font-size: var(--z-text-xs);
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: var(--z-color-bg-muted);
+  border: 1px solid var(--z-command-palette-border);
+  border-radius: var(--z-radius-sm);
+}
+
+.z-command-palette-status {
+  box-sizing: border-box;
+  display: flex;
+  flex: none;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  padding: var(--z-space-2) calc(var(--z-command-palette-padding) + var(--z-space-2));
+  color: var(--z-command-palette-muted-fg);
+  font-size: var(--z-text-xs);
+  text-align: center;
+  border-block-start: 1px solid var(--z-command-palette-border);
+}
+
+.z-command-palette-empty,
+.z-command-palette-loading {
+  padding-block: var(--z-space-2);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 320px) {
+  .z-modal-overlay:has(.z-command-palette-dialog) {
+    padding: max(0.5rem, env(safe-area-inset-top)) max(0.5rem, env(safe-area-inset-right))
+      max(0.5rem, env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left));
+  }
+
+  .z-command-palette-dialog.z-modal {
+    width: calc(100vw - 1rem);
+    max-height: min(78dvh, 42rem);
+  }
+
+  .z-command-palette {
+    --z-command-palette-padding: var(--z-space-1);
+    --z-command-palette-gap: var(--z-space-1);
+  }
+
+  .z-command-palette-option-shortcut {
+    max-width: 34%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-command-palette-option {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .z-command-palette-option[data-active] {
+    color: HighlightText;
+    background: Highlight;
+    outline: 1px solid Highlight;
+  }
+
+  .z-command-palette-input:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+    box-shadow: none;
+  }
+}

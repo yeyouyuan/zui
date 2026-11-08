@@ -19,10 +19,7 @@
     "packages/ui/src/styles/reset.css",
     "packages/ui/src/styles/tokens.css"
   ],
-  "dependencies": [
-    "@zui/i18n",
-    "@zui/tokens"
-  ],
+  "dependencies": ["@zui/i18n", "@zui/tokens"],
   "exports": {
     "Affix": "packages/ui/src/components/Affix/index.ts",
     "AffixProps": "packages/ui/src/components/Affix/index.ts",
@@ -81,6 +78,14 @@
     "ComboboxOpenChangeReason": "packages/ui/src/components/Combobox/index.ts",
     "ComboboxOption": "packages/ui/src/components/Combobox/index.ts",
     "ComboboxProps": "packages/ui/src/components/Combobox/index.ts",
+    "CommandPalette": "packages/ui/src/components/CommandPalette/index.ts",
+    "CommandPaletteCommand": "packages/ui/src/components/CommandPalette/index.ts",
+    "CommandPaletteHotkey": "packages/ui/src/components/CommandPalette/index.ts",
+    "CommandPaletteOpenChangeDetails": "packages/ui/src/components/CommandPalette/index.ts",
+    "CommandPaletteProps": "packages/ui/src/components/CommandPalette/index.ts",
+    "CommandPaletteQueryChangeDetails": "packages/ui/src/components/CommandPalette/index.ts",
+    "CommandPaletteSelectEvent": "packages/ui/src/components/CommandPalette/index.ts",
+    "CommandPaletteSelectOriginalEvent": "packages/ui/src/components/CommandPalette/index.ts",
     "DatePicker": "packages/ui/src/components/DatePicker/index.ts",
     "DatePickerProps": "packages/ui/src/components/DatePicker/index.ts",
     "DateRangePicker": "packages/ui/src/components/DateRangePicker/index.ts",
@@ -146,9 +151,15 @@
     "Image": "packages/ui/src/components/Image/index.ts",
     "ImageProps": "packages/ui/src/components/Image/index.ts",
     "Input": "packages/ui/src/components/Input/index.ts",
+    "InputTextarea": "packages/ui/src/components/Input/index.ts",
+    "InputPassword": "packages/ui/src/components/Input/index.ts",
+    "InputSearch": "packages/ui/src/components/Input/index.ts",
     "InputProps": "packages/ui/src/components/Input/index.ts",
     "InputSize": "packages/ui/src/components/Input/index.ts",
     "InputStatus": "packages/ui/src/components/Input/index.ts",
+    "InputTextareaProps": "packages/ui/src/components/Input/index.ts",
+    "InputPasswordProps": "packages/ui/src/components/Input/index.ts",
+    "InputSearchProps": "packages/ui/src/components/Input/index.ts",
     "InputNumber": "packages/ui/src/components/InputNumber/index.ts",
     "InputNumberProps": "packages/ui/src/components/InputNumber/index.ts",
     "InputNumberSize": "packages/ui/src/components/InputNumber/index.ts",
@@ -181,6 +192,15 @@
     "ModalBodyProps": "packages/ui/src/components/Modal/index.ts",
     "ModalFooterProps": "packages/ui/src/components/Modal/index.ts",
     "ModalCloseProps": "packages/ui/src/components/Modal/index.ts",
+    "MultiCombobox": "packages/ui/src/components/MultiCombobox/index.ts",
+    "MultiComboboxChangeDetails": "packages/ui/src/components/MultiCombobox/index.ts",
+    "MultiComboboxChangeReason": "packages/ui/src/components/MultiCombobox/index.ts",
+    "MultiComboboxInputChangeDetails": "packages/ui/src/components/MultiCombobox/index.ts",
+    "MultiComboboxInputChangeReason": "packages/ui/src/components/MultiCombobox/index.ts",
+    "MultiComboboxOpenChangeDetails": "packages/ui/src/components/MultiCombobox/index.ts",
+    "MultiComboboxOpenChangeReason": "packages/ui/src/components/MultiCombobox/index.ts",
+    "MultiComboboxOption": "packages/ui/src/components/MultiCombobox/index.ts",
+    "MultiComboboxProps": "packages/ui/src/components/MultiCombobox/index.ts",
     "NotificationProvider": "packages/ui/src/components/Notification/index.ts",
     "NotificationProviderProps": "packages/ui/src/components/Notification/index.ts",
     "useNotification": "packages/ui/src/components/Notification/index.ts",
@@ -229,6 +249,14 @@
     "Select": "packages/ui/src/components/Select/index.ts",
     "SelectProps": "packages/ui/src/components/Select/index.ts",
     "SelectOption": "packages/ui/src/components/Select/index.ts",
+    "SideNav": "packages/ui/src/components/SideNav/index.ts",
+    "SideNavExpandedChangeDetails": "packages/ui/src/components/SideNav/index.ts",
+    "SideNavGroupItem": "packages/ui/src/components/SideNav/index.ts",
+    "SideNavItem": "packages/ui/src/components/SideNav/index.ts",
+    "SideNavLinkItem": "packages/ui/src/components/SideNav/index.ts",
+    "SideNavLinkRenderProps": "packages/ui/src/components/SideNav/index.ts",
+    "SideNavProps": "packages/ui/src/components/SideNav/index.ts",
+    "SideNavSection": "packages/ui/src/components/SideNav/index.ts",
     "Skeleton": "packages/ui/src/components/Skeleton/index.ts",
     "SkeletonProps": "packages/ui/src/components/Skeleton/index.ts",
     "Slider": "packages/ui/src/components/Slider/index.ts",
@@ -241,9 +269,23 @@
     "Spin": "packages/ui/src/components/Spin/index.ts",
     "SpinProps": "packages/ui/src/components/Spin/index.ts",
     "SpinSize": "packages/ui/src/components/Spin/index.ts",
+    "Splitter": "packages/ui/src/components/Splitter/index.ts",
+    "SplitterPanel": "packages/ui/src/components/Splitter/index.ts",
+    "normalizeSplitterSizes": "packages/ui/src/components/Splitter/index.ts",
+    "SplitterCollapseTarget": "packages/ui/src/components/Splitter/index.ts",
+    "SplitterHandleContext": "packages/ui/src/components/Splitter/index.ts",
+    "SplitterHandleProps": "packages/ui/src/components/Splitter/index.ts",
+    "SplitterOrientation": "packages/ui/src/components/Splitter/index.ts",
+    "SplitterPanelProps": "packages/ui/src/components/Splitter/index.ts",
+    "SplitterProps": "packages/ui/src/components/Splitter/index.ts",
+    "SplitterResizeEndDetails": "packages/ui/src/components/Splitter/index.ts",
+    "SplitterSizesChangeDetails": "packages/ui/src/components/Splitter/index.ts",
     "Statistic": "packages/ui/src/components/Statistic/index.ts",
+    "StatisticCountDown": "packages/ui/src/components/Statistic/index.ts",
+    "formatCountdown": "packages/ui/src/components/Statistic/index.ts",
     "formatStatisticValue": "packages/ui/src/components/Statistic/index.ts",
     "StatisticProps": "packages/ui/src/components/Statistic/index.ts",
+    "StatisticCountDownProps": "packages/ui/src/components/Statistic/index.ts",
     "Steps": "packages/ui/src/components/Steps/index.ts",
     "StepsProps": "packages/ui/src/components/Steps/index.ts",
     "StepsItem": "packages/ui/src/components/Steps/index.ts",
@@ -369,9 +411,7 @@
       "type": "registry:component",
       "title": "Alert 警告提示",
       "description": "警告提示：页面内的常驻状态提示条（info/success/warning/error）",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Alert/Alert.css",
@@ -436,10 +476,7 @@
       "title": "App 应用容器",
       "description": "应用容器，统一 message / notification / modal 上下文，useApp 一处取用",
       "dependencies": [],
-      "registryDependencies": [
-        "message",
-        "notification"
-      ],
+      "registryDependencies": ["message", "notification"],
       "files": [
         "packages/ui/src/components/App/App.css",
         "packages/ui/src/components/App/App.tsx",
@@ -612,9 +649,7 @@
       "type": "registry:component",
       "title": "Calendar 日历",
       "description": "静态日历展示组件，按月浏览并选中单个日期（ISO YYYY-MM-DD），与 DatePicker 独立",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Calendar/Calendar.css",
@@ -773,9 +808,7 @@
       "title": "Col",
       "description": "24 栅格列：span/offset 定宽定偏移，flex 弹性覆盖（必须是 Row 直接子级）",
       "dependencies": [],
-      "registryDependencies": [
-        "row"
-      ],
+      "registryDependencies": ["row"],
       "files": [
         "packages/ui/src/components/Col/Col.css",
         "packages/ui/src/components/Col/Col.tsx",
@@ -793,9 +826,7 @@
       "type": "registry:component",
       "title": "Collapse 折叠面板",
       "description": "折叠面板：分组内容收纳展示，支持手风琴单开模式与展开高度动画",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Collapse/Collapse.css",
@@ -878,9 +909,7 @@
       "type": "registry:component",
       "title": "Combobox 自动完成",
       "description": "自动完成：可编辑单选、严格选项、外部异步结果与完整 IME/键盘支持",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Combobox/Combobox.css",
@@ -921,13 +950,40 @@
       "meta": "packages/ui/src/components/Combobox/meta.json"
     },
     {
+      "name": "command-palette",
+      "type": "registry:component",
+      "title": "CommandPalette",
+      "description": "命令面板：全局热键唤起的 Modal 对话框，分组命令搜索、键盘导航与快捷键展示",
+      "dependencies": [],
+      "registryDependencies": ["modal"],
+      "files": [
+        "packages/ui/src/components/CommandPalette/CommandPalette.css",
+        "packages/ui/src/components/CommandPalette/CommandPalette.tsx",
+        "packages/ui/src/components/CommandPalette/index.ts"
+      ],
+      "cssVars": {
+        "--z-command-palette-width": "42rem",
+        "--z-command-palette-max-height": "min(70dvh, 42rem)",
+        "--z-command-palette-input-height": "3.25rem",
+        "--z-command-palette-option-height": "2.75rem",
+        "--z-command-palette-gap": "var(--z-space-2)",
+        "--z-command-palette-padding": "var(--z-space-2)",
+        "--z-command-palette-bg": "var(--z-color-bg-elevated)",
+        "--z-command-palette-fg": "var(--z-color-fg)",
+        "--z-command-palette-muted-fg": "var(--z-color-fg-muted)",
+        "--z-command-palette-hover-bg": "var(--z-color-bg-muted)",
+        "--z-command-palette-active-bg": "var(--z-color-primary-subtle)",
+        "--z-command-palette-active-fg": "var(--z-color-primary-subtle-fg)",
+        "--z-command-palette-focus-ring": "var(--z-color-focus-ring)"
+      },
+      "meta": "packages/ui/src/components/CommandPalette/meta.json"
+    },
+    {
       "name": "date-picker",
       "type": "registry:component",
       "title": "DatePicker 日期选择器",
       "description": "日期选择器，弹出日历面板选择单个日期（ISO YYYY-MM-DD）",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/DatePicker/DatePicker.css",
@@ -986,9 +1042,7 @@
       "type": "registry:component",
       "title": "DateRangePicker 日期范围选择器",
       "description": "日期范围选择器，双月并排日历面板选择 [start, end] 区间（ISO YYYY-MM-DD 二元组）。区间版；月份选择器粒度留待后续",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/DateRangePicker/DateRangePicker.css",
@@ -1116,9 +1170,7 @@
       "type": "registry:component",
       "title": "Drawer 抽屉",
       "description": "抽屉：从边缘滑出的面板（复合组件），承载表单/筛选/详情",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Drawer/Drawer.css",
@@ -1308,10 +1360,8 @@
       "name": "input",
       "type": "registry:component",
       "title": "Input 输入框",
-      "description": "单行文本输入框，支持前后缀插槽、清除按钮与校验状态",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "description": "文本输入框：单行输入与 Textarea/Password/Search 子组件，支持前后缀插槽、清除按钮与校验状态",
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Input/Input.css",
@@ -1339,7 +1389,10 @@
         "--z-input-disabled-bg": "var(--z-color-disabled-bg)",
         "--z-input-disabled-fg": "var(--z-color-disabled-fg)",
         "--z-input-disabled-border": "var(--z-color-disabled-border)",
-        "--z-input-transition": "var(--z-duration-fast) var(--z-ease-standard)"
+        "--z-input-transition": "var(--z-duration-fast) var(--z-ease-standard)",
+        "--z-input-textarea-min-height": "4.5rem",
+        "--z-input-action-color": "var(--z-input-clear-color)",
+        "--z-input-action-hover-color": "var(--z-input-clear-hover-color)"
       },
       "meta": "packages/ui/src/components/Input/meta.json"
     },
@@ -1464,9 +1517,7 @@
       "type": "registry:component",
       "title": "Message 全局提示",
       "description": "全局轻提示：hooks 风格 API（useMessage），自动消失的反馈条",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Message/Message.css",
@@ -1498,9 +1549,7 @@
       "type": "registry:component",
       "title": "Modal 对话框",
       "description": "模态对话框：Portal 渲染 + 焦点陷阱 + 确认/取消等交互",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Modal/Modal.css",
@@ -1533,13 +1582,64 @@
       "meta": "packages/ui/src/components/Modal/meta.json"
     },
     {
+      "name": "multi-combobox",
+      "type": "registry:component",
+      "title": "MultiCombobox",
+      "description": "多选自动完成：可编辑搜索 + 多个严格选项标签，支持外部异步结果与完整 IME/键盘支持",
+      "dependencies": ["@zui/icons"],
+      "registryDependencies": ["combobox"],
+      "files": [
+        "packages/ui/src/components/MultiCombobox/MultiCombobox.css",
+        "packages/ui/src/components/MultiCombobox/MultiCombobox.tsx",
+        "packages/ui/src/components/MultiCombobox/index.ts"
+      ],
+      "cssVars": {
+        "--z-multicombobox-control-min-height": "2rem",
+        "--z-multicombobox-control-padding-x": "var(--z-space-3)",
+        "--z-multicombobox-control-gap": "var(--z-space-1)",
+        "--z-multicombobox-font-size": "var(--z-text-sm)",
+        "--z-multicombobox-radius": "var(--z-radius-sm)",
+        "--z-multicombobox-bg": "var(--z-color-bg-elevated)",
+        "--z-multicombobox-fg": "var(--z-color-fg)",
+        "--z-multicombobox-border": "var(--z-color-border)",
+        "--z-multicombobox-hover-border": "var(--z-color-border-focus)",
+        "--z-multicombobox-focus-ring": "var(--z-color-focus-ring)",
+        "--z-multicombobox-placeholder-fg": "var(--z-color-fg-subtle)",
+        "--z-multicombobox-icon-fg": "var(--z-color-fg-muted)",
+        "--z-multicombobox-clear-hover-bg": "var(--z-color-bg-muted)",
+        "--z-multicombobox-tag-height": "1.25rem",
+        "--z-multicombobox-tag-padding-x": "var(--z-space-2)",
+        "--z-multicombobox-tag-gap": "var(--z-space-1)",
+        "--z-multicombobox-tag-bg": "var(--z-color-bg-muted)",
+        "--z-multicombobox-tag-fg": "var(--z-color-fg)",
+        "--z-multicombobox-tag-radius": "var(--z-radius-sm)",
+        "--z-multicombobox-tag-remove-fg": "var(--z-color-fg-muted)",
+        "--z-multicombobox-tag-remove-hover-fg": "var(--z-color-danger)",
+        "--z-multicombobox-panel-bg": "var(--z-color-bg-elevated)",
+        "--z-multicombobox-panel-border": "var(--z-color-border-subtle)",
+        "--z-multicombobox-panel-radius": "0.5rem",
+        "--z-multicombobox-panel-shadow": "var(--z-shadow-lg)",
+        "--z-multicombobox-panel-max-height": "16rem",
+        "--z-multicombobox-panel-margin-top": "var(--z-space-1)",
+        "--z-multicombobox-panel-padding": "var(--z-space-1)",
+        "--z-multicombobox-option-height": "2rem",
+        "--z-multicombobox-option-padding-x": "var(--z-space-3)",
+        "--z-multicombobox-option-radius": "var(--z-radius-sm)",
+        "--z-multicombobox-option-fg": "var(--z-color-fg)",
+        "--z-multicombobox-option-active-bg": "var(--z-color-primary-subtle)",
+        "--z-multicombobox-option-active-fg": "var(--z-color-primary-subtle-fg)",
+        "--z-multicombobox-option-disabled-fg": "var(--z-color-disabled-fg)",
+        "--z-multicombobox-status-fg": "var(--z-color-fg-muted)",
+        "--z-multicombobox-animation-duration": "var(--z-duration-fast)"
+      },
+      "meta": "packages/ui/src/components/MultiCombobox/meta.json"
+    },
+    {
       "name": "notification",
       "type": "registry:component",
       "title": "Notification 通知卡片",
       "description": "通知卡片，全局右上角（四角可配）的可交互消息提醒",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Notification/Notification.css",
@@ -1572,9 +1672,7 @@
       "type": "registry:component",
       "title": "Pagination 分页",
       "description": "分页器：页码导航 + 可选跳页输入（nav 语义）",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Pagination/Pagination.css",
@@ -1897,6 +1995,41 @@
       "meta": "packages/ui/src/components/Select/meta.json"
     },
     {
+      "name": "side-nav",
+      "type": "registry:component",
+      "title": "SideNav 侧边导航",
+      "description": "侧边导航：原生 nav/ul/li/a 语义 + 分组 disclosure + 桌面收窄与 flyout，路由无关",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        "packages/ui/src/components/SideNav/SideNav.css",
+        "packages/ui/src/components/SideNav/SideNav.tsx",
+        "packages/ui/src/components/SideNav/index.ts"
+      ],
+      "cssVars": {
+        "--z-sidenav-width": "15rem",
+        "--z-sidenav-collapsed-width": "3.5rem",
+        "--z-sidenav-padding": "0.5rem",
+        "--z-sidenav-gap": "0.25rem",
+        "--z-sidenav-item-height": "2.5rem",
+        "--z-sidenav-item-padding-x": "0.625rem",
+        "--z-sidenav-child-indent": "1.75rem",
+        "--z-sidenav-radius": "var(--z-radius-md, 0.375rem)",
+        "--z-sidenav-bg": "var(--z-color-bg, #fff)",
+        "--z-sidenav-fg": "var(--z-color-fg, #1f2937)",
+        "--z-sidenav-muted-fg": "var(--z-color-fg-muted, #64748b)",
+        "--z-sidenav-hover-bg": "var(--z-color-bg-subtle, #f1f5f9)",
+        "--z-sidenav-active-bg": "var(--z-color-primary-subtle, #eff6ff)",
+        "--z-sidenav-active-fg": "var(--z-color-primary-subtle-fg, #1d4ed8)",
+        "--z-sidenav-indicator": "var(--z-color-primary, #2563eb)",
+        "--z-sidenav-focus-ring": "var(--z-color-primary, #2563eb)",
+        "--z-sidenav-flyout-width": "15rem",
+        "--z-sidenav-flyout-max-height": "28rem",
+        "--z-sidenav-animation-duration": "160ms"
+      },
+      "meta": "packages/ui/src/components/SideNav/meta.json"
+    },
+    {
       "name": "skeleton",
       "type": "registry:component",
       "title": "Skeleton 骨架屏",
@@ -1999,10 +2132,34 @@
       "meta": "packages/ui/src/components/Spin/meta.json"
     },
     {
+      "name": "splitter",
+      "type": "registry:component",
+      "title": "Splitter 可调分栏",
+      "description": "可调分栏：自动生成的具名 separator 支持 Pointer Capture、键盘调整、受控尺寸与明确目标折叠",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        "packages/ui/src/components/Splitter/Splitter.css",
+        "packages/ui/src/components/Splitter/Splitter.tsx",
+        "packages/ui/src/components/Splitter/index.ts"
+      ],
+      "cssVars": {
+        "--z-splitter-handle-size": "0.5rem",
+        "--z-splitter-handle-hit-size": "1.5rem",
+        "--z-splitter-handle-bg": "var(--z-color-border)",
+        "--z-splitter-handle-hover-bg": "var(--z-color-primary)",
+        "--z-splitter-handle-active-bg": "var(--z-color-primary)",
+        "--z-splitter-handle-radius": "var(--z-radius-full)",
+        "--z-splitter-handle-fg": "var(--z-color-fg-subtle)",
+        "--z-splitter-animation-duration": "var(--z-duration-fast)"
+      },
+      "meta": "packages/ui/src/components/Splitter/meta.json"
+    },
+    {
       "name": "statistic",
       "type": "registry:component",
       "title": "Statistic 统计数值",
-      "description": "统计数值：标题 + 千分位数字 + 前后缀，大数字字重 600",
+      "description": "统计数值：标题 + 千分位数字 + 前后缀，大数字字重 600；含 CountDown 倒计时子组件",
       "dependencies": [],
       "registryDependencies": [],
       "files": [
@@ -2036,9 +2193,7 @@
       "type": "registry:component",
       "title": "Steps 步骤条",
       "description": "步骤条：引导用户按顺序完成多步流程，支持派生状态与显式 error 覆盖",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Steps/Steps.css",
@@ -2161,9 +2316,7 @@
       "type": "registry:component",
       "title": "Tag 标签",
       "description": "标签：小块语义色标签，可关闭、可带图标",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Tag/Tag.css",
@@ -2388,9 +2541,7 @@
       "type": "registry:component",
       "title": "Tree 树",
       "description": "树形控件：勾选传播（父子联动 + 半选）、异步加载子节点、完整键盘导航",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Tree/Tree.css",
@@ -2496,9 +2647,7 @@
       "type": "registry:component",
       "title": "Typography 排版",
       "description": "排版组件：标题、段落与文本的语义化呈现，支持语义标签切换、四色调色、多行省略与一键复制",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Typography/Typography.css",
@@ -2537,9 +2686,7 @@
       "type": "registry:component",
       "title": "Upload 上传",
       "description": "文件上传：隐藏 file input + 可见按钮/拖拽区，customRequest 或 XHR 引擎（进度/成功/失败/中止），带状态流转的文件列表",
-      "dependencies": [
-        "@zui/icons"
-      ],
+      "dependencies": ["@zui/icons"],
       "registryDependencies": [],
       "files": [
         "packages/ui/src/components/Upload/Upload.css",
@@ -2637,17 +2784,8 @@
       "title": "dashboard",
       "description": "仪表盘区块：Statistic 统计卡行 + 流量趋势 Tabs + 渠道分析 + 最近动态表，基于 Statistic/Table/Card/Tabs 拼装",
       "dependencies": [],
-      "registryDependencies": [
-        "button",
-        "card",
-        "statistic",
-        "table",
-        "tabs",
-        "tag"
-      ],
-      "files": [
-        "packages/blocks/src/dashboard/index.tsx"
-      ],
+      "registryDependencies": ["button", "card", "statistic", "table", "tabs", "tag"],
+      "files": ["packages/blocks/src/dashboard/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/dashboard/block.json"
     },
@@ -2657,14 +2795,8 @@
       "title": "data-screen",
       "description": "数据大屏区块：深色底自适应，Statistic 统计卡行 + CSS 柱状图 + Progress 资源指标，支持时间维度切换与刷新回调",
       "dependencies": [],
-      "registryDependencies": [
-        "progress",
-        "segmented",
-        "statistic"
-      ],
-      "files": [
-        "packages/blocks/src/data-screen/index.tsx"
-      ],
+      "registryDependencies": ["progress", "segmented", "statistic"],
+      "files": ["packages/blocks/src/data-screen/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/data-screen/block.json"
     },
@@ -2674,14 +2806,8 @@
       "title": "error-pages",
       "description": "错误页集区块：Result 403/404/500 三态，同一区块内通过 props 切换，含返回上一页 / 回到首页操作",
       "dependencies": [],
-      "registryDependencies": [
-        "button",
-        "result",
-        "segmented"
-      ],
-      "files": [
-        "packages/blocks/src/error-pages/index.tsx"
-      ],
+      "registryDependencies": ["button", "result", "segmented"],
+      "files": ["packages/blocks/src/error-pages/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/error-pages/block.json"
     },
@@ -2703,9 +2829,7 @@
         "switch",
         "tag"
       ],
-      "files": [
-        "packages/blocks/src/form-page/index.tsx"
-      ],
+      "files": ["packages/blocks/src/form-page/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/form-page/block.json"
     },
@@ -2715,13 +2839,8 @@
       "title": "kanban",
       "description": "看板区块：三列静态看板，Card + Tag 优先级 + 计数徽标；静态展示不含拖拽能力（未引入拖拽库），卡片点击仅做高亮选中",
       "dependencies": [],
-      "registryDependencies": [
-        "card",
-        "tag"
-      ],
-      "files": [
-        "packages/blocks/src/kanban/index.tsx"
-      ],
+      "registryDependencies": ["card", "tag"],
+      "files": ["packages/blocks/src/kanban/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/kanban/block.json"
     },
@@ -2731,18 +2850,8 @@
       "title": "list-detail",
       "description": "列表详情区块：左列表（List）右详情（Descriptions + Card）双栏 Row/Col 布局，支持受控选中项",
       "dependencies": [],
-      "registryDependencies": [
-        "card",
-        "col",
-        "descriptions",
-        "empty",
-        "list",
-        "row",
-        "tag"
-      ],
-      "files": [
-        "packages/blocks/src/list-detail/index.tsx"
-      ],
+      "registryDependencies": ["card", "col", "descriptions", "empty", "list", "row", "tag"],
+      "files": ["packages/blocks/src/list-detail/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/list-detail/block.json"
     },
@@ -2752,17 +2861,8 @@
       "title": "login",
       "description": "登录页区块：品牌位 + Form 账号/密码表单 + 记住我 + 第三方登录，基于 Card/Input/Button/Checkbox 拼装",
       "dependencies": [],
-      "registryDependencies": [
-        "button",
-        "card",
-        "checkbox",
-        "divider",
-        "form",
-        "input"
-      ],
-      "files": [
-        "packages/blocks/src/login/index.tsx"
-      ],
+      "registryDependencies": ["button", "card", "checkbox", "divider", "form", "input"],
+      "files": ["packages/blocks/src/login/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/login/block.json"
     },
@@ -2781,9 +2881,7 @@
         "table",
         "tag"
       ],
-      "files": [
-        "packages/blocks/src/order-list/index.tsx"
-      ],
+      "files": ["packages/blocks/src/order-list/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/order-list/block.json"
     },
@@ -2793,16 +2891,8 @@
       "title": "permission",
       "description": "权限管理区块：Tree 角色权限树（checkable 父子联动）+ Table 成员列表 + Switch 启用开关列",
       "dependencies": [],
-      "registryDependencies": [
-        "card",
-        "switch",
-        "table",
-        "tag",
-        "tree"
-      ],
-      "files": [
-        "packages/blocks/src/permission/index.tsx"
-      ],
+      "registryDependencies": ["card", "switch", "table", "tag", "tree"],
+      "files": ["packages/blocks/src/permission/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/permission/block.json"
     },
@@ -2822,9 +2912,7 @@
         "row",
         "upload"
       ],
-      "files": [
-        "packages/blocks/src/profile-edit/index.tsx"
-      ],
+      "files": ["packages/blocks/src/profile-edit/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/profile-edit/block.json"
     },
@@ -2834,16 +2922,8 @@
       "title": "search-result",
       "description": "搜索结果页区块：Input 搜索 + Tabs 类型切换 + List 结果列表 + Empty 无结果，演示数据客户端过滤",
       "dependencies": [],
-      "registryDependencies": [
-        "button",
-        "empty",
-        "input",
-        "list",
-        "tabs"
-      ],
-      "files": [
-        "packages/blocks/src/search-result/index.tsx"
-      ],
+      "registryDependencies": ["button", "empty", "input", "list", "tabs"],
+      "files": ["packages/blocks/src/search-result/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/search-result/block.json"
     },
@@ -2853,16 +2933,8 @@
       "title": "settings",
       "description": "系统设置区块：左侧锚点式分组导航（基本/通知/安全）+ 分区表单（Input/Select）+ Switch 偏好开关",
       "dependencies": [],
-      "registryDependencies": [
-        "button",
-        "card",
-        "input",
-        "select",
-        "switch"
-      ],
-      "files": [
-        "packages/blocks/src/settings/index.tsx"
-      ],
+      "registryDependencies": ["button", "card", "input", "select", "switch"],
+      "files": ["packages/blocks/src/settings/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/settings/block.json"
     },
@@ -2882,9 +2954,7 @@
         "table",
         "tag"
       ],
-      "files": [
-        "packages/blocks/src/table-page/index.tsx"
-      ],
+      "files": ["packages/blocks/src/table-page/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/table-page/block.json"
     },
@@ -2894,16 +2964,8 @@
       "title": "timeline-feed",
       "description": "时间线信息流区块：Timeline + Avatar + Card 组成的事件流，Skeleton 加载占位与加载更多",
       "dependencies": [],
-      "registryDependencies": [
-        "avatar",
-        "button",
-        "card",
-        "skeleton",
-        "timeline"
-      ],
-      "files": [
-        "packages/blocks/src/timeline-feed/index.tsx"
-      ],
+      "registryDependencies": ["avatar", "button", "card", "skeleton", "timeline"],
+      "files": ["packages/blocks/src/timeline-feed/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/timeline-feed/block.json"
     },
@@ -2913,17 +2975,8 @@
       "title": "user-center",
       "description": "个人中心区块：Avatar 头像 + Descriptions 基本资料 + Tabs（资料/安全/偏好）+ Upload 头像上传 + Switch 偏好开关",
       "dependencies": [],
-      "registryDependencies": [
-        "avatar",
-        "card",
-        "descriptions",
-        "switch",
-        "tabs",
-        "upload"
-      ],
-      "files": [
-        "packages/blocks/src/user-center/index.tsx"
-      ],
+      "registryDependencies": ["avatar", "card", "descriptions", "switch", "tabs", "upload"],
+      "files": ["packages/blocks/src/user-center/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/user-center/block.json"
     },
@@ -2933,17 +2986,8 @@
       "title": "wizard",
       "description": "分步向导区块：Steps 步骤条 + 三步表单（基本信息/项目配置/确认创建），含必填校验、上一步/下一步与完成回调",
       "dependencies": [],
-      "registryDependencies": [
-        "button",
-        "card",
-        "descriptions",
-        "input",
-        "select",
-        "steps"
-      ],
-      "files": [
-        "packages/blocks/src/wizard/index.tsx"
-      ],
+      "registryDependencies": ["button", "card", "descriptions", "input", "select", "steps"],
+      "files": ["packages/blocks/src/wizard/index.tsx"],
       "cssVars": {},
       "meta": "packages/blocks/src/wizard/block.json"
     }

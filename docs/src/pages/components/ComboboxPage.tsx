@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Button, Combobox, Form } from '@zui/react';
+import { Button, Combobox, Form, MultiCombobox } from '@zui/react';
 
 import ApiTable from '../../components/ApiTable';
 import CustomizeOutlet from '../../components/CustomizeOutlet';
@@ -447,7 +447,29 @@ export default function ComboboxPage(): React.ReactNode {
         <FormDemo />
       </Demo>
 
-      <h2 className="doc-h2">API</h2>
+      <Demo
+        title="MultiCombobox 多选"
+        description="同构 options 的多选版本：选中即 toggle、清空草稿并保持面板打开；input 为空时 Backspace 删除最后一个标签；name 下每个选中值一个 hidden input。设计边界见 RFC §16。"
+        code={`<MultiCombobox
+  options={CITY_OPTIONS}
+  defaultValue={['shanghai']}
+  clearable
+  openOnFocus
+  aria-label="出差城市"
+/>`}
+        stack
+      >
+        <MultiCombobox
+          options={CITY_OPTIONS}
+          defaultValue={['shanghai']}
+          clearable
+          openOnFocus
+          aria-label="出差城市"
+          style={{ width: 'min(100%, 380px)' }}
+        />
+      </Demo>
+
+      <h2 className="doc-h2">Combobox API</h2>
       <ApiTable
         rows={[
           {
@@ -589,6 +611,125 @@ export default function ComboboxPage(): React.ReactNode {
           '--z-combobox-status-fg',
           '--z-combobox-animation-duration',
         ]}
+      />
+
+      <h2 className="doc-h2">MultiCombobox API</h2>
+      <p className="doc-p">
+        MultiCombobox 与 Combobox 复用相同的 option 结构和异步搜索通道，但 committed value
+        是字符串数组；选择会切换标签并保持面板打开，不使用单选的 displayValue 契约。
+      </p>
+      <ApiTable
+        rows={[
+          {
+            name: 'options',
+            type: 'readonly MultiComboboxOption[]',
+            description:
+              '与 ComboboxOption 同构；value 必须唯一且非空，复杂 label 需提供 textValue。',
+          },
+          {
+            name: 'value / defaultValue',
+            type: 'string[]',
+            description: '受控 / 非受控的 committed values；顺序同时决定标签与原生表单字段顺序。',
+          },
+          {
+            name: 'onChange',
+            type: "(values, { reason: 'selection' | 'remove' | 'backspace' | 'clear' }) => void",
+            description: '选择切换、标签删除、空输入 Backspace 或整体清除时触发。',
+          },
+          {
+            name: 'inputValue / defaultInputValue / onInputValueChange / onSearch',
+            type: '与 Combobox 相同',
+            description: '输入草稿与异步搜索通道；选择后清空草稿并保持结果面板打开。',
+          },
+          {
+            name: 'open / defaultOpen / onOpenChange / filterOption',
+            type: '与 Combobox 相同',
+            description: '受控面板与本地 / 外部过滤；关闭、失焦和 Esc 会清理未提交草稿。',
+          },
+          {
+            name: 'loading / loadingContent / emptyContent / errorContent',
+            type: 'boolean / React.ReactNode',
+            description: '异步状态；loading 时保留旧结果供浏览，但禁止提交陈旧 option。',
+          },
+          {
+            name: 'clearable / readOnly / disabled / openOnFocus / autoHighlight',
+            type: 'boolean',
+            description: '清除、只读、禁用以及打开 / 高亮策略。',
+          },
+          {
+            name: 'name / form / required',
+            type: '原生 input props',
+            description:
+              'name 存在时，每个 selected value 输出一个同名 hidden input，保持原生多值提交。',
+          },
+          {
+            name: 'classNames',
+            type: '{ root?; control?; tags?; tag?; tagLabel?; tagRemove?; input?; clear?; toggle?; panel?; listbox?; option?; loading?; empty?; error?; status? }',
+            description: 'MultiCombobox 各 data-part 的 slot 级类名追加。',
+          },
+        ]}
+      />
+
+      <CustomizeOutlet
+        name="MultiCombobox"
+        parts={[
+          'root',
+          'control',
+          'tags',
+          'tag',
+          'tag-label',
+          'tag-remove',
+          'input',
+          'clear',
+          'toggle',
+          'panel',
+          'listbox',
+          'option',
+          'loading',
+          'empty',
+          'error',
+          'status',
+        ]}
+        vars={[
+          '--z-multicombobox-control-min-height',
+          '--z-multicombobox-control-padding-x',
+          '--z-multicombobox-control-gap',
+          '--z-multicombobox-font-size',
+          '--z-multicombobox-radius',
+          '--z-multicombobox-bg',
+          '--z-multicombobox-fg',
+          '--z-multicombobox-border',
+          '--z-multicombobox-hover-border',
+          '--z-multicombobox-focus-ring',
+          '--z-multicombobox-placeholder-fg',
+          '--z-multicombobox-icon-fg',
+          '--z-multicombobox-clear-hover-bg',
+          '--z-multicombobox-tag-height',
+          '--z-multicombobox-tag-padding-x',
+          '--z-multicombobox-tag-gap',
+          '--z-multicombobox-tag-bg',
+          '--z-multicombobox-tag-fg',
+          '--z-multicombobox-tag-radius',
+          '--z-multicombobox-tag-remove-fg',
+          '--z-multicombobox-tag-remove-hover-fg',
+          '--z-multicombobox-panel-bg',
+          '--z-multicombobox-panel-border',
+          '--z-multicombobox-panel-radius',
+          '--z-multicombobox-panel-shadow',
+          '--z-multicombobox-panel-max-height',
+          '--z-multicombobox-panel-margin-top',
+          '--z-multicombobox-panel-padding',
+          '--z-multicombobox-option-height',
+          '--z-multicombobox-option-padding-x',
+          '--z-multicombobox-option-radius',
+          '--z-multicombobox-option-fg',
+          '--z-multicombobox-option-active-bg',
+          '--z-multicombobox-option-active-fg',
+          '--z-multicombobox-option-disabled-fg',
+          '--z-multicombobox-status-fg',
+          '--z-multicombobox-animation-duration',
+        ]}
+        note="Tag remove 按钮固定 tabIndex=-1；键盘删除走输入框 Backspace，避免每个标签额外进入 Tab 序列。"
       />
     </div>
   );

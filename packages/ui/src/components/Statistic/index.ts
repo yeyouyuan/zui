@@ -1,2 +1,2 @@
-export { Statistic, formatStatisticValue } from './Statistic';
-export type { StatisticProps } from './Statistic';
+export { Statistic, StatisticCountDown, formatCountdown, formatStatisticValue } from './Statistic';
+export type { StatisticProps, StatisticCountDownProps } from './Statistic';

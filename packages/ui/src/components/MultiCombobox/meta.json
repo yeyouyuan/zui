@@ -1,0 +1,110 @@
+{
+  "name": "MultiCombobox",
+  "description": "多选自动完成：可编辑搜索 + 多个严格选项标签，支持外部异步结果与完整 IME/键盘支持",
+  "category": "基础",
+  "useCase": [
+    "为一条记录挂多个标签/负责人",
+    "搜索后批量选择实体（用户、商品、城市）",
+    "远程字典多选（异步 options + onSearch）"
+  ],
+  "dontUse": [
+    "单选用 Combobox",
+    "静态枚举多选用 Checkbox 组或 Transfer",
+    "树形层级多选用 TreeSelect"
+  ],
+  "props": {
+    "options": {
+      "type": "MultiComboboxOption[]",
+      "default": "（必填）",
+      "desc": "选项列表 { value; label; textValue?; keywords?; disabled? }，与 Combobox 同构"
+    },
+    "value": { "type": "string[]", "default": "—", "desc": "受控选中值（数组）" },
+    "defaultValue": { "type": "string[]", "default": "[]", "desc": "非受控初始值" },
+    "onChange": {
+      "type": "(value: string[], details: { reason }) => void",
+      "default": "—",
+      "desc": "选中值变化；reason: selection | remove | backspace | clear"
+    },
+    "inputValue": { "type": "string", "default": "—", "desc": "受控输入草稿" },
+    "defaultInputValue": { "type": "string", "default": "''", "desc": "非受控初始输入草稿" },
+    "onInputValueChange": {
+      "type": "(inputValue: string, details) => void",
+      "default": "—",
+      "desc": "输入草稿变化（含 isComposing）"
+    },
+    "onSearch": {
+      "type": "(query: string) => void",
+      "default": "—",
+      "desc": "搜索文本变化（IME 组合结束后才触发），接外部异步 options"
+    },
+    "open": { "type": "boolean", "default": "—", "desc": "受控面板开关" },
+    "defaultOpen": { "type": "boolean", "default": "false", "desc": "非受控初始面板状态" },
+    "onOpenChange": {
+      "type": "(open: boolean, details) => void",
+      "default": "—",
+      "desc": "面板开合回调（含 reason）"
+    },
+    "filterOption": {
+      "type": "false | ((option, query) => boolean)",
+      "default": "内置包含匹配",
+      "desc": "自定义过滤；false 关闭本地过滤（异步模式）"
+    },
+    "loading": {
+      "type": "boolean",
+      "default": "false",
+      "desc": "异步加载中（loading 中旧结果标记 stale 不可提交）"
+    },
+    "openOnFocus": { "type": "boolean", "default": "false", "desc": "聚焦即展开面板" },
+    "autoHighlight": {
+      "type": "boolean",
+      "default": "true",
+      "desc": "展开时自动高亮首个（或已选）可用选项"
+    },
+    "clearable": { "type": "boolean", "default": "false", "desc": "有选中值或草稿时显示清空按钮" },
+    "size": { "type": "'sm' | 'md' | 'lg'", "default": "'md'", "desc": "尺寸" },
+    "status": {
+      "type": "'default' | 'error' | 'success'",
+      "default": "'default'",
+      "desc": "校验状态（根 data-status）"
+    },
+    "loadingContent": {
+      "type": "React.ReactNode",
+      "default": "locale.combobox.loading",
+      "desc": "加载态内容"
+    },
+    "emptyContent": {
+      "type": "React.ReactNode",
+      "default": "locale.combobox.empty",
+      "desc": "空态内容"
+    },
+    "errorContent": {
+      "type": "React.ReactNode",
+      "default": "—",
+      "desc": "错误态内容（提供即启用）"
+    },
+    "name": {
+      "type": "string",
+      "default": "—",
+      "desc": "原生表单提交：每个选中值渲染一个同名 hidden input"
+    },
+    "required": {
+      "type": "boolean",
+      "default": "false",
+      "desc": "至少选中一项；未选时 setCustomValidity 校验文案"
+    },
+    "classNames": {
+      "type": "{ root?; control?; tags?; tag?; tagLabel?; tagRemove?; input?; clear?; toggle?; panel?; listbox?; option?; loading?; empty?; error?; status? }",
+      "default": "—",
+      "desc": "slot 级类名追加"
+    }
+  },
+  "a11yNotes": [
+    "editable combobox 模式（input role=combobox + aria-activedescendant），listbox 带 aria-multiselectable=true",
+    "选中后草稿清空、面板保持打开，继续输入即可继续搜索",
+    "input 为空时 Backspace 删除最后一个标签；标签删除按钮 tabIndex=-1 不进 Tab 序，aria-label='移除 {item}'",
+    "IME：composition 中 Enter/方向键不触发提交与移动；compositionend 后才触发 onSearch",
+    "loading 中旧结果标记 data-stale 且不可提交，aria-busy=true",
+    "原生表单：name 下每个选中值一个 hidden input；required 未选时 setCustomValidity"
+  ],
+  "related": ["Combobox", "Select", "TreeSelect", "Form"]
+}

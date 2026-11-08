@@ -55,6 +55,7 @@
   max-height: 100vh;
   max-height: 100dvh;
   overflow: hidden;
+  padding: var(--z-drawer-content-padding);
   font-family: var(--z-font-sans);
   font-size: var(--z-text-md);
   line-height: var(--z-leading-normal);

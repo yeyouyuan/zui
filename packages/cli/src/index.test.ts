@@ -332,7 +332,7 @@ describe('registry 定位', () => {
   });
 });
 
-describe('真实 registry 契约校验（67 组件 + 16 业务块）', () => {
+describe('真实 registry 契约校验（71 组件 + 16 业务块）', () => {
   const realRegistry = path.resolve(
     fileURLToPath(new URL('../../../registry/registry.json', import.meta.url))
   );
@@ -346,7 +346,7 @@ describe('真实 registry 契约校验（67 组件 + 16 业务块）', () => {
     };
     expect(registry.name).toBe('zui');
     expect(registry.homepage).toBe('https://zui.dev');
-    expect(registry.items.filter((item) => item.type === 'registry:component')).toHaveLength(67);
+    expect(registry.items.filter((item) => item.type === 'registry:component')).toHaveLength(71);
     expect(registry.items.filter((item) => item.type === 'registry:block')).toHaveLength(16);
     for (const item of registry.items) {
       expect(item.name).toMatch(/^[a-z0-9-]+$/);

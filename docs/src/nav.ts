@@ -11,6 +11,7 @@ const RadioPage = lazy(() => import('./pages/components/RadioPage'));
 const SwitchPage = lazy(() => import('./pages/components/SwitchPage'));
 const SelectPage = lazy(() => import('./pages/components/SelectPage'));
 const ComboboxPage = lazy(() => import('./pages/components/ComboboxPage'));
+const CommandPalettePage = lazy(() => import('./pages/components/CommandPalettePage'));
 const ModalPage = lazy(() => import('./pages/components/ModalPage'));
 const TabsPage = lazy(() => import('./pages/components/TabsPage'));
 const TablePage = lazy(() => import('./pages/components/TablePage'));
@@ -73,6 +74,8 @@ const DesignAssetsPage = lazy(() => import('./pages/design/DesignAssetsPage'));
 const IconGalleryPage = lazy(() => import('./pages/design/IconGalleryPage'));
 const BuilderPage = lazy(() => import('./pages/builder/BuilderPage'));
 const BlocksPage = lazy(() => import('./pages/blocks/BlocksPage'));
+const SideNavPage = lazy(() => import('./pages/components/SideNavPage'));
+const SplitterPage = lazy(() => import('./pages/components/SplitterPage'));
 
 /** 导航分组：'start'（开始）/ 'components'（组件） */
 export type NavGroup = 'start' | 'components';
@@ -114,6 +117,9 @@ export const navItems: NavItem[] = [
   { title: 'Switch 开关', path: '/components/switch', group: 'components' },
   { title: 'Select 选择器', path: '/components/select', group: 'components' },
   { title: 'Combobox 自动完成', path: '/components/combobox', group: 'components' },
+  { title: 'CommandPalette 命令面板', path: '/components/command-palette', group: 'components' },
+  { title: 'SideNav 侧边导航', path: '/components/side-nav', group: 'components' },
+  { title: 'Splitter 可调分栏', path: '/components/splitter', group: 'components' },
   { title: 'Modal 对话框', path: '/components/modal', group: 'components' },
   { title: 'Tabs 标签页', path: '/components/tabs', group: 'components' },
   { title: 'Table 表格', path: '/components/table', group: 'components' },
@@ -191,6 +197,9 @@ export const routeComponents: Record<string, ComponentType> = {
   '/components/switch': SwitchPage,
   '/components/select': SelectPage,
   '/components/combobox': ComboboxPage,
+  '/components/command-palette': CommandPalettePage,
+  '/components/side-nav': SideNavPage,
+  '/components/splitter': SplitterPage,
   '/components/modal': ModalPage,
   '/components/tabs': TabsPage,
   '/components/table': TablePage,

@@ -1,22 +1,77 @@
 {
   "name": "Input",
-  "description": "单行文本输入框，支持前后缀插槽、清除按钮与校验状态",
+  "description": "文本输入框：单行输入与 Textarea/Password/Search 子组件，支持前后缀插槽、清除按钮与校验状态",
   "category": "基础",
-  "useCase": ["表单文本字段", "搜索框（配 prefix 图标）", "带清除按钮的受控输入"],
-  "dontUse": ["多行文本用 textarea（或 Mentions）", "数字步进用 InputNumber", "日期录入用 DatePicker"],
+  "useCase": [
+    "表单文本字段",
+    "多行说明/备注（Input.Textarea）",
+    "密码录入（Input.Password）",
+    "回车或按钮触发搜索（Input.Search）"
+  ],
+  "dontUse": ["数字步进用 InputNumber", "日期录入用 DatePicker"],
   "props": {
     "size": { "type": "'sm' | 'md' | 'lg'", "default": "'md'", "desc": "尺寸" },
-    "status": { "type": "'default' | 'error' | 'success'", "default": "'default'", "desc": "校验状态（根 data-status）" },
+    "status": {
+      "type": "'default' | 'error' | 'success'",
+      "default": "'default'",
+      "desc": "校验状态（根 data-status）"
+    },
     "prefix": { "type": "React.ReactNode", "default": "—", "desc": "前置插槽（图标等）" },
     "suffix": { "type": "React.ReactNode", "default": "—", "desc": "后置插槽" },
     "clearable": { "type": "boolean", "default": "false", "desc": "有值时显示清除按钮" },
-    "onClear": { "type": "() => void", "default": "—", "desc": "点击清除按钮回调（清除后聚焦输入框）" },
-    "classNames": { "type": "{ root?; input?; prefix?; suffix?; clear? }", "default": "—", "desc": "slot 级类名追加" }
+    "onClear": {
+      "type": "() => void",
+      "default": "—",
+      "desc": "点击清除按钮回调（清除后聚焦输入框）"
+    },
+    "classNames": {
+      "type": "{ root?; input?; prefix?; suffix?; clear? }",
+      "default": "—",
+      "desc": "slot 级类名追加"
+    },
+    "Input.Textarea.rows": { "type": "number", "default": "—", "desc": "原生 rows 属性透传" },
+    "Input.Textarea.clearable": {
+      "type": "boolean",
+      "default": "false",
+      "desc": "有值时显示清除按钮"
+    },
+    "Input.Textarea.classNames": {
+      "type": "{ root?; textarea?; clear? }",
+      "default": "—",
+      "desc": "slot 级类名追加"
+    },
+    "Input.Password.visibilityToggle": {
+      "type": "boolean",
+      "default": "true",
+      "desc": "显示可见性切换按钮（明文/密文）"
+    },
+    "Input.Password.classNames": {
+      "type": "{ root?; input?; prefix?; suffix?; toggle? }",
+      "default": "—",
+      "desc": "slot 级类名追加"
+    },
+    "Input.Search.onSearch": {
+      "type": "(value: string) => void",
+      "default": "—",
+      "desc": "点击搜索按钮或按 Enter（IME 组合中除外）触发；onKeyDown.preventDefault() 可取消"
+    },
+    "Input.Search.clearable": {
+      "type": "boolean",
+      "default": "false",
+      "desc": "有值时显示清除按钮"
+    },
+    "Input.Search.classNames": {
+      "type": "{ root?; input?; prefix?; clear?; search? }",
+      "default": "—",
+      "desc": "slot 级类名追加"
+    }
   },
   "a11yNotes": [
     "清除按钮 type=button + aria-label=\"清除\"，readOnly 时隐藏",
+    "Password 可见性切换按钮 aria-label 随状态切换（显示密码/隐藏密码），disabled 时同步禁用",
+    "Search 搜索按钮 type=button + aria-label=\"搜索\"，readOnly/disabled 时同步禁用；IME 组合中的 Enter 不触发搜索",
     "status=error 时配 aria-invalid + aria-describedby 指向错误文案",
-    "原生 input 语义，其余属性（placeholder/aria-* /事件）透传根元素"
+    "原生 input/textarea 语义，其余属性（placeholder/aria-* /事件）透传原生元素"
   ],
   "related": ["Form", "Select", "Button"]
 }
