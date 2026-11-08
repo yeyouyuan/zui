@@ -412,14 +412,16 @@ commandPalette: {
 
 ## 15. 迁移原型与正式准入
 
-正式发布前必须完成两个不对外承诺 API 的真实迁移原型：
+正式发布前必须完成两个不对外承诺 API 的真实迁移原型。**两项原型均已完成（2026-11-09）**：
 
-1. **文档站全局命令入口**
-   - 使用实际 docs 路由、主题切换和组件搜索命令，而不是孤立 demo。
-   - 验证 `mod+k` 与文档搜索快捷键不冲突、Router 后标题焦点、触发点归还、暗色与移动端。
-2. **AdminShell 异步命令入口**
-   - 使用服务端模拟搜索、loading、动态结果、disabled 权限项和至少一个 `preventDefault()` 后保持打开的动作。
-   - 验证快速输入竞态、分组重排、RTL、320px、长文案和业务 modal 叠加。
+1. **文档站全局命令入口** ✅
+   - `docs/src/App.tsx`：⌘K 由 CommandPalette 接管；命令包含全部文档路由（hash 导航 + 既有标题聚焦策略）、主题切换、聚焦文档搜索（旧 ⌘K 行为成为命令，冲突消除）与 GitHub 外链（`preventDefault()` 保持打开 + `window.open`）。
+   - 验证：`e2e/command-palette-docs.spec.ts` 7 条（Router 后标题聚焦、侧栏 `aria-current`、触发点归还、320px 抽屉不冲突、平台感知 mod 按浏览器 UA 断言）。
+2. **AdminShell 异步命令入口** ✅
+   - `docs/src/prototypes/admin-shell/AdminShellPrototype.tsx` 内 `AdminCommandEntry`：260ms debounce + 单调 request id 竞态丢弃、受控 query + `filter={false}`、loading、动态分组重排、权限禁用项、`preventDefault()` 保持打开的复制链接动作（页面通知）。
+   - 验证：`e2e/command-palette-admin.spec.ts` 7 条（竞态后结果一致性、分组重排、禁用不可执行不关闭、导航命令 hash 更新、320px）。
+
+剩余准入项：浏览器级 IME（中/日/韩实机输入法）与 VoiceOver/NVDA 人工走查、macOS Meta 与 Windows Control 实机热键复核。
 
 准入顺序：
 

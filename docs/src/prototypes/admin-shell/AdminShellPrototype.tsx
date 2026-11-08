@@ -18,7 +18,7 @@ import {
   Shield,
   Users,
 } from '@zui/icons';
-import { Drawer } from '@zui/react';
+import { CommandPalette, Drawer, type CommandPaletteCommand } from '@zui/react';
 import { usePageTitle } from '../../components/usePageTitle';
 import {
   SideNav,
@@ -279,6 +279,104 @@ function PageContent({ currentKey, range }: { currentKey: string | null; range: 
   );
 }
 
+/* ---------------------- RFC-004 迁移原型 2：异步命令入口 ---------------------- */
+
+/** 模拟服务端命令池：分组会随 query 变化重排，含权限禁用项 */
+const COMMAND_POOL: Array<CommandPaletteCommand> = [
+  { key: 'nav-projects', label: '跳转：项目管理', group: '导航', keywords: ['项目', 'projects'], onSelect: () => {} },
+  { key: 'nav-team', label: '跳转：团队管理', group: '导航', keywords: ['团队', 'team'], onSelect: () => {} },
+  { key: 'nav-reports', label: '跳转：交付报告', group: '导航', keywords: ['报告', 'reports'], onSelect: () => {} },
+  { key: 'create-ticket', label: '新建工单', group: '操作', shortcut: '⌘T', keywords: ['工单', '新建', 'create', '操作'], onSelect: () => {} },
+  { key: 'invite-member', label: '邀请成员', group: '操作', keywords: ['邀请', '成员', 'invite', '操作'], onSelect: () => {} },
+  {
+    key: 'export-all',
+    label: '导出全部数据（需要管理员权限）',
+    group: '数据',
+    keywords: ['导出', 'export'],
+    disabled: true,
+    onSelect: () => {},
+  },
+  {
+    key: 'copy-link',
+    label: '复制当前页链接',
+    group: '数据',
+    keywords: ['复制', '链接', 'copy'],
+    // preventDefault 保持打开的动作：执行后可继续执行其他命令
+    onSelect: (event) => event.preventDefault(),
+  },
+];
+
+function AdminCommandEntry(): ReactNode {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<CommandPaletteCommand[]>(COMMAND_POOL.slice(0, 4));
+  const [loading, setLoading] = useState(false);
+  const [notice, setNotice] = useState('');
+  const requestRef = useRef(0);
+
+  // 模拟服务端搜索：260ms debounce + 单调 request id 丢弃竞态结果
+  useEffect(() => {
+    const requestId = ++requestRef.current;
+    setLoading(true);
+    const timer = window.setTimeout(() => {
+      if (requestId !== requestRef.current) return;
+      const keyword = query.trim().toLowerCase();
+      const matched = COMMAND_POOL.filter(
+        (command) =>
+          String(command.label).toLowerCase().includes(keyword) ||
+          (command.keywords ?? []).some((item) => item.toLowerCase().includes(keyword))
+      );
+      // 分组重排：含"操作"关键字的 query 把操作组提前
+      const ordered = keyword.includes('操作')
+        ? [...matched].sort(
+            (a, b) => Number(b.group === '操作') - Number(a.group === '操作')
+          )
+        : matched;
+      setResults(ordered);
+      setLoading(false);
+    }, 260);
+    return () => window.clearTimeout(timer);
+  }, [query]);
+
+  return (
+    <>
+      <button
+        type="button"
+        className="admin-prototype-command"
+        aria-label="搜索命令…（快捷键 Ctrl+Shift+P）"
+        onClick={() => setOpen(true)}
+      >
+        搜索命令…
+      </button>
+      <CommandPalette
+        commands={results}
+        open={open}
+        onOpenChange={setOpen}
+        hotkey="ctrl+shift+p"
+        query={query}
+        onQueryChange={setQuery}
+        filter={false}
+        loading={loading}
+        aria-label="星河管理平台命令搜索"
+        onCommandSelect={(command) => {
+          if (command.key === 'copy-link') {
+            setNotice(`已复制：${window.location.hash}`);
+            return;
+          }
+          if (command.key.startsWith('nav-')) {
+            const target = command.key.replace('nav-', '');
+            window.location.hash = `${ADMIN_SHELL_ROUTE_PREFIX}/${target === 'projects' ? 'projects/active' : target}`;
+          }
+          setNotice('');
+        }}
+      />
+      <p role="status" className="admin-prototype-command-notice">
+        {notice}
+      </p>
+    </>
+  );
+}
+
 export default function AdminShellPrototype(): ReactNode {
   usePageTitle('SideNav 原型：后台壳');
   const location = useAdminLocation();
@@ -452,6 +550,7 @@ export default function AdminShellPrototype(): ReactNode {
             <span>星河管理平台</span>
           </div>
           <div className="admin-prototype-header-actions">
+            <AdminCommandEntry />
             <a href="#/" className="admin-prototype-back">
               <ArrowLeft aria-hidden="true" />
               返回文档

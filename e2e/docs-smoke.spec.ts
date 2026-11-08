@@ -817,9 +817,18 @@ test('文档外壳：SideNav 搜索保留路由语义，移动快捷键与搭建
     'aria-current',
     'page'
   );
-  await page.keyboard.press('Control+k');
+  // ⌘K 打开全局命令面板（RFC-004 原型 1，mod 按浏览器 UA 平台映射）
+  const mod = /mac/i.test(await page.evaluate(() => navigator.userAgent)) ? 'Meta' : 'Control';
+  await page.keyboard.press(`${mod}+k`);
+  const paletteDialog = page.getByRole('dialog', { name: '文档命令面板' });
+  await expect(paletteDialog).toBeVisible();
+  await expect(paletteDialog.getByRole('combobox', { name: '搜索命令' })).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(paletteDialog).toHaveCount(0);
+
+  // 文档搜索的过滤语义保留（入口为侧栏搜索框本身）
   const search = page.getByRole('searchbox', { name: '按名称过滤导航项' });
-  await expect(search).toBeFocused();
+  await search.click();
   await search.fill('TreeSelect');
   await expect(navigation.getByRole('list')).toHaveCount(1);
   await expect(navigation.getByRole('link')).toHaveCount(1);
@@ -831,13 +840,17 @@ test('文档外壳：SideNav 搜索保留路由语义，移动快捷键与搭建
   await search.fill('');
 
   await page.setViewportSize({ width: 320, height: 600 });
-  await page.keyboard.press('Meta+k');
+  // 320px：抽屉改由菜单按钮打开；⌘K 打开命令面板而非抽屉
+  await page.getByRole('button', { name: /打开文档菜单|菜单/ }).click();
   const dialog = page.getByRole('dialog', { name: '文档菜单', exact: true });
   await expect(dialog).toBeVisible();
   const mobileSearch = dialog.getByRole('searchbox', { name: '按名称过滤导航项' });
-  await expect(mobileSearch).toBeFocused();
   await mobileSearch.press('Escape');
   await expect(dialog).toHaveCount(0);
+  await page.keyboard.press(`${mod}+k`);
+  await expect(page.getByRole('dialog', { name: '文档命令面板' })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog', { name: '文档命令面板' })).toHaveCount(0);
 
   await page.setViewportSize({ width: 850, height: 800 });
   await page.evaluate(() => {

@@ -6,7 +6,11 @@ import { GROUP_LABELS, GROUP_ORDER, navItems, routeComponents, type NavItem } fr
 import { ADMIN_SHELL_ROUTE_PREFIX } from './prototypes/admin-shell/routes';
 import { SPLITTER_DETAIL_ROUTE, SPLITTER_IDE_ROUTE } from './prototypes/splitter/routes';
 import { DATAGRID_ROUTE } from './prototypes/datagrid/routes';
-import type { SideNavSection } from '@zui/react';
+import {
+  CommandPalette,
+  type CommandPaletteCommand,
+  type SideNavSection,
+} from '@zui/react';
 
 const AdminShellPrototype = lazy(() => import('./prototypes/admin-shell/AdminShellPrototype'));
 const SplitterPrototype = lazy(() => import('./prototypes/splitter/SplitterPrototype'));
@@ -153,25 +157,55 @@ export default function App(): React.ReactNode {
     return () => media.removeEventListener('change', syncSystemTheme);
   }, []);
 
-  // ⌘K / Ctrl+K 聚焦侧栏搜索（与搜索框 placeholder 提示一致）
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
-        event.preventDefault();
-        // resize 的媒体事件可能尚未提交；快捷键按当前视口选择搜索入口。
-        const mobile = window.matchMedia(mobileQuery).matches;
-        setIsMobile(mobile);
-        if (mobile) {
-          setMenuOpen(true);
-          mobileSearchRef.current?.focus();
-        } else {
-          navSearchRef.current?.focus();
-        }
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [mobileQuery]);
+  // ⌘K 已由全局 CommandPalette 接管（RFC-004 迁移原型 1）；聚焦文档搜索
+  // 成为面板中的一条命令，见 focusDocSearch。
+  const focusDocSearch = () => {
+    // resize 的媒体事件可能尚未提交；按当前视口选择搜索入口。
+    const mobile = window.matchMedia(mobileQuery).matches;
+    setIsMobile(mobile);
+    if (mobile) {
+      setMenuOpen(true);
+      window.requestAnimationFrame(() => mobileSearchRef.current?.focus());
+    } else {
+      navSearchRef.current?.focus();
+    }
+  };
+
+  const GITHUB_URL = 'https://github.com/yeyouyuan/zui';
+  const paletteCommands: CommandPaletteCommand[] = (() => {
+    const commands: CommandPaletteCommand[] = [
+      { key: 'docs-search', label: '聚焦文档搜索', keywords: ['search', '查找'], onSelect: () => focusDocSearch() },
+      {
+        key: 'theme',
+        label: dark ? '切换浅色主题' : '切换暗色主题',
+        keywords: ['theme', 'dark', 'light', '主题'],
+        onSelect: () => toggleDark(),
+      },
+      {
+        key: 'github',
+        label: '在 GitHub 打开仓库',
+        keywords: ['repo', '源码'],
+        meta: { href: GITHUB_URL },
+        // 外链走根级回调：验证 preventDefault 取消自动关闭、由应用编排
+        onSelect: () => {},
+      },
+    ];
+    for (const item of navItems) {
+      commands.push({
+        key: `nav:${item.path}`,
+        label: item.title,
+        group: GROUP_LABELS[item.group],
+        meta: { href: hrefFor(item.path) },
+        onSelect: () => {
+          // Router 接入：登记路由焦点策略（与侧栏导航一致），hash 导航后由
+          // 既有路由 effect 聚焦页面标题（RFC-004 §10 的"应用焦点策略优先"）
+          focusPageOnRouteRef.current = item.path;
+          window.location.hash = hrefFor(item.path);
+        },
+      });
+    }
+    return commands;
+  })();
 
   // 侧栏搜索过滤：按名称即时过滤导航项
   const keyword = query.trim().toLowerCase();
@@ -366,6 +400,20 @@ export default function App(): React.ReactNode {
         {/* 页内目录：DOM 为 main > (.doc-page + nav.doc-toc)，供 docs.css 做 grid 多列布局 */}
         <PageToc containerRef={mainRef} />
       </main>
+
+      {/* RFC-004 迁移原型 1：全局命令入口（⌘K）。原型阶段直接使用公共导出。 */}
+      <CommandPalette
+        commands={paletteCommands}
+        aria-label="文档命令面板"
+        placeholder="搜索页面或命令…"
+        onCommandSelect={(command, event) => {
+          if (command.key !== 'github') return;
+          const href = (command.meta as { href?: string } | undefined)?.href;
+          if (!href) return;
+          event.preventDefault(); // 取消自动关闭：由应用编排外链与面板状态
+          window.open(href, '_blank', 'noopener,noreferrer');
+        }}
+      />
     </div>
   );
 }

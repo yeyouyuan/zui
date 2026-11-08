@@ -397,3 +397,39 @@
     padding: 16px;
   }
 }
+
+/* --------------------- RFC-004 原型 2：异步命令入口 --------------------- */
+
+.admin-prototype-command {
+  padding: var(--z-space-1) var(--z-space-3);
+  color: var(--z-color-fg-muted);
+  font-size: var(--z-text-sm);
+  background: var(--z-color-bg-muted);
+  border: 1px solid var(--z-color-border);
+  border-radius: var(--z-radius-full);
+  cursor: pointer;
+}
+
+.admin-prototype-command:hover {
+  border-color: var(--z-color-border-focus);
+  color: var(--z-color-fg);
+}
+
+.admin-prototype-command-notice {
+  position: fixed;
+  bottom: var(--z-space-4);
+  left: 50%;
+  z-index: calc(var(--z-z-dropdown) + 1);
+  padding: var(--z-space-2) var(--z-space-4);
+  color: var(--z-color-fg);
+  font-size: var(--z-text-sm);
+  background: var(--z-color-bg-elevated);
+  border: 1px solid var(--z-color-border);
+  border-radius: var(--z-radius-md);
+  box-shadow: var(--z-shadow-lg);
+  transform: translateX(-50%);
+}
+
+.admin-prototype-command-notice:empty {
+  display: none;
+}
