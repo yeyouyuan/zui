@@ -1,5 +1,7 @@
 import { Image } from '@zui/react';
 
+import demoCover from '../../assets/demo-cover.svg';
+
 import ApiTable from '../../components/ApiTable';
 import CustomizeOutlet from '../../components/CustomizeOutlet';
 import Demo from '../../components/Demo';
@@ -7,30 +9,36 @@ import { usePageTitle } from '../../components/usePageTitle';
 
 const BROKEN_IMAGE_SRC = 'data:image/png;base64,invalid';
 
-const BASIC_CODE = `<Image
-  src="https://picsum.photos/320/200"
+const BASIC_CODE = `import cover from './cover.svg';
+
+<Image
+  src={cover}
   alt="示例图片"
   width={320}
   height={200}
 />`;
 
-const FALLBACK_CODE = `<Image
+const FALLBACK_CODE = `import cover from './cover.svg';
+
+<Image
   src="data:image/png;base64,invalid"
-  fallback="https://picsum.photos/320/200?fallback"
+  fallback={cover}
   alt="加载失败回退"
   width={320}
   height={200}
 />`;
 
-const PREVIEW_CODE = `<Image
-  src="https://picsum.photos/320/200"
+const PREVIEW_CODE = `import cover from './cover.svg';
+
+<Image
+  src={cover}
   alt="点击预览大图"
   width={320}
   height={200}
   preview
 />
 <Image
-  src="https://picsum.photos/320/200"
+  src={cover}
   alt="禁用预览"
   width={160}
   height={100}
@@ -52,7 +60,7 @@ export default function ImagePage(): React.ReactNode {
         description="传入 src 与 alt，width/height 控制占位尺寸。"
         code={BASIC_CODE}
       >
-        <Image src="https://picsum.photos/320/200" alt="示例图片" width={320} height={200} />
+        <Image src={demoCover} alt="示例图片" width={320} height={200} />
       </Demo>
 
       <Demo
@@ -62,7 +70,7 @@ export default function ImagePage(): React.ReactNode {
       >
         <Image
           src={BROKEN_IMAGE_SRC}
-          fallback="https://picsum.photos/320/200?fallback"
+          fallback={demoCover}
           alt="加载失败回退"
           width={320}
           height={200}
@@ -75,20 +83,8 @@ export default function ImagePage(): React.ReactNode {
         code={PREVIEW_CODE}
       >
         <div className="doc-pg-preview-row">
-          <Image
-            src="https://picsum.photos/320/200"
-            alt="点击预览大图"
-            width={320}
-            height={200}
-            preview
-          />
-          <Image
-            src="https://picsum.photos/320/200"
-            alt="禁用预览"
-            width={160}
-            height={100}
-            preview={false}
-          />
+          <Image src={demoCover} alt="点击预览大图" width={320} height={200} preview />
+          <Image src={demoCover} alt="禁用预览" width={160} height={100} preview={false} />
         </div>
       </Demo>
 

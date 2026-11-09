@@ -2,13 +2,21 @@
 
 适用包：`@zui/react`、`@zui/tokens`、`@zui/icons`、`@zui/i18n`、`@zui/cli`、`@zui/mcp`、`@zui/blocks`。
 
-## 当前状态（2026-11-07）
+## v0.2.0 发布基线（2026-11-07 历史记录）
 
 - 七包版本和 CHANGELOG 已更新至 `0.2.0`，原 changeset 已消费。**不要再次执行 `changeset version`**。
 - Registry 为 66 个组件、16 个业务区块；Anchor 已有源码、导出、文档和 Registry 条目。
 - 七包已有独立 LICENSE，`@zui/react` 已有 README；`@zui/blocks` 对 `@zui/react` 的依赖已移入 `dependencies`。
 - GitHub `main` 已包含质量提交 `c7fec2f` 与 Pages 依赖构建修复 `e60a06f`；对应 CI、Pages、`v0.2.0` JS/CSS 和在线脚本演示均已验证成功。远端仍无 `v0.2.0` tag，npm/unpkg 仍等待发布认证。
 - 文档 71 个导航路由已完成 320px 暗色静态布局审计；概览、图标库和 16 个业务区块另做桌面/窄屏/暗色及关键交互复核。66 个组件的全部打开态、长文案和原生 200% 缩放仍属于持续增强验收，不作为本次本地发布门禁的阻塞项。
+
+## 当前开发分支（2026-11-09）
+
+- 源码现有 71 个组件、16 个业务区块，Registry 共 87 个条目；文档有 77 个公开导航路由。
+- 文档完成导航分组、切页保留正文与 77 页四组显示矩阵；内容协作为设计原型。67 条 E2E 全部通过，最新验证与边界见 [本轮审计](quality-audit-2026-11-09.md)。
+- Combobox / MultiCombobox、SideNav、Splitter、CommandPalette 已实现，五份 minor changeset 和一份 patch changeset 等待下一版本统一消费。包版本仍为 `0.2.0`；此处源码数量不代表 npm 已发布内容。
+- CommandPalette 仍需真实中文输入法、VoiceOver / NVDA 和 macOS / Windows 热键人工验收，见 [RFC 第 15 节](./rfcs/command-palette.md)。DataGrid 处于性能原型与 RFC 评审阶段。
+- 本次已重新核验 GitHub 认证和远端分支；用户授权先同步 GitHub 并部署 Pages，npm 稍后继续。npm 当前未登录，包版本与 changeset 本轮不消费；正式 npm 发布前再确认 scope 权限和版本。
 
 ## 1. 发布前验证
 

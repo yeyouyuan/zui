@@ -25,6 +25,7 @@ const CONTROLLED_CODE = `const [open, setOpen] = useState(false);
 </>`;
 
 function PaletteDemo(): React.ReactNode {
+  const [open, setOpen] = useState(false);
   const message = useMessage();
   const commands: CommandPaletteCommand[] = [
     { key: 'overview', label: '跳转：概览', group: '页面', onSelect: () => message.info('跳转到概览') },
@@ -33,7 +34,10 @@ function PaletteDemo(): React.ReactNode {
     { key: 'tokens', label: '查看设计令牌', group: '视图', onSelect: () => message.info('查看令牌') },
     { key: 'export', label: '导出数据', group: '操作', disabled: true, onSelect: () => {} },
   ];
-  return <CommandPalette open commands={commands} hotkey={false} aria-label="演示命令面板" />;
+  return <>
+    <Button onClick={() => setOpen(true)}>打开基础命令面板</Button>
+    <CommandPalette open={open} onOpenChange={setOpen} commands={commands} hotkey={false} aria-label="演示命令面板" />
+  </>;
 }
 
 export default function CommandPalettePage(): React.ReactNode {

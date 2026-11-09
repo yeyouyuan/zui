@@ -406,8 +406,10 @@ test('文档外壳宽态：SideNav 语义、过滤与 location current，原型�
   await expect(nav).toHaveClass(/z-sidenav/);
   await expect(nav).toHaveAttribute('data-collapsed', 'false');
   await expect(nav.getByRole('group', { name: '开始', exact: true })).toHaveCount(1);
-  await expect(nav.getByRole('group', { name: '组件', exact: true })).toHaveCount(1);
-  await expect(nav.getByRole('list')).toHaveCount(2);
+  for (const group of ['基础组件', '布局', '导航', '数据录入', '数据展示', '反馈', '全局配置']) {
+    await expect(nav.getByRole('group', { name: group, exact: true })).toHaveCount(1);
+  }
+  await expect(nav.getByRole('list')).toHaveCount(8);
   await expect(nav.locator('[data-part="collapse-toggle"]')).toHaveCount(0);
   await expect(nav.locator(`a[href^="#${ADMIN_ROUTE}"]`)).toHaveCount(0);
   await currentLink(nav, '#/');

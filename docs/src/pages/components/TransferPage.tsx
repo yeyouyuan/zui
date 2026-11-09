@@ -43,7 +43,7 @@ export default function TransferPage(): React.ReactNode {
 
       <h2 className="doc-h2">示例</h2>
 
-      <Demo
+      <Demo scroll
         title="基础用法"
         description="dataSource 是全量数据，targetKeys 决定落在目标列的项；勾选后点 → / ← 移动。"
         code={BASIC_CODE}
@@ -52,7 +52,7 @@ export default function TransferPage(): React.ReactNode {
         <Transfer dataSource={DATA} defaultTargetKeys={['b']} />
       </Demo>
 
-      <Demo
+      <Demo scroll
         title="搜索与自定义标题"
         description="showSearch 在两侧各加一个过滤框；titles 自定义两列标题。disabled 项不可勾选也不会被搬运。"
         code={SEARCH_CODE}

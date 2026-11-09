@@ -1,6 +1,6 @@
 # RFC-004：CommandPalette 命令面板
 
-状态：2026-11-09 实现复核稿。第 15 节列出的并行初版风险已在本轮实现中逐项清零（query 受控通道、input 独立可访问名、aria-expanded/empty/status 位置、Home/End 保留文本编辑、IME Escape 边界、option id 序号映射、key 安全裁剪、平台感知精确修饰符热键与注册栈仲裁、选择事件与取消、loading/结果公告、焦点恢复），组件测试与 Registry/文档页已同步。双迁移原型（第 15 节）与浏览器级 IME / 平台热键 / 辅助技术验证仍是发布准入前置，未完成前不构成发布承诺。
+状态：2026-11-09 实现复核稿。第 15 节列出的并行初版风险已在本轮实现中逐项清零（query 受控通道、input 独立可访问名、aria-expanded/empty/status 位置、Home/End 保留文本编辑、IME Escape 边界、option id 序号映射、key 安全裁剪、平台感知精确修饰符热键与注册栈仲裁、选择事件与取消、loading/结果公告、焦点恢复），组件测试与 Registry/文档页已同步。双迁移原型（第 15 节）已完成；浏览器级 IME / 平台热键 / 辅助技术人工验证仍是发布准入前置，未完成前不构成发布承诺。
 
 ## 1. 目标
 

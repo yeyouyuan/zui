@@ -317,6 +317,7 @@ export default function DesignAssetsPage(): React.ReactNode {
       </p>
 
       <Demo
+        scroll
         title="导入流程"
         description="四步完成接入（点击步骤可回看）；完成后 Figma 中会出现 primitives 与 semantic 两套 Token Set。"
         code={STEPS_CODE}

@@ -22,7 +22,7 @@ const TARGET_CODE = `const containerRef = useRef<HTMLDivElement>(null);
 <div ref={containerRef} style={{ height: 200, overflow: 'auto', border: '1px solid var(--z-color-border)' }}>
   <div style={{ height: 500 }}>
     <Affix offsetTop={0} target={() => containerRef.current!}>
-      <div style={{ background: 'var(--z-color-primary)', color: '#fff', padding: 8 }}>容器内固钉</div>
+      <div style={{ background: 'var(--z-color-primary)', color: 'var(--z-color-primary-fg)', padding: 8 }}>容器内固钉</div>
     </Affix>
   </div>
 </div>`;
@@ -59,7 +59,7 @@ export default function AffixPage(): React.ReactNode {
         >
           <div style={{ height: 500, position: 'relative' }}>
             <Affix offsetTop={0} target={() => containerRef.current!}>
-              <div style={{ background: 'var(--z-color-primary)', color: '#fff', padding: 8 }}>容器内固钉</div>
+              <div style={{ background: 'var(--z-color-primary)', color: 'var(--z-color-primary-fg)', padding: 8 }}>容器内固钉</div>
             </Affix>
           </div>
         </div>

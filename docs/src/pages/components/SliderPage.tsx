@@ -37,7 +37,7 @@ export default function SliderPage(): React.ReactNode {
         description="拖动 thumb 调整数值；role=slider + aria-valuenow/min/max/valuetext，←→/↑↓/Home/End/PageUp/PageDown 键盘步进。"
         code={BASIC_CODE}
       >
-        <div className="doc-pg-preview-row">
+        <div className="doc-pg-preview-row" style={{ width: '100%' }}>
           <div style={{ flex: 1 }}>
             <Slider value={value} onChange={setValue} />
           </div>

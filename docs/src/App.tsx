@@ -1,16 +1,14 @@
-import { Suspense, Component, lazy, useEffect, useRef, useState } from 'react';
+import { Suspense, Component, lazy, useDeferredValue, useEffect, useRef, useState } from 'react';
 
 import PageToc from './components/PageToc';
+import PageLoading from './components/PageLoading';
 import { useHashRoute, hrefFor } from './router';
 import { GROUP_LABELS, GROUP_ORDER, navItems, routeComponents, type NavItem } from './nav';
 import { ADMIN_SHELL_ROUTE_PREFIX } from './prototypes/admin-shell/routes';
 import { SPLITTER_DETAIL_ROUTE, SPLITTER_IDE_ROUTE } from './prototypes/splitter/routes';
 import { DATAGRID_ROUTE } from './prototypes/datagrid/routes';
-import {
-  CommandPalette,
-  type CommandPaletteCommand,
-  type SideNavSection,
-} from '@zui/react';
+import { catalog } from './site';
+import { CommandPalette, type CommandPaletteCommand, type SideNavSection } from '@zui/react';
 
 const AdminShellPrototype = lazy(() => import('./prototypes/admin-shell/AdminShellPrototype'));
 const SplitterPrototype = lazy(() => import('./prototypes/splitter/SplitterPrototype'));
@@ -20,9 +18,6 @@ const SideNav = lazy(async () => {
   const module = await import('@zui/react');
   return { default: module.SideNav };
 });
-
-/** 站点展示版本（后续可改为从 package.json 读取） */
-const SITE_VERSION = 'v0.2.0';
 
 function getEffectiveDarkTheme(): boolean {
   const explicit = document.documentElement.dataset.theme;
@@ -72,12 +67,15 @@ class PageErrorBoundary extends Component<{ children: React.ReactNode }, { error
 
 export default function App(): React.ReactNode {
   const route = useHashRoute();
-  const isBuilderRoute = route === '/builder';
+  const displayedRoute = useDeferredValue(route);
+  const isRoutePending = route !== displayedRoute;
+  const isBuilderRoute = displayedRoute === '/builder';
   const mobileQuery = isBuilderRoute ? '(max-width: 900px)' : '(max-width: 767px)';
   const [isMobile, setIsMobile] = useState(() => window.matchMedia(mobileQuery).matches);
   const [dark, setDark] = useState<boolean>(getEffectiveDarkTheme);
   const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const mainRef = useRef<HTMLElement | null>(null);
   const navSearchRef = useRef<HTMLInputElement | null>(null);
   const mobileSearchRef = useRef<HTMLInputElement | null>(null);
@@ -94,12 +92,15 @@ export default function App(): React.ReactNode {
   useEffect(() => {
     setDark(getEffectiveDarkTheme());
     setMenuOpen(false);
-    mainRef.current?.scrollTo({ top: 0 });
   }, [route]);
+
+  useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0, behavior: 'instant' });
+  }, [displayedRoute]);
 
   // 导航关闭 Drawer 后，等其归还触发焦点，再把焦点交给已提交路由的标题。
   useEffect(() => {
-    if (menuOpen || focusPageOnRouteRef.current !== route) return undefined;
+    if (menuOpen || route !== displayedRoute || focusPageOnRouteRef.current !== displayedRoute) return undefined;
 
     focusPageOnRouteRef.current = null;
     const main = mainRef.current;
@@ -134,7 +135,7 @@ export default function App(): React.ReactNode {
     scheduleFocus();
     focusTimeout = window.setTimeout(cleanup, 10_000);
     return cleanup;
-  }, [route, menuOpen]);
+  }, [route, displayedRoute, menuOpen]);
 
   useEffect(() => {
     const media = window.matchMedia(mobileQuery);
@@ -174,7 +175,12 @@ export default function App(): React.ReactNode {
   const GITHUB_URL = 'https://github.com/yeyouyuan/zui';
   const paletteCommands: CommandPaletteCommand[] = (() => {
     const commands: CommandPaletteCommand[] = [
-      { key: 'docs-search', label: '聚焦文档搜索', keywords: ['search', '查找'], onSelect: () => focusDocSearch() },
+      {
+        key: 'docs-search',
+        label: '聚焦文档搜索',
+        keywords: ['search', '查找'],
+        onSelect: () => focusDocSearch(),
+      },
       {
         key: 'theme',
         label: dark ? '切换浅色主题' : '切换暗色主题',
@@ -228,22 +234,48 @@ export default function App(): React.ReactNode {
     route === SPLITTER_IDE_ROUTE ? 'ide' : route === SPLITTER_DETAIL_ROUTE ? 'detail' : null;
   const isDatagridRoute = route === DATAGRID_ROUTE;
   const current = navItems.find((item) => item.path === route);
-  const Page = current ? routeComponents[route] : undefined;
+  const Page = routeComponents[displayedRoute];
 
   const renderNavigation = (mobile: boolean) => (
     <>
+      <div className="doc-nav-intro">
+        <span>文档</span>
+        <span>组件、规范与实践</span>
+      </div>
       <div className="doc-nav-search" role="search" aria-label="搜索文档导航">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+          <circle cx="8.5" cy="8.5" r="5.5" />
+          <path d="m13 13 4 4" />
+        </svg>
         <input
           ref={mobile ? mobileSearchRef : navSearchRef}
           data-autofocus={mobile ? '' : undefined}
           type="search"
           className="doc-nav-search-input"
-          placeholder="搜索文档… ⌘K"
+          placeholder="按名称过滤…"
           aria-label="按名称过滤导航项"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
+        {query ? (
+          <button
+            type="button"
+            className="doc-nav-clear"
+            aria-label="清除导航过滤"
+            onClick={() => {
+              setQuery('');
+              (mobile ? mobileSearchRef : navSearchRef).current?.focus();
+            }}
+          >
+            ×
+          </button>
+        ) : null}
       </div>
+      {query ? (
+        <p className="doc-nav-results" role="status">
+          找到 {filtered.length} 个页面
+        </p>
+      ) : null}
       {sections.length === 0 ? (
         <p className="doc-nav-empty">没有匹配「{query.trim()}」的页面</p>
       ) : null}
@@ -279,6 +311,9 @@ export default function App(): React.ReactNode {
           }
         />
       </Suspense>
+      <div className="doc-nav-footer">
+        React 19 <span aria-hidden="true">·</span> CSS 变量驱动
+      </div>
     </>
   );
 
@@ -355,10 +390,26 @@ export default function App(): React.ReactNode {
           <a className="doc-brand" href={hrefFor('/')}>
             <span className="doc-brand-mark">Z</span>
             <span className="doc-brand-name">ZUI</span>
-            <span className="doc-version">{SITE_VERSION}</span>
+            <span className="doc-version">v{catalog.version}</span>
           </a>
+          <span className="doc-topbar-context">
+            开发文档 <span aria-hidden="true">/</span> {current?.title ?? '文档'}
+          </span>
         </div>
         <div className="doc-topbar-actions">
+          <button
+            type="button"
+            className="doc-command-trigger"
+            onClick={() => setPaletteOpen(true)}
+            aria-label="打开文档命令面板"
+          >
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+              <circle cx="8.5" cy="8.5" r="5.5" />
+              <path d="m13 13 4 4" />
+            </svg>
+            <span>搜索页面或命令</span>
+            <kbd>⌘ / Ctrl K</kbd>
+          </button>
           <button type="button" className="doc-chip-btn" onClick={toggleDark} aria-pressed={dark}>
             {dark ? '切换浅色' : '切换暗色'}
           </button>
@@ -371,6 +422,9 @@ export default function App(): React.ReactNode {
             GitHub
           </a>
         </div>
+        <div className="doc-route-status" role="status" aria-live="polite" aria-atomic="true">
+          {isRoutePending && <><span className="doc-route-progress" aria-hidden="true" />正在打开 {current?.title ?? '页面'}…</>}
+        </div>
       </header>
 
       <div id="doc-sidebar" className="doc-sidebar">
@@ -381,19 +435,15 @@ export default function App(): React.ReactNode {
         className={isBuilderRoute ? 'doc-main doc-main--wide' : 'doc-main'}
         id="doc-main"
         ref={mainRef}
+        data-route={displayedRoute}
+        aria-busy={isRoutePending}
       >
         {Page ? (
-          <PageErrorBoundary key={route}>
-            <Suspense
-              fallback={
-                <p className="doc-p" role="status">
-                  正在加载页面…
-                </p>
-              }
-            >
+          <Suspense fallback={<PageLoading />}>
+            <PageErrorBoundary key={displayedRoute}>
               <Page />
-            </Suspense>
-          </PageErrorBoundary>
+            </PageErrorBoundary>
+          </Suspense>
         ) : (
           <NotFound />
         )}
@@ -403,6 +453,8 @@ export default function App(): React.ReactNode {
 
       {/* RFC-004 迁移原型 1：全局命令入口（⌘K）。原型阶段直接使用公共导出。 */}
       <CommandPalette
+        open={paletteOpen}
+        onOpenChange={setPaletteOpen}
         commands={paletteCommands}
         aria-label="文档命令面板"
         placeholder="搜索页面或命令…"

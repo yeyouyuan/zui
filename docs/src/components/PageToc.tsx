@@ -155,9 +155,12 @@ export default function PageToc({ containerRef }: PageTocProps): React.ReactNode
             aria-controls={item.id}
             onClick={() => {
               setActiveId(item.id);
-              document
-                .getElementById(item.id)
-                ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              document.getElementById(item.id)?.scrollIntoView({
+                behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+                  ? 'auto'
+                  : 'smooth',
+                block: 'start',
+              });
             }}
           >
             {item.text}

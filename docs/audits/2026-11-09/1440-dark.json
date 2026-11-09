@@ -1,0 +1,470 @@
+{
+  "width": 1440,
+  "colorScheme": "dark",
+  "pages": 77,
+  "records": [
+    {
+      "title": "概览",
+      "path": "/",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "设计令牌",
+      "path": "/tokens",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "主题调参",
+      "path": "/theme",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "国际化与翻译",
+      "path": "/i18n",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "设计资源",
+      "path": "/design",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "图标库",
+      "path": "/icons",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "页面搭建器",
+      "path": "/builder",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "业务区块",
+      "path": "/blocks",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "内容协作实验室",
+      "path": "/collaboration",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Button 按钮",
+      "path": "/components/button",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Input 输入框",
+      "path": "/components/input",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Checkbox 复选框",
+      "path": "/components/checkbox",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Radio 单选框",
+      "path": "/components/radio",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Switch 开关",
+      "path": "/components/switch",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Select 选择器",
+      "path": "/components/select",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Combobox 自动完成",
+      "path": "/components/combobox",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "CommandPalette 命令面板",
+      "path": "/components/command-palette",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "SideNav 侧边导航",
+      "path": "/components/side-nav",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Splitter 可调分栏",
+      "path": "/components/splitter",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Modal 对话框",
+      "path": "/components/modal",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Tabs 标签页",
+      "path": "/components/tabs",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Table 表格",
+      "path": "/components/table",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Message 全局提示",
+      "path": "/components/message",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Tooltip 文字提示",
+      "path": "/components/tooltip",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Popover 气泡卡片",
+      "path": "/components/popover",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "DropdownMenu 下拉菜单",
+      "path": "/components/dropdown-menu",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Alert 警告提示",
+      "path": "/components/alert",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Badge 徽标",
+      "path": "/components/badge",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Tag 标签",
+      "path": "/components/tag",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Pagination 分页",
+      "path": "/components/pagination",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Breadcrumb 面包屑",
+      "path": "/components/breadcrumb",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Avatar 头像",
+      "path": "/components/avatar",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Card 卡片",
+      "path": "/components/card",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Divider 分割线",
+      "path": "/components/divider",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Empty 空状态",
+      "path": "/components/empty",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Skeleton 骨架屏",
+      "path": "/components/skeleton",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Drawer 抽屉",
+      "path": "/components/drawer",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Spin 加载中",
+      "path": "/components/spin",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Progress 进度条",
+      "path": "/components/progress",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "ConfigProvider 全局配置",
+      "path": "/components/config",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Form 表单",
+      "path": "/components/form",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Slider 滑块",
+      "path": "/components/slider",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Rate 评分",
+      "path": "/components/rate",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "InputNumber 数字输入",
+      "path": "/components/input-number",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "ColorPicker 取色器",
+      "path": "/components/color-picker",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "DatePicker 日期选择",
+      "path": "/components/date-picker",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Calendar 日历",
+      "path": "/components/calendar",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Descriptions 描述列表",
+      "path": "/components/descriptions",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Statistic 统计数值",
+      "path": "/components/statistic",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Timeline 时间轴",
+      "path": "/components/timeline",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "VirtualTable 虚拟滚动表格",
+      "path": "/components/virtual-table",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Tree 树形控件",
+      "path": "/components/tree",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "TreeSelect 树选择",
+      "path": "/components/tree-select",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Collapse 折叠面板",
+      "path": "/components/collapse",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "List 列表",
+      "path": "/components/list",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Transfer 穿梭框",
+      "path": "/components/transfer",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Cascader 级联选择",
+      "path": "/components/cascader",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "TimePicker 时间选择",
+      "path": "/components/time-picker",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Mentions 提及",
+      "path": "/components/mentions",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Notification 通知提醒框",
+      "path": "/components/notification",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Popconfirm 气泡确认",
+      "path": "/components/popconfirm",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Image 图片",
+      "path": "/components/image",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Tour 漫游引导",
+      "path": "/components/tour",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Segmented 分段控制器",
+      "path": "/components/segmented",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "QRCode 二维码",
+      "path": "/components/qrcode",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Watermark 水印",
+      "path": "/components/watermark",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Affix 固钉",
+      "path": "/components/affix",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "BackTop 返回顶部",
+      "path": "/components/back-top",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "FloatButton 悬浮按钮",
+      "path": "/components/float-button",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Result 结果",
+      "path": "/components/result",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "App 容器",
+      "path": "/components/app",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Upload 上传",
+      "path": "/components/upload",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Steps 步骤条",
+      "path": "/components/steps",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "DateRangePicker 日期范围",
+      "path": "/components/date-range-picker",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Anchor 锚点",
+      "path": "/components/anchor",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Typography 排版",
+      "path": "/components/typography",
+      "layout": [],
+      "contrast": []
+    },
+    {
+      "title": "Layout 布局",
+      "path": "/components/layout",
+      "layout": [],
+      "contrast": []
+    }
+  ],
+  "issues": []
+}

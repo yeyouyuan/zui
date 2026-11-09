@@ -27,7 +27,7 @@
   --z-upload-icon-uploading: var(--z-color-primary);
   --z-upload-icon-success: var(--z-color-success);
   --z-upload-icon-error: var(--z-color-danger);
-  --z-upload-size-color: var(--z-color-fg-subtle);
+  --z-upload-size-color: var(--z-color-fg-muted);
   --z-upload-progress-height: 6px;
   --z-upload-progress-bg: var(--z-color-bg-muted);
   --z-upload-progress-fill: var(--z-color-primary);

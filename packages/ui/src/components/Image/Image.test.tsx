@@ -45,6 +45,42 @@ describe('Image 渲染', () => {
     expect(img).toHaveAttribute('src', '/fb.png');
   });
 
+  it('提交前已失败的图片即使错过 error 事件也会回退', () => {
+    render(
+      <Image
+        src="/cached-broken.png"
+        fallback="/fb.png"
+        ref={(node) => {
+          if (node) {
+            Object.defineProperty(node, 'complete', { configurable: true, value: true });
+            Object.defineProperty(node, 'naturalWidth', { configurable: true, value: 0 });
+          }
+        }}
+      />
+    );
+    expect(getImg()).toHaveAttribute('src', '/fb.png');
+  });
+
+  it('回退后切换 src 立即尝试新图片，重复 error 不会循环切换', () => {
+    const { rerender } = render(<Image src="/broken.png" fallback="/fb.png" />);
+    fireEvent.error(getImg());
+    fireEvent.error(getImg());
+    expect(getImg()).toHaveAttribute('src', '/fb.png');
+    rerender(<Image src="/next.png" fallback="/fb.png" />);
+    expect(getImg()).toHaveAttribute('src', '/next.png');
+    rerender(<Image src="/broken.png" fallback="/fb.png" />);
+    expect(getImg()).toHaveAttribute('src', '/broken.png');
+  });
+
+  it('合并内部 ref 时保留 React 19 callback ref 的清理函数', () => {
+    const cleanupRef = vi.fn();
+    const callbackRef = vi.fn(() => cleanupRef);
+    const { unmount } = render(<Image src="/a.png" ref={callbackRef} />);
+    expect(callbackRef).toHaveBeenCalledWith(getImg());
+    unmount();
+    expect(cleanupRef).toHaveBeenCalledOnce();
+  });
+
   it('无 fallback 时 error 保留原 src', () => {
     render(<Image src="/broken.png" alt="A" />);
     fireEvent.error(getImg());
@@ -55,10 +91,14 @@ describe('Image 渲染', () => {
 describe('Image 预览', () => {
   it('Modal 内预览优先显示并逐层响应 Esc', async () => {
     const user = userEvent.setup();
-    render(<Modal defaultOpen><Modal.Content>
-      <Modal.Title>图库</Modal.Title>
-      <Image src="/a.png" alt="A" />
-    </Modal.Content></Modal>);
+    render(
+      <Modal defaultOpen>
+        <Modal.Content>
+          <Modal.Title>图库</Modal.Title>
+          <Image src="/a.png" alt="A" />
+        </Modal.Content>
+      </Modal>
+    );
     await user.click(getImg());
     expect(screen.getAllByRole('dialog')).toHaveLength(2);
     await flushRaf();
@@ -84,7 +124,14 @@ describe('Image 预览', () => {
     const user = userEvent.setup();
     const { rerender } = render(<Image src="/a.png" alt="A" preview={false} />);
     expect(getImg()).not.toHaveAttribute('tabindex');
-    rerender(<Image src="/a.png" alt="A" onKeyDown={(event) => event.preventDefault()} onClick={(event) => event.preventDefault()} />);
+    rerender(
+      <Image
+        src="/a.png"
+        alt="A"
+        onKeyDown={(event) => event.preventDefault()}
+        onClick={(event) => event.preventDefault()}
+      />
+    );
     getImg().focus();
     await user.keyboard('{Enter}');
     await user.click(getImg());

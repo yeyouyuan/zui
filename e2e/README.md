@@ -1,16 +1,25 @@
 # ZUI 文档站 Playwright E2E 冒烟
 
-针对 `docs/` hash 路由文档站的 19 条浏览器冒烟测试。默认端口为 **5174**，可用
+针对 `docs/` hash 路由文档站的 67 条浏览器测试。默认端口为 **5174**，可用
 `ZUI_E2E_PORT` 指定独立端口。覆盖四个核心起始页、Form / Select / Combobox / Modal / 日期范围 / VirtualTable
-交互、暗色切换、移动菜单与页内目录，以及 73 个导航路由在 320px 暗色视口下的横向溢出和
-全站 `pageerror` / `console.error` 检查。
+交互、暗色切换、移动菜单与页内目录，以及 77 个导航路由在 1440px / 320px、浅色 / 暗色四种组合下的溢出、示例裁切、图片加载与文字对比度检查。全站另有 `pageerror` / `console.error` 检查。
 
 ## 文件
 
-| 文件                   | 说明                                                                                                |
-| ---------------------- | --------------------------------------------------------------------------------------------------- |
-| `playwright.config.ts` | 配置：`testDir: '.'`、可配置 baseURL 端口、Chromium、viewport 1280×800、webServer 自动拉起/本地复用 |
-| `docs-smoke.spec.ts`   | 19 条冒烟用例，含全路由 320px 布局审计、焦点管理与 console error 监听                               |
+| 文件                                                             | 说明                                                                                                 |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `playwright.config.ts`                                           | 配置：`testDir: '.'`、可配置 baseURL 端口、Chromium、viewport 1280×800、webServer 自动拉起/本地复用  |
+| `docs-design.spec.ts`                                            | 概览预览、命令入口、示例代码与过滤清除、本地头像与图片回退、命令面板开关与穿梭框复选状态，共 5 条    |
+| `docs-loading.spec.ts`                                           | 冷切页保留正文、快速改选、首次占位与减少动画偏好，共 2 条                                            |
+| `docs-page-audit.spec.ts`                                        | 77 个导航路由的四组显示矩阵，共 4 条；可用 `ZUI_AUDIT_DIR` 导出每页截图与 JSON 报告                  |
+| `collaboration.spec.ts`                                          | 内容协作原型：编辑、引用、评论与回复、解决/重新打开、文件隔离、状态和权限、320px 暗色与 axe，共 3 条 |
+| `docs-smoke.spec.ts`                                             | 22 条冒烟用例，含全路由 320px 布局审计、焦点管理与 console error 监听                                |
+| `command-palette-docs.spec.ts` / `command-palette-admin.spec.ts` | 文档与后台命令面板双迁移，共 14 条                                                                   |
+| `sidenav-prototype.spec.ts`                                      | 侧边导航双迁移，共 8 条                                                                              |
+| `splitter-prototype.spec.ts`                                     | 可调分栏双迁移，共 5 条                                                                              |
+| `datagrid-prototype.spec.ts`                                     | DataGrid 性能原型，共 4 条                                                                           |
+
+> 2026-11-09：67 条用例完整运行全部通过，含 Transfer 复选状态与 77 页四组显示矩阵。完整记录见 [本轮审计](../docs/quality-audit-2026-11-09.md)。
 
 ## 首次安装（一次性）
 
@@ -40,7 +49,7 @@ webServer 行为：Playwright 先探测 `http://localhost:<ZUI_E2E_PORT>`（未�
 - **目标端口空闲** → 自动执行 `pnpm --filter @zui/docs dev --port <port> --strictPort`，测试结束后关闭；
 - **CI** → 不复用已有服务，避免误测残留进程。
 
-只跑单条用例可加过滤：`npx playwright test -g "Select"`。
+只跑单条用例可加过滤：`pnpm test:e2e -g "Select"`。
 
 ## 与手动 dev server 并存
 

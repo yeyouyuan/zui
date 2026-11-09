@@ -812,7 +812,7 @@ test('文档外壳：SideNav 搜索保留路由语义，移动快捷键与搭建
   await openRoute(page, '/', H1.overview);
   const navigation = page.getByRole('navigation', { name: '文档导航', exact: true });
   await expect(navigation).toHaveCount(1);
-  await expect(navigation.getByRole('list')).toHaveCount(2);
+  await expect(navigation.getByRole('list')).toHaveCount(8);
   await expect(navigation.getByRole('link', { name: '概览', exact: true })).toHaveAttribute(
     'aria-current',
     'page'

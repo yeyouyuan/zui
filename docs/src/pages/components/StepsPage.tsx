@@ -78,7 +78,7 @@ export default function StepsPage(): React.ReactNode {
 
       <h2 className="doc-h2">示例</h2>
 
-      <Demo
+      <Demo scroll
         title="基础用法"
         description="current 之前的步骤为 finish（主色对勾），当前为 process（主色数字），之后为 wait。"
         code={BASIC_CODE}
@@ -86,7 +86,7 @@ export default function StepsPage(): React.ReactNode {
         <Steps current={1} items={BASIC_ITEMS} />
       </Demo>
 
-      <Demo
+      <Demo scroll
         title="可点击步骤"
         description="提供 onChange 后每一步可点击（disabled 除外）；键盘 ↑←/↓→ 移动焦点、Home/End 首尾、Enter 确认。"
         code={CONTROLLED_CODE}
@@ -94,7 +94,7 @@ export default function StepsPage(): React.ReactNode {
         <Steps current={current} onChange={setCurrent} items={BASIC_ITEMS} />
       </Demo>
 
-      <Demo
+      <Demo scroll
         title="显式状态覆盖"
         description="item.status 覆盖派生状态，error 可出现在任意位置并显示危险色 XCircle 图标。"
         code={STATUS_CODE}
@@ -103,7 +103,7 @@ export default function StepsPage(): React.ReactNode {
         <Steps current={2} items={ERROR_ITEMS} />
       </Demo>
 
-      <Demo
+      <Demo scroll
         title="自定义图标"
         description="item.icon 替换默认的数字 / 对勾图标。"
         code={ICON_CODE}
@@ -112,11 +112,11 @@ export default function StepsPage(): React.ReactNode {
         <Steps current={2} items={ICON_ITEMS} />
       </Demo>
 
-      <Demo title="垂直方向" description="direction=vertical 时改为列布局，连接线在左侧图标下方。" code={DIRECTION_CODE}>
+      <Demo scroll title="垂直方向" description="direction=vertical 时改为列布局，连接线在左侧图标下方。" code={DIRECTION_CODE}>
         <Steps direction="vertical" current={1} items={BASIC_ITEMS} />
       </Demo>
 
-      <Demo title="尺寸" description="size 支持 md（默认）与 sm，提供紧凑形态。" code={SIZE_CODE}>
+      <Demo scroll title="尺寸" description="size 支持 md（默认）与 sm，提供紧凑形态。" code={SIZE_CODE}>
         <Steps size="sm" current={1} items={BASIC_ITEMS} />
       </Demo>
 

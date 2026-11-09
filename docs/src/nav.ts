@@ -73,12 +73,26 @@ const LayoutPage = lazy(() => import('./pages/components/LayoutPage'));
 const DesignAssetsPage = lazy(() => import('./pages/design/DesignAssetsPage'));
 const IconGalleryPage = lazy(() => import('./pages/design/IconGalleryPage'));
 const BuilderPage = lazy(() => import('./pages/builder/BuilderPage'));
+const CollaborationPage = lazy(() => import('./pages/collaboration/CollaborationPage'));
 const BlocksPage = lazy(() => import('./pages/blocks/BlocksPage'));
 const SideNavPage = lazy(() => import('./pages/components/SideNavPage'));
 const SplitterPage = lazy(() => import('./pages/components/SplitterPage'));
 
-/** 导航分组：'start'（开始）/ 'components'（组件） */
-export type NavGroup = 'start' | 'components';
+/** 按使用目的组织导航，页面、搜索和命令面板共享同一分类。 */
+export type NavGroup = 'start' | 'basic' | 'layout' | 'navigation' | 'input' | 'data' | 'feedback' | 'configuration';
+
+export const GROUP_LABELS: Record<NavGroup, string> = {
+  start: '开始',
+  basic: '基础组件',
+  layout: '布局',
+  navigation: '导航',
+  input: '数据录入',
+  data: '数据展示',
+  feedback: '反馈',
+  configuration: '全局配置',
+};
+
+export const GROUP_ORDER: NavGroup[] = ['start', 'basic', 'layout', 'navigation', 'input', 'data', 'feedback', 'configuration'];
 
 export interface NavItem {
   /** 导航显示名（侧栏搜索按此过滤） */
@@ -88,15 +102,6 @@ export interface NavItem {
   /** 所属分组 */
   group: NavGroup;
 }
-
-/** 分组显示名（渲染顺序即 GROUP_ORDER） */
-export const GROUP_LABELS: Record<NavGroup, string> = {
-  start: '开始',
-  components: '组件',
-};
-
-/** 分组渲染顺序 */
-export const GROUP_ORDER: NavGroup[] = ['start', 'components'];
 
 /**
  * 导航注册表：侧栏按序渲染，路由匹配也走它。
@@ -110,74 +115,75 @@ export const navItems: NavItem[] = [
   { title: '图标库', path: '/icons', group: 'start' },
   { title: '页面搭建器', path: '/builder', group: 'start' },
   { title: '业务区块', path: '/blocks', group: 'start' },
-  { title: 'Button 按钮', path: '/components/button', group: 'components' },
-  { title: 'Input 输入框', path: '/components/input', group: 'components' },
-  { title: 'Checkbox 复选框', path: '/components/checkbox', group: 'components' },
-  { title: 'Radio 单选框', path: '/components/radio', group: 'components' },
-  { title: 'Switch 开关', path: '/components/switch', group: 'components' },
-  { title: 'Select 选择器', path: '/components/select', group: 'components' },
-  { title: 'Combobox 自动完成', path: '/components/combobox', group: 'components' },
-  { title: 'CommandPalette 命令面板', path: '/components/command-palette', group: 'components' },
-  { title: 'SideNav 侧边导航', path: '/components/side-nav', group: 'components' },
-  { title: 'Splitter 可调分栏', path: '/components/splitter', group: 'components' },
-  { title: 'Modal 对话框', path: '/components/modal', group: 'components' },
-  { title: 'Tabs 标签页', path: '/components/tabs', group: 'components' },
-  { title: 'Table 表格', path: '/components/table', group: 'components' },
-  { title: 'Message 全局提示', path: '/components/message', group: 'components' },
-  { title: 'Tooltip 文字提示', path: '/components/tooltip', group: 'components' },
-  { title: 'Popover 气泡卡片', path: '/components/popover', group: 'components' },
-  { title: 'DropdownMenu 下拉菜单', path: '/components/dropdown-menu', group: 'components' },
-  { title: 'Alert 警告提示', path: '/components/alert', group: 'components' },
-  { title: 'Badge 徽标', path: '/components/badge', group: 'components' },
-  { title: 'Tag 标签', path: '/components/tag', group: 'components' },
-  { title: 'Pagination 分页', path: '/components/pagination', group: 'components' },
-  { title: 'Breadcrumb 面包屑', path: '/components/breadcrumb', group: 'components' },
-  { title: 'Avatar 头像', path: '/components/avatar', group: 'components' },
-  { title: 'Card 卡片', path: '/components/card', group: 'components' },
-  { title: 'Divider 分割线', path: '/components/divider', group: 'components' },
-  { title: 'Empty 空状态', path: '/components/empty', group: 'components' },
-  { title: 'Skeleton 骨架屏', path: '/components/skeleton', group: 'components' },
-  { title: 'Drawer 抽屉', path: '/components/drawer', group: 'components' },
-  { title: 'Spin 加载中', path: '/components/spin', group: 'components' },
-  { title: 'Progress 进度条', path: '/components/progress', group: 'components' },
-  { title: 'ConfigProvider 全局配置', path: '/components/config', group: 'components' },
-  { title: 'Form 表单', path: '/components/form', group: 'components' },
-  { title: 'Slider 滑块', path: '/components/slider', group: 'components' },
-  { title: 'Rate 评分', path: '/components/rate', group: 'components' },
-  { title: 'InputNumber 数字输入', path: '/components/input-number', group: 'components' },
-  { title: 'ColorPicker 取色器', path: '/components/color-picker', group: 'components' },
-  { title: 'DatePicker 日期选择', path: '/components/date-picker', group: 'components' },
-  { title: 'Calendar 日历', path: '/components/calendar', group: 'components' },
-  { title: 'Descriptions 描述列表', path: '/components/descriptions', group: 'components' },
-  { title: 'Statistic 统计数值', path: '/components/statistic', group: 'components' },
-  { title: 'Timeline 时间轴', path: '/components/timeline', group: 'components' },
-  { title: 'VirtualTable 虚拟滚动表格', path: '/components/virtual-table', group: 'components' },
-  { title: 'Tree 树形控件', path: '/components/tree', group: 'components' },
-  { title: 'TreeSelect 树选择', path: '/components/tree-select', group: 'components' },
-  { title: 'Collapse 折叠面板', path: '/components/collapse', group: 'components' },
-  { title: 'List 列表', path: '/components/list', group: 'components' },
-  { title: 'Transfer 穿梭框', path: '/components/transfer', group: 'components' },
-  { title: 'Cascader 级联选择', path: '/components/cascader', group: 'components' },
-  { title: 'TimePicker 时间选择', path: '/components/time-picker', group: 'components' },
-  { title: 'Mentions 提及', path: '/components/mentions', group: 'components' },
-  { title: 'Notification 通知提醒框', path: '/components/notification', group: 'components' },
-  { title: 'Popconfirm 气泡确认', path: '/components/popconfirm', group: 'components' },
-  { title: 'Image 图片', path: '/components/image', group: 'components' },
-  { title: 'Tour 漫游引导', path: '/components/tour', group: 'components' },
-  { title: 'Segmented 分段控制器', path: '/components/segmented', group: 'components' },
-  { title: 'QRCode 二维码', path: '/components/qrcode', group: 'components' },
-  { title: 'Watermark 水印', path: '/components/watermark', group: 'components' },
-  { title: 'Affix 固钉', path: '/components/affix', group: 'components' },
-  { title: 'BackTop 返回顶部', path: '/components/back-top', group: 'components' },
-  { title: 'FloatButton 悬浮按钮', path: '/components/float-button', group: 'components' },
-  { title: 'Result 结果', path: '/components/result', group: 'components' },
-  { title: 'App 容器', path: '/components/app', group: 'components' },
-  { title: 'Upload 上传', path: '/components/upload', group: 'components' },
-  { title: 'Steps 步骤条', path: '/components/steps', group: 'components' },
-  { title: 'DateRangePicker 日期范围', path: '/components/date-range-picker', group: 'components' },
-  { title: 'Anchor 锚点', path: '/components/anchor', group: 'components' },
-  { title: 'Typography 排版', path: '/components/typography', group: 'components' },
-  { title: 'Layout 布局', path: '/components/layout', group: 'components' },
+  { title: '内容协作实验室', path: '/collaboration', group: 'start' },
+  { title: 'Button 按钮', path: '/components/button', group: 'basic' },
+  { title: 'Input 输入框', path: '/components/input', group: 'input' },
+  { title: 'Checkbox 复选框', path: '/components/checkbox', group: 'input' },
+  { title: 'Radio 单选框', path: '/components/radio', group: 'input' },
+  { title: 'Switch 开关', path: '/components/switch', group: 'input' },
+  { title: 'Select 选择器', path: '/components/select', group: 'input' },
+  { title: 'Combobox 自动完成', path: '/components/combobox', group: 'input' },
+  { title: 'CommandPalette 命令面板', path: '/components/command-palette', group: 'navigation' },
+  { title: 'SideNav 侧边导航', path: '/components/side-nav', group: 'navigation' },
+  { title: 'Splitter 可调分栏', path: '/components/splitter', group: 'layout' },
+  { title: 'Modal 对话框', path: '/components/modal', group: 'feedback' },
+  { title: 'Tabs 标签页', path: '/components/tabs', group: 'navigation' },
+  { title: 'Table 表格', path: '/components/table', group: 'data' },
+  { title: 'Message 全局提示', path: '/components/message', group: 'feedback' },
+  { title: 'Tooltip 文字提示', path: '/components/tooltip', group: 'feedback' },
+  { title: 'Popover 气泡卡片', path: '/components/popover', group: 'feedback' },
+  { title: 'DropdownMenu 下拉菜单', path: '/components/dropdown-menu', group: 'navigation' },
+  { title: 'Alert 警告提示', path: '/components/alert', group: 'feedback' },
+  { title: 'Badge 徽标', path: '/components/badge', group: 'data' },
+  { title: 'Tag 标签', path: '/components/tag', group: 'data' },
+  { title: 'Pagination 分页', path: '/components/pagination', group: 'navigation' },
+  { title: 'Breadcrumb 面包屑', path: '/components/breadcrumb', group: 'navigation' },
+  { title: 'Avatar 头像', path: '/components/avatar', group: 'data' },
+  { title: 'Card 卡片', path: '/components/card', group: 'data' },
+  { title: 'Divider 分割线', path: '/components/divider', group: 'layout' },
+  { title: 'Empty 空状态', path: '/components/empty', group: 'data' },
+  { title: 'Skeleton 骨架屏', path: '/components/skeleton', group: 'feedback' },
+  { title: 'Drawer 抽屉', path: '/components/drawer', group: 'feedback' },
+  { title: 'Spin 加载中', path: '/components/spin', group: 'feedback' },
+  { title: 'Progress 进度条', path: '/components/progress', group: 'feedback' },
+  { title: 'ConfigProvider 全局配置', path: '/components/config', group: 'configuration' },
+  { title: 'Form 表单', path: '/components/form', group: 'input' },
+  { title: 'Slider 滑块', path: '/components/slider', group: 'input' },
+  { title: 'Rate 评分', path: '/components/rate', group: 'input' },
+  { title: 'InputNumber 数字输入', path: '/components/input-number', group: 'input' },
+  { title: 'ColorPicker 取色器', path: '/components/color-picker', group: 'input' },
+  { title: 'DatePicker 日期选择', path: '/components/date-picker', group: 'input' },
+  { title: 'Calendar 日历', path: '/components/calendar', group: 'data' },
+  { title: 'Descriptions 描述列表', path: '/components/descriptions', group: 'data' },
+  { title: 'Statistic 统计数值', path: '/components/statistic', group: 'data' },
+  { title: 'Timeline 时间轴', path: '/components/timeline', group: 'data' },
+  { title: 'VirtualTable 虚拟滚动表格', path: '/components/virtual-table', group: 'data' },
+  { title: 'Tree 树形控件', path: '/components/tree', group: 'data' },
+  { title: 'TreeSelect 树选择', path: '/components/tree-select', group: 'input' },
+  { title: 'Collapse 折叠面板', path: '/components/collapse', group: 'data' },
+  { title: 'List 列表', path: '/components/list', group: 'data' },
+  { title: 'Transfer 穿梭框', path: '/components/transfer', group: 'input' },
+  { title: 'Cascader 级联选择', path: '/components/cascader', group: 'input' },
+  { title: 'TimePicker 时间选择', path: '/components/time-picker', group: 'input' },
+  { title: 'Mentions 提及', path: '/components/mentions', group: 'input' },
+  { title: 'Notification 通知提醒框', path: '/components/notification', group: 'feedback' },
+  { title: 'Popconfirm 气泡确认', path: '/components/popconfirm', group: 'feedback' },
+  { title: 'Image 图片', path: '/components/image', group: 'data' },
+  { title: 'Tour 漫游引导', path: '/components/tour', group: 'feedback' },
+  { title: 'Segmented 分段控制器', path: '/components/segmented', group: 'input' },
+  { title: 'QRCode 二维码', path: '/components/qrcode', group: 'data' },
+  { title: 'Watermark 水印', path: '/components/watermark', group: 'data' },
+  { title: 'Affix 固钉', path: '/components/affix', group: 'navigation' },
+  { title: 'BackTop 返回顶部', path: '/components/back-top', group: 'navigation' },
+  { title: 'FloatButton 悬浮按钮', path: '/components/float-button', group: 'navigation' },
+  { title: 'Result 结果', path: '/components/result', group: 'feedback' },
+  { title: 'App 容器', path: '/components/app', group: 'configuration' },
+  { title: 'Upload 上传', path: '/components/upload', group: 'input' },
+  { title: 'Steps 步骤条', path: '/components/steps', group: 'navigation' },
+  { title: 'DateRangePicker 日期范围', path: '/components/date-range-picker', group: 'input' },
+  { title: 'Anchor 锚点', path: '/components/anchor', group: 'navigation' },
+  { title: 'Typography 排版', path: '/components/typography', group: 'basic' },
+  { title: 'Layout 布局', path: '/components/layout', group: 'layout' },
 ];
 
 /** 路由映射：path → 页面组件（与 navItems 同源，键必须与 navItems 的 path 一一对应） */
@@ -190,6 +196,7 @@ export const routeComponents: Record<string, ComponentType> = {
   '/icons': IconGalleryPage,
   '/builder': BuilderPage,
   '/blocks': BlocksPage,
+  '/collaboration': CollaborationPage,
   '/components/button': ButtonPage,
   '/components/input': InputPage,
   '/components/checkbox': CheckboxPage,

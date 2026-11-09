@@ -87,14 +87,23 @@ export default function DataGridPrototype(): React.ReactNode {
 
   const viewportRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const resizeSampleFrame = useRef(0);
   const resizeState = useRef<{
     pointerId: number;
     columnIndex: number;
     startX: number;
     startWidth: number;
     worstFrame: number;
-    lastFrame: number;
+    ended: boolean;
   } | null>(null);
+
+  useEffect(
+    () => () => {
+      cancelAnimationFrame(resizeSampleFrame.current);
+      delete document.documentElement.dataset.zDatagridResizing;
+    },
+    []
+  );
 
   useEffect(() => {
     const element = viewportRef.current;
@@ -147,11 +156,14 @@ export default function DataGridPrototype(): React.ReactNode {
 
   const toggleAll = useCallback(() => {
     const started = performance.now();
-    setSelected((previous) => (previous.size === ALL_ROWS.length ? new Set() : new Set(ALL_ROWS.map((row) => row.id))));
+    setSelected((previous) =>
+      previous.size === ALL_ROWS.length ? new Set() : new Set(ALL_ROWS.map((row) => row.id))
+    );
     setMetrics((previous) => ({ ...previous, selectMs: performance.now() - started }));
   }, []);
 
-  // 列宽拖动：最差帧间隔入 HUD（预算：单帧 < 32ms）
+  // 测量收到列宽更新输入到下一帧的延迟，包含 React 提交与等待绘制。
+  // pointermove 之间的间隔包含用户停顿/测试驱动等待，不能用作渲染耗时。
   const startResize = (columnIndex: number) => (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return;
     event.preventDefault();
@@ -162,7 +174,7 @@ export default function DataGridPrototype(): React.ReactNode {
       startX: event.clientX,
       startWidth: widths[columnIndex],
       worstFrame: 0,
-      lastFrame: performance.now(),
+      ended: false,
     };
     document.documentElement.dataset.zDatagridResizing = '';
   };
@@ -170,22 +182,37 @@ export default function DataGridPrototype(): React.ReactNode {
   const moveResize = (event: React.PointerEvent<HTMLDivElement>) => {
     const state = resizeState.current;
     if (!state || state.pointerId !== event.pointerId) return;
-    const now = performance.now();
-    const frame = now - state.lastFrame;
-    state.lastFrame = now;
-    if (frame > state.worstFrame) state.worstFrame = frame;
+    const started = performance.now();
     const nextWidth = Math.max(60, state.startWidth + (event.clientX - state.startX));
     setWidths((previous) => {
       const next = [...previous];
       next[state.columnIndex] = Math.round(nextWidth);
       return next;
     });
+    if (resizeSampleFrame.current === 0) {
+      resizeSampleFrame.current = requestAnimationFrame(() => {
+        resizeSampleFrame.current = 0;
+        state.worstFrame = Math.max(state.worstFrame, performance.now() - started);
+        if (state.ended) {
+          setMetrics((previous) => ({
+            ...previous,
+            resizeFrameMs: Math.round(state.worstFrame * 100) / 100,
+          }));
+        }
+      });
+    }
   };
 
   const endResize = (event: React.PointerEvent<HTMLDivElement>) => {
     const state = resizeState.current;
     if (!state || state.pointerId !== event.pointerId) return;
-    setMetrics((previous) => ({ ...previous, resizeFrameMs: Math.round(state.worstFrame * 100) / 100 }));
+    state.ended = true;
+    if (resizeSampleFrame.current === 0) {
+      setMetrics((previous) => ({
+        ...previous,
+        resizeFrameMs: Math.round(state.worstFrame * 100) / 100,
+      }));
+    }
     resizeState.current = null;
     delete document.documentElement.dataset.zDatagridResizing;
   };
@@ -200,7 +227,6 @@ export default function DataGridPrototype(): React.ReactNode {
 
   useEffect(() => {
     setMetrics((previous) => ({ ...previous, renderedRows: windowRows.length }));
-     
   }, [windowRows.length]);
 
   const domNodes = gridRef.current?.querySelectorAll('*').length ?? 0;
@@ -229,7 +255,12 @@ export default function DataGridPrototype(): React.ReactNode {
     },
     { key: null, label: '状态', render: (row) => row.status },
     { key: 'progress', label: '进度', sortable: true, render: (row) => `${row.progress}%` },
-    { key: 'updatedAt', label: '更新时间', sortable: true, render: (row) => formatDate(row.updatedAt) },
+    {
+      key: 'updatedAt',
+      label: '更新时间',
+      sortable: true,
+      render: (row) => formatDate(row.updatedAt),
+    },
   ];
 
   return (
@@ -246,17 +277,29 @@ export default function DataGridPrototype(): React.ReactNode {
         </span>
         <span data-testid="metric-dom">DOM 节点 {domNodes}</span>
         <span data-testid="metric-selected">已选 {totalSelected}</span>
-        <span data-testid="metric-sort">排序耗时 {metrics.sortMs == null ? '—' : `${metrics.sortMs.toFixed(2)}ms`}</span>
+        <span data-testid="metric-sort">
+          排序耗时 {metrics.sortMs == null ? '—' : `${metrics.sortMs.toFixed(2)}ms`}
+        </span>
         <span data-testid="metric-select">
           选择耗时 {metrics.selectMs == null ? '—' : `${metrics.selectMs.toFixed(2)}ms`}
         </span>
         <span data-testid="metric-resize">
-          列宽最差帧 {metrics.resizeFrameMs == null ? '—' : `${metrics.resizeFrameMs}ms`}
+          列宽更新延迟 {metrics.resizeFrameMs == null ? '—' : `${metrics.resizeFrameMs}ms`}
         </span>
       </section>
 
-      <div ref={gridRef} className="datagrid-prototype-grid" role="grid" aria-label="性能原型表格" aria-rowcount={ROW_COUNT}>
-        <div className="datagrid-prototype-header" role="row" style={{ display: 'grid', gridTemplateColumns: columnsValue, height: HEADER_HEIGHT }}>
+      <div
+        ref={gridRef}
+        className="datagrid-prototype-grid"
+        role="grid"
+        aria-label="性能原型表格"
+        aria-rowcount={ROW_COUNT}
+      >
+        <div
+          className="datagrid-prototype-header"
+          role="row"
+          style={{ display: 'grid', gridTemplateColumns: columnsValue, height: HEADER_HEIGHT }}
+        >
           <div
             role="columnheader"
             className="datagrid-prototype-cell datagrid-prototype-cell--sticky datagrid-prototype-select"
@@ -279,7 +322,10 @@ export default function DataGridPrototype(): React.ReactNode {
                 role="columnheader"
                 aria-sort={sorted ? (sort.dir === 'asc' ? 'ascending' : 'descending') : undefined}
                 className={`datagrid-prototype-cell${columnIndex === 1 ? ' datagrid-prototype-cell--sticky datagrid-prototype-cell--sticky-second' : ''}`}
-                style={{ left: columnIndex === 1 ? widths[0] : undefined, width: widths[columnIndex] }}
+                style={{
+                  left: columnIndex === 1 ? widths[0] : undefined,
+                  width: widths[columnIndex],
+                }}
               >
                 {column.sortable ? (
                   <button
@@ -358,7 +404,10 @@ export default function DataGridPrototype(): React.ReactNode {
                         key={column.key ?? index}
                         role="gridcell"
                         className={`datagrid-prototype-cell${columnIndex === 1 ? ' datagrid-prototype-cell--sticky datagrid-prototype-cell--sticky-second' : ''}`}
-                        style={{ left: columnIndex === 1 ? widths[0] : undefined, width: widths[columnIndex] }}
+                        style={{
+                          left: columnIndex === 1 ? widths[0] : undefined,
+                          width: widths[columnIndex],
+                        }}
                       >
                         {column.render(row)}
                       </div>
@@ -373,4 +422,3 @@ export default function DataGridPrototype(): React.ReactNode {
     </div>
   );
 }
-

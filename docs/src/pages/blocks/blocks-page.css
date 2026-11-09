@@ -55,7 +55,7 @@
 
 .doc-blocks-group > button[aria-current='true'] {
   background: var(--z-color-primary-subtle);
-  color: var(--z-color-primary);
+  color: var(--z-color-fg);
 }
 
 .doc-blocks-group > button:focus-visible {

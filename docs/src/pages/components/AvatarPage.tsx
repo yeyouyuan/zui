@@ -1,11 +1,14 @@
 import { Avatar } from '@zui/react';
+import demoAvatar from '../../assets/demo-avatar.svg';
 
 import ApiTable from '../../components/ApiTable';
 import CustomizeOutlet from '../../components/CustomizeOutlet';
 import Demo from '../../components/Demo';
 import { usePageTitle } from '../../components/usePageTitle';
 
-const FALLBACK_CODE = `<Avatar src="https://i.pravatar.cc/80?img=12" alt="头像" name="张三" />
+const FALLBACK_CODE = `import demoAvatar from './demo-avatar.svg';
+
+<Avatar src={demoAvatar} alt="头像" name="张三" />
 <Avatar name="张三" />
 <Avatar name="alice wang" />
 <Avatar icon={<span>★</span>} />`;
@@ -32,8 +35,8 @@ export default function AvatarPage(): React.ReactNode {
     <div className="doc-page">
       <h1 className="doc-h1">Avatar 头像</h1>
       <p className="doc-lead">
-        用户或实体的视觉标识：图片 / 名字首字 / 图标三级回退，名字哈希在 5 组语义浅色中取底色，
-        支持 3 档尺寸与任意像素自定义。
+        用户或实体的视觉标识：图片 / 名字首字 / 图标三级回退，名字哈希在 5 组语义浅色中取底色， 支持
+        3 档尺寸与任意像素自定义。
       </p>
 
       <h2 className="doc-h2">示例</h2>
@@ -43,7 +46,7 @@ export default function AvatarPage(): React.ReactNode {
         description="优先展示图片；无图或加载失败时回退名字首字（中文取第一个字，英文取首字母大写）；无名时回退图标。"
         code={FALLBACK_CODE}
       >
-        <Avatar src="https://i.pravatar.cc/80?img=12" alt="头像" name="张三" />
+        <Avatar src={demoAvatar} alt="头像" name="张三" />
         <Avatar name="张三" />
         <Avatar name="alice wang" />
         <Avatar icon={<span aria-hidden="true">★</span>} />
@@ -98,7 +101,8 @@ export default function AvatarPage(): React.ReactNode {
           {
             name: 'name',
             type: 'string',
-            description: '名字：无图时取首字符（中文取第一个字，英文取首字母大写），并按哈希取 5 色浅底。',
+            description:
+              '名字：无图时取首字符（中文取第一个字，英文取首字母大写），并按哈希取 5 色浅底。',
           },
           {
             name: 'icon',
@@ -130,7 +134,8 @@ export default function AvatarPage(): React.ReactNode {
           {
             name: '...rest',
             type: "React.ComponentPropsWithRef<'span'>",
-            description: '原生 span 属性透传到根元素（className、style、aria-*、事件等；color 除外）。',
+            description:
+              '原生 span 属性透传到根元素（className、style、aria-*、事件等；color 除外）。',
           },
         ]}
       />

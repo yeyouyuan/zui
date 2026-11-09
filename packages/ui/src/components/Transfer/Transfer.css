@@ -170,6 +170,7 @@
 }
 
 .z-transfer-item-label {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--z-space-2);
@@ -216,7 +217,7 @@
   cursor: not-allowed;
 }
 
-.z-transfer-checkbox input {
+:is(.z-transfer-checkbox, .z-transfer-item-label) input {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -227,6 +228,7 @@
 }
 
 .z-transfer-checkbox-box {
+  flex-shrink: 0;
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
@@ -241,13 +243,13 @@
     border-color var(--z-duration-fast) var(--z-ease-standard);
 }
 
-.z-transfer-checkbox input:checked ~ .z-transfer-checkbox-box,
-.z-transfer-checkbox input:indeterminate ~ .z-transfer-checkbox-box {
+:is(.z-transfer-checkbox, .z-transfer-item-label) input:checked ~ .z-transfer-checkbox-box,
+:is(.z-transfer-checkbox, .z-transfer-item-label) input:indeterminate ~ .z-transfer-checkbox-box {
   background: var(--z-transfer-checkbox-checked-bg);
   border-color: var(--z-transfer-checkbox-checked-bg);
 }
 
-.z-transfer-checkbox input:checked ~ .z-transfer-checkbox-box::after {
+:is(.z-transfer-checkbox, .z-transfer-item-label) input:checked ~ .z-transfer-checkbox-box::after {
   content: '';
   display: block;
   width: calc(var(--z-transfer-checkbox-size) * 0.45);
@@ -257,7 +259,7 @@
   transform: rotate(-45deg) translate(1px, -1px);
 }
 
-.z-transfer-checkbox input:indeterminate ~ .z-transfer-checkbox-box::after {
+:is(.z-transfer-checkbox, .z-transfer-item-label) input:indeterminate ~ .z-transfer-checkbox-box::after {
   content: '';
   display: block;
   width: calc(var(--z-transfer-checkbox-size) * 0.5);
@@ -265,12 +267,12 @@
   background: var(--z-transfer-checkbox-check-color);
 }
 
-.z-transfer-checkbox input:disabled ~ .z-transfer-checkbox-box {
+:is(.z-transfer-checkbox, .z-transfer-item-label) input:disabled ~ .z-transfer-checkbox-box {
   background: var(--z-transfer-checkbox-disabled-bg);
   border-color: var(--z-transfer-checkbox-disabled-border);
 }
 
-.z-transfer-checkbox input:focus-visible ~ .z-transfer-checkbox-box {
+:is(.z-transfer-checkbox, .z-transfer-item-label) input:focus-visible ~ .z-transfer-checkbox-box {
   outline: none;
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-transfer-focus-ring) 35%, transparent);
 }

@@ -78,7 +78,7 @@ export default function AnchorPage(): React.ReactNode {
           <Anchor.Link href="#anchor-usage" title="使用方式" />
           <Anchor.Link href="#anchor-a11y" title="无障碍" />
         </Anchor>
-        <div style={{ flex: 1, minWidth: 280 }}>
+        <div style={{ flex: 1, minWidth: 'min(280px, 100%)' }}>
           <DemoSection
             id="anchor-intro"
             title="组件介绍"
@@ -109,7 +109,7 @@ export default function AnchorPage(): React.ReactNode {
           </Anchor.Link>
           <Anchor.Link href="#anchor-part-2" title="第二部分" />
         </Anchor>
-        <div style={{ flex: 1, minWidth: 280 }}>
+        <div style={{ flex: 1, minWidth: 'min(280px, 100%)' }}>
           <DemoSection
             id="anchor-part-1"
             title="第一部分"
@@ -131,7 +131,7 @@ export default function AnchorPage(): React.ReactNode {
           <Anchor.Link href="#anchor-ch2" title="第二章" />
           <Anchor.Link href="#anchor-ch3" title="第三章" />
         </Anchor>
-        <div ref={setBox} style={{ flex: 1, minWidth: 280, height: 240, overflowY: 'auto' }}>
+        <div ref={setBox} style={{ flex: 1, minWidth: 'min(280px, 100%)', height: 240, overflowY: 'auto' }}>
           <DemoSection id="anchor-ch1" title="第一章" text="在容器内滚动侦测激活状态。" />
           <DemoSection id="anchor-ch2" title="第二章" text="点击链接在容器内平滑滚动。" />
           <DemoSection id="anchor-ch3" title="第三章" text="resize 时也会重新测量位置。" />
@@ -148,7 +148,7 @@ export default function AnchorPage(): React.ReactNode {
           <Anchor.Link href="#anchor-cb-a" title="章节甲" />
           <Anchor.Link href="#anchor-cb-b" title="章节乙" />
         </Anchor>
-        <div style={{ flex: 1, minWidth: 280 }}>
+        <div style={{ flex: 1, minWidth: 'min(280px, 100%)' }}>
           {clicked ? (
             <p className="doc-p">
               已拦截点击：<code className="doc-code-inline">{clicked}</code>（location.hash 未变化）

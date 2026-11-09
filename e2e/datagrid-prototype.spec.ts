@@ -70,7 +70,7 @@ test('DataGrid 原型：10k 行排序与全选的端到端延迟', async ({ page
   await openPrototype(page);
 
   const sortLatency = await measureClickLatency(page, '[data-testid="sort-amount"]');
-   
+
   console.log(`[datagrid-perf] sort(10k): ${sortLatency.toFixed(1)}ms`);
   expect(sortLatency).toBeLessThan(150);
   await expect(page.getByTestId('metric-sort')).toContainText('ms');
@@ -81,13 +81,13 @@ test('DataGrid 原型：10k 行排序与全选的端到端延迟', async ({ page
   );
 
   const selectLatency = await measureClickLatency(page, '[data-testid="select-all"]');
-   
+
   console.log(`[datagrid-perf] select-all(10k): ${selectLatency.toFixed(1)}ms`);
   expect(selectLatency).toBeLessThan(150);
   await expect(page.getByTestId('metric-selected')).toContainText('10000');
 });
 
-test('DataGrid 原型：列宽拖动生效且最差帧在预算内', async ({ page }) => {
+test('DataGrid 原型：列宽更新延迟在预算内，按住不动不计入渲染耗时', async ({ page }) => {
   await openPrototype(page);
 
   const handle = page.getByTestId('resize-name');
@@ -98,18 +98,21 @@ test('DataGrid 原型：列宽拖动生效且最差帧在预算内', async ({ pa
 
   await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
   await page.mouse.down();
+  // 用户按住但不移动时没有列宽更新；该停顿不能成为渲染延迟。
+  await page.waitForTimeout(180);
   await page.mouse.move(box!.x + box!.width / 2 + 160, box!.y + box!.height / 2, { steps: 12 });
   await page.mouse.up();
 
   const widthAfter = (await nameHeader.getAttribute('style')) ?? '';
   expect(widthAfter).not.toEqual(widthBefore);
 
+  await expect(page.getByTestId('metric-resize')).toContainText('ms');
   const resizeText = await page.getByTestId('metric-resize').textContent();
   const worstFrame = Number(resizeText?.replace(/[^0-9.]/g, ''));
-   
-  console.log(`[datagrid-perf] resize worst frame: ${worstFrame}ms`);
+
+  console.log(`[datagrid-perf] resize input-to-frame latency: ${worstFrame}ms`);
   expect(worstFrame).toBeGreaterThan(0);
-  expect(worstFrame).toBeLessThan(64); // 帧预算：最差帧 < 4 帧 @60fps
+  expect(worstFrame).toBeLessThan(64); // 列宽更新到下一帧的延迟预算
 });
 
 test('DataGrid 原型：横向滚动时固定列保持可见', async ({ page }) => {

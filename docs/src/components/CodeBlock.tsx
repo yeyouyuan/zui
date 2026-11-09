@@ -69,12 +69,7 @@ export async function copyCodeText(text: string): Promise<boolean> {
   }
 }
 
-/**
- * 代码块：macOS 终端窗口风格（红黄绿窗口点 + 右上角语言标签 / 复制按钮），
- * 明暗模式统一 #0d0d0d 纯暗底，是文档页的视觉焦点。
- * 窗口点由 docs.css 的 .doc-code-wrap::before 渲染，这里只负责结构：
- * 无语言标签时复制按钮独立悬挂右上角；有语言标签时嵌在标签行内，避免绝对定位互相重叠。
- */
+/** 带语言标记与复制反馈的代码块，明暗主题统一使用暗色代码表面。 */
 export default function CodeBlock({
   code,
   copyable = true,
@@ -101,14 +96,10 @@ export default function CodeBlock({
 
   return (
     <div className="doc-code-wrap">
-      {language ? (
-        <span className="doc-code-lang">
-          {language}
-          {copyButton}
-        </span>
-      ) : (
-        copyButton
-      )}
+      <div className="doc-code-toolbar">
+        <span className="doc-code-lang">{language ?? 'text'}</span>
+        {copyButton}
+      </div>
       <pre className="doc-code">
         {highlight ? (
           <code dangerouslySetInnerHTML={{ __html: highlightJsx(code) }} />

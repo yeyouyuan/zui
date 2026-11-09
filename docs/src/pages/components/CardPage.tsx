@@ -1,5 +1,7 @@
 import { Card } from '@zui/react';
 
+import demoCover from '../../assets/demo-cover.svg';
+
 import ApiTable from '../../components/ApiTable';
 import CustomizeOutlet from '../../components/CustomizeOutlet';
 import Demo from '../../components/Demo';
@@ -9,8 +11,10 @@ const BASIC_CODE = `<Card title="卡片标题" extra={<a href="#">更多</a>}>
   卡片内容区域，承载主要信息。
 </Card>`;
 
-const COVER_CODE = `<Card
-  cover={<img src="https://picsum.photos/seed/zui/480/200" alt="封面" />}
+const COVER_CODE = `import cover from './cover.svg';
+
+<Card
+  cover={<img src={cover} alt="封面" />}
   title="带封面的卡片"
   footer={<span>底部操作区</span>}
 >
@@ -27,7 +31,8 @@ export default function CardPage(): React.ReactNode {
     <div className="doc-page">
       <h1 className="doc-h1">Card 卡片</h1>
       <p className="doc-lead">
-        信息容器：标题 + 右侧插槽 + 封面 + 内容 + 底部的 props 式组合，白底圆角、可选边框与悬停效果。
+        信息容器：标题 + 右侧插槽 + 封面 + 内容 + 底部的 props
+        式组合，白底圆角、可选边框与悬停效果。
       </p>
 
       <h2 className="doc-h2">示例</h2>
@@ -49,7 +54,7 @@ export default function CardPage(): React.ReactNode {
         stack
       >
         <Card
-          cover={<img src="https://picsum.photos/seed/zui/480/200" alt="封面" />}
+          cover={<img src={demoCover} alt="封面" />}
           title="带封面的卡片"
           footer={<span>底部操作区</span>}
         >
@@ -105,19 +110,22 @@ export default function CardPage(): React.ReactNode {
           {
             name: 'classNames',
             type: '{ root?; header?; title?; extra?; cover?; body?; footer? }',
-            description: 'slot 级类名追加（root / header / title / extra / cover / body / footer）。',
+            description:
+              'slot 级类名追加（root / header / title / extra / cover / body / footer）。',
           },
           {
             name: '...rest',
             type: "React.ComponentPropsWithRef<'div'>",
-            description: '原生 div 属性透传到根元素（className、style、aria-*、事件等；title 除外）。',
+            description:
+              '原生 div 属性透传到根元素（className、style、aria-*、事件等；title 除外）。',
           },
         ]}
       />
       <p className="doc-p">
         根元素 data 属性：<code className="doc-code-inline">data-bordered</code>、
-        <code className="doc-code-inline">data-hoverable</code>。header / title / extra / cover / body / footer
-        各结构元素均带 <code className="doc-code-inline">data-part</code>，仅在对应 props 存在时渲染。
+        <code className="doc-code-inline">data-hoverable</code>。header / title / extra / cover /
+        body / footer 各结构元素均带 <code className="doc-code-inline">data-part</code>，仅在对应
+        props 存在时渲染。
       </p>
 
       <CustomizeOutlet

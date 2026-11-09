@@ -36,16 +36,49 @@ export function Image(props: ImageProps) {
     ...rest
   } = props;
 
-  const [currentSrc, setCurrentSrc] = React.useState(src);
+  const [sourceState, setSourceState] = React.useState({ src, failed: false });
+  if (sourceState.src !== src) setSourceState({ src, failed: false });
+  const currentSrc = sourceState.src === src && sourceState.failed && fallback ? fallback : src;
   const [open, setOpen] = React.useState(false);
   const rootRef = React.useRef<HTMLDivElement>(null);
+  const imageRef = React.useRef<HTMLImageElement | null>(null);
   const previewRef = React.useRef<HTMLDivElement | null>(null);
   // Portal 首帧不渲染子树（内部 mounted 门控），ref 就绪后再启用焦点陷阱
   const [trapReady, setTrapReady] = React.useState(false);
 
+  // 并发预渲染/缓存命中可能在提交前完成失败，补查 DOM，避免错过 error 事件。
   React.useEffect(() => {
-    setCurrentSrc(src);
-  }, [src]);
+    const image = imageRef.current;
+    if (
+      image?.complete &&
+      image.naturalWidth === 0 &&
+      currentSrc &&
+      fallback &&
+      currentSrc !== fallback
+    ) {
+      setSourceState({ src, failed: true });
+    }
+  }, [src, currentSrc, fallback]);
+
+  const setImageNode = React.useCallback(
+    (node: HTMLImageElement | null) => {
+      imageRef.current = node;
+      if (typeof ref === 'function') {
+        const cleanup = ref(node);
+        return () => {
+          imageRef.current = null;
+          if (typeof cleanup === 'function') cleanup();
+          else ref(null);
+        };
+      }
+      if (ref) ref.current = node;
+      return () => {
+        imageRef.current = null;
+        if (ref) ref.current = null;
+      };
+    },
+    [ref]
+  );
 
   useScrollLock(open);
   useFocusTrap(previewRef, { active: open && trapReady });
@@ -56,7 +89,7 @@ export function Image(props: ImageProps) {
   }, []);
 
   const handleError = () => {
-    if (fallback && currentSrc !== fallback) setCurrentSrc(fallback);
+    if (fallback && currentSrc !== fallback) setSourceState({ src, failed: true });
   };
 
   const onImageClick = (event: React.MouseEvent<HTMLImageElement>) => {
@@ -77,7 +110,7 @@ export function Image(props: ImageProps) {
       >
         <img
           {...rest}
-          ref={ref}
+          ref={setImageNode}
           data-part="image"
           className={cx('z-image-img', classNames?.image)}
           src={currentSrc}
@@ -89,7 +122,12 @@ export function Image(props: ImageProps) {
           aria-haspopup={preview && currentSrc ? 'dialog' : undefined}
           onKeyDown={(event) => {
             onKeyDown?.(event);
-            if (!event.defaultPrevented && preview && currentSrc && (event.key === 'Enter' || event.key === ' ')) {
+            if (
+              !event.defaultPrevented &&
+              preview &&
+              currentSrc &&
+              (event.key === 'Enter' || event.key === ' ')
+            ) {
               event.preventDefault();
               setOpen(true);
             }

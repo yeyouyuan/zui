@@ -1,6 +1,6 @@
 # ZUI 后续组件路线图
 
-状态：2026-11-09 实施后复核。Combobox、MultiCombobox、SideNav、Splitter、CommandPalette 均已实现并进入 Registry（71 个组件 + 16 个业务块，共 87 个条目），随下一版本发布。DataGrid 立项前置已完成：性能原型实测达标（排序 23ms / 全选 10.9ms / 列宽最差帧 49.7ms，10k 行），独立大型 RFC 已起草（rfcs/datagrid.md），待评审后分期实现。
+状态：2026-11-09 实施后复核。Combobox、MultiCombobox、SideNav、Splitter、CommandPalette 均已实现并进入 Registry（71 个组件 + 16 个业务块，共 87 个条目），随下一版本发布。DataGrid 立项前置已完成：性能原型已复测（10k 行：排序 30.9ms / 全选 21.8ms / 列宽更新到下一帧 34.3ms；列宽测量已排除指针输入间隔），独立大型 RFC 已起草（rfcs/datagrid.md），待评审后分期实现。
 
 ## 现状与判断标准
 
@@ -14,14 +14,14 @@ ZUI v0.2.0 已有 66 个 UI 组件，基础表单、日期、浮层、反馈和�
 
 ## 优先级
 
-| 顺序 | 候选             | 解决的问题                                                                         | 首版范围                                                      | 结论                   |
-| ---- | ---------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------- | ---------------------- |
-| 1    | `Combobox`       | `Select` 只能选择，缺少可编辑搜索、异步结果和严格选项型自动完成                    | 单选、输入过滤、外部异步 options、严格选项、完整 IME/键盘支持 | 已实现，待下一版本     |
-| 1.5  | `MultiCombobox`  | 同构 options 的多选场景（标签、负责人、批量实体）                                  | RFC-001 §16 边界：toggle 多选、标签删除、异步通道同构         | 已实现，待下一版本     |
-| 2    | `SideNav`        | 文档站与路由型后台壳重复手写持久侧栏、分组、展开与当前位置                         | 语义化 `nav/list/link`、分组、层级、折叠、路由适配            | 已正式实现，待下一版本 |
-| 3    | `Splitter`       | Row/Col/Flex 只能静态布局，无法支持主从详情、编辑器和仪表盘可调分栏                | 水平/垂直、受控尺寸、min/max、折叠、键盘 separator            | 已正式实现，待下一版本 |
-| 4    | `DataGrid`       | `Table` 与 `VirtualTable` 缺少交互式列宽调整、排序、筛选、选择和完整 grid 键盘模型 | 先做能力拆分与性能原型，不直接实现                            | RFC 已起草（含实测），待评审   |
-| 5    | `CommandPalette` | 文档和后台缺少全局命令搜索                                                         | 复用未来的 `Combobox` + `Modal`，支持分组命令与快捷键         | 已正式实现，待下一版本 |
+| 顺序 | 候选             | 解决的问题                                                                         | 首版范围                                                      | 结论                         |
+| ---- | ---------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------- | ---------------------------- |
+| 1    | `Combobox`       | `Select` 只能选择，缺少可编辑搜索、异步结果和严格选项型自动完成                    | 单选、输入过滤、外部异步 options、严格选项、完整 IME/键盘支持 | 已实现，待下一版本           |
+| 1.5  | `MultiCombobox`  | 同构 options 的多选场景（标签、负责人、批量实体）                                  | RFC-001 §16 边界：toggle 多选、标签删除、异步通道同构         | 已实现，待下一版本           |
+| 2    | `SideNav`        | 文档站与路由型后台壳重复手写持久侧栏、分组、展开与当前位置                         | 语义化 `nav/list/link`、分组、层级、折叠、路由适配            | 已正式实现，待下一版本       |
+| 3    | `Splitter`       | Row/Col/Flex 只能静态布局，无法支持主从详情、编辑器和仪表盘可调分栏                | 水平/垂直、受控尺寸、min/max、折叠、键盘 separator            | 已正式实现，待下一版本       |
+| 4    | `DataGrid`       | `Table` 与 `VirtualTable` 缺少交互式列宽调整、排序、筛选、选择和完整 grid 键盘模型 | 先做能力拆分与性能原型，不直接实现                            | RFC 已起草（含实测），待评审 |
+| 5    | `CommandPalette` | 文档和后台缺少全局命令搜索                                                         | 复用未来的 `Combobox` + `Modal`，支持分组命令与快捷键         | 已正式实现，待下一版本       |
 
 ## 为什么先做 Combobox
 
@@ -95,3 +95,7 @@ DataGrid 价值高，但不能把功能继续堆入 `Table`：
 - [Material UI Autocomplete](https://mui.com/material-ui/react-autocomplete/)
 - [Ant Design Splitter](https://ant.design/components/splitter/)
 - [MUI X Data Grid](https://mui.com/x/react-data-grid/)
+
+## 内容协作方向（2026-11-09）
+
+下一组设计优先 FilePreview、ContentEditor、CommentThread，覆盖文件预览、纯文本编辑与上下文讨论。文档站 `#/collaboration` 提供可操作原型；[RFC-006](rfcs/content-collaboration.md) 定义 API、异步状态、权限、引用和正式实现验收。当前属于设计阶段，未加入正式导出与 Registry，不增加 71 个源码组件的计数。

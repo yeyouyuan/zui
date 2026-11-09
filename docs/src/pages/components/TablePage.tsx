@@ -60,7 +60,7 @@ export default function TablePage(): React.ReactNode {
 
       <h2 className="doc-h2">示例</h2>
 
-      <Demo title="基础用法" description="Table.Head / Body / Row / HeaderCell / Cell 组合出语义化表格，th 自带 scope=col。" code={BASIC_CODE} stack>
+      <Demo scroll title="基础用法" description="Table.Head / Body / Row / HeaderCell / Cell 组合出语义化表格，th 自带 scope=col。" code={BASIC_CODE} stack>
         <Table>
           <TableHead>
             <TableRow>
@@ -81,7 +81,7 @@ export default function TablePage(): React.ReactNode {
         </Table>
       </Demo>
 
-      <Demo
+      <Demo scroll
         title="密度、斑马纹与边框"
         description="density=compact 收紧行高；striped 斑马纹；bordered 加列分隔线（行分隔线始终存在）。"
         code={STYLE_CODE}
@@ -109,7 +109,7 @@ export default function TablePage(): React.ReactNode {
         </Table>
       </Demo>
 
-      <Demo
+      <Demo scroll
         title="行选中与对齐"
         description="Table.Row 的 selected 写入 data-selected；Cell / HeaderCell 的 align 控制 left / center / right。"
         code={SELECT_CODE}
