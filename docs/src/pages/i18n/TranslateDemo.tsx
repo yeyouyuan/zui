@@ -218,8 +218,8 @@ function I18nPageBody(): React.ReactNode {
         code={LOCALE_USAGE_CODE}
         stack
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div className="doc-locale-demo">
+          <div className="doc-locale-switcher">
             <span style={{ fontWeight: 600 }}>选择语言：</span>
             <Select
               options={LOCALES.map((l) => ({ value: l.value, label: l.label }))}
@@ -231,39 +231,30 @@ function I18nPageBody(): React.ReactNode {
 
           {/* 实时呈现多语言组件展示区 */}
           <ConfigProvider locale={activeLocale}>
-            <div
-              style={{
-                display: 'grid',
-                gap: 16,
-                padding: 20,
-                border: '1px solid var(--z-color-border-subtle)',
-                borderRadius: 'var(--z-radius-md)',
-                backgroundColor: 'var(--z-color-bg-subtle)',
-              }}
-            >
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div className="doc-locale-panel">
+              <div className="doc-locale-controls">
+                <div>
                   <span style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-fg-muted)' }}>
                     选择器占位符
                   </span>
                   <Select options={[]} style={{ minWidth: 160 }} />
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div>
                   <span style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-fg-muted)' }}>
                     日期选择面板
                   </span>
                   <DatePicker defaultValue="2026-11-05" />
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div>
                   <span style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-fg-muted)' }}>
                     时间选择
                   </span>
                   <TimePicker />
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div>
                   <span style={{ fontSize: 'var(--z-text-xs)', color: 'var(--z-color-fg-muted)' }}>
                     气泡确认框
                   </span>

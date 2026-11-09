@@ -747,6 +747,51 @@ a:hover {
   align-items: stretch;
 }
 
+/* 窄屏下纵向演示项不能按内容最小宽度撑出卡片；组件内部继续使用 flex 收缩。 */
+.doc-demo-stage--stack > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.doc-locale-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.doc-locale-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.doc-locale-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--z-color-border-subtle);
+  border-radius: var(--z-radius-md);
+  background: var(--z-color-bg-subtle);
+}
+.doc-locale-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+.doc-locale-controls > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+.doc-locale-demo .z-select,
+.doc-locale-demo .z-datepicker,
+.doc-locale-demo .z-time-picker {
+  max-width: 100%;
+}
+
 .doc-demo-stage .z-image {
   max-width: 100%;
 }

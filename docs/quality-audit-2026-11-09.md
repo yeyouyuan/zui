@@ -19,6 +19,7 @@ Combobox / MultiCombobox、SideNav、Splitter、CommandPalette 已有实现；Da
 - Image 补查提交前已经失败的缓存图片，避免并发预渲染错过 error 事件；保留 React 19 callback ref 清理函数，切换 src 后重新尝试新来源。
 - 修复 Transfer 条目同时显示原生与自绘复选框的问题。样式统一覆盖条目和全选控件，并同步选中、禁用与焦点状态；桌面与 320px 暗色的选中、禁用、键盘焦点与条目移动回归通过。
 - 发布复核发现 Avatar 示例仍依赖外部图库，网络不稳定会使图片检查超时；已改用站内 SVG，并与 Card/Image 一起验证没有外部图片请求。
+- 首次 GitHub Linux CI 的 320px 审计发现 Input 基础示例与国际化展示板受内容最小宽度影响发生裁切；纵向示例补充可收缩宽度约束，语言切换行允许换行，国际化展示板使用 `minmax(0, 1fr)` 网格。修复后本地完整 67 条 E2E 和四组逐页矩阵再次通过。
 
 ## 内容协作设计
 
@@ -37,7 +38,7 @@ Combobox / MultiCombobox、SideNav、Splitter、CommandPalette 已有实现；Da
 | ESLint / 全仓 TypeScript         | 通过                                                                                                                                         |
 | 全仓 build / UI browser build    | 通过                                                                                                                                         |
 | 七包发行检查 / 消费者 / Registry | 通过；消费者为 87 条目、251 文件、71 个 MCP 示例                                                                                             |
-| 浏览器回归                       | 67 条完整 E2E 同次运行全部通过（3.0 分钟）                                                                                                   |
+| 浏览器回归                       | 窄屏修复后 67 条完整 E2E 同次运行全部通过（54.5 秒）                                                                                         |
 | 最后新增 Transfer 浏览器用例     | 通过，覆盖桌面浅色和 320px 暗色的重复标识、选中、禁用、焦点与移动                                                                            |
 | 逐页显示矩阵                     | 77 路由 × 1440px/320px × 浅色/暗色，共 308 次页面检查通过；覆盖正文/页面溢出、示例直接子元素裁切、图片加载、Slider 宽度和文字对比度          |
 | 截图复核                         | 已逐页查看四组首屏联系表，并放大复核协作原型、Slider、日期范围、Table、Transfer 等修改页面。已刷新最终 Transfer 和 Avatar 修复后的矩阵与截图 |
