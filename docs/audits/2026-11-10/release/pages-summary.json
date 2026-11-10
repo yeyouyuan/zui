@@ -1,0 +1,29 @@
+{
+  "checks": [
+    {
+      "width": 1440,
+      "theme": "dark",
+      "pages": 78,
+      "issues": 0
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "pages": 78,
+      "issues": 0
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "pages": 78,
+      "issues": 0
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "pages": 78,
+      "issues": 0
+    }
+  ],
+  "total_page_checks": 312
+}

@@ -489,7 +489,7 @@ export function DateRangePicker(props: DateRangePickerProps) {
           data-part="input-start"
           className="z-daterange-input"
           type="text"
-          role="textbox"
+          role="combobox"
           aria-label={locale.dateRange.startPlaceholder}
           aria-haspopup="dialog"
           aria-expanded={open}
@@ -510,7 +510,7 @@ export function DateRangePicker(props: DateRangePickerProps) {
           data-part="input-end"
           className="z-daterange-input"
           type="text"
-          role="textbox"
+          role="combobox"
           aria-label={locale.dateRange.endPlaceholder}
           aria-haspopup="dialog"
           aria-expanded={open}

@@ -297,7 +297,7 @@ export function DashboardBlock({
 
         <TabsPanel value="channels">
           <Card title="渠道明细">
-            <div style={{ overflowX: 'auto' }}>
+            <div tabIndex={0} role="region" aria-label="可横向滚动的数据表格" style={{ overflowX: 'auto' }}>
             <Table>
               <TableHead>
                 <TableRow>
@@ -355,7 +355,7 @@ export function DashboardBlock({
 
       {/* 最近动态 */}
       <Card title="最近动态" extra={<Button variant="ghost" size="sm">查看全部</Button>}>
-        <div style={{ overflowX: 'auto' }}><Table>
+        <div tabIndex={0} role="region" aria-label="可横向滚动的数据表格" style={{ overflowX: 'auto' }}><Table>
           <TableHead>
             <TableRow>
               <TableHeaderCell style={{ width: 80 }}>时间</TableHeaderCell>

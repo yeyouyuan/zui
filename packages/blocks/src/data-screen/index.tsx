@@ -130,7 +130,7 @@ export function DataScreenBlock({
     border: 'var(--z-neutral-800)',
     fg: 'var(--z-neutral-100)',
     fgMuted: 'var(--z-neutral-400)',
-    fgSubtle: 'var(--z-neutral-500)',
+    fgSubtle: 'var(--z-neutral-400)',
   };
   const darkTokens = {
     '--z-color-fg': dark.fg,

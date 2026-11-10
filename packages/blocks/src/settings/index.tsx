@@ -222,7 +222,7 @@ export function SettingsBlock({
                 cursor: 'pointer',
                 fontSize: 'var(--z-text-sm)',
                 fontWeight: active ? 'var(--z-weight-semibold)' : 'var(--z-weight-regular)',
-                color: active ? 'var(--z-color-primary)' : 'var(--z-color-fg-muted)',
+                color: active ? 'var(--z-color-primary-subtle-fg)' : 'var(--z-color-fg-muted)',
                 background: active ? 'var(--z-color-primary-subtle)' : 'transparent',
               }}
             >

@@ -5,10 +5,15 @@
 
 ## Install & Setup
 
+Version 0.3.0 is distributed through GitHub Packages, not npmjs. Configure
+@yeyouyuan:registry=https://npm.pkg.github.com in the project .npmrc and log in
+with a GitHub account that has package read access. Install aliases below keep
+source imports at @zui/*.
+
 ```
-pnpm add @zui/react          # components + bundled styles
-pnpm add @zui/tokens         # optional: TS constants + CSS variable references
-pnpm add @zui/blocks         # optional: 16 page-level business blocks
+pnpm add @zui/react@npm:@yeyouyuan/zui-react@0.3.0          # components + bundled styles
+pnpm add @zui/tokens@npm:@yeyouyuan/zui-tokens@0.3.0         # optional: TS constants + CSS variable references
+pnpm add @zui/blocks@npm:@yeyouyuan/zui-blocks@0.3.0         # optional: 16 page-level business blocks
 ```
 
 ```tsx
@@ -463,12 +468,12 @@ upstream update channel.
 node registry/scripts/generate.mjs          # rebuild registry.json
 node registry/scripts/generate.mjs --check  # CI: registry vs components
 
-pnpm dlx @zui/cli init                 # interactive setup → writes .zurc.json
-pnpm dlx @zui/cli add button           # copy Button.tsx + Button.css → src/components/ui/button/
-pnpm dlx @zui/cli add button modal     # multiple components
-pnpm dlx @zui/cli add --all            # everything in the registry
-pnpm dlx @zui/cli diff button          # unified diff: local copy vs registry (update channel)
-pnpm dlx @zui/cli list                 # list all components (--json for machine output)
+pnpm dlx @yeyouyuan/zui-cli@0.3.0 init                 # interactive setup → writes .zurc.json
+pnpm dlx @yeyouyuan/zui-cli@0.3.0 add button           # copy Button.tsx + Button.css → src/components/ui/button/
+pnpm dlx @yeyouyuan/zui-cli@0.3.0 add button modal     # multiple components
+pnpm dlx @yeyouyuan/zui-cli@0.3.0 add --all            # everything in the registry
+pnpm dlx @yeyouyuan/zui-cli@0.3.0 diff button          # unified diff: local copy vs registry (update channel)
+pnpm dlx @yeyouyuan/zui-cli@0.3.0 list                 # list all components (--json for machine output)
 ```
 
 - `add` copies components to `<components>/<kebab-name>/`, blocks to `<components>/blocks/<name>/`,
@@ -542,10 +547,10 @@ never remapped). Contrast is WCAG AA calibrated in both themes.
      `:root:not([data-theme='light'])` media fallback.
 - CDN (no-build): `pnpm --filter @zui/react build:browser` →
   `packages/ui/dist/browser/zui.global.js` + `zui.css` (+ LICENSE.txt), synced
-  to `docs/dist/cdn/v<v>/` (version from package.json, currently v0.2.0).
-  Public Pages currently serves `cdn/v0.2.0/` and the matching demo page.
-  Usage: `<link rel="stylesheet" href="cdn/v0.2.0/zui.css">` +
-  `<script src="cdn/v0.2.0/zui.global.js">`; the IIFE bundles React 19 under
+  to `docs/dist/cdn/v<v>/` (version from package.json, currently v0.3.0).
+  Public Pages currently serves `cdn/v0.3.0/` and the matching demo page.
+  Usage: `<link rel="stylesheet" href="cdn/v0.3.0/zui.css">` +
+  `<script src="cdn/v0.3.0/zui.global.js">`; the IIFE bundles React 19 under
   the global namespace `ZUI` (`ZUI.React`, `ZUI.createRoot`, `ZUI.hydrateRoot`,
   every component). Live example: `/cdn-demo.html`.
 - Naming map (Figma path ↔ CSS variable): `zui.primitives.brand.600` ↔

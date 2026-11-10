@@ -9,11 +9,11 @@ afterEach(cleanup);
 /* ---------------------------------- 工具 ---------------------------------- */
 
 function getStartInput(): HTMLInputElement {
-  return screen.getByRole('textbox', { name: '开始日期' }) as HTMLInputElement;
+  return screen.getByRole('combobox', { name: '开始日期' }) as HTMLInputElement;
 }
 
 function getEndInput(): HTMLInputElement {
-  return screen.getByRole('textbox', { name: '结束日期' }) as HTMLInputElement;
+  return screen.getByRole('combobox', { name: '结束日期' }) as HTMLInputElement;
 }
 
 function getPanel(): HTMLElement {

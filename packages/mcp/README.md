@@ -1,5 +1,14 @@
 # @zui/mcp
 
+> v0.3.0 发布到 GitHub Packages：`@yeyouyuan/zui-mcp`，npmjs 暂不发布。先在项目 `.npmrc` 配置 `@yeyouyuan:registry=https://npm.pkg.github.com`，再用拥有包读取权限的 GitHub 账号登录。
+
+```bash
+npm login --scope=@yeyouyuan --auth-type=legacy --registry=https://npm.pkg.github.com
+pnpm add @zui/mcp@npm:@yeyouyuan/zui-mcp@0.3.0
+```
+
+源码导入继续使用 `@zui/mcp`。完整认证和安装说明见仓库 [GitHub Packages 文档](https://github.com/yeyouyuan/zui/blob/main/docs/GITHUB-PACKAGES.md)。
+
 ZUI 组件库 MCP（Model Context Protocol）server：纯 stdio JSON-RPC 2.0 实现（不引
 `@modelcontextprotocol/sdk`），让 Claude Desktop / Cursor 等 MCP 客户端直接查询 ZUI 组件、
 生成可用 JSX 代码。数据源为 `packages/ui/src/components/<Name>/meta.json`（AI 翻译组产出）+
@@ -66,17 +75,17 @@ MCP 客户端以子进程方式拉起它。命令等价于 `node packages/mcp/di
 
 ### 1. `zui_search_components` — 搜索组件
 
-| 参数 | 类型 | 说明 |
-|---|---|---|
+| 参数    | 类型           | 说明                                                 |
+| ------- | -------------- | ---------------------------------------------------- |
 | `query` | string（必填） | 关键词（如 "表单"、"button"、"modal"）；空串返回全部 |
-| `limit` | number | 返回条数上限，默认 10 |
+| `limit` | number         | 返回条数上限，默认 10                                |
 
 返回：`{ query, count, results: [{ name, description, category }] }`。
 
 ### 2. `zui_get_component_api` — 查询组件 API
 
-| 参数 | 类型 | 说明 |
-|---|---|---|
+| 参数   | 类型           | 说明                                          |
+| ------ | -------------- | --------------------------------------------- |
 | `name` | string（必填） | 组件名（Button、Input、Modal…，大小写不敏感） |
 
 返回：markdown 格式的 props 签名（type/default/desc）+ 用法示例 + 无障碍说明 +
@@ -84,11 +93,11 @@ MCP 客户端以子进程方式拉起它。命令等价于 `node packages/mcp/di
 
 ### 3. `zui_generate_code` — 生成 JSX 代码片段
 
-| 参数 | 类型 | 说明 |
-|---|---|---|
-| `component` | string（必填） | 组件名 |
-| `props` | object | props 键值对；true 渲染布尔属性、false/null 省略、数字渲染 `{42}`；字符串 `"{表达式}"` 原样输出为 JSX 表达式 |
-| `children` | string | children 文本（可选） |
+| 参数        | 类型           | 说明                                                                                                         |
+| ----------- | -------------- | ------------------------------------------------------------------------------------------------------------ |
+| `component` | string（必填） | 组件名                                                                                                       |
+| `props`     | object         | props 键值对；true 渲染布尔属性、false/null 省略、数字渲染 `{42}`；字符串 `"{表达式}"` 原样输出为 JSX 表达式 |
+| `children`  | string         | children 文本（可选）                                                                                        |
 
 返回：`import` + 示例组件的可用 JSX；props 与 meta 声明不符时附 `warnings`。
 

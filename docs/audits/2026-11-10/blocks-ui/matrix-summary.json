@@ -1,0 +1,50 @@
+[
+  {
+    "width": 1440,
+    "theme": "light",
+    "blocks": 16,
+    "issues": []
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "blocks": 16,
+    "issues": []
+  },
+  {
+    "width": 1280,
+    "theme": "light",
+    "blocks": 16,
+    "issues": []
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "blocks": 16,
+    "issues": []
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "blocks": 16,
+    "issues": []
+  },
+  {
+    "width": 768,
+    "theme": "dark",
+    "blocks": 16,
+    "issues": []
+  },
+  {
+    "width": 320,
+    "theme": "light",
+    "blocks": 16,
+    "issues": []
+  },
+  {
+    "width": 320,
+    "theme": "dark",
+    "blocks": 16,
+    "issues": []
+  }
+]

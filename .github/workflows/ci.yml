@@ -24,7 +24,7 @@ jobs:
       - run: pnpm lint
       # a11y: axe-core 扫描已包含在 packages/ui 测试套件（src/test/a11y.axe.test.tsx）
       - run: pnpm -r test
-      - run: pnpm test:e2e
+      - run: pnpm test:e2e --workers=1
       - name: Validate published ESM and CommonJS entries
         run: node scripts/check-distribution.mjs
       - name: Compile installed sources and MCP examples

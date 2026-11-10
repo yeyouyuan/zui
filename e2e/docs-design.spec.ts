@@ -65,7 +65,7 @@ test('组件示例：键盘展开高亮代码，API 表可聚焦，侧栏可清�
   await expect(search).toBeFocused();
   await expect(
     page.getByRole('navigation', { name: '文档导航', exact: true }).getByRole('link')
-  ).toHaveCount(77);
+  ).toHaveCount(78);
 
   await page.addScriptTag({ content: AXE_SOURCE });
   for (const colorScheme of ['light', 'dark'] as const) {

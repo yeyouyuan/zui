@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Checkbox, ConfigProvider, Radio, RadioGroup, Select, Steps, Switch } from '@zui/react';
 
 import ApiTable from '../../components/ApiTable';
+import { catalog } from '../../site';
 import CodeBlock from '../../components/CodeBlock';
 import Demo from '../../components/Demo';
 import { usePageTitle } from '../../components/usePageTitle';
@@ -95,19 +96,19 @@ const SKIN_DARK_CODE = `/* 第三步：补暗色取值。规则与 dark.css 完�
 
 const CDN_BUILD_CODE = `pnpm --filter @zui/react build:browser
 # 产物：packages/ui/dist/browser/zui.global.js + zui.css + LICENSE.txt
-# 同时自动同步到 docs/dist/cdn/v0.2.0/（版本号取自 package.json）`;
+# 同时自动同步到 docs/dist/cdn/v${catalog.version}/（版本号取自 package.json）`;
 
 const CDN_HTML_CODE = `<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <!-- zui.css 已包含 tokens + reset + 全部组件样式 -->
-    <link rel="stylesheet" href="cdn/v0.2.0/zui.css" />
+    <link rel="stylesheet" href="cdn/v${catalog.version}/zui.css" />
   </head>
   <body>
     <main id="root"></main>
     <!-- zui.global.js 内置 React 19，全局命名空间为 ZUI -->
-    <script src="cdn/v0.2.0/zui.global.js"></script>
+    <script src="cdn/v${catalog.version}/zui.global.js"></script>
     <script>
       const root = ZUI.createRoot(document.getElementById('root'));
       root.render(
@@ -497,10 +498,10 @@ export default function DesignAssetsPage(): React.ReactNode {
         全局命名空间 <code className="doc-code-inline">ZUI</code> 暴露全部组件与 <code className="doc-code-inline">ZUI.React</code>、
         <code className="doc-code-inline">ZUI.createRoot</code>、<code className="doc-code-inline">ZUI.hydrateRoot</code>，
         无需额外引入 React。完整可运行示例见{' '}
-        <a className="doc-chip-link" href="/cdn-demo.html">
+        <a className="doc-chip-link" href={`${import.meta.env.BASE_URL}cdn-demo.html`}>
           /cdn-demo.html
         </a>{' '}
-        （提示：示例当前引用 v0.1.0 产物，新版本请按上面的 v0.2.0 路径接入）。
+        （示例与文档使用相同版本的浏览器产物）。
       </p>
 
       {/* ============================ 4. 命名对照表 ============================ */}

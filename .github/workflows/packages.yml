@@ -1,0 +1,65 @@
+name: Publish GitHub Packages
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: github-packages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@${{ github.repository_owner }}'
+      - run: pnpm install --frozen-lockfile
+      - run: node registry/scripts/generate.mjs --check
+      - run: pnpm -r build
+      - run: pnpm --filter @zui/react build:browser
+      - run: node scripts/check-distribution.mjs
+      - run: node scripts/prepare-github-packages.mjs --owner "$GITHUB_REPOSITORY_OWNER"
+      - run: node scripts/check-github-packages.mjs --local
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: node scripts/publish-github-packages.mjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: node scripts/check-github-packages.mjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Record package visibility and repository association
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for PACKAGE in tokens icons i18n react blocks cli mcp; do
+            gh api "users/$GITHUB_REPOSITORY_OWNER/packages/npm/zui-$PACKAGE" \
+              --jq '{name,visibility,repository:.repository.full_name,html_url}' \
+              > ".release/github-packages/package-$PACKAGE.json"
+            cat ".release/github-packages/package-$PACKAGE.json"
+          done
+      - name: Attach verified tarballs to GitHub Release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "$GITHUB_REF_NAME" .release/github-packages/*.tgz \
+            .release/github-packages/github-packages.json \
+            .release/github-packages/consumer-registry.json --clobber
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: github-packages
+          path: .release/github-packages/

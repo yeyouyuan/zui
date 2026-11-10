@@ -269,7 +269,6 @@ export function KanbanBlock({
                   data-active={active ? 'true' : 'false'}
                   role="button"
                   tabIndex={0}
-                  aria-label={card.title}
                   aria-pressed={active}
                   style={{
                     cursor: 'pointer',

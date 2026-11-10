@@ -1,5 +1,14 @@
 # @zui/blocks
 
+> v0.3.0 发布到 GitHub Packages：`@yeyouyuan/zui-blocks`，npmjs 暂不发布。先在项目 `.npmrc` 配置 `@yeyouyuan:registry=https://npm.pkg.github.com`，再用拥有包读取权限的 GitHub 账号登录。
+
+```bash
+npm login --scope=@yeyouyuan --auth-type=legacy --registry=https://npm.pkg.github.com
+pnpm add @zui/blocks@npm:@yeyouyuan/zui-blocks@0.3.0
+```
+
+源码导入继续使用 `@zui/blocks`。完整认证和安装说明见仓库 [GitHub Packages 文档](https://github.com/yeyouyuan/zui/blob/main/docs/GITHUB-PACKAGES.md)。
+
 ZUI 业务区块：16 个页面级区块，用 `@zui/react` 组件拼装，可整体嵌入业务系统，也可拆改。内置演示数据均可替换，业务请求由使用方的回调处理。
 
 - 每块是一个 React 组件（首行 `'use client'`，RSC/Next.js 友好），自带布局/间距/层次，直接像真实页面渲染。
@@ -9,7 +18,7 @@ ZUI 业务区块：16 个页面级区块，用 `@zui/react` 组件拼装，可�
 ## 安装与引入
 
 ```bash
-pnpm add @zui/blocks @zui/react react react-dom
+pnpm add @zui/blocks@npm:@yeyouyuan/zui-blocks@0.3.0 @zui/react@npm:@yeyouyuan/zui-react@0.3.0 react react-dom
 ```
 
 ```tsx

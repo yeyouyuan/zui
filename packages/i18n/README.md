@@ -1,5 +1,14 @@
 # @zui/i18n
 
+> v0.3.0 发布到 GitHub Packages：`@yeyouyuan/zui-i18n`，npmjs 暂不发布。先在项目 `.npmrc` 配置 `@yeyouyuan:registry=https://npm.pkg.github.com`，再用拥有包读取权限的 GitHub 账号登录。
+
+```bash
+npm login --scope=@yeyouyuan --auth-type=legacy --registry=https://npm.pkg.github.com
+pnpm add @zui/i18n@npm:@yeyouyuan/zui-i18n@0.3.0
+```
+
+源码导入继续使用 `@zui/i18n`。完整认证和安装说明见仓库 [GitHub Packages 文档](https://github.com/yeyouyuan/zui/blob/main/docs/GITHUB-PACKAGES.md)。
+
 ZUI 组件内置文案自动翻译。标准语言请优先使用 `ConfigProvider locale={enUS}` 等静态语言包；运行时翻译适合尚无语言包的语种或动态文案。支持 4 种 provider、localStorage 缓存，失败回退原文。
 
 对应契约：`CONTRACTS-V3.md` §2「AI 翻译组」。
@@ -7,7 +16,7 @@ ZUI 组件内置文案自动翻译。标准语言请优先使用 `ConfigProvider
 ## 安装
 
 ```bash
-pnpm add @zui/i18n
+pnpm add @zui/i@npm:@yeyouyuan/zui-i@0.3.018n
 ```
 
 `react ^19` 为 peer 依赖。

@@ -322,12 +322,64 @@ test('页面搭建器：宽画布、第三方控件可访问名与窄屏边界�
   await page.setViewportSize({ width: 1280, height: 800 });
   await openRoute(page, '/builder', '页面搭建器');
 
+  // Keep accessibility coverage independent of the default business template.
+  await page.getByLabel('导入页面或工作区 JSON', { exact: true }).setInputFiles({
+    name: 'accessibility.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(
+      JSON.stringify({
+        root: { props: { title: '组件无障碍检查', theme: 'light', maxWidth: 1120, padding: 24 } },
+        content: [
+          {
+            type: 'Heading',
+            props: { id: 'smoke-heading', text: '项目工作台', level: 'h2', align: 'left' },
+          },
+          { type: 'Progress', props: { id: 'smoke-progress', percent: 60, status: 'active' } },
+          {
+            type: 'Form',
+            props: {
+              id: 'smoke-form',
+              title: '项目资料',
+              content: [
+                {
+                  type: 'Input',
+                  props: {
+                    id: 'smoke-name',
+                    label: '项目名称',
+                    name: 'project',
+                    placeholder: '填写名称',
+                    type: 'text',
+                  },
+                },
+                {
+                  type: 'Switch',
+                  props: { id: 'smoke-switch', label: '接收通知', name: 'notifications' },
+                },
+                {
+                  type: 'Button',
+                  props: {
+                    id: 'submit-button',
+                    children: '提交项目',
+                    action: 'submit',
+                    variant: 'primary',
+                    size: 'md',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      })
+    ),
+  });
+  await expect(page.locator('.doc-builder-notice')).toContainText('已导入 1 个页面');
+
   const editor = page.locator('.doc-builder-editor');
   await expect(editor).toHaveCount(1);
   await expect(editor.locator('select[aria-label="画布缩放"]')).toHaveCount(1);
   await expect(editor.locator('iframe#preview-frame')).toHaveAttribute('title', '页面画布预览');
-  await expect(editor.getByRole('status', { name: '正在加载页面画布' })).toHaveCount(1);
-  await expect(page.locator('.doc-builder-json')).toHaveAttribute('tabindex', '0');
+  await expect(editor.getByRole('region', { name: '画布工作区' })).toBeVisible();
+  await expect(page.locator('.doc-builder-json')).toHaveAttribute('hidden', '');
 
   const canvas = page.frameLocator('iframe#preview-frame');
   await expect(canvas.locator('html')).toHaveAttribute('lang', 'zh-CN');
@@ -406,22 +458,19 @@ test('页面搭建器：宽画布、第三方控件可访问名与窄屏边界�
   expect(axeViolations).toEqual([]);
 
   const desktopCanvasWidth = await editor
-    .locator('[class*="PuckCanvas"]')
+    .locator('.studio-canvas-column')
     .first()
     .evaluate((node) => node.getBoundingClientRect().width);
   expect(desktopCanvasWidth).toBeGreaterThan(500);
 
-  await editor.getByRole('button', { name: '切换组件面板' }).click();
-  const structureTab = editor.getByRole('button', { name: '结构', exact: true });
-  await expect(structureTab).toHaveCount(1);
+  const structureTab = editor.getByRole('button', { name: '图层结构', exact: true });
   await structureTab.focus();
   await expect(structureTab).toBeFocused();
   await structureTab.press('Enter');
   await expect(structureTab).toHaveAttribute('aria-pressed', 'true');
-
-  const outlineButton = editor
-    .locator('li[data-puck-layer-tree-id="submit-button"] button')
-    .filter({ hasText: '按钮' });
+  const outlineButton = editor.locator(
+    '[data-builder-layer-id="submit-button"] > .studio-layer-row .studio-layer-select'
+  );
   await expect(outlineButton).toHaveCount(1);
   await outlineButton.focus();
   await expect(outlineButton).toBeFocused();
@@ -469,11 +518,9 @@ test('页面搭建器：宽画布、第三方控件可访问名与窄屏边界�
   expect(narrowGeometry.right).toBeLessThanOrEqual(320);
   expect(narrowGeometry.documentWidth).toBe(narrowGeometry.viewportWidth);
 
-  const narrowToolbar = page
-    .locator('.doc-builder-editor')
-    .locator('[class*="ViewportControls-actionsInner"]');
+  const narrowToolbar = page.locator('.doc-builder-editor').locator('.studio-canvas-toolbar');
   const narrowToolbarGeometry = await narrowToolbar.evaluate((node) => {
-    const firstControl = node.querySelector('button');
+    const firstControl = node.querySelector('button:not(.studio-canvas-mode button)');
     const lastControl = node.querySelector('select');
     if (!firstControl) throw new Error('窄屏画布工具条缺少按钮');
     if (!lastControl) throw new Error('窄屏画布工具条缺少缩放选择框');
@@ -489,7 +536,9 @@ test('页面搭建器：宽画布、第三方控件可访问名与窄屏边界�
       toolbarRight: toolbarRect.right,
     };
   });
-  expect(narrowToolbarGeometry.toolbarHeight).toBeGreaterThan(narrowToolbarGeometry.firstHeight);
+  expect(narrowToolbarGeometry.toolbarHeight).toBeGreaterThanOrEqual(
+    narrowToolbarGeometry.firstHeight
+  );
   expect(narrowToolbarGeometry.firstLeft).toBeGreaterThanOrEqual(narrowToolbarGeometry.toolbarLeft);
   expect(narrowToolbarGeometry.lastRight).toBeLessThanOrEqual(narrowToolbarGeometry.toolbarRight);
 });
@@ -543,7 +592,7 @@ test('DateRangePicker 窄屏单月面板可跨月选择', async ({ page }) => {
   await openRoute(page, '/components/date-range-picker', 'DateRangePicker 日期范围选择器');
 
   const range = page.locator('.z-daterange').first();
-  await range.getByRole('textbox', { name: '开始日期' }).click();
+  await range.getByRole('combobox', { name: '开始日期' }).click();
   const panel = page.getByRole('dialog', { name: '选择日期范围' });
   await expect(panel.getByRole('grid')).toHaveCount(1);
   const dayWidth = await panel
@@ -556,14 +605,14 @@ test('DateRangePicker 窄屏单月面板可跨月选择', async ({ page }) => {
   await panel.getByRole('button', { name: '下一月' }).click();
   await panel.locator('[data-date="2024-07-05"]').first().click();
   await expect(panel).toHaveCount(0);
-  await expect(range.getByRole('textbox', { name: '开始日期' })).toHaveValue('2024-06-25');
-  await expect(range.getByRole('textbox', { name: '结束日期' })).toHaveValue('2024-07-05');
+  await expect(range.getByRole('combobox', { name: '开始日期' })).toHaveValue('2024-06-25');
+  await expect(range.getByRole('combobox', { name: '结束日期' })).toHaveValue('2024-07-05');
 });
 
 test('DateRangePicker 中间宽度与暗色面板保持可用', async ({ page }) => {
   await openRoute(page, '/components/date-range-picker', 'DateRangePicker 日期范围选择器');
   const range = page.locator('.z-daterange').first();
-  const trigger = range.getByRole('textbox', { name: '开始日期' });
+  const trigger = range.getByRole('combobox', { name: '开始日期' });
 
   for (const [width, expectedGrids] of [
     [480, 1],
@@ -706,12 +755,12 @@ test('文档外壳：全部导航页在 320px 暗色视口无页面级横向溢�
       // 等 lazy 页面真正挂载（usePageTitle 已执行），避免连续切换时取消尚未完成的模块请求。
       await expect.poll(() => page.title()).not.toBe(previousTitle);
     }
-    // 区块文档会嵌入完整的页面级预览，预览本身可以包含 h1；这里只校验文档页主标题。
+    // 区块预览可包含 h1；文档主标题有专用类名，也可以位于协作页的语义页头中。
     // SideNav 后台壳原型是全幅应用壳，没有 .doc-page 结构，校验它自己的 h1。
     if (route.startsWith('/prototype/')) {
       await expect(page.locator('.admin-prototype h1')).toHaveCount(1);
     } else {
-      await expect(page.locator('.doc-page > .doc-h1, .doc-page > .doc-hero > h1')).toHaveCount(1);
+      await expect(page.locator('.doc-page h1.doc-h1, .doc-page > .doc-hero > h1')).toHaveCount(1);
     }
     await expect(page.getByText(ERROR_SENTINEL)).toHaveCount(0);
 
@@ -856,15 +905,17 @@ test('文档外壳：SideNav 搜索保留路由语义，移动快捷键与搭建
   await page.evaluate(() => {
     window.location.hash = '/builder';
   });
-  const menu = page.getByRole('button', { name: '打开文档菜单', exact: true });
-  await expect(menu).toBeVisible();
-  await expect(navigation).toHaveCount(0);
-  await menu.click();
-  await expect(dialog.getByRole('navigation', { name: '文档导航', exact: true })).toHaveCount(1);
-  await page.setViewportSize({ width: 1000, height: 800 });
-  await expect(dialog).toHaveCount(0);
-  await expect(navigation).toHaveCount(1);
-  await expect(menu).toHaveCount(0);
+  await expect(page.locator('.studio')).toBeVisible();
+  await expect(navigation).not.toBeVisible();
+  const components = page.getByRole('button', { name: '组件库', exact: true });
+  await components.click();
+  await expect(page.getByRole('dialog', { name: '组件库', exact: true })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByRole('complementary', { name: '组件库', exact: true })).toBeVisible();
+  await page.getByRole('link', { name: '返回文档', exact: true }).click();
+  await expect(navigation).toBeVisible();
 });
 
 test('图标库：窄屏详情接管焦点，关闭后返回触发图标', async ({ page }) => {

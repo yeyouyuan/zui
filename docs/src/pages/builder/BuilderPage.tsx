@@ -1,26 +1,53 @@
 'use client';
 
-import {
-  Button as ZButton,
-  Input as ZInput,
-  Card as ZCard,
-  Alert as ZAlert,
-  Switch as ZSwitch,
-  Badge as ZBadge,
-  Tag as ZTag,
-  Divider as ZDivider,
-  Progress as ZProgress,
-  MessageProvider,
-  Typography,
-} from '@zui/react';
+import { Button, Input, Modal, MessageProvider } from '@zui/react';
+import { Clock } from '@zui/icons';
 import { Puck } from '@puckeditor/core';
 import '@puckeditor/core/puck.css';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { usePageTitle } from '../../components/usePageTitle';
+import { copyCodeText } from '../../components/CodeBlock';
+import { builderConfig } from './builder-config';
+import { BuilderEditor } from './BuilderEditor';
+import {
+  checkedStructure,
+  childNodes,
+  containerTypes,
+  insertNode,
+  ROOT_ZONE,
+} from './builder-tree';
+import { flattenNodes } from './builder-tree';
+import { BuilderEditorSelection } from './builder-scene-runtime';
+import { useBuilderEditor } from './builder-editor-context';
+import { BuilderTemplateGallery } from './BuilderTemplateGallery';
+import { tokenReference, validateTokens } from './builder-tokens';
+import {
+  createSymbol,
+  detachSymbol,
+  findInstance,
+  linkOriginal,
+  newSymbolInstance,
+  switchSymbolVariant,
+  updateSymbol,
+  validateSymbols,
+  type BuilderInstance,
+} from './builder-symbols';
+import { isNodeLocked, mapBuilderNodes } from './builder-selection';
+import type { BuilderAction, BuilderNodeLogic } from './builder-logic';
+import './builder-studio.css';
+import { builderTemplates, initialBuilderData } from './builder-templates';
+import {
+  builderId,
+  countBuilderComponents,
+  createBuilderPage,
+  MAX_IMPORT_BYTES,
+  parseBuilderImport,
+  saveDownload,
+  type BuilderData,
+} from './builder-model';
+import { useBuilderWorkspace } from './use-builder-workspace';
+import './builder-page.css';
 
-/* ---------- ZUI → Puck 组件注册 ---------- */
-
-type PuckConfig = Parameters<typeof Puck>[0]['config'];
 type PuckOverrides = NonNullable<Parameters<typeof Puck>[0]['overrides']>;
 
 const visuallyHiddenHeadingStyle = {
@@ -36,6 +63,15 @@ const visuallyHiddenHeadingStyle = {
 } as const;
 
 function BuilderCanvasFrame({ children, document }: { children: ReactNode; document?: Document }) {
+  const api = useBuilderEditor((state) => state);
+  const entries = flattenNodes(api.appState.data.content);
+  const selection: string[] = [];
+  let entry = entries.find(({ node }) => node.props.id === api.selectedItem?.props.id);
+  while (entry) {
+    selection.push(entry.node.props.id);
+    const parentId = entry.parent?.props.id;
+    entry = parentId ? entries.find(({ node }) => node.props.id === parentId) : undefined;
+  }
   useEffect(() => {
     if (!document) return undefined;
     document.title = '页面搭建器画布';
@@ -102,7 +138,9 @@ function BuilderCanvasFrame({ children, document }: { children: ReactNode; docum
       <h1 id="builder-canvas-title" style={visuallyHiddenHeadingStyle}>
         页面搭建器画布
       </h1>
-      {children}
+      <BuilderEditorSelection.Provider value={selection}>
+        {children}
+      </BuilderEditorSelection.Provider>
     </main>
   );
 }
@@ -112,7 +150,7 @@ const PUCK_OVERRIDES: PuckOverrides = {
 };
 
 const PUCK_DICTIONARY: NonNullable<Parameters<typeof Puck>[0]['dictionary']> = {
-  'header-publish': '复制 JSON',
+  'header-publish': '保存版本',
   'header-undo': '撤销',
   'header-redo': '重做',
   'header-toggle-leftsidebar': '切换组件面板',
@@ -150,263 +188,23 @@ const PUCK_DICTIONARY: NonNullable<Parameters<typeof Puck>[0]['dictionary']> = {
   'loader-loading': '正在加载页面画布',
 };
 
-const config: PuckConfig = {
-  components: {
-    Button: {
-      label: '按钮',
-      fields: {
-        children: { type: 'text', label: '文本' },
-        variant: {
-          type: 'select',
-          label: '变体',
-          options: [
-            { label: '主要', value: 'primary' },
-            { label: '次要', value: 'secondary' },
-            { label: '描边', value: 'outline' },
-            { label: '幽灵', value: 'ghost' },
-            { label: '危险', value: 'danger' },
-          ],
-        },
-        size: {
-          type: 'select',
-          label: '尺寸',
-          options: [
-            { label: '小', value: 'sm' },
-            { label: '中', value: 'md' },
-            { label: '大', value: 'lg' },
-          ],
-        },
-        disabled: { type: 'checkbox', label: '禁用' },
-      },
-      defaultProps: { children: '按钮', variant: 'primary', size: 'md' },
-      render: ({ children, variant, size, disabled }) => (
-        <ZButton variant={variant} size={size} disabled={disabled}>
-          {children}
-        </ZButton>
-      ),
-    },
-
-    Input: {
-      label: '输入框',
-      fields: {
-        placeholder: { type: 'text', label: '占位符' },
-        size: {
-          type: 'select',
-          label: '尺寸',
-          options: [
-            { label: '小', value: 'sm' },
-            { label: '中', value: 'md' },
-            { label: '大', value: 'lg' },
-          ],
-        },
-        status: {
-          type: 'select',
-          label: '状态',
-          options: [
-            { label: '默认', value: 'default' },
-            { label: '错误', value: 'error' },
-            { label: '成功', value: 'success' },
-          ],
-        },
-        clearable: { type: 'checkbox', label: '可清除' },
-      },
-      defaultProps: { placeholder: '请输入内容', size: 'md' },
-      render: (props) => <ZInput {...props} />,
-    },
-
-    Card: {
-      label: '卡片',
-      fields: {
-        title: { type: 'text', label: '标题' },
-        children: { type: 'textarea', label: '内容' },
-        hoverable: { type: 'checkbox', label: '悬浮效果' },
-      },
-      defaultProps: { title: '卡片标题', children: '卡片内容' },
-      render: ({ title, children, hoverable }) => (
-        <ZCard title={title} hoverable={hoverable}>
-          {children}
-        </ZCard>
-      ),
-    },
-
-    Alert: {
-      label: '警告提示',
-      fields: {
-        type: {
-          type: 'select',
-          label: '类型',
-          options: [
-            { label: '信息', value: 'info' },
-            { label: '成功', value: 'success' },
-            { label: '警告', value: 'warning' },
-            { label: '错误', value: 'error' },
-          ],
-        },
-        title: { type: 'text', label: '标题' },
-        children: { type: 'textarea', label: '描述' },
-        closable: { type: 'checkbox', label: '可关闭' },
-      },
-      defaultProps: { type: 'info', title: '提示', children: '这是一条提示信息' },
-      render: ({ type, title, children, closable }) => (
-        <ZAlert type={type} title={title} closable={closable}>
-          {children}
-        </ZAlert>
-      ),
-    },
-
-    Switch: {
-      label: '开关',
-      fields: {
-        label: { type: 'text', label: '标签' },
-        size: {
-          type: 'select',
-          label: '尺寸',
-          options: [
-            { label: '小', value: 'sm' },
-            { label: '中', value: 'md' },
-          ],
-        },
-      },
-      defaultProps: { label: '开关' },
-      render: ({ label, size }) => <ZSwitch label={label} size={size} />,
-    },
-
-    Badge: {
-      label: '徽标',
-      fields: {
-        count: { type: 'number', label: '数量' },
-        dot: { type: 'checkbox', label: '圆点模式' },
-        children: { type: 'text', label: '包裹内容' },
-      },
-      defaultProps: { count: 5 },
-      render: ({ count, dot, children }) => (
-        <ZBadge count={count} dot={dot}>
-          {children || <span style={{ padding: 16 }}>内容</span>}
-        </ZBadge>
-      ),
-    },
-
-    Tag: {
-      label: '标签',
-      fields: {
-        children: { type: 'text', label: '文本' },
-        color: {
-          type: 'select',
-          label: '颜色',
-          options: [
-            { label: '主色', value: 'primary' },
-            { label: '成功', value: 'success' },
-            { label: '警告', value: 'warning' },
-            { label: '错误', value: 'error' },
-            { label: '中性', value: 'neutral' },
-          ],
-        },
-        closable: { type: 'checkbox', label: '可关闭' },
-      },
-      defaultProps: { children: '标签', color: 'primary' },
-      render: ({ children, color, closable }) => (
-        <ZTag color={color} closable={closable}>
-          {children}
-        </ZTag>
-      ),
-    },
-
-    Divider: {
-      label: '分割线',
-      fields: {
-        children: { type: 'text', label: '文字（可选）' },
-        dashed: { type: 'checkbox', label: '虚线' },
-      },
-      defaultProps: {},
-      render: ({ children, dashed }) => <ZDivider dashed={dashed}>{children}</ZDivider>,
-    },
-
-    Progress: {
-      label: '进度条',
-      fields: {
-        percent: { type: 'number', label: '百分比', min: 0, max: 100 },
-        status: {
-          type: 'select',
-          label: '状态',
-          options: [
-            { label: '正常', value: 'normal' },
-            { label: '活跃', value: 'active' },
-            { label: '成功', value: 'success' },
-            { label: '错误', value: 'error' },
-          ],
-        },
-      },
-      defaultProps: { percent: 60 },
-      render: ({ percent, status }) => (
-        <ZProgress percent={percent} status={status} aria-label="任务进度" />
-      ),
-    },
-
-    Typography_Text: {
-      label: '文本',
-      fields: {
-        children: { type: 'textarea', label: '内容' },
-        strong: { type: 'checkbox', label: '加粗' },
-      },
-      defaultProps: { children: '文本内容' },
-      render: ({ children, strong }) => (
-        <Typography.Text strong={strong}>{children}</Typography.Text>
-      ),
-    },
-  },
-};
-
-/* ---------- 初始页面数据 ---------- */
-
-const initialData = {
-  content: [
-    {
-      type: 'Alert',
-      props: {
-        id: 'welcome-alert',
-        type: 'info',
-        title: '开始搭建',
-        children: '打开组件面板，将组件拖到画布；选中后在属性面板编辑。',
-        closable: false,
-      },
-    },
-    {
-      type: 'Card',
-      props: {
-        id: 'profile-card',
-        title: '用户信息',
-        children: '这里可以放任何内容。',
-        hoverable: true,
-      },
-    },
-    { type: 'Button', props: { id: 'submit-button', children: '提交', variant: 'primary' } },
-    { type: 'Divider', props: { id: 'content-divider' } },
-    {
-      type: 'Typography_Text',
-      props: { id: 'intro-text', children: '使用 Typography.Text 渲染文本', strong: true },
-    },
-    { type: 'Progress', props: { id: 'task-progress', percent: 72, status: 'active' } },
-    { type: 'Tag', props: { id: 'primary-tag', children: '标签', color: 'primary' } },
-    { type: 'Tag', props: { id: 'success-tag', children: '另一个标签', color: 'success' } },
-  ],
-};
-
-/* ---------- 页面 ---------- */
-
 export default function BuilderPage(): React.ReactNode {
   usePageTitle('页面搭建器');
-
-  const [data, setData] = useState(initialData);
-  const [copyStatus, setCopyStatus] = useState('');
+  const { workspace, update, persist, status, message, savedAt, reload, rebuild, rawBackup } =
+    useBuilderWorkspace(initialBuilderData);
+  const current = workspace.pages.find((page) => page.id === workspace.activeId)!;
+  const [notice, setNotice] = useState('');
+  const [editorRevision, setEditorRevision] = useState(0);
+  const [dialog, setDialog] = useState<'new' | 'rename' | 'delete' | 'history' | 'rebuild' | null>(
+    null
+  );
+  const [name, setName] = useState('');
+  const [preview, setPreview] = useState<string | null>(null);
+  const [previewWidth, setPreviewWidth] = useState('auto');
+  const [exporting, setExporting] = useState(false);
+  const importRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
-  const [initialEditorUi] = useState(() => {
-    const viewportWidth = typeof window === 'undefined' ? 1600 : window.innerWidth;
-    return {
-      // 文档站本身已有侧栏；常见笔记本宽度优先保证画布可读，面板仍可从顶部按钮打开。
-      leftSideBarVisible: viewportWidth >= 1600,
-      rightSideBarVisible: viewportWidth >= 1920,
-    };
-  });
+  const [codeOpen, setCodeOpen] = useState(false);
 
   useEffect(() => {
     const root = editorRef.current;
@@ -500,56 +298,745 @@ export default function BuilderPage(): React.ReactNode {
       ],
     });
     return () => observer.disconnect();
-  }, []);
+  }, [workspace.activeId, editorRevision]);
 
-  const copyJson = async (nextData = data) => {
+  const updateData = (data: BuilderData) => {
     try {
-      await navigator.clipboard.writeText(JSON.stringify(nextData, null, 2));
-      setCopyStatus('JSON 已复制到剪贴板。');
-    } catch {
-      setCopyStatus('复制失败，请聚焦下方 JSON 后手动复制。');
+      checkedStructure(data);
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : '页面结构无效，已保留修改前的内容。');
+      setEditorRevision((revision) => revision + 1);
+      return;
+    }
+    data = { ...data };
+    if (data.zones && !Object.keys(data.zones).length) delete data.zones;
+    update((previous) => {
+      const active = previous.pages.find((page) => page.id === previous.activeId)!;
+      if (JSON.stringify(active.data) === JSON.stringify(data)) return previous;
+      return {
+        ...previous,
+        pages: previous.pages.map((page) =>
+          page.id === previous.activeId
+            ? { ...page, data, updatedAt: new Date().toISOString() }
+            : page
+        ),
+      };
+    });
+  };
+
+  const saveVersion = (data = current.data) => {
+    update((previous) => ({
+      ...previous,
+      pages: previous.pages.map((page) =>
+        page.id === previous.activeId
+          ? {
+              ...page,
+              data,
+              updatedAt: new Date().toISOString(),
+              snapshots: [
+                {
+                  id: builderId('snapshot'),
+                  savedAt: new Date().toISOString(),
+                  data: structuredClone(data),
+                },
+                ...page.snapshots,
+              ].slice(0, 5),
+            }
+          : page
+      ),
+    }));
+    if (persist()) setNotice('已保存当前版本，可从“版本历史”恢复。');
+  };
+
+  const addPage = (templateId: string) => {
+    const template = builderTemplates.find((item) => item.id === templateId)!;
+    if (workspace.pages.length >= 20) {
+      setNotice('工作区最多 20 页，请先备份并删除不再使用的页面。');
+      return;
+    }
+    const page = createBuilderPage(template.name, template.data);
+    update((previous) => ({ ...previous, activeId: page.id, pages: [...previous.pages, page] }));
+    setDialog(null);
+    setNotice(`已创建“${page.name}”，原页面继续保留。`);
+  };
+
+  const importFile = async (file: File) => {
+    if (file.size > MAX_IMPORT_BYTES) {
+      setNotice('导入文件不能超过 32 MB。');
+      return;
+    }
+    try {
+      const imported = parseBuilderImport(await file.text());
+      if (workspace.pages.length + imported.pages.length > 20)
+        throw new Error('导入后将超过 20 页，请先整理工作区。');
+      const pages = imported.pages.map((page) => ({ ...page, id: builderId() }));
+      const pageAliases = new Map(imported.pages.map((page, index) => [page.id, pages[index].id]));
+      const symbolAliases = new Map<string, string>();
+      const symbols = structuredClone(workspace.symbols || []);
+      const addedSymbolIds = new Set<string>();
+      for (const symbol of imported.symbols || []) {
+        const existing = symbols.find((item) => item.id === symbol.id);
+        const remapsNavigation = symbol.variants.some(
+          (variant) =>
+            JSON.stringify(variant.node).includes('"navigate"') &&
+            [...pageAliases.keys()].some((id) => JSON.stringify(variant.node).includes(`"${id}"`))
+        );
+        if (existing && JSON.stringify(existing) === JSON.stringify(symbol) && !remapsNavigation)
+          continue;
+        const id = existing ? builderId('symbol') : symbol.id;
+        symbolAliases.set(symbol.id, id);
+        symbols.push({ ...symbol, id });
+        addedSymbolIds.add(id);
+      }
+      validateSymbols(symbols);
+      const remapActions = (actions: BuilderAction[]): BuilderAction[] =>
+        actions.map((action) =>
+          action.type === 'navigate'
+            ? { ...action, pageId: pageAliases.get(action.pageId) || action.pageId }
+            : action.type === 'condition' || action.type === 'confirm'
+              ? {
+                  ...action,
+                  then: remapActions(action.then),
+                  otherwise: remapActions(action.otherwise),
+                }
+              : action
+        );
+      const remapData = (data: BuilderData): BuilderData => ({
+        ...data,
+        content: mapBuilderNodes(data.content, (node) => {
+          const logic = node.props._logic as BuilderNodeLogic | undefined;
+          const instance = node.props._instance as BuilderInstance | undefined;
+          return {
+            ...node,
+            props: {
+              ...node.props,
+              ...(instance
+                ? {
+                    _instance: {
+                      ...instance,
+                      symbolId: symbolAliases.get(instance.symbolId) || instance.symbolId,
+                    },
+                  }
+                : {}),
+              ...(logic
+                ? {
+                    _logic: {
+                      ...logic,
+                      ...Object.fromEntries(
+                        (['click', 'change', 'submit'] as const)
+                          .filter((key) => logic[key])
+                          .map((key) => [key, remapActions(logic[key]!)])
+                      ),
+                    },
+                  }
+                : {}),
+            },
+          };
+        }),
+      });
+      for (const page of pages) {
+        page.data = remapData(page.data);
+        page.snapshots = page.snapshots.map((snapshot) => ({
+          ...snapshot,
+          data: remapData(snapshot.data),
+        }));
+      }
+      for (const symbol of symbols)
+        if (addedSymbolIds.has(symbol.id))
+          symbol.variants = symbol.variants.map((variant) => ({
+            ...variant,
+            node: remapData({ root: { props: {} }, content: [variant.node] }).content[0],
+          }));
+      update((previous) => ({
+        ...previous,
+        activeId: pages[0].id,
+        pages: [...previous.pages, ...pages],
+        symbols,
+      }));
+      setNotice(`已导入 ${pages.length} 个页面，原有页面继续保留。`);
+    } catch (error) {
+      setNotice(
+        `导入失败：${error instanceof Error ? error.message : '文件格式不正确。'} 原页面未修改。`
+      );
+    }
+  };
+
+  const exportPage = () => {
+    saveDownload(
+      JSON.stringify(
+        {
+          format: 'zui-page',
+          version: 1,
+          pageId: current.id,
+          name: current.name,
+          data: current.data,
+          symbols: workspace.symbols || [],
+        },
+        null,
+        2
+      ),
+      `${current.name}.json`
+    );
+    setNotice('页面 JSON 已导出，可重新导入继续编辑。');
+  };
+  const exportWorkspace = () => {
+    saveDownload(JSON.stringify(workspace, null, 2), 'ZUI-页面工作区.json');
+    setNotice('工作区已备份，包含所有页面和最近保存版本。');
+  };
+  const generateHtml = async (
+    mode: 'preview' | 'download' | 'prototype-preview' | 'prototype-download'
+  ) => {
+    setExporting(true);
+    try {
+      const { exportBuilderHtml, exportBuilderPrototypeHtml } = await import('./builder-export');
+      const isPrototype = mode.startsWith('prototype');
+      const html = isPrototype
+        ? exportBuilderPrototypeHtml({
+            format: 'zui-prototype',
+            version: 1,
+            startId: current.id,
+            pages: workspace.pages.map(({ id, name, data }) => ({ id, name, data })),
+          })
+        : exportBuilderHtml(current.data, current.name);
+      if (mode.endsWith('preview')) {
+        setPreviewWidth('auto');
+        setPreview(html);
+      } else {
+        saveDownload(
+          html,
+          isPrototype ? 'ZUI-多页面交互原型.html' : `${current.name}.html`,
+          'text/html;charset=utf-8'
+        );
+        setNotice(
+          isPrototype
+            ? '多页面交互原型已导出，页面切换、交互状态和全部页面保存在同一 HTML 中。'
+            : 'HTML 已导出，可直接用浏览器打开。页面样式和表单数据下载已包含在文件内。'
+        );
+      }
+    } catch (error) {
+      setNotice(`页面生成失败：${error instanceof Error ? error.message : '请检查属性值后重试。'}`);
+    } finally {
+      setExporting(false);
     }
   };
 
   return (
     <div className="doc-page doc-builder-page">
-      <h1 className="doc-h1">页面搭建器</h1>
-      <p className="doc-lead doc-builder-intro">
-        基于 Puck 的可视化页面编辑器。打开组件面板后将组件拖到画布，选中后在属性面板编辑。
-        编辑内容会实时同步到下方 JSON，可复制保存或交给后端。支持注册任何 React 组件库的组件。
-      </p>
+      {message && (
+        <div className="doc-builder-storage-error" role="alert">
+          <p>{message}</p>
+          <div>
+            <Button size="sm" variant="outline" onClick={exportWorkspace}>
+              备份当前工作区
+            </Button>
+            {status === 'error' && (
+              <Button size="sm" onClick={() => persist()}>
+                重试保存
+              </Button>
+            )}
+            {status === 'conflict' && (
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (reload()) {
+                    setEditorRevision((value) => value + 1);
+                    setNotice('已载入最新工作区。');
+                  }
+                }}
+              >
+                载入最新存档
+              </Button>
+            )}
+            {status === 'corrupt' && rawBackup && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => saveDownload(rawBackup, 'ZUI-原始存档.txt', 'text/plain')}
+              >
+                下载原始存档
+              </Button>
+            )}
+            {['corrupt', 'conflict'].includes(status) && (
+              <Button size="sm" variant="outline" onClick={() => setDialog('rebuild')}>
+                重建本地存档
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
 
+      <input
+        ref={importRef}
+        type="file"
+        accept=".json,application/json"
+        aria-label="导入页面或工作区 JSON"
+        hidden
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          event.target.value = '';
+          if (file) void importFile(file);
+        }}
+      />
       <MessageProvider>
         <div className="doc-builder-editor" ref={editorRef}>
           <Puck
-            config={config}
-            data={data}
+            key={`${workspace.activeId}-${editorRevision}`}
+            config={builderConfig}
+            data={current.data}
             dictionary={PUCK_DICTIONARY}
             dnd={{ enableDragHandle: true }}
             overrides={PUCK_OVERRIDES}
-            ui={initialEditorUi}
-            onChange={(nextData) => setData(nextData)}
-            onPublish={(nextData) => void copyJson(nextData)}
-          />
+            ui={{
+              viewports: {
+                current: { width: 1280, height: 'auto' },
+                controlsVisible: false,
+                options: [],
+              },
+            }}
+            onChange={updateData}
+          >
+            <BuilderEditor
+              pages={workspace.pages}
+              activeId={workspace.activeId}
+              status={status}
+              savedAt={savedAt}
+              notice={notice}
+              exporting={exporting}
+              modalOpen={!!dialog || !!preview || codeOpen}
+              onPage={(id) => {
+                update((previous) => ({ ...previous, activeId: id }));
+                setNotice('');
+              }}
+              onNew={() => setDialog('new')}
+              onRename={() => {
+                setName(current.name);
+                setDialog('rename');
+              }}
+              onDuplicatePage={() => {
+                if (workspace.pages.length >= 20) return;
+                const page = createBuilderPage(`${current.name.slice(0, 75)} 副本`, current.data);
+                update((previous) => ({
+                  ...previous,
+                  activeId: page.id,
+                  pages: [...previous.pages, page],
+                }));
+                setNotice('已复制当前页面。');
+              }}
+              onDeletePage={() => setDialog('delete')}
+              onHistory={() => setDialog('history')}
+              onSave={() => saveVersion()}
+              onPreview={() => void generateHtml('preview')}
+              onPrototype={(download) =>
+                void generateHtml(download ? 'prototype-download' : 'prototype-preview')
+              }
+              onImport={() => importRef.current?.click()}
+              onExportPage={exportPage}
+              onExportHtml={() => void generateHtml('download')}
+              onBackup={exportWorkspace}
+              onCode={() => setCodeOpen(true)}
+              onNotice={setNotice}
+              symbols={workspace.symbols || []}
+              onSymbol={(command, latestData) => {
+                try {
+                  let next = {
+                    ...workspace,
+                    pages: workspace.pages.map((page) =>
+                      page.id === current.id ? { ...page, data: latestData } : page
+                    ),
+                  };
+                  let data = latestData;
+                  if (command.type === 'create') {
+                    const selected = flattenNodes(data.content).find(
+                      ({ node }) => node.props.id === command.nodeId
+                    )?.node;
+                    if (!selected) throw new Error('请先选择组件。');
+                    if (isNodeLocked(data, selected.props.id)) throw new Error('请先解锁选区。');
+                    const symbol = createSymbol(command.name, selected, data);
+                    if ((next.symbols?.length || 0) >= 50) throw new Error('主组件最多 50 个。');
+                    data = linkOriginal(data, symbol, selected.props.id);
+                    next.symbols = [...(next.symbols || []), symbol];
+                    setNotice('主组件已创建，当前选区已关联；可继续插入实例和设计变体。');
+                  } else if (command.type === 'insert') {
+                    const symbol = next.symbols?.find((item) => item.id === command.symbolId);
+                    if (!symbol) throw new Error('主组件不存在。');
+                    const activeInstance = findInstance(data, command.selectedId);
+                    const selected = flattenNodes(data.content).find(
+                      ({ node }) =>
+                        node.props.id === (activeInstance?.node.props.id || command.selectedId)
+                    );
+                    const targetParentId =
+                      selected && !activeInstance && containerTypes.has(selected.node.type)
+                        ? selected.node.props.id
+                        : selected?.parent?.props.id;
+                    if (targetParentId && isNodeLocked(data, targetParentId))
+                      throw new Error('目标容器已锁定，请先解锁。');
+                    const { node, data: merged } = newSymbolInstance(
+                      data,
+                      symbol,
+                      command.variantId
+                    );
+                    const inside =
+                      selected && !activeInstance && containerTypes.has(selected.node.type);
+                    const target = inside
+                      ? `${selected.node.props.id}:content`
+                      : selected?.zone || ROOT_ZONE;
+                    data = insertNode(
+                      merged,
+                      node,
+                      target,
+                      inside
+                        ? childNodes(selected.node).length
+                        : selected
+                          ? selected.index + 1
+                          : data.content.length
+                    );
+                    setNotice('已插入关联实例，文字与样式可以独立覆盖。');
+                  } else if (command.type === 'switch') {
+                    const symbol = next.symbols?.find((item) => item.id === command.symbolId);
+                    if (!symbol) throw new Error('主组件不存在。');
+                    data = switchSymbolVariant(
+                      data,
+                      command.nodeId,
+                      symbol,
+                      command.variantId,
+                      command.reset
+                    );
+                    setNotice(
+                      command.reset
+                        ? '实例已恢复主组件设计，覆盖已清除。'
+                        : '已切换变体，实例的独立覆盖保留。'
+                    );
+                  } else if (command.type === 'detach') {
+                    data = detachSymbol(data, command.nodeId);
+                    setNotice('实例已解除关联，继续作为普通组件编辑。');
+                  } else if (command.type === 'update') {
+                    next = updateSymbol(next, current.id, command.nodeId, command.variantName);
+                    data = next.pages.find((page) => page.id === current.id)!.data;
+                    setNotice(
+                      command.variantName
+                        ? '已保存新变体，并关联当前实例。'
+                        : '主组件已同步至所有页面，实例的独立覆盖保留。'
+                    );
+                  } else if (command.type === 'delete') {
+                    const used = next.pages.some((page) =>
+                      flattenNodes(page.data.content).some(
+                        ({ node }) =>
+                          (node.props._instance as { symbolId?: string } | undefined)?.symbolId ===
+                          command.symbolId
+                      )
+                    );
+                    if (used) throw new Error('还有页面引用此主组件，请先解除所有实例关联。');
+                    next.symbols = next.symbols?.filter((symbol) => symbol.id !== command.symbolId);
+                    setNotice('未被引用的主组件已移除。');
+                  }
+                  checkedStructure(data);
+                  next.pages = next.pages.map((page) =>
+                    page.id === current.id
+                      ? { ...page, data, updatedAt: new Date().toISOString() }
+                      : page
+                  );
+                  update(() => next);
+                  return data;
+                } catch (reason) {
+                  setNotice(reason instanceof Error ? reason.message : '主组件操作失败。');
+                  return false;
+                }
+              }}
+              onDesignTokens={(tokens) => {
+                try {
+                  const pages = workspace.pages.map((page) => {
+                    const existing = page.data.root.props?.tokens || [];
+                    for (const token of existing)
+                      if (
+                        tokens.some((item) => item.key === token.key && item.type !== token.type) &&
+                        JSON.stringify(page.data.content).includes(tokenReference(token))
+                      )
+                        throw new Error(
+                          `页面“${page.name}”正在引用不同类型的同名变量 ${token.key}，请先调整。`
+                        );
+                    const merged = validateTokens([
+                      ...tokens,
+                      ...existing.filter((token) => !tokens.some((item) => item.key === token.key)),
+                    ]);
+                    return {
+                      ...page,
+                      data: {
+                        ...page.data,
+                        root: {
+                          ...page.data.root,
+                          props: { ...page.data.root.props, tokens: merged },
+                        },
+                      },
+                      updatedAt: new Date().toISOString(),
+                    };
+                  });
+                  update((previous) => ({ ...previous, pages }));
+                  setEditorRevision((value) => value + 1);
+                  setNotice('设计规范已同步到全部页面；其他页面独有的变量继续保留。');
+                } catch (reason) {
+                  setNotice(reason instanceof Error ? reason.message : '同步失败。');
+                }
+              }}
+            />
+          </Puck>
         </div>
       </MessageProvider>
 
-      <div className="doc-builder-json-heading">
-        <h2 className="doc-h2" id="builder-json-title">
-          当前 JSON 数据
-        </h2>
-        <ZButton type="button" size="sm" variant="outline" onClick={() => void copyJson()}>
-          复制 JSON
-        </ZButton>
-      </div>
-      {copyStatus ? (
-        <p className="doc-builder-copy-status" role="status">
-          {copyStatus}
-        </p>
-      ) : null}
-      <pre className="doc-builder-json" tabIndex={0} aria-labelledby="builder-json-title">
-        {JSON.stringify(data, null, 2)}
+      <pre className="doc-builder-json" hidden>
+        {JSON.stringify(current.data, null, 2)}
       </pre>
+      <Modal open={codeOpen} onOpenChange={setCodeOpen}>
+        <Modal.Content size="lg" className="studio-code-dialog">
+          <Modal.Header>
+            <Modal.Title>当前页面 JSON</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>复制数据用于开发接入，或导出 JSON 继续编辑。</p>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={async () =>
+                setNotice(
+                  (await copyCodeText(JSON.stringify(current.data, null, 2)))
+                    ? 'JSON 已复制。'
+                    : '复制失败，可使用导出 JSON。'
+                )
+              }
+            >
+              复制 JSON
+            </Button>
+            <pre tabIndex={0} aria-label="页面数据">
+              {JSON.stringify(current.data, null, 2)}
+            </pre>
+          </Modal.Body>
+        </Modal.Content>
+      </Modal>
+
+      <Modal
+        open={dialog !== null}
+        onOpenChange={(open) => {
+          if (!open) setDialog(null);
+        }}
+      >
+        <Modal.Content size={dialog === 'new' ? 'lg' : 'md'} className="doc-builder-dialog">
+          <Modal.Header>
+            <Modal.Title>
+              {
+                (
+                  {
+                    new: '选择一个起点',
+                    rename: '重命名页面',
+                    delete: '删除当前页面',
+                    history: '保存版本',
+                    rebuild: '重建本地存档',
+                  } as const
+                )[dialog ?? 'new']
+              }
+            </Modal.Title>
+            <Modal.Close />
+          </Modal.Header>
+          <Modal.Body>
+            {dialog === 'new' && <BuilderTemplateGallery onCreate={addPage} />}
+            {dialog === 'rename' && (
+              <form
+                id="builder-rename-form"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  if (!name.trim()) return;
+                  update((previous) => ({
+                    ...previous,
+                    pages: previous.pages.map((page) =>
+                      page.id === previous.activeId
+                        ? { ...page, name: name.trim().slice(0, 80) }
+                        : page
+                    ),
+                  }));
+                  setDialog(null);
+                  setNotice('页面名称已更新。');
+                }}
+              >
+                <label htmlFor="builder-rename">页面名称</label>
+                <Input
+                  id="builder-rename"
+                  data-autofocus
+                  maxLength={80}
+                  required
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                />
+              </form>
+            )}
+            {dialog === 'delete' && (
+              <p>将删除“{current.name}”及其保存版本。请先导出需要保留的内容。</p>
+            )}
+            {dialog === 'rebuild' && (
+              <p>
+                将以当前工作区替换浏览器中的存档。建议先下载当前工作区和原始存档；其他标签页的未合并编辑不会自动加入。
+              </p>
+            )}
+            {dialog === 'history' && (
+              <>
+                <p className="doc-builder-dialog-intro">
+                  保留最近 5
+                  次手动保存的版本。自动保存持续更新草稿；恢复前会保留当前内容为一个版本。
+                </p>
+                {current.snapshots.length ? (
+                  <ol className="doc-builder-history">
+                    {current.snapshots.map((snapshot, index) => (
+                      <li key={snapshot.id}>
+                        <div>
+                          <strong>保存版本 {current.snapshots.length - index}</strong>
+                          <time dateTime={snapshot.savedAt}>
+                            {new Date(snapshot.savedAt).toLocaleString('zh-CN')}
+                          </time>
+                          <small>{countBuilderComponents(snapshot.data)} 个组件</small>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            update((previous) => ({
+                              ...previous,
+                              pages: previous.pages.map((page) =>
+                                page.id === previous.activeId
+                                  ? {
+                                      ...page,
+                                      data: structuredClone(snapshot.data),
+                                      updatedAt: new Date().toISOString(),
+                                      snapshots: [
+                                        {
+                                          id: builderId('snapshot'),
+                                          savedAt: new Date().toISOString(),
+                                          data: structuredClone(page.data),
+                                        },
+                                        ...page.snapshots,
+                                      ].slice(0, 5),
+                                    }
+                                  : page
+                              ),
+                            }));
+                            setEditorRevision((value) => value + 1);
+                            setDialog(null);
+                            setNotice('已恢复保存版本，恢复前的内容已加入版本历史。');
+                          }}
+                        >
+                          恢复此版本
+                        </Button>
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <div className="doc-builder-history-empty">
+                    <Clock aria-hidden="true" />
+                    <strong>还没有保存版本</strong>
+                    <p>点击“保存版本”，为重要进展留一个可恢复的节点。</p>
+                  </div>
+                )}
+              </>
+            )}
+          </Modal.Body>
+          {dialog === 'rename' && (
+            <Modal.Footer>
+              <Button variant="outline" onClick={() => setDialog(null)}>
+                取消
+              </Button>
+              <Button type="submit" form="builder-rename-form" disabled={!name.trim()}>
+                保存名称
+              </Button>
+            </Modal.Footer>
+          )}
+          {dialog === 'delete' && (
+            <Modal.Footer>
+              <Button variant="outline" onClick={() => setDialog(null)}>
+                取消
+              </Button>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  update((previous) => {
+                    const pages = previous.pages.filter((page) => page.id !== previous.activeId);
+                    if (!pages.length)
+                      pages.push(createBuilderPage('空白页面', builderTemplates[0].data));
+                    return { ...previous, pages, activeId: pages[0].id };
+                  });
+                  setDialog(null);
+                  setNotice('页面已删除。');
+                }}
+              >
+                确认删除
+              </Button>
+            </Modal.Footer>
+          )}
+          {dialog === 'rebuild' && (
+            <Modal.Footer>
+              <Button variant="outline" onClick={() => setDialog(null)}>
+                取消
+              </Button>
+              <Button
+                onClick={() => {
+                  if (rebuild()) {
+                    setDialog(null);
+                    setNotice('本地存档已重建。');
+                  }
+                }}
+              >
+                确认重建
+              </Button>
+            </Modal.Footer>
+          )}
+        </Modal.Content>
+      </Modal>
+
+      <Modal
+        open={preview !== null}
+        onOpenChange={(open) => {
+          if (!open) setPreview(null);
+        }}
+      >
+        <Modal.Content className="doc-builder-preview-dialog" size="lg">
+          <Modal.Header>
+            <Modal.Title>{current.name} · 页面预览</Modal.Title>
+            <Modal.Close />
+          </Modal.Header>
+          <div className="doc-builder-preview-toolbar">
+            <p>与导出 HTML 一致的独立页面</p>
+            <div role="group" aria-label="页面预览尺寸">
+              {[
+                ['auto', '自适应'],
+                ['768', '平板'],
+                ['390', '手机'],
+              ].map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={previewWidth === value}
+                  onClick={() => setPreviewWidth(value)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                if (preview)
+                  saveDownload(preview, `${current.name}.html`, 'text/html;charset=utf-8');
+              }}
+            >
+              下载 HTML
+            </Button>
+          </div>
+          <div className="doc-builder-preview-stage">
+            <iframe
+              title={`${current.name}独立页面预览`}
+              srcDoc={preview ?? ''}
+              sandbox="allow-scripts allow-forms allow-downloads"
+              style={{ maxWidth: previewWidth === 'auto' ? '100%' : `${previewWidth}px` }}
+            />
+          </div>
+        </Modal.Content>
+      </Modal>
     </div>
   );
 }

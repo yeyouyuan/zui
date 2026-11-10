@@ -1,0 +1,87 @@
+{
+  "date": "2026-11-10",
+  "route": "#/builder",
+  "feature": "All public ZUI components and responsive custom page editor",
+  "coverage": {
+    "publicComponentExports": 71,
+    "builderNodeTypes": 82,
+    "missingPublicComponents": [],
+    "groups": ["layout", "form", "content", "navigation", "feedback"],
+    "renderer": "Actual @zui/react components in editor, preview and standalone HTML"
+  },
+  "e2e": {
+    "passed": 35,
+    "failed": 0,
+    "newCatalogTests": 7,
+    "retainedEditorTests": 28,
+    "duration": "1.1m",
+    "log": "editor-e2e.log",
+    "scope": "Builder suites only. Earlier full-site results are historical.",
+    "browser": "Chromium",
+    "verified": [
+      "All 82 nodes render, save, reload and run in standalone HTML with network requests blocked",
+      "Actual local attachment download preserves original bytes and submits metadata",
+      "Composite form values survive desktop-to-mobile Splitter layout changes and serialize into downloaded JSON",
+      "Custom TabPanel, Card, Modal and Splitter content renders and behaves correctly",
+      "Data field editing, duplicate-value rejection and selector clearing",
+      "Responsive dimensions, positioning, grid spans, Col width, CSS validation and page theme",
+      "Clone generates new HTML IDs and remaps internal action targets",
+      "Visibility, messages, text download and actual clipboard copy in standalone and sandboxed preview",
+      "Overlay content remains inside its own interactive iframe",
+      "Responsive Splitter content stacks completely on mobile and supports keyboard resize on desktop",
+      "Workspace template, editor light/dark axe checks, mobile editor and exported-page layout"
+    ]
+  },
+  "checks": {
+    "docsUnitTests": {
+      "passed": 8,
+      "failed": 0,
+      "log": "docs-unit.log"
+    },
+    "docsTypecheck": {
+      "result": "passed",
+      "log": "typecheck.log"
+    },
+    "scopedEslint": {
+      "result": "passed",
+      "log": "eslint.log"
+    },
+    "scopedPrettier": {
+      "result": "passed",
+      "log": "prettier.log"
+    },
+    "githubPagesBuild": {
+      "result": "passed",
+      "log": "pages-build.log"
+    },
+    "gitDiffCheck": "passed"
+  },
+  "build": {
+    "duration": "4.39s",
+    "editorChunkKB": 643.31,
+    "standaloneExportChunkKB": 607.12,
+    "zuiComponentsChunkKB": 573.21,
+    "warning": "Vite reports chunks above its 500 kB recommendation. The editor and standalone exporter remain lazy-loaded."
+  },
+  "screenshots": {
+    "editorLight": "catalog-light.png",
+    "editorDark": "catalog-dark.png",
+    "editorMobile": "catalog-mobile.png",
+    "standaloneDesktop": "catalog-preview-desktop.png",
+    "standaloneMobile": "catalog-preview-mobile.png",
+    "visuallyReviewed": true
+  },
+  "limits": {
+    "workspacePages": 20,
+    "componentsPerPage": 500,
+    "nestingLevels": 8,
+    "snapshotsPerPage": 5,
+    "imageBytes": 1048576,
+    "importBytes": 33554432,
+    "storage": "Current browser on this device. No shared backend or multi-user synchronization.",
+    "uploads": "Local files live in the current session. Upload service mode requires a real HTTP endpoint.",
+    "offline": "React, ZUI, styles and page JSON are inlined; externally linked images require a connection.",
+    "css": "Validated CSS declarations, scoped to the selected component; no arbitrary JavaScript."
+  },
+  "published": false
+}

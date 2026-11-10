@@ -165,7 +165,7 @@ export function TimelineFeedBlock({
                   type="button"
                   aria-label={
                     typeof entry.title === 'string'
-                      ? `${entry.author}：${entry.title}`
+                      ? `查看 ${entry.author}：${entry.title}`
                       : `查看 ${entry.author} 的动态`
                   }
                   onClick={(event) => {

@@ -376,7 +376,7 @@ export function DatePicker(props: DatePickerProps) {
           data-part="input"
           className={cx('z-datepicker-input', classNames?.input)}
           type="text"
-          role="textbox"
+          role="combobox"
           aria-label={inputProps['aria-label'] ?? (inputProps.id || inputProps['aria-labelledby'] ? undefined : locale.date.inputLabel)}
           aria-haspopup="dialog"
           aria-expanded={open}

@@ -100,7 +100,7 @@ function GoogleIcon() {
 const linkStyle: React.CSSProperties = {
   fontSize: 'var(--z-text-sm)',
   color: 'var(--z-color-link)',
-  textDecoration: 'none',
+  textDecoration: 'underline',
   background: 'none',
   border: 'none',
   padding: 0,

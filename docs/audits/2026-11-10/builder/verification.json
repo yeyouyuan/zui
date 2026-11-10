@@ -1,0 +1,81 @@
+{
+  "date": "2026-11-10",
+  "checks": [
+    {
+      "name": "full-e2e",
+      "status": "passed",
+      "passed": 124
+    },
+    {
+      "name": "builder-after-export-spacing",
+      "status": "passed",
+      "passed": 13
+    },
+    {
+      "name": "ui-unit",
+      "status": "passed",
+      "passed": 1220
+    },
+    {
+      "name": "blocks-unit",
+      "status": "passed",
+      "passed": 68
+    },
+    {
+      "name": "docs-unit",
+      "status": "passed",
+      "passed": 8
+    }
+  ],
+  "typecheck": "passed",
+  "eslint": "passed",
+  "pagesBuild": {
+    "status": "passed",
+    "base": "/zui/",
+    "warnings": [
+      "BuilderPage and zui-components chunks exceed the Vite 500 kB advisory threshold."
+    ]
+  },
+  "coverage": {
+    "navigation": {
+      "pages": 78,
+      "widths": [
+        1440,
+        320
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ]
+    },
+    "blocks": {
+      "blocks": 16,
+      "widths": [
+        1440,
+        1280,
+        768,
+        320
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "issues": []
+    },
+    "builder": {
+      "registeredComponents": 15,
+      "templates": 4,
+      "widths": [
+        1440,
+        768,
+        320
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "issues": []
+    }
+  },
+  "followup": "After the full 124-test run passed, static HTML root spacing was aligned with the canvas. All 13 builder tests were rerun and passed, including assertions on exported spacing."
+}

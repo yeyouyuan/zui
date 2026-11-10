@@ -1,5 +1,14 @@
 # @zui/icons
 
+> v0.3.0 发布到 GitHub Packages：`@yeyouyuan/zui-icons`，npmjs 暂不发布。先在项目 `.npmrc` 配置 `@yeyouyuan:registry=https://npm.pkg.github.com`，再用拥有包读取权限的 GitHub 账号登录。
+
+```bash
+npm login --scope=@yeyouyuan --auth-type=legacy --registry=https://npm.pkg.github.com
+pnpm add @zui/icons@npm:@yeyouyuan/zui-icons@0.3.0
+```
+
+源码导入继续使用 `@zui/icons`。完整认证和安装说明见仓库 [GitHub Packages 文档](https://github.com/yeyouyuan/zui/blob/main/docs/GITHUB-PACKAGES.md)。
+
 ZUI 图标包：142 个线性图标组件（Feather/Lucide 风格），React 19 原生 ref，零 CSS 依赖。
 
 共 5 组：基础 24 枚 + CONTRACTS-V6.md §1 第三批 118 枚（方向 / 操作 / 对象文件 / 设备系统 / 社交状态）。
@@ -9,7 +18,7 @@ ZUI 图标包：142 个线性图标组件（Feather/Lucide 风格），React 19 
 ## 安装
 
 ```bash
-pnpm add @zui/icons
+pnpm add @zui/icons@npm:@yeyouyuan/zui-icons@0.3.0
 # peer：react ^19
 ```
 

@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-10",
+  "verifiedAt": "2026-11-10T15:31:48.240391+00:00",
+  "scope": "frontend-page-design",
+  "browser": {
+    "report": "regression.json",
+    "passed": 52,
+    "failed": 0,
+    "flaky": 0,
+    "skipped": 0,
+    "durationMs": 297240.04600000003,
+    "workers": 1
+  },
+  "unit": {
+    "passed": 17,
+    "failed": 0,
+    "newBuilderTests": 9
+  },
+  "focusedUndoRepeats": {
+    "passed": 5,
+    "failed": 0
+  },
+  "checks": {
+    "typecheck": "passed",
+    "scopedEslint": "passed",
+    "prettier": "passed",
+    "productionBuild": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "catalog": {
+    "builderNodes": 89,
+    "publicZuiComponents": 71,
+    "pageTemplates": 10,
+    "presetBlocks": 15
+  },
+  "newBrowserFlows": 10,
+  "screenshots": [
+    "workbench-editor.png",
+    "workbench-design-system.png",
+    "interaction-designer.png",
+    "master-components.png",
+    "design-audit.png",
+    "multi-selection-mobile.png",
+    "prototype-mobile.png"
+  ],
+  "limits": [
+    "Browser-local workspace storage",
+    "Linked master components cannot nest",
+    "Global master and token synchronization require workspace backups for full rollback",
+    "Page snapshots do not version the master registry",
+    "Prototype page changes reinitialize page state",
+    "REST source is read-only HTTP GET with credentials omitted"
+  ],
+  "buildWarnings": ["Large JavaScript chunks", "Data source module has static and dynamic imports"]
+}

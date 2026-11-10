@@ -26,7 +26,7 @@ import { generateCode } from './tools/generate.js';
 /* --------------------------------- 常量 --------------------------------- */
 
 export const SERVER_NAME = '@zui/mcp';
-export const SERVER_VERSION = '0.2.0';
+export const SERVER_VERSION = '0.3.0';
 const PROTOCOL_VERSION = '2024-11-05';
 
 export const TOOL_SEARCH = 'zui_search_components';

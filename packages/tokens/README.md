@@ -1,14 +1,23 @@
 # @zui/tokens
 
+> v0.3.0 发布到 GitHub Packages：`@yeyouyuan/zui-tokens`，npmjs 暂不发布。先在项目 `.npmrc` 配置 `@yeyouyuan:registry=https://npm.pkg.github.com`，再用拥有包读取权限的 GitHub 账号登录。
+
+```bash
+npm login --scope=@yeyouyuan --auth-type=legacy --registry=https://npm.pkg.github.com
+pnpm add @zui/tokens@npm:@yeyouyuan/zui-tokens@0.3.0
+```
+
+源码导入继续使用 `@zui/tokens`。完整认证和安装说明见仓库 [GitHub Packages 文档](https://github.com/yeyouyuan/zui/blob/main/docs/GITHUB-PACKAGES.md)。
+
 ZUI 设计令牌：三层结构 + TS 常量 + DTCG JSON。设计原则「简洁中性」——克制灰阶 + 单一主色（蓝，参考 `#1677ff` 感），颜色以 `oklch()` 书写，对比度按 WCAG AA 校准（正文 `fg` 与 `bg` ≥ 4.5:1，`primary-fg` 与 `primary` ≥ 4.5:1，明暗两套均满足）。
 
 ## 三层结构
 
-| 层 | 文件 | 命名 | 谁消费 |
-|---|---|---|---|
-| Primitive 基础层 | `src/base.css` | 无语义色阶/刻度：`--z-neutral-50..950`、`--z-brand-*`、`--z-space-*`、`--z-radius` … | 仅供语义层引用、画色板 |
-| Semantic 语义层 | `src/semantic.css` | 语义名：`--z-color-bg / fg / border / primary / danger…`（与 CONTRACTS.md §3 逐字一致） | **组件唯一消费入口** |
-| Theme 主题层 | `src/dark.css` | 同语义名，只做重映射 | 自动（系统/`data-theme`） |
+| 层               | 文件               | 命名                                                                                    | 谁消费                    |
+| ---------------- | ------------------ | --------------------------------------------------------------------------------------- | ------------------------- |
+| Primitive 基础层 | `src/base.css`     | 无语义色阶/刻度：`--z-neutral-50..950`、`--z-brand-*`、`--z-space-*`、`--z-radius` …    | 仅供语义层引用、画色板    |
+| Semantic 语义层  | `src/semantic.css` | 语义名：`--z-color-bg / fg / border / primary / danger…`（与 CONTRACTS.md §3 逐字一致） | **组件唯一消费入口**      |
+| Theme 主题层     | `src/dark.css`     | 同语义名，只做重映射                                                                    | 自动（系统/`data-theme`） |
 
 - `src/base.css` 还包含 `@property` 注册（关键颜色变量 `<color>`、`--z-radius` 为 `<length>`），主题切换时类型确定、平滑过渡，防换肤闪烁。
 - 组件 CSS 只消费语义层与本组件 `--z-<name>-*` 变量；禁止硬编码色值（透明度叠加除外，用 `color-mix()`）。
@@ -68,8 +77,8 @@ semantic 层 `$value` 用 DTCG 别名语法指向 primitives（如 `"{zui.primit
 ```ts
 import { tokens, colorScales, type TokenPath } from '@zui/tokens';
 
-tokens.color.primary;   // 'var(--z-color-primary)'
-tokens.space[4];        // 'var(--z-space-4)'
+tokens.color.primary; // 'var(--z-color-primary)'
+tokens.space[4]; // 'var(--z-space-4)'
 colorScales.brand['500']; // 'var(--z-brand-500)'（文档画色板用）
 ```
 

@@ -2,7 +2,7 @@
 
 ## 当前进度
 
-当前开发分支为 `codex/combobox`。源码包含 71 个 UI 组件、16 个业务区块、142 个图标，Registry 共 87 个条目；文档有 77 个公开导航路由。七个包版本仍是 `0.2.0`，源码数量不代表已发布数量。本轮将源码同步 GitHub 并通过 Pages 发布文档站；npm 按用户最新指示延期，包版本与未消费 changeset 保持不变。
+当前开发分支为 `codex/combobox`。源码包含 71 个 UI 组件、16 个业务区块、142 个图标，Registry 共 87 个条目；文档有 78 个公开导航路由。七个包版本仍是 `0.2.0`，源码数量不代表已发布数量。此前已同步 GitHub 并发布 Pages；npm 按用户最新指示延期。后续新增 10 个设计原型的本地实现与最新 79 条回归见[组件创意工坊记录](ui-design-lab-2026-11-09.md)，以下保留原 77 页审计与发布记录。
 
 Combobox / MultiCombobox、SideNav、Splitter、CommandPalette 已有实现；DataGrid 保持性能原型和 RFC 阶段。新增内容协作方向也保持设计原型阶段，不计入正式组件数。历史审计见 [2026-11-06 记录](quality-audit-2026-11-06.md)。
 
@@ -25,7 +25,7 @@ Combobox / MultiCombobox、SideNav、Splitter、CommandPalette 已有实现；Da
 
 入口为文档导航“内容协作实验室”（`#/collaboration`）。原型支持本地文本/图片/不支持类型、加载和失败演示、概述段落编辑、取消与保存、段落引用、按文件隔离的评论、回复、解决/重新打开，以及只读模式。桌面预览与讨论并列，窄屏上下排列。
 
-所有数据仅保存在页面内存，刷新重置。它不是正式包导出；异步持久化、保存失败/版本冲突、失效引用、权限服务、PDF/Office 与实时协同传输尚未实现。正式契约与验收见 [RFC-006](rfcs/content-collaboration.md)。
+所有数据仅保存在页面内存，刷新重置。它不是正式包导出；异步持久化、保存失败/版本冲突、失效引用、权限服务、PDF/Office 与实时协同传输尚未实现。正式契约与验收见 [RFC-006](rfcs/content-collaboration.md)。后续宽工作台、文件目录、文档画布与讨论卡片优化，以及 11 条协作检查和最新全站结果，见 [2026-11-10 界面优化记录](collaboration-ui-2026-11-10.md)。
 
 ![内容协作桌面原型](audits/2026-11-09/collaboration-desktop.png)
 

@@ -10,7 +10,7 @@ afterEach(cleanup);
 /* ---------------------------------- 工具 ---------------------------------- */
 
 function getInput(): HTMLInputElement {
-  return screen.getByRole('textbox', { name: '日期' }) as HTMLInputElement;
+  return screen.getByRole('combobox', { name: '日期' }) as HTMLInputElement;
 }
 
 function getPanel(): HTMLElement {

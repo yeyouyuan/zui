@@ -50,7 +50,7 @@ describe('timeline-feed block', () => {
     const user = userEvent.setup();
     render(<TimelineFeedBlock onEntryClick={onEntryClick} />);
     const trigger = screen.getByRole('button', {
-      name: '系统：库存告警：SKU-8891 低于安全库存',
+      name: '查看 系统：库存告警：SKU-8891 低于安全库存',
     });
     trigger.focus();
     await user.keyboard('{Enter}');

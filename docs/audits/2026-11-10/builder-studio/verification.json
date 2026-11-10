@@ -1,0 +1,93 @@
+{
+  "date": "2026-11-10",
+  "route": "#/builder",
+  "feature": "Page Studio complete local page editor",
+  "e2e": {
+    "total": 139,
+    "editorTests": 28,
+    "newEditorTests": 15,
+    "fullRun": {
+      "passed": 138,
+      "failed": 1,
+      "duration": "3.7m",
+      "log": "completeness-initial-e2e.log"
+    },
+    "resolvedFailure": {
+      "test": "e2e/collaboration.spec.ts workspace backup accessibility",
+      "cause": "Download button hover text contrast was 4.38:1.",
+      "fix": "Use the collaboration semantic accent for outline button hover text.",
+      "validation": "Explicit hover before axe and the entire collaboration suite."
+    },
+    "affectedSuiteRerun": {
+      "passed": 24,
+      "failed": 0,
+      "duration": "43.0s",
+      "log": "completeness-collaboration.log"
+    },
+    "unresolvedFailures": 0,
+    "navigationPagesAudited": 78,
+    "auditViewports": [1440, 320],
+    "auditThemes": ["light", "dark"],
+    "editorViewports": [1440, 768, 320],
+    "note": "Full run and affected-suite rerun are separate executions; no claim of a single 139/139 run."
+  },
+  "checks": {
+    "docsUnitTests": {
+      "passed": 8,
+      "failed": 0
+    },
+    "docsTypecheck": "passed",
+    "scopedEslint": "passed",
+    "scopedPrettier": "passed",
+    "githubPagesBuild": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "build": {
+    "log": "completeness-pages-build.log",
+    "warning": "Editor and component library chunks exceed Vite's 500 kB recommendation; editor remains route-lazy-loaded.",
+    "editorChunkKB": 580.32
+  },
+  "screenshots": {
+    "light": "composed-page.png",
+    "dark": "composed-dark.png",
+    "mobile": "editor-320.png",
+    "tablet": "editor-768.png"
+  },
+  "capabilities": {
+    "components": 20,
+    "composableBlocks": 6,
+    "pages": 20,
+    "snapshotsPerPage": 5,
+    "componentsPerPage": 500,
+    "nestingLimit": 8,
+    "imageLimitBytes": 1048576,
+    "importLimitBytes": 33554432
+  },
+  "published": false,
+  "previousFullVerification": {
+    "passed": 135,
+    "failed": 0,
+    "duration": "2.5m",
+    "editorTests": 24,
+    "newEditorTests": 11,
+    "navigationPagesAudited": 78,
+    "auditViewports": [1440, 320],
+    "auditThemes": ["light", "dark"],
+    "editorViewports": [1440, 768, 320],
+    "log": "full-e2e.log"
+  },
+  "completenessAudit": {
+    "report": "completeness-audit.md",
+    "fixes": [
+      "Flex/grid child dimensions in editor and export",
+      "Section/form content layout",
+      "In-document anchor preview navigation"
+    ],
+    "additionalFlowsVerified": [
+      "Style copy/paste",
+      "Breakpoint reset and undo",
+      "Custom 820px canvas",
+      "Focus mode automatic scale"
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "version": "0.3.0",
+  "registry": "local tarballs through npm aliases",
+  "packages": [
+    {
+      "sourceName": "@zui/tokens",
+      "name": "@yeyouyuan/zui-tokens",
+      "version": "0.3.0"
+    },
+    {
+      "sourceName": "@zui/icons",
+      "name": "@yeyouyuan/zui-icons",
+      "version": "0.3.0"
+    },
+    {
+      "sourceName": "@zui/i18n",
+      "name": "@yeyouyuan/zui-i18n",
+      "version": "0.3.0"
+    },
+    {
+      "sourceName": "@zui/react",
+      "name": "@yeyouyuan/zui-react",
+      "version": "0.3.0"
+    },
+    {
+      "sourceName": "@zui/blocks",
+      "name": "@yeyouyuan/zui-blocks",
+      "version": "0.3.0"
+    },
+    {
+      "sourceName": "@zui/cli",
+      "name": "@yeyouyuan/zui-cli",
+      "version": "0.3.0"
+    },
+    {
+      "sourceName": "@zui/mcp",
+      "name": "@yeyouyuan/zui-mcp",
+      "version": "0.3.0"
+    }
+  ],
+  "checks": [
+    "ESM",
+    "CommonJS",
+    "React 19 SSR",
+    "CSS exports",
+    "CLI registry",
+    "MCP stdio",
+    "strict TypeScript declarations"
+  ]
+}

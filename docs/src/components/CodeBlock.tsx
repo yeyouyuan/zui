@@ -100,7 +100,7 @@ export default function CodeBlock({
         <span className="doc-code-lang">{language ?? 'text'}</span>
         {copyButton}
       </div>
-      <pre className="doc-code">
+      <pre className="doc-code" tabIndex={0}>
         {highlight ? (
           <code dangerouslySetInnerHTML={{ __html: highlightJsx(code) }} />
         ) : (

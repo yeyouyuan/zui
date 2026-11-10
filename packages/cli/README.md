@@ -1,32 +1,41 @@
 # @zui/cli
 
+> v0.3.0 发布到 GitHub Packages：`@yeyouyuan/zui-cli`，npmjs 暂不发布。先在项目 `.npmrc` 配置 `@yeyouyuan:registry=https://npm.pkg.github.com`，再用拥有包读取权限的 GitHub 账号登录。
+
+```bash
+npm login --scope=@yeyouyuan --auth-type=legacy --registry=https://npm.pkg.github.com
+pnpm add @zui/cli@npm:@yeyouyuan/zui-cli@0.3.0
+```
+
+源码导入继续使用 `@zui/cli`。完整认证和安装说明见仓库 [GitHub Packages 文档](https://github.com/yeyouyuan/zui/blob/main/docs/GITHUB-PACKAGES.md)。
+
 ZUI registry 命令行工具：把 registry 里的组件**源码**复制进你的项目（可自由修改），并提供
 上游更新对比通道。零运行时依赖，纯 `process.argv` 解析。
 
 ## 命令（契约 §3）
 
 ```bash
-pnpm dlx @zui/cli init                     # 交互式初始化：检测框架、配置目标目录、写 .zurc.json
-pnpm dlx @zui/cli add button               # 复制 Button.tsx + Button.css 到 src/components/ui/button/
-pnpm dlx @zui/cli add button modal         # 多组件
-pnpm dlx @zui/cli add --all                # 复制全部组件与业务块
-pnpm dlx @zui/cli diff button              # 本地副本 vs registry 的 unified diff（上游更新通道）
-pnpm dlx @zui/cli list                     # 列出 registry 所有组件
-pnpm dlx @zui/cli list --json              # JSON 输出整个 registry
+pnpm dlx @yeyouyuan/zui-cli@0.3.0 init                     # 交互式初始化：检测框架、配置目标目录、写 .zurc.json
+pnpm dlx @yeyouyuan/zui-cli@0.3.0 add button               # 复制 Button.tsx + Button.css 到 src/components/ui/button/
+pnpm dlx @yeyouyuan/zui-cli@0.3.0 add button modal         # 多组件
+pnpm dlx @yeyouyuan/zui-cli@0.3.0 add --all                # 复制全部组件与业务块
+pnpm dlx @yeyouyuan/zui-cli@0.3.0 diff button              # 本地副本 vs registry 的 unified diff（上游更新通道）
+pnpm dlx @yeyouyuan/zui-cli@0.3.0 list                     # 列出 registry 所有组件
+pnpm dlx @yeyouyuan/zui-cli@0.3.0 list --json              # JSON 输出整个 registry
 ```
 
 ## 选项
 
-| 选项 | 说明 |
-|---|---|
-| `-c, --components <dir>` | 组件目标目录（默认 `src/components/ui`） |
-| `--framework <name>` | 指定框架，跳过检测（next / vite / react-scripts / remix / react） |
-| `--registry <path>` | 指定 `registry.json` 路径（默认自动定位） |
-| `--cwd <dir>` | 指定项目目录（默认当前目录） |
-| `--json` | `list` 以 JSON 输出 |
-| `-y, --yes` | 非交互，全部取默认 |
-| `-f, --force` | `init` 覆盖已有 `.zurc.json` |
-| `-h, --help` / `-v, --version` | 帮助 / 版本 |
+| 选项                           | 说明                                                              |
+| ------------------------------ | ----------------------------------------------------------------- |
+| `-c, --components <dir>`       | 组件目标目录（默认 `src/components/ui`）                          |
+| `--framework <name>`           | 指定框架，跳过检测（next / vite / react-scripts / remix / react） |
+| `--registry <path>`            | 指定 `registry.json` 路径（默认自动定位）                         |
+| `--cwd <dir>`                  | 指定项目目录（默认当前目录）                                      |
+| `--json`                       | `list` 以 JSON 输出                                               |
+| `-y, --yes`                    | 非交互，全部取默认                                                |
+| `-f, --force`                  | `init` 覆盖已有 `.zurc.json`                                      |
+| `-h, --help` / `-v, --version` | 帮助 / 版本                                                       |
 
 ## .zurc.json
 
@@ -61,13 +70,13 @@ pnpm dlx @zui/cli list --json              # JSON 输出整个 registry
 - 输出 import 提示与需要安装的 npm `dependencies`（无则提示仅 react peer 依赖）。
 
 ```bash
-pnpm dlx @zui/cli add button modal
+pnpm dlx @yeyouyuan/zui-cli@0.3.0 add button modal
 #   created  src/components/ui/button/Button.css
 #   created  src/components/ui/button/Button.tsx
 #   created  src/components/ui/modal/Modal.css
 #   created  src/components/ui/modal/Modal.tsx
 # import 提示：import { Button } from './src/components/ui/button'; // Button 按钮
-# 按输出安装 @zui/icons / @zui/i18n / @zui/tokens 等实际依赖；另需 react / react-dom。
+# 按 GitHub Packages 文档中的别名方式安装 @zui/icons / @zui/i18n / @zui/tokens 等依赖；另需 react / react-dom。
 ```
 
 ## diff 行为

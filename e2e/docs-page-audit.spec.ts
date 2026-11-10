@@ -36,7 +36,7 @@ for (const width of [1440, 320]) {
         await expect(page.locator('.doc-main')).toHaveAttribute('data-route', route.path);
         await expect(page.locator('.doc-page h1').first()).toBeVisible();
         await expect(page.getByLabel('正在加载文档')).toHaveCount(0);
-        await expect(page.locator('.doc-page > .doc-h1, .doc-page > .doc-hero > h1')).toHaveCount(
+        await expect(page.locator('.doc-page h1.doc-h1, .doc-page > .doc-hero > h1')).toHaveCount(
           1
         );
         await expect(page.getByText('页面出错了', { exact: true })).toHaveCount(0);

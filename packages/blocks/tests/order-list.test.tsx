@@ -28,7 +28,7 @@ describe('order-list block', () => {
     const { container, rerender } = render(
       <OrderListBlock orders={DEMO_ORDERS} onStatusFilterChange={onStatusFilterChange} />
     );
-    await user.click(screen.getByRole('button', { name: '订单状态筛选' }));
+    await user.click(screen.getByRole('button', { name: /^订单状态筛选 / }));
     await user.click(screen.getByRole('option', { name: '待支付' }));
     expect(onStatusFilterChange).toHaveBeenCalledWith('pending');
 

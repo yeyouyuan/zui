@@ -12,7 +12,9 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "changeset": "changeset",
-    "release": "changeset publish"
+    "release": "node scripts/publish-github-packages.mjs",
+    "release:prepare": "node scripts/prepare-github-packages.mjs --owner yeyouyuan",
+    "release:check": "node scripts/check-github-packages.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.0",

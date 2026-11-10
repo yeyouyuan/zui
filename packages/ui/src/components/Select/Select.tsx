@@ -141,7 +141,10 @@ export function Select(props: SelectProps) {
     window.clearTimeout(state.timer);
     const isRepeat =
       state.query.length > 0 &&
-      state.query.toLowerCase().split('').every((c) => c === char.toLowerCase());
+      state.query
+        .toLowerCase()
+        .split('')
+        .every((c) => c === char.toLowerCase());
     const query = isRepeat ? char : state.query + char;
     state.query = query;
     state.timer = window.setTimeout(() => {
@@ -269,6 +272,23 @@ export function Select(props: SelectProps) {
       data-disabled={disabled ? 'true' : undefined}
       style={style}
     >
+      {ariaLabel && !ariaLabelledBy ? (
+        <span
+          id={`${triggerId}-label`}
+          style={{
+            position: 'absolute',
+            width: 1,
+            height: 1,
+            padding: 0,
+            margin: -1,
+            overflow: 'hidden',
+            clip: 'rect(0, 0, 0, 0)',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {ariaLabel}
+        </span>
+      ) : null}
       <button
         type="button"
         id={triggerId}
@@ -280,7 +300,13 @@ export function Select(props: SelectProps) {
         aria-controls={listboxId}
         aria-activedescendant={activeDescendantId}
         aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
+        aria-labelledby={
+          ariaLabelledBy
+            ? `${ariaLabelledBy} ${triggerId}-value`
+            : ariaLabel
+              ? `${triggerId}-label ${triggerId}-value`
+              : undefined
+        }
         aria-describedby={ariaDescribedBy}
         disabled={disabled}
         onClick={onTriggerClick}
@@ -288,6 +314,7 @@ export function Select(props: SelectProps) {
       >
         <span
           data-part="value"
+          id={`${triggerId}-value`}
           className={cx('z-select-value', classNames?.value)}
           data-placeholder={selectedOption ? undefined : ''}
         >
@@ -297,40 +324,46 @@ export function Select(props: SelectProps) {
 
       {name ? <input type="hidden" name={name} value={currentValue} disabled={disabled} /> : null}
 
-      <FloatingPanel open={open} anchorRef={rootRef} matchWidth offsetVariable="--z-select-listbox-margin-top">
-        <div ref={panelRef}
-        role="listbox"
-        id={listboxId}
-        data-part="listbox"
-        data-open={open ? 'true' : 'false'}
-        className={cx('z-select-listbox', classNames?.listbox)}
+      <FloatingPanel
+        open={open}
+        anchorRef={rootRef}
+        matchWidth
+        offsetVariable="--z-select-listbox-margin-top"
       >
-        {options.length === 0 ? (
-          <div data-part="empty" className={cx('z-select-empty', classNames?.empty)}>
-            {locale.select.empty}
-          </div>
-        ) : (
-          options.map((option, index) => (
-            <div
-              key={`${option.value}-${index}`}
-              id={optionId(index)}
-              role="option"
-              data-part="option"
-              className={cx('z-select-option', classNames?.option)}
-              aria-selected={currentValue === option.value}
-              aria-disabled={option.disabled ? true : undefined}
-              data-active={activeIndex === index ? 'true' : undefined}
-              ref={(element) => {
-                optionRefs.current[index] = element;
-              }}
-              onMouseDown={onOptionMouseDown}
-              onClick={() => onOptionClick(index)}
-            >
-              {option.label}
+        <div
+          ref={panelRef}
+          role="listbox"
+          id={listboxId}
+          data-part="listbox"
+          data-open={open ? 'true' : 'false'}
+          className={cx('z-select-listbox', classNames?.listbox)}
+        >
+          {options.length === 0 ? (
+            <div data-part="empty" className={cx('z-select-empty', classNames?.empty)}>
+              {locale.select.empty}
             </div>
-          ))
-        )}
-      </div>
+          ) : (
+            options.map((option, index) => (
+              <div
+                key={`${option.value}-${index}`}
+                id={optionId(index)}
+                role="option"
+                data-part="option"
+                className={cx('z-select-option', classNames?.option)}
+                aria-selected={currentValue === option.value}
+                aria-disabled={option.disabled ? true : undefined}
+                data-active={activeIndex === index ? 'true' : undefined}
+                ref={(element) => {
+                  optionRefs.current[index] = element;
+                }}
+                onMouseDown={onOptionMouseDown}
+                onClick={() => onOptionClick(index)}
+              >
+                {option.label}
+              </div>
+            ))
+          )}
+        </div>
       </FloatingPanel>
     </div>
   );

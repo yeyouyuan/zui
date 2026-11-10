@@ -1,0 +1,50 @@
+[
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "pages": 78,
+    "issues": [],
+    "collaboration": {
+      "title": "内容协作实验室",
+      "path": "/collaboration",
+      "layout": [],
+      "contrast": []
+    }
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "pages": 78,
+    "issues": [],
+    "collaboration": {
+      "title": "内容协作实验室",
+      "path": "/collaboration",
+      "layout": [],
+      "contrast": []
+    }
+  },
+  {
+    "width": 320,
+    "colorScheme": "light",
+    "pages": 78,
+    "issues": [],
+    "collaboration": {
+      "title": "内容协作实验室",
+      "path": "/collaboration",
+      "layout": [],
+      "contrast": []
+    }
+  },
+  {
+    "width": 320,
+    "colorScheme": "dark",
+    "pages": 78,
+    "issues": [],
+    "collaboration": {
+      "title": "内容协作实验室",
+      "path": "/collaboration",
+      "layout": [],
+      "contrast": []
+    }
+  }
+]

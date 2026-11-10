@@ -19,9 +19,9 @@
 无需安装包，可在普通 HTML 页面中引用公开的浏览器版。它已包含 React 和 React DOM，适合演示或非构建项目；不要与页面现有的另一份 React 混用。
 
 ```html
-<link rel="stylesheet" href="https://yeyouyuan.github.io/zui/cdn/v0.2.0/zui.css" />
+<link rel="stylesheet" href="https://yeyouyuan.github.io/zui/cdn/v0.3.0/zui.css" />
 <div id="root"></div>
-<script src="https://yeyouyuan.github.io/zui/cdn/v0.2.0/zui.global.js"></script>
+<script src="https://yeyouyuan.github.io/zui/cdn/v0.3.0/zui.global.js"></script>
 <script>
   ZUI.createRoot(document.getElementById('root')).render(
     ZUI.React.createElement(ZUI.Button, { variant: 'primary' }, '你好，ZUI')
@@ -29,13 +29,22 @@
 </script>
 ```
 
-[在线脚本演示](https://yeyouyuan.github.io/zui/cdn-demo.html)。公开 Pages 已提供 `v0.2.0` 的 JS、CSS 与演示页；npm 包仍需单独发布。
+[在线脚本演示](https://yeyouyuan.github.io/zui/cdn-demo.html)。本次版本为 `v0.3.0`。浏览器产物随文档站部署，组件包发布到 GitHub Packages；npmjs 暂不发布。
 
-### 包管理器安装
+### 从 GitHub Packages 安装
+
+先在项目 `.npmrc` 写入 registry 配置，再使用拥有读取包权限的 GitHub 账号登录。不要把访问令牌提交到仓库。
+
+```ini
+@yeyouyuan:registry=https://npm.pkg.github.com
+```
 
 ```bash
-pnpm add @zui/react
+npm login --scope=@yeyouyuan --auth-type=legacy --registry=https://npm.pkg.github.com
+pnpm add @zui/react@npm:@yeyouyuan/zui-react@0.3.0
 ```
+
+安装别名保留原有 `@zui/*` 导入路径。七个发布包的名称、完整安装示例和发布验证流程见 [GitHub Packages 使用说明](docs/GITHUB-PACKAGES.md)。
 
 ```tsx
 import '@zui/react/styles.css';
@@ -81,14 +90,14 @@ document.documentElement.style.setProperty('--z-color-primary', 'oklch(0.55 0.2 
 | 包            | 说明                                                                        |
 | ------------- | --------------------------------------------------------------------------- |
 | `@zui/tokens` | 设计令牌：三层 CSS 变量 + TS 常量 + DTCG JSON（Figma/Tokens Studio 可消费） |
-| `@zui/react`  | 组件库（当前源码 71 个 Registry 组件条目；v0.2.0 基线为 66 个）             |
+| `@zui/react`  | 组件库（v0.3.0 共 71 个 Registry 组件条目）                                 |
 | `@zui/icons`  | 图标：142 枚线性图标组件（Feather/Lucide 风格，React 19）                   |
 | `@zui/i18n`   | AI 翻译：`useAutoTranslate` 组件内置文案自动翻译                            |
 | `@zui/cli`    | registry CLI：`zui init / add / diff / list`                                |
 | `@zui/mcp`    | MCP server：给 AI 编码工具暴露 ZUI 组件检索/生成能力                        |
 | `@zui/blocks` | 业务区块：16 个页面级区块，涵盖登录、仪表盘、设置与数据展示等场景           |
 
-## 组件清单（v0.2.0，66 个）
+## 组件清单（v0.3.0，71 个）
 
 **基础**：Button · Input · InputNumber · Checkbox · Radio/RadioGroup · Switch · Select · Cascader · Transfer · Mentions
 **表单**：Form · Rate · Slider · ColorPicker
@@ -102,7 +111,7 @@ document.documentElement.style.setProperty('--z-color-primary', 'oklch(0.55 0.2 
 
 配套：`@zui/icons`（142 枚线性图标，组件内图标已全面接入）、`@zui/tokens`（三层令牌 + DTCG JSON）
 
-下一版本源码已包含 Combobox、MultiCombobox、SideNav、Splitter 和 CommandPalette，共 71 个组件。SideNav、Splitter 与 CommandPalette 的双迁移原型已落地；CommandPalette 仍需真实输入法、读屏与跨平台热键人工验收。DataGrid 已完成性能原型与 RFC 设计稿，待评审后分期实现。详见[组件路线图](./docs/COMPONENT-ROADMAP.md)。
+v0.3.0 新增 Combobox、MultiCombobox、SideNav、Splitter 和 CommandPalette，共 71 个组件。SideNav、Splitter 与 CommandPalette 的双迁移原型已落地；CommandPalette 仍需真实输入法、读屏与跨平台热键人工验收。DataGrid 已完成性能原型与 RFC 设计稿，待评审后分期实现。详见[组件路线图](./docs/COMPONENT-ROADMAP.md)。
 
 ## AI 翻译（`@zui/i18n`）
 
@@ -146,7 +155,7 @@ pnpm --filter @zui/docs dev       # 文档站 http://localhost:5173
 
 - 语义化版本：破坏性变更只随 major 版本发布，废弃 API 跨一个大版本后才移除
 - API 命名规范见 `CONTRACTS.md`（唯一事实来源）
-- 版本历史见 `CHANGELOG.md`；当前待发布的 v0.2.0 包含 66 个 Registry 组件条目、AI 翻译与 registry/CLI/MCP 分发生态；SSR/Next.js 接入见 `docs/SSR.md`
+- 版本历史见 `CHANGELOG.md`；v0.3.0 包含 71 个 Registry 组件条目、16 个业务区块、完整页面设计器、本地文件工作台与 GitHub Packages 分发；SSR/Next.js 接入见 `docs/SSR.md`
 
 ## License
 

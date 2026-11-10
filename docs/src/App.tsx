@@ -432,7 +432,11 @@ export default function App(): React.ReactNode {
       </div>
 
       <main
-        className={isBuilderRoute ? 'doc-main doc-main--wide' : 'doc-main'}
+        className={
+          isBuilderRoute || displayedRoute === '/lab' || displayedRoute === '/collaboration' || displayedRoute === '/blocks'
+            ? 'doc-main doc-main--wide'
+            : 'doc-main'
+        }
         id="doc-main"
         ref={mainRef}
         data-route={displayedRoute}

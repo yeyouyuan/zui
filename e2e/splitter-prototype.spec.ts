@@ -32,6 +32,8 @@ async function openPrototype(page: Page, route: string, heading: string): Promis
 }
 
 async function dragHandle(page: Page, handle: Locator, delta: number, release = true) {
+  // 恢复宽度时 Handle 仍随 CSS transition 移动；先等定位稳定再读取拖拽坐标。
+  await handle.hover();
   const box = await handle.boundingBox();
   if (!box) throw new Error('Splitter Handle 不可见');
   const start = { x: box.x + box.width / 2, y: box.y + box.height / 2 };

@@ -164,7 +164,10 @@ export default function Overview(): React.ReactNode {
           </a>
         </div>
         <div className="doc-hero-install">
-          <CodeBlock code="pnpm add @zui/react" language="shell" />
+          <CodeBlock
+            code={`pnpm add @zui/react@npm:@yeyouyuan/zui-react@${catalog.version}`}
+            language="shell"
+          />
         </div>
         <ComponentPreview />
       </section>
@@ -228,8 +231,17 @@ export default function Overview(): React.ReactNode {
           <span>01</span>
           <div>
             <h3>安装依赖</h3>
-            <p>在 React 19 项目中安装组件包。</p>
-            <CodeBlock code="pnpm add @zui/react" language="shell" />
+            <p>先登录 GitHub Packages，再在 React 19 项目中安装组件包。</p>
+            <CodeBlock
+              code={
+                'npm config set @yeyouyuan:registry https://npm.pkg.github.com --location=project\nnpm login --scope=@yeyouyuan --auth-type=legacy --registry=https://npm.pkg.github.com'
+              }
+              language="shell"
+            />
+            <CodeBlock
+              code={`pnpm add @zui/react@npm:@yeyouyuan/zui-react@${catalog.version}`}
+              language="shell"
+            />
           </div>
         </li>
         <li>
@@ -302,6 +314,13 @@ export default function Overview(): React.ReactNode {
             建立你的视觉语言 <span aria-hidden="true">↗</span>
           </strong>
           <p>探索色彩、间距、排版与圆角，调整产品的每个细节。</p>
+        </a>
+        <a href={hrefFor('/lab')}>
+          <span className="doc-eyebrow">DESIGN LAB</span>
+          <strong>
+            探索组件创意工坊 <span aria-hidden="true">↗</span>
+          </strong>
+          <p>体验 10 个交互设计原型，从数据洞察、文件协作到团队效率与创作配置。</p>
         </a>
       </div>
       <footer className="doc-overview-footer">

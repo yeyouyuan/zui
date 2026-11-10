@@ -36,7 +36,7 @@ describe('table-page block', () => {
     expect(onSearch).not.toHaveBeenCalled();
     await user.keyboard('{Enter}');
     expect(onSearch).toHaveBeenCalledWith('SKU-A');
-    await user.click(screen.getByRole('button', { name: '商品状态' }));
+    await user.click(screen.getByRole('button', { name: /^商品状态 / }));
     await user.click(screen.getByRole('option', { name: '在售' }));
     expect(onFilterChange).toHaveBeenCalledWith('status', 'onSale');
     // 查询和筛选由使用方回填数据，区块不会擅自删掉传入的行。

@@ -56,7 +56,7 @@ describe('kanban block', () => {
     const onActiveCardChange = vi.fn();
     const onCardClick = vi.fn();
     render(<KanbanBlock onActiveCardChange={onActiveCardChange} onCardClick={onCardClick} />);
-    const card = screen.getByRole('button', { name: '看板拖拽交互调研' });
+    const card = screen.getByRole('button', { name: /看板拖拽交互调研/ });
     expect(card).toHaveAttribute('tabindex', '0');
     expect(card).toHaveAttribute('aria-pressed', 'false');
     fireEvent.keyDown(card, { key: 'Enter' });

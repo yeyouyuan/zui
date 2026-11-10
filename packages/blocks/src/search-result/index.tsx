@@ -6,9 +6,6 @@ import {
   Empty,
   Input,
   List,
-  Tabs,
-  TabsList,
-  TabsTrigger,
   useControllableState,
 } from '@zui/react';
 
@@ -202,15 +199,13 @@ export function SearchResultBlock({
           <Button onClick={() => onSearch?.(currentKeyword)}>搜索</Button>
         </div>
         {types.length > 0 ? (
-          <Tabs value={currentType} onValueChange={setCurrentType}>
-            <TabsList aria-label="结果类型">
+          <div role="group" aria-label="结果类型" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--z-space-2)' }}>
               {types.map((item) => (
-                <TabsTrigger key={item.value} value={item.value}>
+                <Button key={item.value} size="sm" variant={item.value === currentType ? 'primary' : 'ghost'} aria-pressed={item.value === currentType} onClick={() => setCurrentType(item.value)}>
                   {item.label}
-                </TabsTrigger>
+                </Button>
               ))}
-            </TabsList>
-          </Tabs>
+          </div>
         ) : null}
       </div>
 

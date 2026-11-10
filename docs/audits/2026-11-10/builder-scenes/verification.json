@@ -1,0 +1,112 @@
+{
+  "date": "2026-11-10",
+  "route": "#/builder",
+  "scope": "Multi-scene page design, reusable blocks, shared local and read-only REST data",
+  "catalog": {
+    "publicZuiComponentDirectories": 71,
+    "builderNodeTypes": 89,
+    "templates": 10,
+    "presetBlocks": 15,
+    "newNodeTypes": [
+      "AppShell",
+      "AppView",
+      "DataTable",
+      "DataMetric",
+      "DataChart",
+      "RecordList",
+      "RecordForm"
+    ],
+    "newTemplates": [
+      "项目业务工作台",
+      "运营分析看板",
+      "内容资源中心",
+      "品牌产品官网",
+      "需求收集门户"
+    ]
+  },
+  "e2e": {
+    "browser": "Chromium",
+    "combinedSuite": {
+      "passed": 42,
+      "failed": 0,
+      "existingTests": 35,
+      "newTests": 7,
+      "duration": "1.6m",
+      "log": "all-e2e.log"
+    },
+    "afterFinalChartSizingFix": {
+      "passed": 7,
+      "failed": 0,
+      "duration": "24.2s",
+      "log": "scenes-final-e2e.log",
+      "scope": "All new scene tests, including desktop and mobile offline templates and assertions for chart aspect ratio and actual SVG width"
+    },
+    "verified": [
+      "Ten templates with category filtering and real rendered thumbnails",
+      "Five new templates exported to standalone HTML with external requests blocked",
+      "1440px desktop and 390px mobile templates, no document horizontal overflow",
+      "Create, edit, batch delete, detail views, search, CSV export, reload persistence and metric updates",
+      "Data source configuration, typed CSV import with quoted commas and multiline cells, and binding",
+      "REST design samples without requests, runtime error and retry, empty and read-only states",
+      "Inline text commit, cancel, undo and redo; Backspace does not delete the component",
+      "Actual mouse double-click, blur commit, pointer resizing and breakpoint dimensions",
+      "Container wrapping, unwrapping and layout targeting the Card and AppView content slots",
+      "Reusable blocks across pages and reload; conflicting source IDs renamed without overwriting target data",
+      "Retained component catalog, responsive layout, form submission, saved versions, JSON round trips, drag and keyboard workflows",
+      "Retained editor light/dark and 1440px, 768px and 320px accessibility and layout checks"
+    ],
+    "command": "pnpm exec playwright test --config e2e/playwright.config.ts e2e/builder.spec.ts e2e/builder-studio.spec.ts e2e/builder-layout.spec.ts e2e/builder-catalog.spec.ts e2e/builder-scenes.spec.ts --workers=2",
+    "finalTargetedCommand": "pnpm exec playwright test --config e2e/playwright.config.ts e2e/builder-scenes.spec.ts --workers=2",
+    "limitations": "Builder suites only. Earlier full-site audits are historical and were not repeated in this iteration."
+  },
+  "manualBrowserChecks": {
+    "origin": "http://127.0.0.1:5190",
+    "viewport": "1680x1050",
+    "verified": [
+      "Switch editor to a non-default application view",
+      "Open and inspect data source panel",
+      "Open nested large template preview",
+      "Use previewed template to create an editable page"
+    ],
+    "pageErrors": []
+  },
+  "checks": {
+    "docsTypecheck": "passed",
+    "docsUnitTests": { "passed": 8, "failed": 0 },
+    "eslint": "passed: docs/src/pages/builder and affected editor tests",
+    "prettier": "passed: changed builder sources, tests and documentation",
+    "gitDiffCheck": "passed",
+    "githubPagesBuild": {
+      "result": "passed",
+      "command": "GITHUB_PAGES_BUILD=true pnpm --filter @zui/docs build",
+      "log": "build.log",
+      "warning": "Editor and standalone export chunks exceed the existing 500 kB advisory threshold"
+    }
+  },
+  "screenshots": {
+    "editor": "editor-final.png",
+    "sourcePanel": "data-panel.png",
+    "applicationViewEditing": "view-editor.png",
+    "templateGallery": "template-gallery.png",
+    "largeTemplatePreview": "template-large-preview.png",
+    "businessDesktop": "scene-0-desktop.png",
+    "businessMobile": "scene-0-mobile.png",
+    "analyticsDesktop": "scene-1-desktop.png",
+    "analyticsMobile": "scene-1-mobile.png",
+    "contentDesktop": "scene-2-desktop.png",
+    "contentMobile": "scene-2-mobile.png",
+    "websiteDesktop": "scene-3-desktop.png",
+    "websiteMobile": "scene-3-mobile.png",
+    "intakeDesktop": "scene-4-desktop.png",
+    "intakeMobile": "scene-4-mobile.png"
+  },
+  "boundaries": [
+    "Runtime local data belongs to the current browser; sandbox preview may retain it for this session only and shows a notice",
+    "Workspace JSON contains source samples and design, not subsequent standalone runtime edits; export runtime rows separately as CSV",
+    "Personal block library has its own import/export and creates independent copies",
+    "REST is GET-only with credentials omitted and requires browser-compatible CORS",
+    "No multi-user sync, accounts, server-side writes, databases, instance synchronization or hosting backend",
+    "No dependencies installed, package versions changed, or GitHub/npm releases performed in this iteration"
+  ],
+  "report": "../../../page-studio-scenes-2026-11-10.md"
+}

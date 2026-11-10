@@ -74,6 +74,7 @@ const DesignAssetsPage = lazy(() => import('./pages/design/DesignAssetsPage'));
 const IconGalleryPage = lazy(() => import('./pages/design/IconGalleryPage'));
 const BuilderPage = lazy(() => import('./pages/builder/BuilderPage'));
 const CollaborationPage = lazy(() => import('./pages/collaboration/CollaborationPage'));
+const LabPage = lazy(() => import('./pages/lab/LabPage'));
 const BlocksPage = lazy(() => import('./pages/blocks/BlocksPage'));
 const SideNavPage = lazy(() => import('./pages/components/SideNavPage'));
 const SplitterPage = lazy(() => import('./pages/components/SplitterPage'));
@@ -116,6 +117,7 @@ export const navItems: NavItem[] = [
   { title: '页面搭建器', path: '/builder', group: 'start' },
   { title: '业务区块', path: '/blocks', group: 'start' },
   { title: '内容协作实验室', path: '/collaboration', group: 'start' },
+  { title: '组件创意工坊', path: '/lab', group: 'start' },
   { title: 'Button 按钮', path: '/components/button', group: 'basic' },
   { title: 'Input 输入框', path: '/components/input', group: 'input' },
   { title: 'Checkbox 复选框', path: '/components/checkbox', group: 'input' },
@@ -197,6 +199,7 @@ export const routeComponents: Record<string, ComponentType> = {
   '/builder': BuilderPage,
   '/blocks': BlocksPage,
   '/collaboration': CollaborationPage,
+  '/lab': LabPage,
   '/components/button': ButtonPage,
   '/components/input': InputPage,
   '/components/checkbox': CheckboxPage,

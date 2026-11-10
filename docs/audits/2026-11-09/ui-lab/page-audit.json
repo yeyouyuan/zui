@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-09",
+  "matrix": [
+    {
+      "viewport": 1440,
+      "theme": "dark",
+      "pages": 78,
+      "issueCount": 0,
+      "lab": {
+        "title": "组件创意工坊",
+        "path": "/lab",
+        "layout": [],
+        "contrast": []
+      }
+    },
+    {
+      "viewport": 1440,
+      "theme": "light",
+      "pages": 78,
+      "issueCount": 0,
+      "lab": {
+        "title": "组件创意工坊",
+        "path": "/lab",
+        "layout": [],
+        "contrast": []
+      }
+    },
+    {
+      "viewport": 320,
+      "theme": "dark",
+      "pages": 78,
+      "issueCount": 0,
+      "lab": {
+        "title": "组件创意工坊",
+        "path": "/lab",
+        "layout": [],
+        "contrast": []
+      }
+    },
+    {
+      "viewport": 320,
+      "theme": "light",
+      "pages": 78,
+      "issueCount": 0,
+      "lab": {
+        "title": "组件创意工坊",
+        "path": "/lab",
+        "layout": [],
+        "contrast": []
+      }
+    }
+  ]
+}

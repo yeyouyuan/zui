@@ -211,9 +211,12 @@ describe('其余可交互元素可访问名抽样', () => {
     expect(screen.getByRole('switch', { name: '自动保存' })).toBeInTheDocument();
   });
 
-  it('Select 触发器：aria-label / placeholder 充当可访问名', () => {
+  it('Select 触发器：可访问名包含字段标签和当前可见值', () => {
     const { rerender } = render(<Select options={fruitOptions} aria-label="水果" />);
-    expect(screen.getByRole('button', { name: '水果' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '水果 请选择' })).toBeInTheDocument();
+
+    rerender(<Select options={fruitOptions} aria-label="水果" value="apple" />);
+    expect(screen.getByRole('button', { name: '水果 Apple' })).toBeInTheDocument();
 
     rerender(<Select options={fruitOptions} />);
     expect(screen.getByRole('button', { name: '请选择' })).toBeInTheDocument();

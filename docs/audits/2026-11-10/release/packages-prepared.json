@@ -1,0 +1,76 @@
+{
+  "repository": "yeyouyuan/zui",
+  "version": "0.3.0",
+  "packages": [
+    {
+      "sourceName": "@zui/tokens",
+      "name": "@yeyouyuan/zui-tokens",
+      "version": "0.3.0",
+      "filename": "yeyouyuan-zui-tokens-0.3.0.tgz",
+      "integrity": "sha512-6rSAE4cQS+OvYCohruG5F5mJDJxiJcFFLj41M0F2z1gWMgsq+W87ZO/KuGIVGIGTBUsUIozOffRCPLPq6chitQ==",
+      "shasum": "cabf566bf31c7a40464dd890c1df1450cdf1a782",
+      "size": 14424,
+      "files": 11
+    },
+    {
+      "sourceName": "@zui/icons",
+      "name": "@yeyouyuan/zui-icons",
+      "version": "0.3.0",
+      "filename": "yeyouyuan-zui-icons-0.3.0.tgz",
+      "integrity": "sha512-lhqBpJtGkQboa6xP+H6K9XwBJBdq6r+WUPFtg07OJ8f4l95UYd+4iyP3FoSKNu6/vzXZEWXv7DyGBxXncz72MA==",
+      "shasum": "b2d37fe4162508bcd14ee5892684177b1f4679c6",
+      "size": 26900,
+      "files": 293
+    },
+    {
+      "sourceName": "@zui/i18n",
+      "name": "@yeyouyuan/zui-i18n",
+      "version": "0.3.0",
+      "filename": "yeyouyuan-zui-i18n-0.3.0.tgz",
+      "integrity": "sha512-/KsvmW1WK4Y2sg9PHSfRwR9OUMYkeiklm6UiJwxJcm4IFBYHENDyudpLfzIZqiiKMV0c7zLyMZiAZNPcNAE65A==",
+      "shasum": "cebb913ca2664b73913b351bec5d2c008acfccac",
+      "size": 13909,
+      "files": 17
+    },
+    {
+      "sourceName": "@zui/react",
+      "name": "@yeyouyuan/zui-react",
+      "version": "0.3.0",
+      "filename": "yeyouyuan-zui-react-0.3.0.tgz",
+      "integrity": "sha512-p8BDh0ImtViWbtqsyyFEH8UrUqhTpZjqrsXDndBhQbaEqhaBDSgUpvh2q8O2yBfRQlejtlwj5pTDCkTsZTC6KQ==",
+      "shasum": "547e4cf831359dbdfc98ab1a524d0096a04ee0d8",
+      "size": 1052312,
+      "files": 12
+    },
+    {
+      "sourceName": "@zui/blocks",
+      "name": "@yeyouyuan/zui-blocks",
+      "version": "0.3.0",
+      "filename": "yeyouyuan-zui-blocks-0.3.0.tgz",
+      "integrity": "sha512-EpUEVFxq6uNFKeyA/SwuQl0nRk48Dh7SYYJF/9wNAzyDvr8SDU+80QXcxZIUvV0JiOJsjTP7Qco8KaTOBL5jbw==",
+      "shasum": "444dae5144c13e43c94301708acb36a151b89ea6",
+      "size": 86059,
+      "files": 70
+    },
+    {
+      "sourceName": "@zui/cli",
+      "name": "@yeyouyuan/zui-cli",
+      "version": "0.3.0",
+      "filename": "yeyouyuan-zui-cli-0.3.0.tgz",
+      "integrity": "sha512-2djDhxOJBnwAi53TAjGzivwltSPTc8dESYk6XgFCiJUOKhd1LDrl1Dd1dS2CMVCadJsxRjd91oX7BoVBR8C/iA==",
+      "shasum": "8080097f835f47aa29f0620c61d8d6b53f1eeb9b",
+      "size": 439380,
+      "files": 615
+    },
+    {
+      "sourceName": "@zui/mcp",
+      "name": "@yeyouyuan/zui-mcp",
+      "version": "0.3.0",
+      "filename": "yeyouyuan-zui-mcp-0.3.0.tgz",
+      "integrity": "sha512-XayRyOYlsBP7U8FE+TbC9hBX7xCI1+l155gKOMOhK7ullVgSV0bMQ2j/4krAJFj0Kvzo5XWS3aRHdy4FXcnLMw==",
+      "shasum": "ba4e05643dad90e373b6596fbf81316d24d530b2",
+      "size": 442360,
+      "files": 611
+    }
+  ]
+}

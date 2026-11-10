@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { readFileSync, readdirSync } from 'node:fs';
+import { builderRuntimePlugin } from './builder-runtime-plugin';
 
 const { version } = JSON.parse(
   readFileSync(new URL('../packages/ui/package.json', import.meta.url), 'utf8')
@@ -11,8 +12,12 @@ const countDirectories = (path: string) =>
   ).length;
 
 export default defineConfig({
+  // Export is lazy-loaded; prebundle its React entry so the first preview does
+  // not trigger a development-server reload and interrupt the editing session.
+  optimizeDeps: { include: ['react-dom/server'] },
   plugins: [
     react(),
+    builderRuntimePlugin(),
     {
       name: 'zui-puck-local-font',
       enforce: 'pre',

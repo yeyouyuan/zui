@@ -4,6 +4,12 @@
 
 ## 现状与判断标准
 
+### 新增设计探索（2026-11-09）
+
+文档站新增“组件创意工坊”（`#/lab`），按四组实现 10 个可交互设计：MetricBoard、QueryBuilder、FileWorkbench、DiffViewer、TaskBoard、ApprovalFlow、ActivityInbox、AccessControl、SchedulePicker、StyleConfigurator。包含筛选、批量操作、状态流转、审批校验、角色权限与样式实时配置。它们仍是文档设计原型，不计入 71 个正式组件；候选契约、复用方向与实现边界见 [RFC-007](rfcs/ui-design-lab.md)。
+
+优先验证文件工作台/版本对比与既有内容协作原型的组合；条件构建器验证受控规则和服务端查询契约；任务看板和指标卡优先作为业务块深化。其余候选在两个真实消费场景验证后再确定正式化次序。
+
 ZUI v0.2.0 已有 66 个 UI 组件，基础表单、日期、浮层、反馈和常见数据展示已经完整。后续组件不再按“别的组件库有就补”的方式扩张，而按以下标准进入路线图：
 
 1. 在两个以上业务页面中存在稳定复用需求。
@@ -98,4 +104,4 @@ DataGrid 价值高，但不能把功能继续堆入 `Table`：
 
 ## 内容协作方向（2026-11-09）
 
-下一组设计优先 FilePreview、ContentEditor、CommentThread，覆盖文件预览、纯文本编辑与上下文讨论。文档站 `#/collaboration` 提供可操作原型；[RFC-006](rfcs/content-collaboration.md) 定义 API、异步状态、权限、引用和正式实现验收。当前属于设计阶段，未加入正式导出与 Registry，不增加 71 个源码组件的计数。
+下一组设计优先 FilePreview、ContentEditor、CommentThread，覆盖文件预览、纯文本编辑与上下文讨论。文档站 `#/collaboration` 已于 2026-11-10 补齐[可用的本地文件工作台](collaboration-local-2026-11-10.md)：真实文件导入、完整文本编辑、评论、IndexedDB 持久保存、下载与完整备份恢复。[RFC-006](rfcs/content-collaboration.md) 的通用组件 API、远端存储与权限契约仍为提案，未加入正式导出与 Registry，不增加 71 个源码组件的计数。

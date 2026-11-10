@@ -30,7 +30,30 @@ import {
   DEMO_USER,
   DEMO_WIZARD_VALUES,
 } from '@zui/blocks';
-import { Button, Input, Tag } from '@zui/react';
+import { Button, Drawer, Input, Tabs, Tag } from '@zui/react';
+import {
+  Archive,
+  CheckCircle,
+  ChevronRight,
+  Clock,
+  Code,
+  Database,
+  Edit,
+  Eye,
+  FileText,
+  Layers,
+  Lock,
+  LogIn,
+  Monitor,
+  RotateCcw,
+  Search,
+  Settings,
+  Shield,
+  ShoppingCart,
+  Smartphone,
+  User,
+  Users,
+} from '@zui/icons';
 
 import CodeBlock from '../../components/CodeBlock';
 import { usePageTitle } from '../../components/usePageTitle';
@@ -153,6 +176,24 @@ const BLOCKS = [
 
 type BlockKey = (typeof BLOCKS)[number]['key'];
 const GROUPS = ['数据展示', '表单与账户', '系统管理'] as const;
+const BLOCK_ICONS = {
+  dashboard: Database,
+  'data-screen': Monitor,
+  'table-page': FileText,
+  'order-list': ShoppingCart,
+  'search-result': Search,
+  'list-detail': Archive,
+  'timeline-feed': Clock,
+  kanban: Layers,
+  login: LogIn,
+  'form-page': FileText,
+  wizard: CheckCircle,
+  'user-center': User,
+  'profile-edit': Edit,
+  permission: Shield,
+  settings: Settings,
+  'error-pages': Lock,
+};
 const PREVIEW_STYLE: CSSProperties = { minHeight: 0, width: '100%', maxWidth: '100%' };
 
 function exampleCode(block: (typeof BLOCKS)[number]): string {
@@ -193,9 +234,11 @@ function exampleCode(block: (typeof BLOCKS)[number]): string {
 function BlockPreview({
   blockKey,
   onFeedback,
+  onSelectBlock,
 }: {
   blockKey: BlockKey;
   onFeedback: (message: string) => void;
+  onSelectBlock: (key: BlockKey) => void;
 }) {
   const [settings, setSettings] = useState({ ...DEMO_SETTINGS_VALUES });
   const [wizard, setWizard] = useState({ ...DEMO_WIZARD_VALUES });
@@ -369,7 +412,7 @@ function BlockPreview({
               previous.map((item) => (item.key === key ? { ...item, checked } : item))
             )
           }
-          onEditProfile={() => onFeedback('可从左侧选择“资料编辑”查看编辑表单。')}
+          onEditProfile={() => onSelectBlock('profile-edit')}
           onChangePassword={() => onFeedback('已打开修改密码入口（演示）。')}
         />
       );
@@ -421,117 +464,308 @@ export default function BlocksPage(): React.ReactNode {
   usePageTitle('业务区块');
   const [selected, setSelected] = useState<BlockKey>('dashboard');
   const [query, setQuery] = useState('');
-  const [revision, setRevision] = useState(0);
-  const [feedback, setFeedback] = useState('');
+  const [group, setGroup] = useState<string>('all');
+  const [visited, setVisited] = useState<BlockKey[]>(['dashboard']);
+  const [revisions, setRevisions] = useState<Partial<Record<BlockKey, number>>>({});
+  const [feedback, setFeedback] = useState<Partial<Record<BlockKey, string>>>({});
+  const [view, setView] = useState('preview');
+  const [width, setWidth] = useState<'auto' | 'mobile'>('auto');
+  const [catalogOpen, setCatalogOpen] = useState(false);
   const current = BLOCKS.find((block) => block.key === selected)!;
-  const matches = BLOCKS.filter((block) =>
-    `${block.title} ${block.key} ${block.component} ${block.group}`
-      .toLowerCase()
-      .includes(query.trim().toLowerCase())
+  const CurrentIcon = BLOCK_ICONS[selected];
+  const matches = BLOCKS.filter(
+    (block) =>
+      (group === 'all' || block.group === group) &&
+      `${block.title} ${block.key} ${block.component} ${block.group} ${block.description}`
+        .toLowerCase()
+        .includes(query.trim().toLowerCase())
   );
-  const code = exampleCode(current);
+  const selectBlock = (key: BlockKey) => {
+    setSelected(key);
+    setVisited((previous) => (previous.includes(key) ? previous : [...previous, key]));
+    setView('preview');
+    setCatalogOpen(false);
+  };
+  const resetFilters = () => {
+    setQuery('');
+    setGroup('all');
+  };
+  const renderCatalog = (inDrawer = false) => (
+    <>
+      <div className="doc-blocks-catalog-search">
+        <Input
+          type="search"
+          aria-label="搜索业务区块"
+          placeholder="搜索名称或组件…"
+          prefix={<Search aria-hidden="true" />}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          clearable
+          onClear={() => setQuery('')}
+          data-autofocus={inDrawer ? '' : undefined}
+        />
+        <span className="doc-blocks-count" role="status">
+          {matches.length} / {BLOCKS.length} 个区块
+        </span>
+      </div>
+      <nav aria-label="选择业务区块" className="doc-blocks-options">
+        {GROUPS.map((category) => {
+          const items = matches.filter((block) => block.group === category);
+          return items.length > 0 ? (
+            <div key={category} className="doc-blocks-group">
+              <p>
+                {category}
+                <span>{items.length}</span>
+              </p>
+              {items.map((block) => {
+                const Icon = BLOCK_ICONS[block.key];
+                return (
+                  <button
+                    key={block.key}
+                    type="button"
+                    aria-current={selected === block.key ? 'true' : undefined}
+                    onClick={() => selectBlock(block.key)}
+                  >
+                    <span className="doc-blocks-option-icon">
+                      <Icon aria-hidden="true" />
+                    </span>
+                    <span className="doc-blocks-option-label">
+                      <strong>{block.title}</strong>
+                      <small>{block.component}</small>
+                    </span>
+                    {selected === block.key && (
+                      <ChevronRight className="doc-blocks-option-arrow" aria-hidden="true" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          ) : null;
+        })}
+        {matches.length === 0 && (
+          <div className="doc-blocks-empty">
+            <Search aria-hidden="true" />
+            <strong>没有找到匹配区块</strong>
+            <p>试试名称、组件名或其他分类。</p>
+            <Button variant="outline" size="sm" onClick={resetFilters}>
+              清除筛选
+            </Button>
+          </div>
+        )}
+      </nav>
+      <p className="doc-blocks-catalog-note">切换区块会保留本页的演示状态。</p>
+    </>
+  );
 
   return (
     <div className="doc-page doc-blocks-page">
-      <h1 className="doc-h1">业务区块</h1>
-      <p className="doc-lead">
-        16
-        个可直接使用的页面级区块，覆盖数据展示、表单账户和系统管理。选择区块查看实际界面，体验筛选、表单与确认操作。
-      </p>
+      <header className="doc-blocks-intro">
+        <div>
+          <div className="doc-blocks-eyebrow">
+            <Layers aria-hidden="true" /> ZUI / PAGE BLOCKS
+          </div>
+          <h1 className="doc-h1">业务区块</h1>
+          <p className="doc-lead">
+            从一个区块，开始一张完整页面。
+            <br />
+            选择业务场景，体验真实交互，再带走接入代码。
+          </p>
+        </div>
+        <dl className="doc-blocks-stats">
+          <div>
+            <dt>页面区块</dt>
+            <dd>
+              {BLOCKS.length}
+              <span>个</span>
+            </dd>
+          </div>
+          <div>
+            <dt>业务场景</dt>
+            <dd>
+              {GROUPS.length}
+              <span>类</span>
+            </dd>
+          </div>
+        </dl>
+      </header>
+      <div className="doc-blocks-categories" role="group" aria-label="区块分类">
+        {['all', ...GROUPS].map((category) => (
+          <button
+            type="button"
+            key={category}
+            aria-pressed={group === category}
+            onClick={() => setGroup(category)}
+          >
+            {category === 'all' ? '全部区块' : category}
+            <span>
+              {category === 'all'
+                ? BLOCKS.length
+                : BLOCKS.filter((block) => block.group === category).length}
+            </span>
+          </button>
+        ))}
+      </div>
       <div className="doc-blocks-layout">
         <aside className="doc-blocks-catalog" aria-label="区块目录">
-          <Input
-            type="search"
-            aria-label="搜索业务区块"
-            placeholder="搜索名称或组件"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            clearable
-            onClear={() => setQuery('')}
-          />
-          <span className="doc-blocks-count" role="status">
-            {matches.length} / {BLOCKS.length} 个区块
-          </span>
-          <nav aria-label="选择业务区块" className="doc-blocks-options">
-            {GROUPS.map((group) => {
-              const items = matches.filter((block) => block.group === group);
-              return items.length > 0 ? (
-                <div key={group} className="doc-blocks-group">
-                  <p>{group}</p>
-                  {items.map((block) => (
-                    <button
-                      key={block.key}
-                      type="button"
-                      aria-current={selected === block.key ? 'true' : undefined}
-                      onClick={() => {
-                        setSelected(block.key);
-                        setFeedback('');
-                      }}
-                    >
-                      <span>{block.title}</span>
-                      <small>{block.component}</small>
-                    </button>
-                  ))}
-                </div>
-              ) : null;
-            })}
-            {matches.length === 0 ? (
-              <p className="doc-blocks-empty">
-                没有匹配的区块。
-                <Button variant="ghost" size="sm" onClick={() => setQuery('')}>
-                  清除搜索
-                </Button>
-              </p>
-            ) : null}
-          </nav>
+          <div className="doc-blocks-catalog-heading">
+            <Layers aria-hidden="true" />
+            区块目录
+          </div>
+          {renderCatalog()}
         </aside>
         <section className="doc-blocks-detail" aria-labelledby="block-preview-title">
           <header className="doc-blocks-preview-head">
+            <span className="doc-blocks-detail-icon">
+              <CurrentIcon aria-hidden="true" />
+            </span>
             <div>
               <h2 id="block-preview-title" className="doc-h2">
-                {current.title} <Tag color="neutral">{current.group}</Tag>
+                {current.title}
+                <Tag color="neutral">{current.group}</Tag>
               </h2>
               <p>{current.description}</p>
             </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                setRevision((previous) => previous + 1);
-                setFeedback('演示已重置。');
-              }}
-            >
-              重置演示
-            </Button>
           </header>
-          <div className="doc-blocks-preview" data-block={selected}>
-            <BlockPreview
-              key={`${selected}-${revision}`}
-              blockKey={selected}
-              onFeedback={setFeedback}
-            />
-          </div>
+          <Drawer open={catalogOpen} onOpenChange={setCatalogOpen}>
+            <Drawer.Trigger className="doc-blocks-mobile-catalog">
+              <Layers aria-hidden="true" />
+              区块目录<span>{matches.length} 个可选区块</span>
+              <ChevronRight aria-hidden="true" />
+            </Drawer.Trigger>
+            <Drawer.Content
+              placement="left"
+              size="min(360px, calc(100vw - 20px))"
+              className="doc-blocks-drawer"
+            >
+              <Drawer.Header>
+                <Drawer.Title>选择业务区块</Drawer.Title>
+                <Drawer.Close />
+              </Drawer.Header>
+              <Drawer.Body>{renderCatalog(true)}</Drawer.Body>
+            </Drawer.Content>
+          </Drawer>
+          <Tabs value={view} onValueChange={setView} className="doc-blocks-frame">
+            <div className="doc-blocks-toolbar">
+              <Tabs.List aria-label="区块展示方式">
+                <Tabs.Trigger value="preview" icon={<Eye />}>
+                  预览
+                </Tabs.Trigger>
+                <Tabs.Trigger value="code" icon={<Code />}>
+                  代码
+                </Tabs.Trigger>
+              </Tabs.List>
+              <div className="doc-blocks-preview-actions">
+                <div className="doc-blocks-device" role="group" aria-label="预览宽度">
+                  <button
+                    type="button"
+                    aria-label="自适应宽度"
+                    title="自适应宽度"
+                    aria-pressed={width === 'auto'}
+                    disabled={view !== 'preview'}
+                    onClick={() => setWidth('auto')}
+                  >
+                    <Monitor aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="手机宽度"
+                    title="手机宽度（390px）"
+                    aria-pressed={width === 'mobile'}
+                    disabled={view !== 'preview'}
+                    onClick={() => setWidth('mobile')}
+                  >
+                    <Smartphone aria-hidden="true" />
+                  </button>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  iconStart={<RotateCcw />}
+                  onClick={() => {
+                    setRevisions((previous) => ({
+                      ...previous,
+                      [selected]: (previous[selected] ?? 0) + 1,
+                    }));
+                    setFeedback((previous) => ({
+                      ...previous,
+                      [selected]: '当前区块已重置，其他区块的操作继续保留。',
+                    }));
+                  }}
+                >
+                  重置演示
+                </Button>
+              </div>
+            </div>
+            <Tabs.Panel value="preview" forceMount>
+              <div className="doc-blocks-canvas-meta">
+                <span>
+                  <span className="doc-blocks-live-dot" />
+                  可交互预览
+                </span>
+                <code>{current.component}</code>
+              </div>
+              <div className="doc-blocks-viewport" data-width={width}>
+                <div
+                  className="doc-blocks-preview"
+                  data-block={selected}
+                  aria-label="业务区块预览"
+                  role="region"
+                >
+                  {visited.map((key) => (
+                    <div key={key} hidden={key !== selected} className="doc-blocks-preview-panel">
+                      <BlockPreview
+                        key={`${key}-${revisions[key] ?? 0}`}
+                        blockKey={key}
+                        onFeedback={(message) =>
+                          setFeedback((previous) => ({ ...previous, [key]: message }))
+                        }
+                        onSelectBlock={selectBlock}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Tabs.Panel>
+            <Tabs.Panel value="code">
+              <div className="doc-blocks-code-intro">
+                <strong>接入 {current.component}</strong>
+                <p>可复制的基础用法。业务数据与请求由页面回调接入。</p>
+              </div>
+              <CodeBlock key={selected} language="tsx" code={exampleCode(current)} />
+              <p className="doc-blocks-code-note">
+                支持按需引入：<code>@zui/blocks/{current.key}</code>
+              </p>
+            </Tabs.Panel>
+          </Tabs>
           <p className="doc-blocks-feedback" role="status" aria-live="polite">
-            {feedback || '交互仅使用本地演示数据。'}
-          </p>
-          <h2 className="doc-h2">接入代码</h2>
-          <CodeBlock language="tsx" code={code} />
-          <p className="doc-p">
-            受控区块需要由业务页面维护数据与回调。可从同名子路径（例如{' '}
-            <code className="doc-code-inline">@zui/blocks/settings</code>
-            ）引入组件及其类型、演示数据。
+            <CheckCircle aria-hidden="true" />
+            {feedback[selected] || '使用本地演示数据 · 可直接体验 · 切换保留本页状态'}
           </p>
         </section>
       </div>
-      <h2 className="doc-h2">安装与定制</h2>
-      <CodeBlock language="bash" code="pnpm add @zui/blocks @zui/react react react-dom" />
-      <p className="doc-p">
-        入口引入一次 <code className="doc-code-inline">@zui/react/styles.css</code>。区块通过{' '}
-        <code className="doc-code-inline">style</code>、
-        <code className="doc-code-inline">classNames</code> 和{' '}
-        <code className="doc-code-inline">data-part</code>{' '}
-        定制布局，随全局主题切换；数据大屏保留深色展示。
-      </p>
+      <section className="doc-blocks-integration" aria-labelledby="blocks-integration-title">
+        <div>
+          <div className="doc-blocks-eyebrow">
+            <Code aria-hidden="true" /> READY TO BUILD
+          </div>
+          <h2 className="doc-h2" id="blocks-integration-title">
+            接入你的项目
+          </h2>
+          <p>安装一次，组合使用。数据与样式由你掌控。</p>
+        </div>
+        <div className="doc-blocks-integration-content">
+          <CodeBlock language="bash" code="pnpm add @zui/blocks @zui/react react react-dom" />
+          <p>
+            入口引入 <code>@zui/react/styles.css</code>。通过 <code>style</code>、
+            <code>classNames</code> 与 <code>data-part</code>{' '}
+            定制布局，随全局主题切换；数据大屏保留深色展示。
+          </p>
+          <span>
+            <Users aria-hidden="true" />
+            16 个正式区块 · TypeScript · 受控数据与回调
+          </span>
+        </div>
+      </section>
     </div>
   );
 }

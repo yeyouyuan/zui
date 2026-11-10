@@ -65,11 +65,11 @@ describe('wizard block', () => {
     expect(onCurrentChange).toHaveBeenLastCalledWith(1);
 
     // 第二步：下拉 + 输入
-    await user.click(screen.getByRole('button', { name: '项目类别' }));
+    await user.click(screen.getByRole('button', { name: /^项目类别 / }));
     await user.click(screen.getByRole('option', { name: '平台组件' }));
     fireEvent.change(screen.getByLabelText('负责人'), { target: { value: '林小满' } });
     rerender(<WizardBlock {...props} />);
-    expect(screen.getByRole('button', { name: '项目类别' })).toHaveTextContent('平台组件');
+    expect(screen.getByRole('button', { name: '项目类别 平台组件' })).toHaveTextContent('平台组件');
     await user.click(screen.getByRole('button', { name: '下一步' }));
     expect(onCurrentChange).toHaveBeenLastCalledWith(2);
 

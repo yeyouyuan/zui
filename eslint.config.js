@@ -10,6 +10,8 @@ export default tseslint.config(
       'packages/cli/data/**',
       'packages/mcp/data/**',
       'test-results/**',
+      '.release/**',
+      'docs/public/cdn/**',
     ],
   },
   {

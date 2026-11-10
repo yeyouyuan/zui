@@ -412,7 +412,7 @@ describe('DatePicker ARIA 角色与状态', () => {
     const user = userEvent.setup();
     render(<DatePicker defaultValue="2024-03-11" />);
     // 面板经 Portal 渲染，先打开再查询
-    await user.click(screen.getByRole('textbox', { name: '日期' }));
+    await user.click(screen.getByRole('combobox', { name: '日期' }));
 
     const grid = screen.getByRole('grid');
     expect(grid).toBeInTheDocument();
