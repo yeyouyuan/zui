@@ -4,13 +4,13 @@
   /* 组件级变量（用户可覆盖） */
   --z-popover-bg: var(--z-color-bg-elevated);
   --z-popover-fg: var(--z-color-fg);
-  --z-popover-radius: 0.5rem; /* 8px 浮层圆角 */
+  --z-popover-radius: var(--z-radius-md);
   --z-popover-padding: var(--z-space-3); /* 12px */
   --z-popover-shadow: var(--z-shadow-lg);
   --z-popover-offset: var(--z-space-2); /* 浮层与触发器间距 */
   --z-popover-max-width: 20rem;
   --z-popover-z: var(--z-z-dropdown);
-  --z-popover-animation-duration: 150ms;
+  --z-popover-animation-duration: var(--z-duration-fast);
   --z-popover-transition: var(--z-popover-animation-duration) var(--z-ease-entrance);
 
   position: relative;

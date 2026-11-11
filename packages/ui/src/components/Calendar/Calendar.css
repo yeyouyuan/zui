@@ -2,7 +2,7 @@
 
 .z-calendar {
   /* 组件级变量（用户可覆盖） */
-  --z-calendar-bg: var(--z-color-bg);
+  --z-calendar-bg: var(--z-color-bg-elevated);
   --z-calendar-fg: var(--z-color-fg);
   --z-calendar-border: var(--z-color-border-subtle);
   --z-calendar-radius: var(--z-radius-md);

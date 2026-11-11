@@ -76,8 +76,7 @@
 .z-mentions-panel {
   position: fixed;
   top: 100%;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   z-index: var(--z-z-dropdown);
   box-sizing: border-box;
   margin-top: var(--z-mentions-panel-margin-top);

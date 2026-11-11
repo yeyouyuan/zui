@@ -112,7 +112,7 @@
 
 .z-transfer-search-icon {
   position: absolute;
-  left: calc(var(--z-transfer-search-padding) + var(--z-space-2));
+  inset-inline-start: calc(var(--z-transfer-search-padding) + var(--z-space-2));
   color: var(--z-color-fg-subtle);
   pointer-events: none;
   flex: none;
@@ -122,7 +122,8 @@
   box-sizing: border-box;
   width: 100%;
   height: var(--z-transfer-search-height);
-  padding: 0 var(--z-space-2) 0 1.75rem;
+  padding-block: 0;
+  padding-inline: 1.75rem var(--z-space-2);
   font-family: inherit;
   font-size: var(--z-text-sm);
   line-height: var(--z-transfer-search-height);
@@ -259,7 +260,9 @@
   transform: rotate(-45deg) translate(1px, -1px);
 }
 
-:is(.z-transfer-checkbox, .z-transfer-item-label) input:indeterminate ~ .z-transfer-checkbox-box::after {
+:is(.z-transfer-checkbox, .z-transfer-item-label)
+  input:indeterminate
+  ~ .z-transfer-checkbox-box::after {
   content: '';
   display: block;
   width: calc(var(--z-transfer-checkbox-size) * 0.5);
@@ -322,6 +325,15 @@
   background: var(--z-color-disabled-bg);
   border-color: var(--z-color-disabled-border);
   cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-transfer-search-input,
+  .z-transfer-item-label,
+  .z-transfer-checkbox-box,
+  .z-transfer-button {
+    transition: none;
+  }
 }
 
 @media (forced-colors: active) {

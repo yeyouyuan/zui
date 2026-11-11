@@ -64,7 +64,10 @@ export interface CommandPaletteProps {
   onQueryChange?: (query: string, details: CommandPaletteQueryChangeDetails) => void;
   resetQueryOnClose?: boolean;
 
-  /** false 关闭本地过滤，由受控 query + commands 承担异步结果 */
+  /**
+   * false 关闭本地过滤，由受控 query + commands 承担异步结果。当前列表不虚拟化；
+   * 首版建议最多使用数百条本地命令，更多命令请走异步查询并设置 filter={false}。
+   */
   filter?: false | ((command: CommandPaletteCommand, query: string) => boolean);
   loading?: boolean;
   loadingContent?: React.ReactNode;
@@ -507,8 +510,18 @@ function CommandPalette(props: CommandPaletteProps) {
     () => sections.flatMap((section) => section.records.filter((record) => !record.disabled)),
     [sections]
   );
-  const enabledKeys = enabledRecords.map((record) => record.command.key);
-  const enabledSignature = JSON.stringify(enabledKeys);
+  const enabledKeys = React.useMemo(
+    () => enabledRecords.map((record) => record.command.key),
+    [enabledRecords]
+  );
+  const enabledIndexByKey = React.useMemo(() => {
+    const indexByKey = new Map<string, number>();
+    for (let index = 0; index < enabledRecords.length; index += 1) {
+      indexByKey.set(enabledRecords[index].command.key, index);
+    }
+    return indexByKey;
+  }, [enabledRecords]);
+  const enabledSignature = React.useMemo(() => JSON.stringify(enabledKeys), [enabledKeys]);
   const previousOpenRef = React.useRef(false);
   const previousQueryRef = React.useRef(query);
   const previousEnabledKeysRef = React.useRef<string[]>([]);
@@ -544,7 +557,7 @@ function CommandPalette(props: CommandPaletteProps) {
   }, [open, query, requestQuery, resetQueryOnClose]);
 
   const effectiveActiveKey =
-    open && activeKey && enabledKeys.includes(activeKey) ? activeKey : null;
+    open && activeKey && enabledIndexByKey.has(activeKey) ? activeKey : null;
 
   React.useEffect(() => {
     if (!effectiveActiveKey) return;
@@ -574,9 +587,10 @@ function CommandPalette(props: CommandPaletteProps) {
 
   const moveActive = (delta: 1 | -1): boolean => {
     if (enabledRecords.length === 0) return false;
-    const index = enabledRecords.findIndex((record) => record.command.key === effectiveActiveKey);
+    const index =
+      effectiveActiveKey === null ? undefined : enabledIndexByKey.get(effectiveActiveKey);
     const nextIndex =
-      index < 0
+      index === undefined
         ? delta > 0
           ? 0
           : enabledRecords.length - 1
@@ -600,9 +614,8 @@ function CommandPalette(props: CommandPaletteProps) {
       return;
     }
     if (event.key === 'Enter' && effectiveActiveKey) {
-      const record = enabledRecords.find(
-        (candidate) => candidate.command.key === effectiveActiveKey
-      );
+      const activeIndex = enabledIndexByKey.get(effectiveActiveKey);
+      const record = activeIndex === undefined ? undefined : enabledRecords[activeIndex];
       if (record) {
         event.preventDefault();
         runCommand(record, 'keyboard', event);

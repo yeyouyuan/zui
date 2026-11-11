@@ -61,7 +61,7 @@
 .z-image-preview-close {
   position: absolute;
   top: var(--z-space-4);
-  right: var(--z-space-4);
+  inset-inline-end: var(--z-space-4);
   display: flex;
   align-items: center;
   justify-content: center;

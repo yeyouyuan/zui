@@ -64,7 +64,7 @@
   --z-badge-fg: var(--z-color-fg-inverse);
 }
 
-/* 包裹型：children 位置锚点，角标右上角 translate 50% */
+/* 包裹型：children 位置锚点，角标位于 block-start / inline-end，向外偏移 50% */
 .z-badge {
   box-sizing: border-box;
   position: relative;
@@ -95,10 +95,14 @@
 .z-badge > .z-badge-indicator {
   position: absolute;
   top: 0;
-  right: 0;
+  inset-inline-end: 0;
   z-index: 1;
   transform: translate(50%, -50%);
   border: var(--z-badge-border-width) solid var(--z-badge-border-color);
+}
+
+.z-badge:dir(rtl) > .z-badge-indicator {
+  transform: translate(-50%, -50%);
 }
 
 .z-badge-indicator[data-single='true'] {

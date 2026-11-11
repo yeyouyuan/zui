@@ -50,14 +50,14 @@
 }
 
 .z-statistic-prefix {
-  margin-right: var(--z-statistic-prefix-margin-right);
+  margin-inline-end: var(--z-statistic-prefix-margin-right);
   color: var(--z-statistic-prefix-fg);
   font-size: var(--z-statistic-prefix-font-size);
   font-weight: var(--z-statistic-prefix-font-weight);
 }
 
 .z-statistic-suffix {
-  margin-left: var(--z-statistic-suffix-margin-left);
+  margin-inline-start: var(--z-statistic-suffix-margin-left);
   color: var(--z-statistic-suffix-fg);
   font-size: var(--z-statistic-suffix-font-size);
   font-weight: var(--z-statistic-suffix-font-weight);

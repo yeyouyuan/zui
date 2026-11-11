@@ -61,7 +61,7 @@ function sameItems(a: TocItem[], b: TocItem[]): boolean {
 
 /**
  * 页内目录：扫描 .doc-main（或 containerRef 指向的容器）内 h2.doc-h2 / h3.doc-h3，
- * 在右侧渲染目录并在滚动时高亮当前区块。
+ * 在宽屏右侧、800–1099px 顶部折叠入口渲染目录，并在滚动时高亮当前区块。
  * - MutationObserver：懒加载换页 / DOM 变化后自动重扫（rAF 合帧，避免扫屏）
  * - IntersectionObserver：取最接近视口顶部的可见标题为 active
  * 点击仅平滑滚动：hash 已被路由（#/components/...）占用，不能写 location.hash。
@@ -69,6 +69,7 @@ function sameItems(a: TocItem[], b: TocItem[]): boolean {
 export default function PageToc({ containerRef }: PageTocProps): React.ReactNode {
   const [items, setItems] = useState<TocItem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [compactOpen, setCompactOpen] = useState(false);
 
   useEffect(() => {
     const rootEl = containerRef?.current ?? document.querySelector<HTMLElement>('.doc-main');
@@ -134,39 +135,59 @@ export default function PageToc({ containerRef }: PageTocProps): React.ReactNode
   // 只有 0/1 个标题时目录没有导航价值，不渲染
   if (items.length <= 1) return null;
 
+  const links = items.map((item) => {
+    const active = item.id === activeId;
+    const className = [
+      'doc-toc-link',
+      item.level === 3 ? 'doc-toc-link--sub' : '',
+      active ? 'doc-toc-link--active' : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+    return (
+      <button
+        type="button"
+        key={item.id}
+        className={className}
+        aria-current={active ? 'location' : undefined}
+        aria-controls={item.id}
+        onClick={() => {
+          setActiveId(item.id);
+          setCompactOpen(false);
+          document.getElementById(item.id)?.scrollIntoView({
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+              ? 'auto'
+              : 'smooth',
+            block: 'start',
+          });
+        }}
+      >
+        {item.text}
+      </button>
+    );
+  });
+
   return (
-    <nav className="doc-toc" aria-label="页内导航">
-      <div className="doc-toc-title">本页内容</div>
-      {items.map((item) => {
-        const active = item.id === activeId;
-        const className = [
-          'doc-toc-link',
-          item.level === 3 ? 'doc-toc-link--sub' : '',
-          active ? 'doc-toc-link--active' : '',
-        ]
-          .filter(Boolean)
-          .join(' ');
-        return (
-          <button
-            type="button"
-            key={item.id}
-            className={className}
-            aria-current={active ? 'location' : undefined}
-            aria-controls={item.id}
-            onClick={() => {
-              setActiveId(item.id);
-              document.getElementById(item.id)?.scrollIntoView({
-                behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
-                  ? 'auto'
-                  : 'smooth',
-                block: 'start',
-              });
-            }}
-          >
-            {item.text}
-          </button>
-        );
-      })}
+    <nav
+      className="doc-toc"
+      aria-label="页内导航"
+      data-compact-open={compactOpen ? 'true' : 'false'}
+    >
+      <button
+        type="button"
+        className="doc-toc-compact-trigger"
+        aria-expanded={compactOpen}
+        onClick={() => setCompactOpen((open) => !open)}
+      >
+        <span>本页内容</span>
+        <span aria-hidden="true">⌄</span>
+      </button>
+      <div className="doc-toc-title" aria-hidden="true">
+        本页内容
+      </div>
+      <div className="doc-toc-list">
+        {links}
+      </div>
     </nav>
   );
 }

@@ -440,14 +440,20 @@ export function SideNav({
     }
     return { sections: cleaned, entries, known, groups, top, lists, warnings };
   }, [sections, collapsible, collapsed]);
-  const ordered = (keys: readonly string[]) => model.groups.filter((key) => keys.includes(key));
+  const ordered = React.useCallback(
+    (keys: readonly string[]) => model.groups.filter((key) => keys.includes(key)),
+    [model.groups]
+  );
   const currentEntry = currentKey ? model.entries.get(currentKey) : undefined;
   const current = currentEntry?.enabled && !isGroup(currentEntry.item) ? currentEntry : undefined;
   const resolution = current ? JSON.stringify([current.item.key, current.parent]) : null;
   const [internalExpanded, setInternalExpanded] = React.useState(() =>
     ordered([...defaultExpandedKeys, ...(current?.parent ? [current.parent] : [])])
   );
-  const expanded = ordered(expandedKeys ?? internalExpanded);
+  const expanded = React.useMemo(
+    () => ordered(expandedKeys ?? internalExpanded),
+    [expandedKeys, internalExpanded, ordered]
+  );
   const validFlyout = openFlyoutKey ? model.entries.get(openFlyoutKey) : undefined;
   const flyoutGroup =
     collapsed && validFlyout?.enabled && isGroup(validFlyout.item) ? validFlyout.item : null;
@@ -459,36 +465,45 @@ export function SideNav({
   const previousCurrent = React.useRef(currentKey);
   const warned = React.useRef(new Set<string>());
 
-  const fallbackTop = (record: Pick<FocusRecord, 'key' | 'topKeys'>) => {
-    const index = record.topKeys.indexOf(record.key);
-    for (const key of record.topKeys.slice(index + 1)) if (focus(topRefs.current.get(key))) return;
-    for (const key of record.topKeys.slice(0, index).reverse())
-      if (focus(topRefs.current.get(key))) return;
-    if (!focus(collapseRef.current)) focus(rootRef.current);
-  };
+  const fallbackTop = React.useCallback(
+    (record: Pick<FocusRecord, 'key' | 'topKeys'>) => {
+      const index = record.topKeys.indexOf(record.key);
+      for (const key of record.topKeys.slice(index + 1)) if (focus(topRefs.current.get(key))) return;
+      for (const key of record.topKeys.slice(0, index).reverse())
+        if (focus(topRefs.current.get(key))) return;
+      if (!focus(collapseRef.current)) focus(rootRef.current);
+    },
+    []
+  );
 
-  const closeFlyout = (reason: 'escape' | 'navigation' | 'outside' | 'tab') => {
-    const oldFlyout = flyoutRef.current;
-    const oldFocus = rootRef.current?.ownerDocument.activeElement;
-    const trigger = openFlyoutKey ? topRefs.current.get(openFlyoutKey) : undefined;
-    setOpenFlyoutKey(null);
-    setTooltipKey(null);
-    // Route focus and the new pointer target belong to the application.
-    if (reason === 'navigation' || reason === 'outside') focused.current = null;
-    if (reason === 'escape') focus(trigger);
-    if (reason === 'navigation') {
-      requestAnimationFrame(() => {
-        const active = rootRef.current?.ownerDocument.activeElement;
-        if (
-          active &&
-          (active === document.body ||
-            oldFlyout?.contains(active) ||
-            (active === oldFocus && !active.isConnected))
-        )
-          focus(rootRef.current);
-      });
-    }
-  };
+  const openFlyoutKeyRef = React.useRef(openFlyoutKey);
+  openFlyoutKeyRef.current = openFlyoutKey;
+  const closeFlyout = React.useCallback(
+    (reason: 'escape' | 'navigation' | 'outside' | 'tab') => {
+      const oldFlyout = flyoutRef.current;
+      const oldFocus = rootRef.current?.ownerDocument.activeElement;
+      const triggerKey = openFlyoutKeyRef.current;
+      const trigger = triggerKey ? topRefs.current.get(triggerKey) : undefined;
+      setOpenFlyoutKey(null);
+      setTooltipKey(null);
+      // Route focus and the new pointer target belong to the application.
+      if (reason === 'navigation' || reason === 'outside') focused.current = null;
+      if (reason === 'escape') focus(trigger);
+      if (reason === 'navigation') {
+        requestAnimationFrame(() => {
+          const active = rootRef.current?.ownerDocument.activeElement;
+          if (
+            active &&
+            (active === document.body ||
+              oldFlyout?.contains(active) ||
+              (active === oldFocus && !active.isConnected))
+          )
+            focus(rootRef.current);
+        });
+      }
+    },
+    []
+  );
 
   // Resolution identity resets while unknown/filtered, so asynchronous reappearance is a new cycle.
   useClientLayoutEffect(() => {
@@ -525,13 +540,28 @@ export function SideNav({
       setTooltipKey(null);
     }
     if (!collapsed && tooltipKey) setTooltipKey(null);
-  });
+  }, [
+    closeFlyout,
+    collapsed,
+    current,
+    currentKey,
+    expanded,
+    expandedKeys,
+    flyoutGroup,
+    internalExpanded,
+    model.groups,
+    onExpandedKeysChange,
+    openFlyoutKey,
+    ordered,
+    resolution,
+    tooltipKey,
+  ]);
 
   useClientLayoutEffect(() => {
     const record = focused.current;
     if (!record) return;
-    const active = document.activeElement;
-    if (active !== record.element && active !== document.body) return;
+    const active = record.element.ownerDocument.activeElement;
+    if (active !== record.element && active !== record.element.ownerDocument.body) return;
     const entry = model.entries.get(record.key);
     if (usable(record.element)) {
       if (entry) {
@@ -572,7 +602,7 @@ export function SideNav({
       if (focus(linkRefs.current.get(key) ?? topRefs.current.get(key))) return;
     if (record.parent && focus(topRefs.current.get(record.parent))) return;
     if (!focus(collapseRef.current)) focus(rootRef.current);
-  });
+  }, [collapsed, expanded, fallbackTop, model]);
 
   useClientLayoutEffect(() => {
     const viewport = viewportRef.current;
@@ -590,7 +620,7 @@ export function SideNav({
     const bottom = top + viewport.clientHeight;
     if (rect.top < top) viewport.scrollTop += rect.top - top;
     else if (rect.bottom > bottom) viewport.scrollTop += rect.bottom - bottom;
-  });
+  }, [collapsed, current, expanded, resolution]);
 
   React.useEffect(() => {
     if (isProductionRuntime()) return;
@@ -641,7 +671,7 @@ export function SideNav({
       document.removeEventListener('keydown', keyboard, true);
       document.removeEventListener('focusin', movedFocus);
     };
-  });
+  }, [closeFlyout, openFlyoutKey]);
 
   const recordFocus = (event: React.FocusEvent<HTMLElement>) => {
     onFocusCapture?.(event);
@@ -689,33 +719,29 @@ export function SideNav({
     const children = flyoutGroup.children.filter(hasDestination);
     if (key === flyoutGroup.key) {
       if (event.shiftKey) closeFlyout('tab');
-      else {
-        event.preventDefault();
-        focus(linkRefs.current.get(children[0].key));
-      }
+      else if (focus(linkRefs.current.get(children[0]?.key))) event.preventDefault();
       return;
     }
     const index = children.findIndex((item) => item.key === key);
     if (index < 0) return;
     if (event.shiftKey && index === 0) {
-      event.preventDefault();
-      focus(topRefs.current.get(flyoutGroup.key));
-      closeFlyout('tab');
+      if (focus(topRefs.current.get(flyoutGroup.key))) {
+        event.preventDefault();
+        closeFlyout('tab');
+      }
     } else if (event.shiftKey || index < children.length - 1) {
-      event.preventDefault();
-      focus(linkRefs.current.get(children[index + (event.shiftKey ? -1 : 1)].key));
+      const nextChild = children[index + (event.shiftKey ? -1 : 1)];
+      if (focus(linkRefs.current.get(nextChild?.key))) event.preventDefault();
     } else {
       const topIndex = model.top.indexOf(flyoutGroup.key);
-      const next =
-        model.top
-          .slice(topIndex + 1)
-          .map((itemKey) => topRefs.current.get(itemKey))
-          .find(usable) ??
-        (usable(collapseRef.current) ? collapseRef.current : undefined) ??
-        (rootRef.current ? outsideNext(rootRef.current, flyoutRef.current) : undefined);
-      if (next) {
+      const candidates = [
+        ...model.top.slice(topIndex + 1).map((itemKey) => topRefs.current.get(itemKey)),
+        collapseRef.current,
+        rootRef.current ? outsideNext(rootRef.current, flyoutRef.current) : undefined,
+      ];
+      const moved = candidates.some((candidate) => focus(candidate));
+      if (moved) {
         event.preventDefault();
-        focus(next);
         closeFlyout('tab');
       } else
         setTimeout(() => {

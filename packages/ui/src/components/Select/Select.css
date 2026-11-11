@@ -68,7 +68,7 @@
   font-family: inherit;
   font-size: var(--z-select-trigger-font-size);
   color: var(--z-select-trigger-fg);
-  text-align: left;
+  text-align: start;
   background: var(--z-select-trigger-bg);
   border: 1px solid var(--z-select-trigger-border);
   border-radius: var(--z-select-trigger-radius);
@@ -160,8 +160,7 @@
 .z-select-listbox {
   position: fixed;
   top: 100%;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   z-index: var(--z-z-dropdown);
   margin-top: var(--z-select-listbox-margin-top);
   padding: var(--z-select-listbox-padding);
@@ -230,7 +229,7 @@
 
 .z-select-option[aria-selected='true']::after {
   content: '✓';
-  margin-left: auto;
+  margin-inline-start: auto;
   color: var(--z-color-primary);
 }
 

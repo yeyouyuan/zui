@@ -110,7 +110,8 @@
   justify-content: center;
   width: var(--z-alert-close-size);
   height: var(--z-alert-close-size);
-  margin: -0.125rem -0.375rem -0.125rem 0; /* 视觉贴边、点击域不挤压内容 */
+  margin-block: -0.125rem;
+  margin-inline: 0 -0.375rem; /* 视觉贴边、点击域不挤压内容 */
   padding: 0;
   border: none;
   border-radius: var(--z-alert-close-radius);

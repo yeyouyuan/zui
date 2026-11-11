@@ -88,7 +88,8 @@
 .z-color-picker-swatch:focus-visible {
   border-color: var(--z-color-picker-trigger-hover-border);
   outline: none;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-color-picker-trigger-focus-ring) 15%, transparent);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--z-color-picker-trigger-focus-ring) 15%, transparent);
 }
 
 .z-color-picker-swatch:disabled {
@@ -129,7 +130,7 @@
   border-radius: var(--z-color-picker-panel-radius);
   background: var(--z-color-picker-panel-bg);
   box-shadow: var(--z-color-picker-panel-shadow);
-  max-width: calc(100vw - 16px);
+  max-width: calc(100vw - var(--z-space-4));
   max-height: calc(100dvh - 16px);
   overflow: auto;
 }
@@ -205,7 +206,8 @@
 
 .z-color-picker-hex-input:focus {
   border-color: var(--z-color-picker-trigger-hover-border);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--z-color-picker-trigger-focus-ring) 15%, transparent);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--z-color-picker-trigger-focus-ring) 15%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {

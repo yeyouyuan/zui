@@ -14,13 +14,13 @@
   --z-message-font-size: var(--z-text-sm);
   --z-message-icon-size: 1.125rem;
   --z-message-close-size: var(--z-space-5);
-  --z-message-bar-width: 3px; /* 左侧状态色条 */
+  --z-message-bar-width: 3px; /* 行内起始侧状态色条 */
   --z-message-transition: var(--z-duration-normal) var(--z-ease-standard);
 }
 
 .z-message-list {
   position: fixed;
-  left: 50%;
+  inset-inline-start: 50%;
   z-index: var(--z-z-toast);
   display: flex;
   flex-direction: column;
@@ -40,6 +40,10 @@
   bottom: var(--z-space-6);
   transform: translateX(-50%);
   flex-direction: column-reverse;
+}
+
+.z-message-list:dir(rtl) {
+  transform: translateX(50%);
 }
 
 .z-message {
@@ -64,14 +68,15 @@
     transform var(--z-message-transition);
 }
 
-/* 左侧状态色条 */
+/* 行内起始侧状态色条 */
 .z-message::before {
   content: '';
   flex: none;
   align-self: stretch;
   width: var(--z-message-bar-width);
-  margin: calc(var(--z-message-padding-y) * -1) 0 calc(var(--z-message-padding-y) * -1)
-    calc(var(--z-message-padding-x) * -1);
+  margin-block: calc(var(--z-message-padding-y) * -1);
+  margin-inline: 0;
+  margin-inline-start: calc(var(--z-message-padding-x) * -1);
   background: var(--z-color-info);
 }
 
@@ -153,7 +158,8 @@
   justify-content: center;
   width: var(--z-message-close-size);
   height: var(--z-message-close-size);
-  margin: 0 0 0 var(--z-space-1);
+  margin: 0;
+  margin-inline-start: var(--z-space-1);
   padding: 0;
   border: 0;
   border-radius: var(--z-radius-sm);

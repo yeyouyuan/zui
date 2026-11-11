@@ -184,6 +184,38 @@ describe('MultiCombobox 选中与标签', () => {
     expect(screen.queryByRole('button', { name: '清除选择' })).not.toBeInTheDocument();
   });
 
+  it('1000 个选项下用索引解析标签，不回退到 options.find per tag', async () => {
+    const user = userEvent.setup();
+    const indexedOptions = Array.from({ length: 1000 }, (_, index) => ({
+      value: `value-${index}`,
+      label: `选项 ${index}`,
+    }));
+    const find = vi.spyOn(indexedOptions, 'find');
+    const selectedValues = ['value-0', 'value-500', 'value-999'];
+    const onChange = vi.fn();
+
+    const { container } = render(
+      <MultiCombobox
+        options={indexedOptions}
+        defaultValue={selectedValues}
+        onChange={onChange}
+        aria-label="大列表标签"
+      />
+    );
+
+    const root = getRoot(container);
+    const tags = getTags(root);
+    expect(tags).toHaveLength(3);
+    expect(tags[0]).toHaveTextContent('选项 0');
+    expect(tags[1]).toHaveTextContent('选项 500');
+    expect(tags[2]).toHaveTextContent('选项 999');
+    expect(find).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('button', { name: '移除 选项 999' }));
+    expect(onChange).toHaveBeenLastCalledWith(['value-0', 'value-500'], { reason: 'remove' });
+    expect(getTags(root)).toHaveLength(2);
+  });
+
   it('受控 value 不自我更新，父组件更新后同步', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
@@ -256,10 +288,7 @@ describe('MultiCombobox 选中与标签', () => {
     expect(getInput()).toHaveValue('');
     expect(getTags(getRoot(container))).toHaveLength(1);
     expect(getTags(getRoot(container))[0]).toHaveTextContent('Banana');
-    expect(screen.getByRole('option', { name: 'Banana' })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    );
+    expect(screen.getByRole('option', { name: 'Banana' })).toHaveAttribute('aria-selected', 'true');
   });
 });
 

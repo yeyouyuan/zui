@@ -65,7 +65,7 @@
   font-family: inherit;
   font-size: var(--z-time-picker-trigger-font-size);
   color: var(--z-time-picker-trigger-fg);
-  text-align: left;
+  text-align: start;
   background: var(--z-time-picker-trigger-bg);
   border: 1px solid var(--z-time-picker-trigger-border);
   border-radius: var(--z-time-picker-trigger-radius);
@@ -115,7 +115,7 @@
 .z-time-picker-panel {
   position: fixed;
   top: 100%;
-  left: 0;
+  inset-inline-start: 0;
   z-index: var(--z-z-dropdown);
   display: flex;
   margin-top: var(--z-time-picker-panel-margin-top);
@@ -164,11 +164,11 @@
   width: var(--z-time-picker-column-width);
   padding: var(--z-space-1);
   overflow-y: auto;
-  border-right: 1px solid var(--z-time-picker-column-border);
+  border-inline-end: 1px solid var(--z-time-picker-column-border);
 }
 
 .z-time-picker-column:last-child {
-  border-right: none;
+  border-inline-end: none;
 }
 
 .z-time-picker-item {

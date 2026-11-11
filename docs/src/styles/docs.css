@@ -23,6 +23,17 @@
   /* 代码块：无论明暗模式都是纯暗底（视觉焦点） */
   --doc-code-bg: #0d0d0d;
   --doc-code-fg: #e8e8e8;
+  /* 文档排版：页级导语与章节导语分别占用大/小节奏，避免页面局部覆写漂移。 */
+  --doc-lead-page-size: var(--z-text-md);
+  --doc-lead-section-size: 13px;
+  --doc-lead-page-gap: var(--z-space-8);
+  --doc-lead-section-gap: var(--z-space-6);
+  --doc-lead-color: var(--z-color-fg-muted);
+  /* 文档交互基础：三类按钮共享最小可点击高度、过渡和 focus ring，variant 自行定视觉。 */
+  --doc-action-height: 36px;
+  --doc-action-focus-inner: var(--doc-bg);
+  --doc-action-focus-ring: color-mix(in srgb, var(--z-color-primary) 30%, transparent);
+  --doc-action-hover-bg: var(--z-color-bg-muted);
 }
 
 [data-theme='dark'] {
@@ -102,22 +113,37 @@ a:hover {
   text-decoration: underline;
 }
 
+/* 三轨文档按钮只共享交互底座；填充、边框与字色仍由各 variant 决定。 */
+:where(.doc-btn, .doc-chip-btn, .doc-command-trigger) {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--doc-action-height);
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background-color var(--z-duration-fast) var(--z-ease-standard),
+    border-color var(--z-duration-fast) var(--z-ease-standard),
+    color var(--z-duration-fast) var(--z-ease-standard);
+}
+
 /* 统一双层 focus ring：贴底色内圈 + 半透明主色外圈 */
 :where(
   .doc-page a:not([class]),
   .doc-menu-btn,
   .doc-chip-btn,
+  .doc-command-trigger,
   .doc-brand,
   .doc-nav-link,
   .doc-toc-link,
+  .doc-toc-compact-trigger,
   .doc-copy-btn,
   .doc-btn,
   .doc-pg-preset-btn
 ):focus-visible {
   outline: none;
   box-shadow:
-    0 0 0 2px var(--doc-bg),
-    0 0 0 4px color-mix(in srgb, var(--z-color-primary) 30%, transparent);
+    0 0 0 2px var(--doc-action-focus-inner),
+    0 0 0 4px var(--doc-action-focus-ring);
 }
 
 /* ============================================================
@@ -229,26 +255,19 @@ a:hover {
   gap: var(--z-space-1);
 }
 
-/* 顶栏动作按钮：ghost 风格，无边框无底色 */
+/* 顶栏动作按钮：共享交互底座上的紧凑 ghost variant。 */
 .doc-chip-btn {
-  display: inline-flex;
-  align-items: center;
   padding: 6px 10px;
   border: none;
   border-radius: 6px;
   background: transparent;
   color: var(--z-color-fg-muted);
-  font-family: inherit;
   font-size: 13px;
-  cursor: pointer;
-  transition:
-    color var(--z-duration-fast) var(--z-ease-standard),
-    background var(--z-duration-fast) var(--z-ease-standard);
 }
 
 .doc-chip-btn:hover {
   color: var(--z-color-fg);
-  background: var(--z-color-bg-muted);
+  background: var(--doc-action-hover-bg);
   text-decoration: none;
 }
 
@@ -308,7 +327,7 @@ a:hover {
   padding: 12px 8px 24px;
 }
 
-/* ---------------- 侧栏搜索过滤：无边框设计 ---------------- */
+/* ---------------- 侧栏搜索过滤：低对比边框，hover 提升表面与边界 ---------------- */
 
 .doc-nav-search {
   flex-shrink: 0;
@@ -336,7 +355,8 @@ a:hover {
 }
 
 .doc-nav-search-input:hover {
-  border-color: var(--doc-border);
+  border-color: var(--z-color-fg-subtle);
+  background: var(--z-color-bg-subtle);
 }
 
 /* 聚焦时才出现边框 + 微妙 ring */
@@ -356,7 +376,9 @@ a:hover {
 
 .doc-nav-loading {
   display: grid;
+  align-content: start;
   gap: 10px;
+  min-height: 520px;
   padding: 6px 8px;
 }
 
@@ -564,11 +586,12 @@ a:hover {
   scroll-margin-top: 72px;
 }
 
+/* 页级导语：紧跟 h1，承担页面定位；字号与下方内容间距均高于章节导语。 */
 .doc-lead {
-  margin: 0 0 32px;
-  font-size: 1rem;
+  margin: 0 0 var(--doc-lead-page-gap);
+  font-size: var(--doc-lead-page-size);
   font-weight: var(--z-weight-regular);
-  color: var(--z-color-fg-muted);
+  color: var(--doc-lead-color);
   line-height: 1.7;
 }
 
@@ -676,6 +699,16 @@ a:hover {
 .doc-copy-btn:hover {
   color: #fff;
   background: #ffffff14;
+}
+
+.doc-copy-btn[data-state='copied'] {
+  border-color: var(--z-color-success);
+  color: var(--z-color-success);
+}
+
+.doc-copy-btn[data-state='failed'] {
+  border-color: var(--z-color-danger);
+  color: var(--z-color-danger);
 }
 
 /* 语法高亮 token（#0d0d0d 底上的固定高亮色，明暗共用） */
@@ -834,6 +867,10 @@ a:hover {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--z-color-fg-subtle);
+}
+
+.doc-toc-compact-trigger {
+  display: none;
 }
 
 .doc-toc-link {
@@ -1029,24 +1066,16 @@ a:hover {
 }
 
 .doc-btn {
-  display: inline-flex;
-  align-items: center;
   justify-content: center;
   gap: 6px;
-  height: 36px;
+  height: var(--doc-action-height);
   padding: 0 16px;
   border: 1px solid transparent;
   border-radius: 8px;
-  font-family: inherit;
   font-size: 14px;
   font-weight: var(--z-weight-medium);
   line-height: 1;
   text-decoration: none;
-  cursor: pointer;
-  transition:
-    background var(--z-duration-fast) var(--z-ease-standard),
-    border-color var(--z-duration-fast) var(--z-ease-standard),
-    color var(--z-duration-fast) var(--z-ease-standard);
 }
 
 .doc-btn--primary {
@@ -1475,8 +1504,6 @@ a:hover {
   color: var(--z-color-fg-subtle);
 }
 .doc-command-trigger {
-  display: inline-flex;
-  align-items: center;
   gap: 10px;
   min-width: 40px;
   height: 40px;
@@ -1486,9 +1513,7 @@ a:hover {
   border-radius: 7px;
   background: var(--z-color-bg-subtle);
   color: var(--z-color-fg-muted);
-  font: inherit;
   font-size: 12px;
-  cursor: pointer;
 }
 .doc-command-trigger svg,
 .doc-nav-search svg {
@@ -1598,7 +1623,6 @@ a:hover {
   background: var(--z-color-bg-subtle);
 }
 :where(
-  .doc-command-trigger,
   .doc-demo-code-toggle,
   .doc-nav-clear,
   .doc-table-wrap
@@ -1781,10 +1805,11 @@ a:hover {
   font-size: 18px;
   margin: 0 4px;
 }
+/* 章节导语：只解释紧邻 h2 的局部内容，视觉权级与间距均低于页级 .doc-lead。 */
 .doc-section-lead {
-  margin: -6px 0 24px;
-  font-size: 13px;
-  color: var(--z-color-fg-muted);
+  margin: calc(0px - var(--z-space-2)) 0 var(--doc-lead-section-gap);
+  font-size: var(--doc-lead-section-size);
+  color: var(--doc-lead-color);
   line-height: 1.8;
 }
 .doc-overview .doc-feature {
@@ -2005,9 +2030,11 @@ a:hover {
   .doc-nav-search-input,
   .doc-nav-link,
   .doc-toc-link,
+  .doc-toc-compact-trigger,
   .doc-copy-btn,
   .doc-btn,
-  .doc-chip-btn {
+  .doc-chip-btn,
+  .doc-command-trigger {
     transition: none;
   }
 }
@@ -2052,8 +2079,90 @@ a:hover {
  * 16. 响应式
  * ============================================================ */
 
-/* <1100px：TOC 隐藏，正文恢复完整内容宽度 */
-@media (max-width: 1099px) {
+/* 800–1099px：右栏改为正文顶部的折叠目录；<800px 完全隐藏，避免挤压 320px。 */
+@media (min-width: 800px) and (max-width: 1099px) {
+  .doc-shell {
+    grid-template-columns: 232px 1fr;
+  }
+
+  .doc-main {
+    grid-template-columns: minmax(0, 800px);
+  }
+
+  .doc-page {
+    grid-row: 2;
+  }
+
+  .doc-toc {
+    grid-column: 1;
+    grid-row: 1;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    max-height: none;
+    margin-bottom: var(--z-space-5);
+    overflow: visible;
+    padding: 0;
+    border: 1px solid var(--doc-border-faint);
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--doc-bg) 92%, transparent);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+  .doc-toc-title {
+    display: none;
+  }
+
+  .doc-toc-compact-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: calc(var(--doc-action-height) + var(--z-space-1));
+    padding: 0 var(--z-space-4);
+    border: 0;
+    border-radius: inherit;
+    background: transparent;
+    color: var(--z-color-fg-muted);
+    font: inherit;
+    font-size: 13px;
+    font-weight: var(--z-weight-medium);
+    cursor: pointer;
+  }
+
+  .doc-toc-compact-trigger:hover {
+    background: var(--doc-action-hover-bg);
+    color: var(--z-color-fg);
+  }
+
+  .doc-toc-compact-trigger > :last-child {
+    transition: transform var(--z-duration-fast) var(--z-ease-standard);
+  }
+
+  .doc-toc[data-compact-open='true'] .doc-toc-compact-trigger > :last-child {
+    transform: rotate(180deg);
+  }
+
+  .doc-toc-list {
+    display: none;
+    max-height: min(52vh, 360px);
+    overflow-y: auto;
+    padding: 0 var(--z-space-4) var(--z-space-3);
+    border-top: 1px solid var(--doc-border-faint);
+  }
+
+  .doc-toc[data-compact-open='true'] .doc-toc-list {
+    display: block;
+  }
+
+  .doc-toc-link {
+    padding-block: 7px;
+  }
+}
+
+@media (max-width: 799px) {
   .doc-shell {
     grid-template-columns: 232px 1fr;
   }
@@ -2067,6 +2176,8 @@ a:hover {
   }
 }
 
+/* Builder 是有意保留的 900px 特例：编辑画布和双侧面板需要比普通文档更宽；
+ * 普通文档仍在 767px 才折叠导航。与 App.tsx 的 mobileQuery 注释保持同步。 */
 @media (max-width: 900px) {
   .doc-shell--builder {
     grid-template-columns: 1fr;

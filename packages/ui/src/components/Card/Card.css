@@ -85,7 +85,7 @@
 
 .z-card-extra {
   flex: none;
-  margin-left: auto;
+  margin-inline-start: auto;
   font-size: var(--z-card-extra-font-size);
   color: var(--z-card-extra-fg);
 }

@@ -22,7 +22,7 @@
   font-size: var(--z-table-font-size);
   line-height: var(--z-leading-normal);
   color: var(--z-color-fg);
-  text-align: left;
+  text-align: start;
 }
 
 /* 紧凑密度：行高 ≈36px，缩小 cell padding */
@@ -101,12 +101,18 @@
 
 .z-table[data-bordered='true'] .z-table-header-cell,
 .z-table[data-bordered='true'] .z-table-cell {
-  border-right: 1px solid var(--z-table-border-color-subtle);
+  border-inline-end: 1px solid var(--z-table-border-color-subtle);
 }
 
 .z-table[data-bordered='true'] .z-table-header-cell:last-child,
 .z-table[data-bordered='true'] .z-table-cell:last-child {
-  border-right: none;
+  border-inline-end: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-table-row {
+    transition: none;
+  }
 }
 
 @media (forced-colors: active) {

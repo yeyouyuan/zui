@@ -24,7 +24,7 @@
   position: fixed;
   z-index: var(--z-tooltip-z);
   box-sizing: border-box;
-  max-width: min(var(--z-tooltip-max-width), calc(100vw - 16px));
+  max-width: min(var(--z-tooltip-max-width), calc(100vw - var(--z-space-4)));
   padding: var(--z-tooltip-padding-y) var(--z-tooltip-padding-x);
   color: var(--z-tooltip-fg);
   background: var(--z-tooltip-bg);

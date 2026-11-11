@@ -32,7 +32,7 @@
   position: fixed;
   z-index: var(--z-dropdown-menu-z);
   top: calc(100% + var(--z-dropdown-menu-offset));
-  left: 0;
+  inset-inline-start: 0;
   box-sizing: border-box;
   min-width: var(--z-dropdown-menu-min-width);
   padding: var(--z-dropdown-menu-padding);
@@ -45,7 +45,7 @@
   line-height: var(--z-leading-normal);
   outline: none;
   animation: z-dropdown-menu-in var(--z-dropdown-menu-animation);
-  max-width: calc(100vw - 16px);
+  max-width: calc(100vw - var(--z-space-4));
   max-height: calc(100dvh - 16px);
   overflow: auto;
 }

@@ -351,6 +351,15 @@
   background: transparent;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .z-daterange-trigger,
+  .z-daterange-clear,
+  .z-daterange-nav,
+  .z-daterange-day {
+    transition: none;
+  }
+}
+
 @media (max-width: 560px) {
   .z-daterange-header {
     grid-template-columns: auto 1fr auto;

@@ -375,6 +375,91 @@ describe('SideNav 收窄态', () => {
     expect(groupToggle).toHaveFocus();
   });
 
+  it.each(['disable', 'remove'] as const)(
+    '首个子项目标动态 %s 时 Tab 放行原生顺序，不把焦点困在触发器',
+    async (mode) => {
+      const user = userEvent.setup();
+      render(<SideNav sections={collapsedSections()} defaultCollapsed aria-label="主导航" />);
+      const groupToggle = screen.getByRole('button', { name: '项目' });
+      await user.click(groupToggle);
+      groupToggle.focus();
+      const firstChild = screen.getByRole('link', { name: '进行中' });
+      if (mode === 'disable') firstChild.setAttribute('aria-disabled', 'true');
+      else firstChild.remove();
+
+      const tab = new KeyboardEvent('keydown', {
+        key: 'Tab',
+        bubbles: true,
+        cancelable: true,
+      });
+      expect(groupToggle.dispatchEvent(tab)).toBe(true);
+      expect(tab.defaultPrevented).toBe(false);
+      expect(groupToggle).toHaveFocus();
+      expect(document.body).not.toHaveFocus();
+    }
+  );
+
+  it('首个子项在 Tab 聚焦时被删除会放行原生顺序，不把焦点丢到 body', async () => {
+    const user = userEvent.setup();
+    const dynamic = collapsedSections();
+    const { rerender } = render(
+      <SideNav sections={dynamic} defaultCollapsed aria-label="主导航" />
+    );
+    const groupToggle = screen.getByRole('button', { name: '项目' });
+    await user.click(groupToggle);
+    groupToggle.focus();
+    const firstChild = screen.getByRole('link', { name: '进行中' });
+    const focusSpy = vi.spyOn(firstChild, 'focus').mockImplementation(() => {
+      const removed = dynamic.map((section) => ({
+        ...section,
+        items: section.items.map((item) =>
+          'children' in item && item.key === 'projects'
+            ? { ...item, children: item.children.slice(1) }
+            : item
+        ),
+      }));
+      rerender(<SideNav sections={removed} defaultCollapsed aria-label="主导航" />);
+    });
+
+    const tab = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      cancelable: true,
+    });
+    try {
+      expect(groupToggle.dispatchEvent(tab)).toBe(true);
+      expect(tab.defaultPrevented).toBe(false);
+      expect(groupToggle).toHaveFocus();
+      expect(document.body).not.toHaveFocus();
+      expect(screen.queryByRole('link', { name: '进行中' })).not.toBeInTheDocument();
+    } finally {
+      focusSpy.mockRestore();
+    }
+  });
+
+  it('子项间 Tab 仅在目标实际接收焦点后取消默认行为', async () => {
+    const user = userEvent.setup();
+    render(<SideNav sections={collapsedSections()} defaultCollapsed aria-label="主导航" />);
+    const groupToggle = screen.getByRole('button', { name: '项目' });
+    await user.click(groupToggle);
+    const firstChild = screen.getByRole('link', { name: '进行中' });
+    const secondChild = screen.getByRole('link', { name: '已归档' });
+    firstChild.focus();
+    const focusSpy = vi.spyOn(secondChild, 'focus').mockImplementation(() => {});
+    const tab = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      cancelable: true,
+    });
+    try {
+      expect(firstChild.dispatchEvent(tab)).toBe(true);
+      expect(tab.defaultPrevented).toBe(false);
+      expect(firstChild).toHaveFocus();
+    } finally {
+      focusSpy.mockRestore();
+    }
+  });
+
   it('收窄再恢复不丢失 expanded 状态', async () => {
     const user = userEvent.setup();
     render(

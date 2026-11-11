@@ -8,9 +8,8 @@
   --z-modal-content-width-lg: 48rem;
   --z-modal-content-bg: var(--z-color-bg-elevated);
   --z-modal-content-fg: var(--z-color-fg);
-  --z-modal-content-radius: 0.75rem; /* 12px 浮层圆角 */
-  --z-modal-content-shadow:
-    0 4px 8px -2px oklch(0.155 0.005 250 / 0.1), 0 24px 48px -12px oklch(0.155 0.005 250 / 0.22);
+  --z-modal-content-radius: var(--z-radius-lg);
+  --z-modal-content-shadow: var(--z-shadow-lg);
   --z-modal-content-padding: var(--z-space-6);
   --z-modal-content-max-height: calc(100vh - var(--z-space-8));
   --z-modal-header-gap: var(--z-space-2);
@@ -146,7 +145,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--z-modal-header-gap);
-  padding-right: var(--z-modal-close-size);
+  padding-inline-end: var(--z-modal-close-size);
 }
 
 .z-modal-title {
@@ -182,7 +181,7 @@
 .z-modal-close {
   position: absolute;
   top: var(--z-space-3);
-  right: var(--z-space-3);
+  inset-inline-end: var(--z-space-3);
   display: inline-flex;
   align-items: center;
   justify-content: center;

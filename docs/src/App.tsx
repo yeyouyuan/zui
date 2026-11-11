@@ -70,6 +70,8 @@ export default function App(): React.ReactNode {
   const displayedRoute = useDeferredValue(route);
   const isRoutePending = route !== displayedRoute;
   const isBuilderRoute = displayedRoute === '/builder';
+  // Builder 保留 900px 特例：编辑画布与双侧面板比普通文档需要更宽的可用区；
+  // 其余文档继续使用全站 767px 抽屉断点。与 docs.css 的响应式注释保持同步。
   const mobileQuery = isBuilderRoute ? '(max-width: 900px)' : '(max-width: 767px)';
   const [isMobile, setIsMobile] = useState(() => window.matchMedia(mobileQuery).matches);
   const [dark, setDark] = useState<boolean>(getEffectiveDarkTheme);
@@ -282,7 +284,7 @@ export default function App(): React.ReactNode {
       <Suspense
         fallback={
           <div className="doc-nav-loading" aria-hidden="true">
-            {Array.from({ length: 8 }, (_, index) => (
+            {Array.from({ length: 18 }, (_, index) => (
               <span key={index} />
             ))}
           </div>

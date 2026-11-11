@@ -270,6 +270,27 @@ describe('CommandPalette 导航与选择契约', () => {
     expectActive('切换主题');
   });
 
+  it('1000 条命令下方向键仍按相邻索引移动并正确执行', async () => {
+    const onSelect = vi.fn();
+    const largeCommands = Array.from({ length: 1000 }, (_, index) => ({
+      key: `command-${index}`,
+      label: `命令 ${index}`,
+      onSelect: index === 2 ? onSelect : () => {},
+    }));
+    render(<CommandPalette open commands={largeCommands} filter={false} aria-label="大命令面板" />);
+
+    await waitFor(() => expectActive('命令 0'));
+    fireEvent.keyDown(getInput(), { key: 'ArrowDown' });
+    expectActive('命令 1');
+    fireEvent.keyDown(getInput(), { key: 'ArrowDown' });
+    expectActive('命令 2');
+
+    fireEvent.keyDown(getInput(), { key: 'Enter' });
+    expect(onSelect).toHaveBeenCalledWith(
+      expect.objectContaining({ query: '', source: 'keyboard' })
+    );
+  });
+
   it('item 后 root 的顺序固定，事件携带 query/source/meta，preventDefault 可保持打开', async () => {
     const order: string[] = [];
     const itemSelect = vi.fn((event) => {

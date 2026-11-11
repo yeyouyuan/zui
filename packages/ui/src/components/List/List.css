@@ -70,8 +70,7 @@
 .z-list[data-bordered='false'] .z-list-header,
 .z-list[data-bordered='false'] .z-list-footer {
   background: none;
-  padding-left: 0;
-  padding-right: 0;
+  padding-inline: 0;
 }
 
 /* -------------------------------- 列表项 ------------------------------- */
@@ -128,7 +127,7 @@
 
 .z-list-item-extra {
   flex: 0 0 auto;
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 /* -------------------------------- 加载态 ------------------------------- */

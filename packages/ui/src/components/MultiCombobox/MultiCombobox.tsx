@@ -67,6 +67,10 @@ export interface MultiComboboxProps extends Omit<
   onOpenChange?: (open: boolean, details: MultiComboboxOpenChangeDetails) => void;
   onBlur?: React.FocusEventHandler<HTMLDivElement>;
 
+  /**
+   * false 关闭本地过滤。当前列表不虚拟化；数百项以上请改用异步筛选并设置
+   * filterOption={false}，避免一次渲染全部远端结果。
+   */
   filterOption?: false | ((option: MultiComboboxOption, query: string) => boolean);
 
   loading?: boolean;
@@ -262,22 +266,25 @@ export function MultiCombobox(props: MultiComboboxProps) {
   const loadingText = loadingContent === undefined ? locale.combobox.loading : loadingContent;
   const emptyText = emptyContent === undefined ? locale.combobox.empty : emptyContent;
 
-  // 已选值的可显示文本：options 里找不到时（异步结果暂不含已选项）退回最近已知文本
-  const resolveTagText = React.useCallback(
-    (value: string): string => {
-      const option = options.find((candidate) => candidate.value === value);
-      if (option) return getOptionText(option);
-      return lastKnownTextByValueRef.current.get(value) ?? value;
-    },
-    [options]
-  );
+  const optionLookup = React.useMemo(() => {
+    const byValue = new Map<string, MultiComboboxOption>();
+    const textByValue = new Map<string, string>();
+    for (const option of options) {
+      // 与原先 Array.find 的语义一致：重复值使用首项。
+      if (byValue.has(option.value)) continue;
+      byValue.set(option.value, option);
+      textByValue.set(option.value, getOptionText(option));
+    }
+    return { byValue, textByValue };
+  }, [options]);
 
+  // 已选值在异步结果中暂时消失时，退回最近一次可见的文本。
   React.useEffect(() => {
-    for (const selected of selectedRef.current) {
-      const option = options.find((candidate) => candidate.value === selected);
+    for (const selected of selectedValues) {
+      const option = optionLookup.byValue.get(selected);
       if (option) lastKnownTextByValueRef.current.set(selected, getOptionText(option));
     }
-  }, [options, selectedValues]);
+  }, [optionLookup, selectedValues]);
 
   const filteredOptions = React.useMemo(() => {
     if (filterOption === false) return options;
@@ -566,8 +573,7 @@ export function MultiCombobox(props: MultiComboboxProps) {
     if (!valueControlled || pending === null) return;
     pendingControlledSelectionRef.current = null;
 
-    const accepted =
-      selectedValues.includes(pending.optionValue) === pending.shouldBeSelected;
+    const accepted = selectedValues.includes(pending.optionValue) === pending.shouldBeSelected;
     if (!accepted && pending.query !== '' && draftRef.current === '') {
       requestInput(pending.query, 'reset', false);
     }
@@ -673,35 +679,38 @@ export function MultiCombobox(props: MultiComboboxProps) {
       <div data-part="control" className={cx('z-multicombobox-control', classNames?.control)}>
         {selectedValues.length > 0 ? (
           <span data-part="tags" className={cx('z-multicombobox-tags', classNames?.tags)}>
-            {selectedValues.map((value) => (
-              <span
-                key={value}
-                data-part="tag"
-                className={cx('z-multicombobox-tag', classNames?.tag)}
-              >
+            {selectedValues.map((value) => {
+              const tagText =
+                optionLookup.textByValue.get(value) ??
+                lastKnownTextByValueRef.current.get(value) ??
+                value;
+              return (
                 <span
-                  data-part="tag-label"
-                  className={cx('z-multicombobox-tag-label', classNames?.tagLabel)}
+                  key={value}
+                  data-part="tag"
+                  className={cx('z-multicombobox-tag', classNames?.tag)}
                 >
-                  {resolveTagText(value)}
+                  <span
+                    data-part="tag-label"
+                    className={cx('z-multicombobox-tag-label', classNames?.tagLabel)}
+                  >
+                    {tagText}
+                  </span>
+                  <button
+                    type="button"
+                    data-part="tag-remove"
+                    className={cx('z-multicombobox-tag-remove', classNames?.tagRemove)}
+                    aria-label={locale.accessibility.removeItem.replace('{item}', tagText)}
+                    tabIndex={-1}
+                    disabled={disabled}
+                    onPointerDown={(event) => event.preventDefault()}
+                    onClick={() => removeValue(value, 'remove')}
+                  >
+                    <Close size={10} />
+                  </button>
                 </span>
-                <button
-                  type="button"
-                  data-part="tag-remove"
-                  className={cx('z-multicombobox-tag-remove', classNames?.tagRemove)}
-                  aria-label={locale.accessibility.removeItem.replace(
-                    '{item}',
-                    resolveTagText(value)
-                  )}
-                  tabIndex={-1}
-                  disabled={disabled}
-                  onPointerDown={(event) => event.preventDefault()}
-                  onClick={() => removeValue(value, 'remove')}
-                >
-                  <Close size={10} />
-                </button>
-              </span>
-            ))}
+              );
+            })}
           </span>
         ) : null}
 

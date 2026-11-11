@@ -238,6 +238,27 @@ describe('Anchor 滚动侦测', () => {
     await fireScroll(replacement);
     expect(screen.getByRole('link', { name: '重挂二' })).toHaveAttribute('aria-current', 'true');
   });
+
+  it('卸载时移除滚动、scrollend 与 resize 监听', () => {
+    const scroller = document.createElement('div');
+    document.body.appendChild(scroller);
+    makeSection('cleanup-section', 100);
+    const scrollerRemove = vi.spyOn(scroller, 'removeEventListener');
+    const windowRemove = vi.spyOn(window, 'removeEventListener');
+
+    const { unmount } = render(
+      <Anchor target={() => scroller}>
+        <Anchor.Link href="#cleanup-section" title="卸载清理" />
+      </Anchor>
+    );
+    unmount();
+
+    expect(scrollerRemove).toHaveBeenCalledWith('scroll', expect.any(Function));
+    expect(scrollerRemove).toHaveBeenCalledWith('scrollend', expect.any(Function));
+    expect(windowRemove).toHaveBeenCalledWith('resize', expect.any(Function));
+    scrollerRemove.mockRestore();
+    windowRemove.mockRestore();
+  });
 });
 
 describe('Anchor 点击行为', () => {

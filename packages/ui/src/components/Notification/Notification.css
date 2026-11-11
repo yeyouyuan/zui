@@ -32,22 +32,22 @@
 
 .z-notification-list[data-placement='topLeft'] {
   top: var(--z-notification-inset);
-  left: var(--z-notification-inset);
+  inset-inline-start: var(--z-notification-inset);
 }
 
 .z-notification-list[data-placement='topRight'] {
   top: var(--z-notification-inset);
-  right: var(--z-notification-inset);
+  inset-inline-end: var(--z-notification-inset);
 }
 
 .z-notification-list[data-placement='bottomLeft'] {
   bottom: var(--z-notification-inset);
-  left: var(--z-notification-inset);
+  inset-inline-start: var(--z-notification-inset);
   flex-direction: column-reverse;
 }
 
 .z-notification-list[data-placement='bottomRight'] {
-  right: var(--z-notification-inset);
+  inset-inline-end: var(--z-notification-inset);
   bottom: var(--z-notification-inset);
   flex-direction: column-reverse;
 }

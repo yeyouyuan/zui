@@ -181,7 +181,7 @@
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  margin-left: auto;
+  margin-inline-start: auto;
   color: var(--z-color-fg-muted);
   pointer-events: none;
   transform-origin: center;
@@ -214,8 +214,7 @@
 .z-tree-select-panel {
   position: fixed;
   top: 100%;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   z-index: var(--z-z-dropdown);
   box-sizing: border-box;
   margin-top: var(--z-tree-select-panel-margin-top);
@@ -226,7 +225,7 @@
   border: 1px solid var(--z-tree-select-panel-border);
   border-radius: var(--z-tree-select-panel-radius);
   box-shadow: var(--z-tree-select-panel-shadow);
-  max-width: calc(100vw - 16px);
+  max-width: calc(100vw - var(--z-space-4));
 }
 
 .z-tree-select-panel[data-open='false'] {
@@ -264,7 +263,7 @@
 }
 
 .z-tree-select-node-children {
-  padding-left: var(--z-tree-select-indent);
+  padding-inline-start: var(--z-tree-select-indent);
 }
 
 .z-tree-select-node-row {
@@ -272,7 +271,7 @@
   align-items: center;
   gap: var(--z-tree-select-node-gap);
   min-height: var(--z-tree-select-node-height);
-  padding-right: var(--z-space-2);
+  padding-inline-end: var(--z-space-2);
   border-radius: var(--z-tree-select-node-radius);
   cursor: pointer;
   transition: background-color var(--z-tree-select-transition);

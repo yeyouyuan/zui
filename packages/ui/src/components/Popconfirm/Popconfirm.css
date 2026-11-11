@@ -44,7 +44,7 @@
   color: var(--z-popconfirm-fg);
   font-family: var(--z-font-sans);
   box-shadow: var(--z-popconfirm-shadow);
-  max-width: calc(100vw - 16px);
+  max-width: calc(100vw - var(--z-space-4));
   max-height: calc(100dvh - 16px);
   overflow: auto;
   overflow-wrap: break-word;

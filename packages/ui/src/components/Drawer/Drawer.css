@@ -3,7 +3,7 @@
 .z-drawer-overlay {
   /* 组件级变量（用户可覆盖） */
   --z-drawer-overlay-bg: var(--z-color-overlay);
-  --z-drawer-size: 378px;
+  --z-drawer-size: 24rem;
   --z-drawer-content-bg: var(--z-color-bg-elevated);
   --z-drawer-content-fg: var(--z-color-fg);
   --z-drawer-content-shadow: var(--z-shadow-lg);
@@ -226,7 +226,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--z-drawer-header-gap);
-  padding-right: var(--z-drawer-close-size);
+  padding-inline-end: var(--z-drawer-close-size);
 }
 
 .z-drawer-title {
@@ -255,7 +255,7 @@
 .z-drawer-close {
   position: absolute;
   top: var(--z-space-3);
-  right: var(--z-space-3);
+  inset-inline-end: var(--z-space-3);
   display: inline-flex;
   align-items: center;
   justify-content: center;

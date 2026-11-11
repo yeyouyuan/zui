@@ -5,7 +5,7 @@
   --z-slider-track-bg: var(--z-color-bg-muted);
   --z-slider-track-radius: var(--z-radius-full);
   --z-slider-fill-bg: var(--z-color-primary);
-  --z-slider-thumb-size: 16px;
+  --z-slider-thumb-size: 1rem;
   --z-slider-thumb-hit-size: 24px;
   --z-slider-thumb-bg: var(--z-color-bg);
   --z-slider-thumb-border: 2px solid var(--z-color-primary);

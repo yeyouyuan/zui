@@ -281,6 +281,14 @@
   background: transparent;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .z-datepicker-trigger,
+  .z-datepicker-nav,
+  .z-datepicker-day {
+    transition: none;
+  }
+}
+
 @media (forced-colors: active) {
   .z-datepicker-trigger,
   .z-datepicker-panel {

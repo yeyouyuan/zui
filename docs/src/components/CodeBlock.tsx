@@ -89,7 +89,13 @@ export default function CodeBlock({
   };
 
   const copyButton = copyable ? (
-    <button type="button" className="doc-copy-btn" onClick={handleCopy} aria-live="polite">
+    <button
+      type="button"
+      className="doc-copy-btn"
+      data-state={copyStatus}
+      onClick={handleCopy}
+      aria-live="polite"
+    >
       {copyStatus === 'copied' ? '已复制' : copyStatus === 'failed' ? '复制失败' : '复制'}
     </button>
   ) : null;

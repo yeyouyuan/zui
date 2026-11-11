@@ -4,17 +4,16 @@
   --z-switch-track-width: 2.25rem; /* 36px md */
   --z-switch-track-height: 1.25rem; /* 20px md */
   --z-switch-thumb-size: 1rem; /* 16px */
-  --z-switch-thumb-offset: calc(
-    (var(--z-switch-track-height) - var(--z-switch-thumb-size)) / 2
+  --z-switch-thumb-offset: calc((var(--z-switch-track-height) - var(--z-switch-thumb-size)) / 2);
+  --z-switch-thumb-travel: calc(
+    var(--z-switch-track-width) - var(--z-switch-thumb-size) - 2 * var(--z-switch-thumb-offset)
   );
-  --z-switch-thumb-travel: calc(var(--z-switch-track-width) - var(--z-switch-thumb-size) - 2 * var(--z-switch-thumb-offset));
   --z-switch-gap: var(--z-space-2);
   --z-switch-track-bg: var(--z-color-border-strong); /* 关态中性灰 */
   --z-switch-track-checked-bg: var(--z-color-primary);
   --z-switch-track-disabled-bg: var(--z-color-disabled-border);
   --z-switch-thumb-bg: var(--z-color-bg-elevated);
-  --z-switch-thumb-shadow: 0 1px 2px oklch(0.155 0.005 250 / 0.2),
-    0 2px 4px oklch(0.155 0.005 250 / 0.1);
+  --z-switch-thumb-shadow: var(--z-shadow-sm);
   --z-switch-thumb-disabled-bg: var(--z-color-bg-elevated);
   --z-switch-label-color: var(--z-color-fg);
   --z-switch-label-font-size: var(--z-text-sm);

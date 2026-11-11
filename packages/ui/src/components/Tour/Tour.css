@@ -149,3 +149,9 @@
   background: var(--z-tour-button-disabled-bg);
   cursor: not-allowed;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .z-tour-button {
+    transition: none;
+  }
+}
