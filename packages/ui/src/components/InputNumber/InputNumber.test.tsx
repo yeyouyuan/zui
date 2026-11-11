@@ -199,4 +199,39 @@ describe('InputNumber', () => {
     expect(input).toHaveAttribute('name', 'qty');
     expect(input).toHaveAttribute('maxlength', '5');
   });
+
+  it('value={null} is a controlled empty state, not uncontrolled', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    function Controlled() {
+      const [value, setValue] = React.useState<number | null>(null);
+      return (
+        <InputNumber
+          aria-label="数量"
+          value={value}
+          onChange={onChange}
+          // 父级拒绝更新：输入后 UI 必须服从 null
+          onChangeCapture={() => setValue(null)}
+        />
+      );
+    }
+    render(<Controlled />);
+    const input = getInput() as HTMLInputElement;
+    // 键入过程显示草稿；失焦提交时父级仍拒绝（value 恒为 null），回滚为空显示
+    await user.type(input, '5');
+    expect(onChange).toHaveBeenCalled();
+    await user.keyboard('{Tab}');
+    expect(input.value).toBe('');
+  });
+
+  it('renders empty string (not crash) when Form injects a non-number value', () => {
+    // Form.Item 会把 null 强转 '' 注入；此处模拟该契约外输入，要求按空值渲染
+    const { container } = render(
+      // @ts-expect-error 模拟 Form 运行时注入的契约外值
+      <InputNumber aria-label="数量" value={''} precision={2} />
+    );
+    const input = container.querySelector('input') as HTMLInputElement;
+    // type=number 的 toHaveValue 语义不稳定，直接断言字符串值
+    expect(input.value).toBe('');
+  });
 });

@@ -101,6 +101,9 @@ export function Mentions(props: MentionsProps) {
   const [triggerStart, setTriggerStart] = React.useState(0);
   const [cursorTarget, setCursorTarget] = React.useState<number | null>(null);
 
+  // IME 组合态标记（中文/日文等输入法选词过程中按 Enter/Tab 属于确认候选词）
+  const compositionRef = React.useRef(false);
+
   const [current, setCurrent] = useControllableState<string>({
     value,
     defaultValue: defaultValue ?? '',
@@ -153,7 +156,21 @@ export function Mentions(props: MentionsProps) {
     updateTrigger(next, pos);
   };
 
+  const onCompositionStart = () => {
+    compositionRef.current = true;
+  };
+
+  const onCompositionEnd = () => {
+    compositionRef.current = false;
+  };
+
   const onKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const native = event.nativeEvent as KeyboardEvent & {
+      isComposing?: boolean;
+      keyCode?: number;
+    };
+    // IME 组合态（含部分浏览器的 keyCode 229 兜底）不触发建议导航与提及插入
+    if (compositionRef.current || native.isComposing || native.keyCode === 229) return;
     if (disabled || !open) return;
     const { key } = event;
     switch (key) {
@@ -230,6 +247,8 @@ export function Mentions(props: MentionsProps) {
         aria-controls={open ? panelId : undefined}
         aria-activedescendant={activeDescendantId}
         onChange={onTextareaChange}
+        onCompositionStart={onCompositionStart}
+        onCompositionEnd={onCompositionEnd}
         onKeyDown={onKeyDown}
       />
 

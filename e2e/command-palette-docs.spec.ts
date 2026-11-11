@@ -89,12 +89,24 @@ test('聚焦文档搜索命令：旧 ⌘K 行为成为面板命令', async ({ pa
 test('GitHub 命令：preventDefault 保持打开并打开新窗口', async ({ page }) => {
   await openDocs(page);
   await pressModK(page);
-  const popupPromise = page.waitForEvent('popup');
+  // noopener 打开的窗口不触发 popup 事件，拦截 window.open 断言参数
+  await page.evaluate(() => {
+    (window as { __openArgs?: unknown[] }).__openArgs = [];
+    const orig = window.open.bind(window);
+    window.open = ((...args: Parameters<typeof window.open>) => {
+      (window as { __openArgs?: unknown[] }).__openArgs!.push(args[0]);
+      orig('about:blank', '_blank');
+      return null;
+    }) as typeof window.open;
+  });
   const input = page.getByRole('dialog').getByRole('combobox');
   await input.fill('GitHub');
   await input.press('Enter');
-  const popup = await popupPromise;
-  expect(popup.url()).toContain('github.com');
+  const opened = await page.evaluate(
+    () => (window as { __openArgs?: string[] }).__openArgs as string[]
+  );
+  expect(opened).toHaveLength(1);
+  expect(opened[0]).toContain('github.com');
   // preventDefault 取消了自动关闭：面板保持打开
   await expect(page.getByRole('dialog', { name: '文档命令面板' })).toBeVisible();
 });

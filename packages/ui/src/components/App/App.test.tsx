@@ -216,6 +216,39 @@ describe('App 内置确认框', () => {
     expect(screen.getByRole('dialog', { name: '外层确认框' })).toBeInTheDocument();
   });
 
+  it('Modal 在下、确认框在上时 Esc 关闭确认框而非 Modal', async () => {
+    const user = userEvent.setup();
+    const onCancel = vi.fn();
+    render(
+      <App>
+        <Harness />
+        <Modal defaultOpen>
+          <Modal.Content>
+            <Modal.Title>底层弹窗</Modal.Title>
+          </Modal.Content>
+        </Modal>
+      </App>
+    );
+    await waitFor(() => expect(screen.getByRole('dialog', { name: '底层弹窗' })).toBeInTheDocument());
+
+    // 确认框后打开，注册顺序在 Modal 之后（位于弹层栈顶）
+    act(() => {
+      api.modal.confirm({ title: '确认操作', onCancel });
+    });
+    expect(screen.getByRole('dialog', { name: '确认操作' })).toBeInTheDocument();
+
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('dialog', { name: '确认操作' })).not.toBeInTheDocument();
+    expect(onCancel).toHaveBeenCalledTimes(1);
+    // 底层 Modal 不被误关
+    expect(screen.getByRole('dialog', { name: '底层弹窗' })).toHaveAttribute('data-state', 'open');
+
+    await user.keyboard('{Escape}');
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog', { name: '底层弹窗' })).not.toBeInTheDocument()
+    );
+  });
+
   it('自定义 okText/cancelText', () => {
     render(
       <App>

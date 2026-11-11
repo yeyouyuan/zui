@@ -3,7 +3,13 @@
 import * as React from 'react';
 import { MessageProvider, useMessage } from '../Message';
 import { cx, Portal } from '../../utils';
-import { useFocusTrap, useScrollLock } from '../../utils';
+import {
+  useFocusTrap,
+  useScrollLock,
+  registerLayer,
+  isTopmostLayer,
+  isImeComposing,
+} from '../../utils';
 import { useZuiConfig } from '../../config';
 import { NotificationProvider, useNotification } from '../Notification';
 import type { NotificationPlacement } from '../Notification';
@@ -38,6 +44,29 @@ function AppInner({
   useScrollLock(modalConfig !== null);
   useFocusTrap(dialogRef, { active: modalConfig !== null && dialogNode !== null });
 
+  const closeModal = React.useCallback(() => setModalConfig(null), []);
+
+  // 弹层仲裁：确认框带 [data-zui-modal-layer] 按打开顺序注册，Esc 仅栈顶弹层响应
+  React.useEffect(() => {
+    if (modalConfig === null || !dialogNode) return;
+    return registerLayer(dialogNode);
+  }, [modalConfig, dialogNode]);
+
+  // Esc 关闭（document 级监听，焦点在框外也可靠）；仅栈顶响应并遵守 IME 组合守卫
+  React.useEffect(() => {
+    if (modalConfig === null || !dialogNode) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.defaultPrevented || isImeComposing(event)) return;
+      // 有更上层弹层（嵌套 Modal/Drawer、Popover 等）时让栈顶先响应
+      if (!isTopmostLayer(dialogNode)) return;
+      event.preventDefault();
+      modalConfig.onCancel?.();
+      closeModal();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [modalConfig, dialogNode, closeModal]);
+
   const modal = React.useMemo<ModalApi>(
     () => ({
       confirm: (config) => setModalConfig(config),
@@ -51,8 +80,6 @@ function AppInner({
     [message, notification, modal]
   );
 
-  const closeModal = () => setModalConfig(null);
-
   return (
     <AppContext.Provider value={api}>
       <div ref={rootRef} data-part="root" className={cx('z-app', classNames?.root, className)}>
@@ -62,6 +89,8 @@ function AppInner({
         <Portal inheritFrom={rootRef}>
           <div
             data-part="modal"
+            data-zui-modal-layer=""
+            data-state="open"
             className={cx('z-app-modal', classNames?.modal)}
             ref={setDialogRef}
             tabIndex={-1}
@@ -70,27 +99,6 @@ function AppInner({
             aria-label={
               typeof modalConfig.title === 'string' ? modalConfig.title : locale.app.confirm
             }
-            onKeyDown={(event) => {
-              if (event.key === 'Escape' && !event.defaultPrevented) {
-                // A nested Modal/Drawer portal can receive Escape after this
-                // React handler. Leave the outer confirm open while that layer
-                // is visually above it, even before the inner focus RAF runs.
-                const layers = document.querySelectorAll<HTMLElement>(
-                  '[data-zui-modal-layer][data-state="open"]'
-                );
-                const topLayer = layers[layers.length - 1];
-                if (
-                  topLayer &&
-                  (event.currentTarget.compareDocumentPosition(topLayer) &
-                    Node.DOCUMENT_POSITION_FOLLOWING) !==
-                    0
-                )
-                  return;
-                event.preventDefault();
-                modalConfig.onCancel?.();
-                closeModal();
-              }
-            }}
             onClick={(event) => {
               if (event.target === event.currentTarget) {
                 modalConfig.onCancel?.();

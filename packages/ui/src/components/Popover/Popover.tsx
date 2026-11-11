@@ -8,6 +8,9 @@ import {
   useControllableState,
   useFocusTrap,
   useOnClickOutside,
+  registerLayer,
+  isTopmostLayer,
+  isImeComposing,
 } from '../../utils';
 import './Popover.css';
 
@@ -247,18 +250,37 @@ function PopoverContentInner(props: PopoverContentProps) {
     returnFocus: true,
   });
 
-  // Esc 关闭（文档级监听，焦点在 Portal 内也可靠）
+  // 弹层仲裁：按打开顺序注册 popup，Esc 仅栈顶弹层响应
+  React.useEffect(() => {
+    if (!open || !contentNode) return;
+    return registerLayer(contentNode);
+  }, [open, contentNode]);
+
+  // Esc 关闭（文档级监听，焦点在 Portal 内也可靠）；仅栈顶响应并遵守 IME 组合守卫
   React.useEffect(() => {
     if (!open) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !event.defaultPrevented) {
+      if (event.key === 'Escape') {
+        if (event.defaultPrevented || isImeComposing(event)) return;
+        // 有更上层弹层（其他 Popover / Modal / Drawer 等）时让栈顶先响应
+        if (!isTopmostLayer(contentRef.current)) return;
         event.preventDefault();
         setOpen(false);
+        return;
+      }
+      // 非模态弹层不困死 Tab：焦点已离开弹层（触发器与内容之外）时，Tab 顺手关闭
+      if (event.key === 'Tab' && !event.defaultPrevented) {
+        const inside = (node: Element | null) =>
+          !!node &&
+          (!!contentRef.current?.contains(node) || !!ctx.rootRef.current?.contains(node));
+        const target = event.target instanceof Element ? event.target : null;
+        const active = document.activeElement instanceof Element ? document.activeElement : null;
+        if (!inside(target) && !inside(active)) setOpen(false);
       }
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [open, setOpen]);
+  }, [open, setOpen, ctx.rootRef]);
 
   // 点击外部关闭（root 含触发器，触发器自身点击走 toggle）
   const outsideRefs = React.useMemo(() => [ctx.rootRef, contentRef], [ctx.rootRef]);
@@ -306,7 +328,12 @@ function PopoverContentInner(props: PopoverContentProps) {
           zIndex: position.zIndex, ...style }}
         onKeyDown={(event) => {
           userOnKeyDown?.(event);
-          if (event.key === 'Escape' && !event.defaultPrevented) {
+          if (
+            event.key === 'Escape' &&
+            !event.defaultPrevented &&
+            !isImeComposing(event) &&
+            isTopmostLayer(event.currentTarget)
+          ) {
             event.preventDefault();
             event.stopPropagation();
             setOpen(false);

@@ -5,7 +5,11 @@ import { useAutoTranslate, type TranslateConfig } from '@zui/i18n';
 import { mergeLocale, zhCN, type DeepPartial, type ZuiLocale } from './locale';
 import { ZuiConfigContext } from './useZuiConfig';
 
-const LOCALE_SECTIONS = Object.keys(zhCN) as Array<keyof ZuiLocale>;
+// `code` 是语言标识（BCP 47）而非文案段：排除在 AI 翻译段之外，
+// 避免语言标签被翻译成非法 BCP 47 tag，导致 Intl 格式化抛 RangeError。
+const LOCALE_SECTIONS = Object.keys(zhCN).filter(
+  (key) => key !== 'code'
+) as Array<keyof ZuiLocale>;
 
 function translateLocaleValue(
   value: unknown,

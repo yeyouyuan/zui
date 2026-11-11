@@ -324,7 +324,7 @@
 }
 
 .z-sidenav-tooltip {
-  z-index: var(--z-z-tooltip, 1100);
+  z-index: var(--z-z-dropdown);
   inline-size: max-content;
   max-inline-size: min(20rem, calc(100vw - 1rem));
   padding: 0.375rem 0.625rem;

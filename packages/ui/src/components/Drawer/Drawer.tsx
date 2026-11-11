@@ -3,7 +3,16 @@
 import * as React from 'react';
 import { useZuiConfig } from '../../config';
 import { Close } from '@zui/icons';
-import { cx, Portal, useControllableState, useFocusTrap, useScrollLock } from '../../utils';
+import {
+  cx,
+  Portal,
+  useControllableState,
+  useFocusTrap,
+  useScrollLock,
+  registerLayer,
+  isTopmostLayer,
+  isImeComposing,
+} from '../../utils';
 import './Drawer.css';
 
 /* ---------------------------------- 类型 ---------------------------------- */
@@ -116,6 +125,7 @@ function DrawerTrigger(props: DrawerTriggerProps) {
     <button
       type="button"
       aria-haspopup="dialog"
+      aria-expanded={ctx.open}
       data-part="trigger"
       className={cx('z-drawer-trigger', className)}
       onClick={(event) => {
@@ -176,12 +186,18 @@ function DrawerContentInner(props: DrawerContentProps) {
     returnFocus: true,
   });
 
+  // 弹层仲裁：按打开顺序注册 overlay（[data-zui-modal-layer]），Esc 仅栈顶弹层响应
+  const layerNode = dialogNode?.parentElement ?? null;
+  React.useEffect(() => {
+    if (!open || !layerNode) return;
+    return registerLayer(layerNode);
+  }, [open, layerNode]);
+
   // Esc 关闭（document 级监听，焦点在 Portal 内也可靠）
   React.useEffect(() => {
     if (!open || !closeOnEsc) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      const layers = document.querySelectorAll('[data-zui-modal-layer][data-state="open"]');
-      const isTopmost = layers[layers.length - 1] === dialogRef.current?.parentElement;
+      const isTopmost = isTopmostLayer(dialogRef.current?.parentElement);
       const inNestedPopup =
         event.target instanceof Element &&
         !!event.target.closest('[data-zui-portal]') &&
@@ -196,6 +212,7 @@ function DrawerContentInner(props: DrawerContentProps) {
       if (
         event.key === 'Escape' &&
         !event.defaultPrevented &&
+        !isImeComposing(event) &&
         isTopmost &&
         !inNestedPopup &&
         !activePopup &&

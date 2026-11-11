@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as React from 'react';
 import { Mentions } from './index';
@@ -104,6 +104,62 @@ describe('Mentions 键盘', () => {
     await user.type(getTextarea(), '@');
     await user.click(screen.getAllByRole('option')[2]);
     expect(getTextarea()).toHaveValue('carol ');
+  });
+});
+
+describe('Mentions IME 组合输入', () => {
+  it('组合态 Enter 确认候选词时不插入提及且不关面板', () => {
+    render(<Mentions options={options} />);
+    const textarea = getTextarea();
+
+    fireEvent.compositionStart(textarea);
+    // 组合中的草稿文本经 change 探测触发建议面板
+    fireEvent.change(textarea, { target: { value: '@阿' } });
+    expect(textarea).toHaveAttribute('aria-expanded', 'true');
+    expect(getPanel()).toBeInTheDocument();
+
+    // IME 选词确认的 Enter 不应插入提及
+    fireEvent.keyDown(textarea, { key: 'Enter' });
+    expect(textarea).toHaveValue('@阿');
+    expect(getPanel()).toBeInTheDocument();
+  });
+
+  it('组合态 Tab 不插入提及', () => {
+    render(<Mentions options={options} />);
+    const textarea = getTextarea();
+
+    fireEvent.compositionStart(textarea);
+    fireEvent.change(textarea, { target: { value: '@阿' } });
+    fireEvent.keyDown(textarea, { key: 'Tab' });
+    expect(textarea).toHaveValue('@阿');
+    expect(getPanel()).toBeInTheDocument();
+  });
+
+  it('keyCode 229 兜底不插入 active 项', () => {
+    render(<Mentions options={options} />);
+    const textarea = getTextarea();
+
+    fireEvent.change(textarea, { target: { value: '@al' } });
+    fireEvent.keyDown(textarea, { key: 'Enter', keyCode: 229, which: 229 });
+    expect(textarea).toHaveValue('@al');
+    expect(getPanel()).toBeInTheDocument();
+  });
+
+  it('compositionEnd 后 Enter 正常插入提及', () => {
+    render(<Mentions options={options} />);
+    const textarea = getTextarea();
+
+    fireEvent.compositionStart(textarea);
+    fireEvent.change(textarea, { target: { value: '@al' } });
+    fireEvent.keyDown(textarea, { key: 'Enter' });
+    expect(textarea).toHaveValue('@al');
+
+    fireEvent.compositionEnd(textarea, { data: '阿里' });
+    // 组合落盘后浏览器仍会派发 change，触发词重新探测
+    fireEvent.change(textarea, { target: { value: '@al' } });
+    fireEvent.keyDown(textarea, { key: 'Enter' });
+    expect(textarea).toHaveValue('alice ');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
   });
 });
 

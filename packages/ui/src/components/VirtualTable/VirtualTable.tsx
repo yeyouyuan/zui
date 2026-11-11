@@ -43,6 +43,10 @@ const cancelFrame: (id: number) => void =
     ? (id) => cancelAnimationFrame(id)
     : (id) => clearTimeout(id as unknown as ReturnType<typeof setTimeout>);
 
+/** SSR 下退化为 useEffect，避免服务端 useLayoutEffect 警告 */
+const useIsomorphicLayoutEffect: typeof React.useLayoutEffect =
+  typeof window === 'undefined' ? React.useEffect : React.useLayoutEffect;
+
 /** 默认单元格取值：字符串/数字直接渲染，其余交给 render */
 function defaultCellValue(row: unknown, key: string): React.ReactNode {
   const value = (row as Record<string, unknown>)[key];
@@ -66,8 +70,23 @@ export function VirtualTable<T = Record<string, unknown>>({
   classNames,
 }: VirtualTableProps<T>) {
   const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const headerRef = React.useRef<HTMLDivElement | null>(null);
   const frameRef = React.useRef<number | null>(null);
   const [scrollTop, setScrollTop] = React.useState(0);
+  // 表头真实高度：sticky 表头固定为 --z-virtual-table-header-height（默认 2.5rem），
+  // 占据文档流高度，必须计入滚动总高。SSR / jsdom 等无布局环境量不到
+  // （getBoundingClientRect 返回 0），保持 null 回退 rowHeight。
+  const [measuredHeaderHeight, setMeasuredHeaderHeight] = React.useState<number | null>(null);
+
+  // 挂载及结构性变化后测量表头实际高度，滚动上限按「表头 + 表体」口径计算
+  useIsomorphicLayoutEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+    const measured = header.getBoundingClientRect().height;
+    if (measured > 0) {
+      setMeasuredHeaderHeight((prev) => (prev === measured ? prev : measured));
+    }
+  }, [data.length, height, rowHeight]);
 
   // 滚动监听：rAF 合帧，避免每次 scroll 都触发渲染
   const flushScroll = React.useCallback(() => {
@@ -114,7 +133,11 @@ export function VirtualTable<T = Record<string, unknown>>({
 
   // 可视区窗口：~height/rowHeight + 2*overscan 行
   const totalHeight = data.length * rowHeight;
-  const maxScrollTop = Math.max(0, totalHeight + rowHeight - height);
+  // 真实可滚动上限 = 表体总高 + 表头高 - 容器高（表头 sticky 但占文档流，参与滚动范围）。
+  // 旧实现用 rowHeight 充当表头高：rowHeight < 表头高（如 32 < 40）时上限偏小，
+  // 会把浏览器合法的底部 scrollTop 强行拉回，导致底部行不可达、滚动抖动。
+  const headerHeight = measuredHeaderHeight ?? rowHeight;
+  const maxScrollTop = Math.max(0, totalHeight + headerHeight - height);
   const effectiveScrollTop = Math.min(scrollTop, maxScrollTop);
   React.useEffect(() => {
     const root = rootRef.current;
@@ -142,6 +165,7 @@ export function VirtualTable<T = Record<string, unknown>>({
     >
       {/* 表头：sticky 顶栏 */}
       <div
+        ref={headerRef}
         data-part="header"
         role="row"
         aria-rowindex={1}

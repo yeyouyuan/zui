@@ -11,6 +11,8 @@ export type DeepPartial<T> = T extends readonly unknown[]
 
 /** 全量文案表（默认 zh-CN） */
 export interface ZuiLocale {
+  /** 语言标识（BCP 47，如 'zh-CN'），供数字 / 日期等 Intl 格式化使用 */
+  code?: string;
   accessibility: {
     loading: string;
     removeTag: string;
@@ -179,6 +181,7 @@ export interface ZuiLocale {
 
 /** 默认 zh-CN 简体中文 */
 export const zhCN: ZuiLocale = {
+  code: 'zh-CN',
   accessibility: {
     loading: '加载中',
     removeTag: '移除标签',
@@ -321,6 +324,7 @@ export const zhCN: ZuiLocale = {
 
 /** en-US English */
 export const enUS: ZuiLocale = {
+  code: 'en-US',
   accessibility: {
     loading: 'Loading',
     removeTag: 'Remove tag',
@@ -468,6 +472,7 @@ export const enUS: ZuiLocale = {
 
 /** zh-TW 繁體中文 */
 export const zhTW: ZuiLocale = {
+  code: 'zh-TW',
   accessibility: {
     loading: '載入中',
     removeTag: '移除標籤',
@@ -605,6 +610,7 @@ export const zhTW: ZuiLocale = {
 
 /** ja-JP 日本語 */
 export const jaJP: ZuiLocale = {
+  code: 'ja-JP',
   accessibility: {
     loading: '読み込み中',
     removeTag: 'タグを削除',
@@ -751,6 +757,7 @@ export const jaJP: ZuiLocale = {
 
 /** ko-KR 한국어 */
 export const koKR: ZuiLocale = {
+  code: 'ko-KR',
   accessibility: {
     loading: '로딩 중',
     removeTag: '태그 제거',
@@ -902,6 +909,7 @@ export const koKR: ZuiLocale = {
 
 /** fr-FR Français */
 export const frFR: ZuiLocale = {
+  code: 'fr-FR',
   accessibility: {
     loading: 'Chargement',
     removeTag: 'Supprimer le tag',
@@ -1053,6 +1061,7 @@ export const frFR: ZuiLocale = {
 
 /** de-DE Deutsch */
 export const deDE: ZuiLocale = {
+  code: 'de-DE',
   accessibility: {
     loading: 'Wird geladen',
     removeTag: 'Tag entfernen',
@@ -1204,6 +1213,7 @@ export const deDE: ZuiLocale = {
 
 /** es-ES Español */
 export const esES: ZuiLocale = {
+  code: 'es-ES',
   accessibility: {
     loading: 'Cargando',
     removeTag: 'Eliminar etiqueta',
@@ -1355,6 +1365,7 @@ export const esES: ZuiLocale = {
 
 /** ru-RU Русский */
 export const ruRU: ZuiLocale = {
+  code: 'ru-RU',
   accessibility: {
     loading: 'Загрузка',
     removeTag: 'Удалить тег',
@@ -1506,6 +1517,7 @@ export const ruRU: ZuiLocale = {
 
 /** pt-BR Português (Brasil) */
 export const ptBR: ZuiLocale = {
+  code: 'pt-BR',
   accessibility: {
     loading: 'Carregando',
     removeTag: 'Remover tag',
@@ -1664,6 +1676,7 @@ export const ptBR: ZuiLocale = {
 export function mergeLocale(base: ZuiLocale, override?: DeepPartial<ZuiLocale>): ZuiLocale {
   if (!override) return base;
   return {
+    code: override.code ?? base.code,
     accessibility: { ...base.accessibility, ...override.accessibility },
     form: { ...base.form, ...override.form },
     result: { ...base.result, ...override.result },

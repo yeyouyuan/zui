@@ -74,7 +74,8 @@ function parseNumber(text: string): number | null {
 }
 
 function formatValue(value: number | null, precision?: number): string {
-  if (value === null || Number.isNaN(value)) return '';
+  // 防御非契约值（如 Form 注入的空串）：按空值渲染，不让渲染路径抛错
+  if (typeof value !== 'number' || Number.isNaN(value)) return '';
   return precision !== undefined ? value.toFixed(precision) : String(value);
 }
 

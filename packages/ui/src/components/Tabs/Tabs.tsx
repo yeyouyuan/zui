@@ -47,6 +47,7 @@ interface TabsContextValue {
   /** 触发器注册顺序（tablist 内声明顺序） */
   triggerOrder: string[];
   registerOrder: (value: string) => void;
+  unregisterOrder: (value: string) => void;
 }
 
 const TabsContext = React.createContext<TabsContextValue | null>(null);
@@ -92,8 +93,10 @@ function Tabs(props: TabsProps) {
   const baseId = React.useId();
 
   const triggersRef = React.useRef<Map<string, HTMLButtonElement>>(new Map());
+  /** 触发器注册顺序的唯一事实源（DOM ref，同步维护） */
   const orderRef = React.useRef<string[]>([]);
-  const orderSnapshotRef = React.useRef<string[]>([]);
+  // triggerOrder 是 orderRef 的渲染投影：注册/注销时仅在顺序实际变化时同步一次，
+  // 避免 render/effect 反复 setState 造成无限重渲
   const [triggerOrder, setTriggerOrder] = React.useState<string[]>([]);
   /** 启用（未禁用）tab 的 value 列表，注册顺序 */
   const [enabledValues, setEnabledValues] = React.useState<string[]>([]);
@@ -113,15 +116,17 @@ function Tabs(props: TabsProps) {
 
   const registerOrder = React.useCallback((tabValue: string) => {
     const order = orderRef.current;
-    if (!order.includes(tabValue)) {
-      order.push(tabValue);
-      orderSnapshotRef.current = order.slice();
-    }
+    if (order.includes(tabValue)) return;
+    order.push(tabValue);
+    setTriggerOrder(order.slice());
   }, []);
 
-  // 声明顺序在 mount 后一次性同步（避免 render 期间 setState 反复调度）
-  React.useEffect(() => {
-    setTriggerOrder(orderSnapshotRef.current);
+  const unregisterOrder = React.useCallback((tabValue: string) => {
+    const order = orderRef.current;
+    const index = order.indexOf(tabValue);
+    if (index === -1) return;
+    order.splice(index, 1);
+    setTriggerOrder(order.slice());
   }, []);
 
   // 非受控且未显式指定 defaultValue 时，默认选中第一个启用 tab（ARIA tabs 推荐）。
@@ -151,6 +156,7 @@ function Tabs(props: TabsProps) {
       registerTrigger,
       triggerOrder,
       registerOrder,
+      unregisterOrder,
     }),
     [
       value,
@@ -162,6 +168,7 @@ function Tabs(props: TabsProps) {
       registerTrigger,
       triggerOrder,
       registerOrder,
+      unregisterOrder,
     ]
   );
 
@@ -222,6 +229,7 @@ function TabsTrigger(props: TabsTriggerProps) {
     registerTrigger,
     triggerOrder,
     registerOrder,
+    unregisterOrder,
   } = useTabsContext('Tabs.Trigger');
 
   const id = `${baseId}-tab-${tabValue}`;
@@ -229,9 +237,13 @@ function TabsTrigger(props: TabsTriggerProps) {
   const selected = value === tabValue;
 
   const ref = React.useRef<HTMLButtonElement | null>(null);
+  // 在 Trigger 的 effect 中注册声明顺序；卸载时注销，保证注册表与 DOM 一致
   React.useEffect(() => {
     registerOrder(tabValue);
-  }, [registerOrder, tabValue]);
+    return () => {
+      unregisterOrder(tabValue);
+    };
+  }, [registerOrder, unregisterOrder, tabValue]);
   const setRef = React.useCallback(
     (el: HTMLButtonElement | null) => {
       ref.current = el;
@@ -239,6 +251,24 @@ function TabsTrigger(props: TabsTriggerProps) {
     },
     [registerTrigger, tabValue]
   );
+
+  /**
+   * 当前导航顺序：成员集合来自注册表（triggerOrder），顺序按 tablist 内 DOM 位置排列。
+   * 动态增删 Trigger 或 React 复用组件实例时，注册顺序可能与声明顺序不一致，
+   * 导航时以 DOM 顺序为准（compareDocumentPosition）。
+   */
+  const getNavigationOrder = (): string[] => {
+    return triggerOrder
+      .map((navValue) => ({ navValue, el: triggers.get(navValue) }))
+      .filter((entry): entry is { navValue: string; el: HTMLButtonElement } => entry.el != null)
+      .sort((a, b) => {
+        const position = a.el.compareDocumentPosition(b.el);
+        if (position & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
+        if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1;
+        return 0;
+      })
+      .map((entry) => entry.navValue);
+  };
 
   /** 从 from 起按 step 方向找第一个启用 tab 的下标，环形（跳过 disabled） */
   const findEnabledIndex = (order: string[], from: number, step: number): number => {
@@ -256,8 +286,8 @@ function TabsTrigger(props: TabsTriggerProps) {
    * - automatic：焦点即选中由 Trigger 的 onFocus 处理，这里只移动焦点
    * - manual：仅聚焦，不触发选中
    */
-  const moveFocus = (index: number) => {
-    const nextValue = triggerOrder[index];
+  const moveFocus = (order: string[], index: number) => {
+    const nextValue = order[index];
     const el = nextValue !== undefined ? triggers.get(nextValue) : undefined;
     if (!el) return;
     el.focus();
@@ -267,7 +297,7 @@ function TabsTrigger(props: TabsTriggerProps) {
     onKeyDown?.(event);
     if (event.defaultPrevented) return;
 
-    const order = triggerOrder;
+    const order = getNavigationOrder();
     const currentIndex = order.indexOf(tabValue);
     if (currentIndex === -1) return;
 
@@ -280,21 +310,21 @@ function TabsTrigger(props: TabsTriggerProps) {
       event.preventDefault();
       const step = isNextKey ? 1 : -1;
       const nextIndex = findEnabledIndex(order, currentIndex, step);
-      if (nextIndex !== -1) moveFocus(nextIndex);
+      if (nextIndex !== -1) moveFocus(order, nextIndex);
       return;
     }
 
     if (event.key === 'Home') {
       event.preventDefault();
       const firstIndex = findEnabledIndex(order, -1, 1);
-      if (firstIndex !== -1) moveFocus(firstIndex);
+      if (firstIndex !== -1) moveFocus(order, firstIndex);
       return;
     }
 
     if (event.key === 'End') {
       event.preventDefault();
       const lastIndex = findEnabledIndex(order, order.length, -1);
-      if (lastIndex !== -1) moveFocus(lastIndex);
+      if (lastIndex !== -1) moveFocus(order, lastIndex);
       return;
     }
 

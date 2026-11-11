@@ -50,6 +50,31 @@ function panelByText(container: HTMLElement, text: string): HTMLElement | null {
   return found ?? null;
 }
 
+/** 第三个 tab 由 extra 控制动态挂载/卸载，用于回归动态注册表 */
+function DynamicTabs(props: {
+  extra: boolean;
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+}) {
+  return (
+    <Tabs
+      value={props.value}
+      defaultValue={props.defaultValue}
+      onValueChange={props.onValueChange}
+    >
+      <Tabs.List>
+        <Tabs.Trigger value="one">Tab One</Tabs.Trigger>
+        {props.extra ? <Tabs.Trigger value="late">Tab Late</Tabs.Trigger> : null}
+        <Tabs.Trigger value="two">Tab Two</Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Panel value="one">Panel One</Tabs.Panel>
+      <Tabs.Panel value="two">Panel Two</Tabs.Panel>
+      <Tabs.Panel value="late">Panel Late</Tabs.Panel>
+    </Tabs>
+  );
+}
+
 describe('Tabs', () => {
   it('默认选中第一个 tab，仅第一个面板渲染', () => {
     const { container } = render(<BasicTabs />);
@@ -286,5 +311,117 @@ describe('Tabs', () => {
     for (const tab of tabsOf(container)) {
       expect(tab).toHaveAttribute('type', 'button');
     }
+  });
+
+  it('动态新增 tab 后方向键可到达新 tab（automatic 焦点即选中）', async () => {
+    const user = userEvent.setup();
+    const { rerender, container } = render(<DynamicTabs extra={false} />);
+    let tabs = tabsOf(container);
+    expect(tabs).toHaveLength(2);
+
+    // 初始 2 个 tab：右方向键环形移动
+    tabs[0].focus();
+    await user.keyboard('{ArrowRight}');
+    expect(tabs[1]).toHaveFocus();
+    await user.keyboard('{ArrowRight}');
+    expect(tabs[0]).toHaveFocus();
+
+    // 动态挂载第 3 个 tab（新 tab 插在 one 与 two 之间）
+    rerender(<DynamicTabs extra />);
+    tabs = tabsOf(container);
+    expect(tabs).toHaveLength(3);
+
+    tabs[0].focus();
+    await user.keyboard('{ArrowRight}');
+    expect(tabs[1]).toHaveFocus();
+    // 新 tab 可达：焦点移动且 automatic 模式下即选中
+    expect(tabs[1].textContent).toBe('Tab Late');
+    expect(tabs[1]).toHaveAttribute('aria-selected', 'true');
+    expect(panelByText(container, 'Panel Late')).not.toBeNull();
+
+    // 继续右移到末尾的 two，再环形回到第一个
+    await user.keyboard('{ArrowRight}');
+    expect(tabs[2]).toHaveFocus();
+    await user.keyboard('{ArrowRight}');
+    expect(tabs[0]).toHaveFocus();
+
+    // End 直达末尾（two）
+    await user.keyboard('{End}');
+    expect(tabs[2]).toHaveFocus();
+    expect(tabs[2]).toHaveAttribute('tabindex', '0');
+  });
+
+  it('动态卸载中间 tab 后顺序收缩且导航正确', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    const { rerender, container } = render(
+      <DynamicTabs extra defaultValue="one" onValueChange={onValueChange} />
+    );
+    let tabs = tabsOf(container);
+    expect(tabs).toHaveLength(3);
+    tabs[0].focus();
+    await user.keyboard('{ArrowRight}');
+    expect(tabs[1]).toHaveFocus();
+    expect(onValueChange).toHaveBeenLastCalledWith('late');
+
+    // 卸载中间 tab "late"（此刻焦点在其上，随后焦点回到 body）
+    rerender(<DynamicTabs extra={false} defaultValue="one" onValueChange={onValueChange} />);
+    tabs = tabsOf(container);
+    expect(tabs).toHaveLength(2);
+
+    // 顺序收缩：one 的右侧直达 two，不再经过已卸载的 late
+    tabs[0].focus();
+    await user.keyboard('{ArrowRight}');
+    expect(tabs[1]).toHaveFocus();
+    expect(tabs[1].textContent).toBe('Tab Two');
+    expect(onValueChange).toHaveBeenLastCalledWith('two');
+    expect(panelByText(container, 'Panel Two')).not.toBeNull();
+
+    // 环形与反向：two → one → two 均正确
+    await user.keyboard('{ArrowRight}');
+    expect(tabs[0]).toHaveFocus();
+    await user.keyboard('{ArrowLeft}');
+    expect(tabs[1]).toHaveFocus();
+
+    // Home 从 two 直达 one
+    await user.keyboard('{Home}');
+    expect(tabs[0]).toHaveFocus();
+    expect(onValueChange).toHaveBeenLastCalledWith('one');
+  });
+
+  it('受控 value 模式下动态 tab 键盘导航同样工作', async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    const { rerender, container } = render(
+      <DynamicTabs extra={false} value="one" onValueChange={onValueChange} />
+    );
+    let tabs = tabsOf(container);
+    tabs[0].focus();
+    await user.keyboard('{ArrowRight}');
+    expect(tabs[1]).toHaveFocus();
+    expect(onValueChange).toHaveBeenLastCalledWith('two');
+    // 受控：父级未更新 value 前仍选中 one
+    expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
+
+    // 动态挂载第 3 个 tab（焦点保持在 two，DOM 顺序变为 one/late/two）
+    rerender(<DynamicTabs extra value="one" onValueChange={onValueChange} />);
+    tabs = tabsOf(container);
+    expect(tabs).toHaveLength(3);
+    expect(tabs[2]).toHaveFocus();
+
+    // 从 two 左移到达新 tab late，受控模式下仅回调、选中保持
+    await user.keyboard('{ArrowLeft}');
+    expect(tabs[1]).toHaveFocus();
+    expect(tabs[1].textContent).toBe('Tab Late');
+    expect(onValueChange).toHaveBeenLastCalledWith('late');
+    expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
+
+    // 父级跟进 value 后选中与新 roving tabindex 生效
+    rerender(<DynamicTabs extra value="late" onValueChange={onValueChange} />);
+    tabs = tabsOf(container);
+    expect(tabs[1]).toHaveAttribute('aria-selected', 'true');
+    expect(tabs[1]).toHaveAttribute('tabindex', '0');
+    expect(tabs[0]).toHaveAttribute('tabindex', '-1');
+    expect(panelByText(container, 'Panel Late')).not.toBeNull();
   });
 });

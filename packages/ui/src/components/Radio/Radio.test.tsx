@@ -165,4 +165,18 @@ describe('RadioGroup + Radio', () => {
     expect(radios[1].checked).toBe(true);
     expect(onChange).toHaveBeenLastCalledWith('b');
   });
+
+  it('bare radio: forwards user onChange and works uncontrolled', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <>
+        <Radio value="a" label="甲" onChange={onChange} name="solo" />
+        <Radio value="b" label="乙" onChange={onChange} name="solo" />
+      </>
+    );
+    await user.click(screen.getByText('甲'));
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(screen.getByLabelText('甲')).toBeChecked();
+  });
 });

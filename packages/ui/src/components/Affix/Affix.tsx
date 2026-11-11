@@ -26,6 +26,22 @@ function getViewportHeight(scroller: HTMLElement | Window): number {
   return isWindow(scroller) ? window.innerHeight : (scroller as HTMLElement).clientHeight;
 }
 
+
+/** 值未变化时不触发 setState，避免滚动期间每帧重渲 */
+function patchStyle(
+  current: React.CSSProperties,
+  set: (next: React.CSSProperties) => void,
+  next: React.CSSProperties
+): void {
+  const keys = new Set([...Object.keys(current), ...Object.keys(next)]);
+  for (const key of keys) {
+    if ((current as Record<string, unknown>)[key] !== (next as Record<string, unknown>)[key]) {
+      set(next);
+      return;
+    }
+  }
+}
+
 export function Affix(props: AffixProps) {
   const {
     offsetTop,
@@ -43,6 +59,8 @@ export function Affix(props: AffixProps) {
   const [affixed, setAffixed] = React.useState(false);
   const [placeholderStyle, setPlaceholderStyle] = React.useState<React.CSSProperties>({});
   const [fixedStyle, setFixedStyle] = React.useState<React.CSSProperties>({});
+  const placeholderStyleRef = React.useRef<React.CSSProperties>({});
+  const fixedStyleRef = React.useRef<React.CSSProperties>({});
   const rafRef = React.useRef(0);
   const affixedRef = React.useRef(false);
 
@@ -54,16 +72,18 @@ export function Affix(props: AffixProps) {
     const rect = placeholder.getBoundingClientRect();
 
     // 判定阈值：offsetTop 优先，否则 offsetBottom
+    // offsetBottom 语义（同 rc-affix）：元素自然位置仍在阈值线之下（未滚到）
+    // 期间钉在视口底部；自然位置滚到线上方时释放。
     let shouldAffix: boolean;
     if (offsetBottom !== undefined && offsetTop === undefined) {
       const bottomLimit = getViewportHeight(scroller) - offsetBottom;
-      shouldAffix = rect.bottom <= bottomLimit;
+      shouldAffix = rect.bottom >= bottomLimit;
     } else {
       shouldAffix = rect.top <= (offsetTop ?? 0);
     }
 
     if (shouldAffix) {
-      setPlaceholderStyle({
+      patchStyle(placeholderStyleRef.current, setPlaceholderStyle, {
         width: rect.width,
         height: rect.height,
       });
@@ -76,10 +96,10 @@ export function Affix(props: AffixProps) {
       else style.top = offsetTop ?? 0;
       // 横向跟随占位符
       style.left = rect.left;
-      setFixedStyle(style);
+      patchStyle(fixedStyleRef.current, setFixedStyle, style);
     } else {
-      setPlaceholderStyle({});
-      setFixedStyle({});
+      patchStyle(placeholderStyleRef.current, setPlaceholderStyle, {});
+      patchStyle(fixedStyleRef.current, setFixedStyle, {});
     }
 
     if (shouldAffix !== affixedRef.current) {

@@ -22,19 +22,57 @@ export interface StatisticProps extends Omit<
 
 /* ---------------------------------- 工具 ---------------------------------- */
 
-/** 数字 → 千分位字符串；非数字原样返回 */
-function formatStatisticValue(value: number | string, precision?: number): string {
+const MIN_PRECISION = 0;
+/** ECMA-402 规范允许的 minimumFractionDigits / maximumFractionDigits 上限 */
+const SPEC_MAX_PRECISION = 100;
+
+/**
+ * 运行时实际支持的小数位上限：规范上限为 100，但当前 V8（Node 18/20）仍只接受 ≤20。
+ * 模块加载时探测一次，取「规范上限 ∩ 运行时上限」，保证 clamp 之后不会再抛 RangeError。
+ */
+const MAX_PRECISION = (() => {
+  for (const candidate of [SPEC_MAX_PRECISION, 20]) {
+    try {
+      (0).toLocaleString('zh-CN', {
+        minimumFractionDigits: candidate,
+        maximumFractionDigits: candidate,
+      });
+      return candidate;
+    } catch {
+      // 该候选值不被当前运行时支持，降级探测
+    }
+  }
+  return 20;
+})();
+
+/**
+ * 将 precision 收敛到 Intl 数字格式化的合法区间 [0, MAX_PRECISION]（规范 [0, 100] 与
+ * 运行时能力的交集）。越界（<0 或 >100，含 ±Infinity）直接 clamp，避免 toLocaleString
+ * 抛 RangeError 导致渲染崩溃；NaN 无法比较，回退 undefined（不补零、按默认小数位展示）。
+ */
+function clampPrecision(precision: number | undefined): number | undefined {
+  if (precision == null || Number.isNaN(precision)) return undefined;
+  return Math.min(MAX_PRECISION, Math.max(MIN_PRECISION, Math.trunc(precision)));
+}
+
+/** 数字 → 千分位字符串；非数字原样返回；locale 缺省时沿用库默认 zh-CN */
+function formatStatisticValue(
+  value: number | string,
+  precision?: number,
+  locale?: string
+): string {
   if (value == null || value === '') return '';
   if (typeof value === 'number') {
     if (!Number.isFinite(value)) return String(value);
-    return value.toLocaleString('zh-CN', {
-      minimumFractionDigits: precision,
-      maximumFractionDigits: precision,
+    const digits = clampPrecision(precision);
+    return value.toLocaleString(locale || 'zh-CN', {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
     });
   }
   // 字符串：纯数字（含负号/小数点）做千分位；否则原样返回
   if (/^-?\d+(\.\d+)?$/.test(value.trim())) {
-    return formatStatisticValue(Number(value), precision);
+    return formatStatisticValue(Number(value), precision, locale);
   }
   return value;
 }
@@ -55,7 +93,8 @@ function Statistic({
   classNames,
   ...rest
 }: StatisticProps) {
-  const text = formatStatisticValue(value, precision);
+  const { locale } = useZuiConfig();
+  const text = formatStatisticValue(value, precision, locale.code);
 
   return (
     <div {...rest} data-part="root" className={cx('z-statistic', className, classNames?.root)}>

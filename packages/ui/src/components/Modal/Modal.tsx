@@ -3,7 +3,16 @@
 import * as React from 'react';
 import { Close } from '@zui/icons';
 import { useZuiConfig } from '../../config';
-import { cx, Portal, useControllableState, useFocusTrap, useScrollLock } from '../../utils';
+import {
+  cx,
+  Portal,
+  useControllableState,
+  useFocusTrap,
+  useScrollLock,
+  registerLayer,
+  isTopmostLayer,
+  isImeComposing,
+} from '../../utils';
 import './Modal.css';
 
 /* ---------------------------------- 类型 ---------------------------------- */
@@ -136,6 +145,7 @@ function ModalTrigger(props: ModalTriggerProps) {
     <button
       type="button"
       aria-haspopup="dialog"
+      aria-expanded={ctx.open}
       data-part="trigger"
       className={cx('z-modal-trigger', className)}
       onClick={(event) => {
@@ -202,12 +212,18 @@ function ModalContentInner(props: ModalContentProps) {
     returnFocusRef,
   });
 
+  // 弹层仲裁：按打开顺序注册 overlay（[data-zui-modal-layer]），Esc 仅栈顶弹层响应
+  const layerNode = dialogNode?.parentElement ?? null;
+  React.useEffect(() => {
+    if (!open || !layerNode) return;
+    return registerLayer(layerNode);
+  }, [open, layerNode]);
+
   // Esc 关闭（document 级监听，焦点在 Portal 内也可靠）
   React.useEffect(() => {
     if (!open || !closeOnEsc) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      const layers = document.querySelectorAll('[data-zui-modal-layer][data-state="open"]');
-      const isTopmost = layers[layers.length - 1] === dialogRef.current?.parentElement;
+      const isTopmost = isTopmostLayer(dialogRef.current?.parentElement);
       const inNestedPopup =
         event.target instanceof Element &&
         !!event.target.closest('[data-zui-portal]') &&
@@ -219,12 +235,10 @@ function ModalContentInner(props: ModalContentProps) {
       const popoverTrigger =
         event.target instanceof Element &&
         !!event.target.closest<HTMLElement>('[data-zui-popover-trigger="open"]');
-      const native = event as KeyboardEvent & { keyCode?: number };
       if (
         event.key === 'Escape' &&
         !event.defaultPrevented &&
-        !native.isComposing &&
-        native.keyCode !== 229 &&
+        !isImeComposing(event) &&
         isTopmost &&
         !inNestedPopup &&
         !activePopup &&

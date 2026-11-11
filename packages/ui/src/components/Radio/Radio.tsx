@@ -13,6 +13,8 @@ export interface RadioProps
   value: string;
   label?: React.ReactNode;
   disabled?: boolean;
+  /** 原生 change 回调；组内选中值由 RadioGroup.onChange 统一报告，两者都会触发 */
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
   classNames?: { root?: string; control?: string; label?: string };
 }
 
@@ -23,6 +25,7 @@ export function Radio({
   classNames,
   className,
   name,
+  onChange: onChangeProp,
   ref,
   ...rest
 }: RadioProps) {
@@ -39,6 +42,7 @@ export function Radio({
         checked={group ? group.value === value : undefined}
         disabled={disabled || group?.disabled}
         onChange={(event) => {
+          onChangeProp?.(event);
           if (event.target.checked) group?.onChange(value);
         }}
       />

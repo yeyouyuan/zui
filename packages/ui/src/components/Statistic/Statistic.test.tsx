@@ -4,6 +4,26 @@ import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import { Statistic, StatisticCountDown, formatCountdown, formatStatisticValue } from './index';
+import { ConfigProvider, deDE } from '../../index';
+
+/**
+ * 与实现一致的运行时小数位上限探测（ECMA-402 规范上限 100，当前 V8/Node 18-20 实际为 20）。
+ * 用例断言使用该交集，保证在不同 Node 版本上都稳定。
+ */
+function runtimeMaxFractionDigits(): number {
+  for (const candidate of [100, 20]) {
+    try {
+      (0).toLocaleString('zh-CN', {
+        minimumFractionDigits: candidate,
+        maximumFractionDigits: candidate,
+      });
+      return candidate;
+    } catch {
+      // 该候选值不被当前运行时支持，降级探测
+    }
+  }
+  return 20;
+}
 
 afterEach(cleanup);
 
@@ -29,6 +49,46 @@ describe('Statistic', () => {
   it('precision pads decimals', () => {
     render(<Statistic value={42} precision={2} />);
     expect(screen.getByText('42.00')).toBeInTheDocument();
+  });
+
+  it('precision=-1 does not crash and renders like precision=0', () => {
+    render(<Statistic value={12345} precision={-1} />);
+    expect(screen.getByText('12,345')).toBeInTheDocument();
+  });
+
+  it('precision=-1 output matches precision=0 output', () => {
+    const { unmount } = render(<Statistic value={1234.5678} precision={-1} />);
+    expect(screen.getByText('1,235')).toBeInTheDocument();
+    unmount();
+    render(<Statistic value={1234.5678} precision={0} />);
+    expect(screen.getByText('1,235')).toBeInTheDocument();
+  });
+
+  it('precision=101 does not crash and output matches precision=100 output', () => {
+    const expected = formatStatisticValue(1234.5678, 100);
+    const { unmount } = render(<Statistic value={1234.5678} precision={101} />);
+    expect(screen.getByText(expected)).toBeInTheDocument();
+    unmount();
+    render(<Statistic value={1234.5678} precision={100} />);
+    expect(screen.getByText(expected)).toBeInTheDocument();
+  });
+
+  it('clamped precision yields correct decimals: negative clamps to 0, oversized clamps to cap', () => {
+    const cap = Math.min(100, runtimeMaxFractionDigits());
+    const { unmount } = render(<Statistic value={2} precision={-5} />);
+    expect(screen.getByText('2')).toBeInTheDocument();
+    unmount();
+    render(<Statistic value={2} precision={200} />);
+    expect(screen.getByText(`2.${'0'.repeat(cap)}`)).toBeInTheDocument();
+  });
+
+  it('number formatting follows ConfigProvider locale code (de-DE decimal separator)', () => {
+    render(
+      <ConfigProvider locale={deDE}>
+        <Statistic value={1234.5} precision={1} />
+      </ConfigProvider>
+    );
+    expect(screen.getByText('1.234,5')).toBeInTheDocument();
   });
 
   it('renders prefix and suffix', () => {
@@ -91,6 +151,50 @@ describe('Statistic', () => {
   it('forwards native props (aria-label / data-*) to root', () => {
     render(<Statistic value={1} aria-label="指标" data-testid="stat-root" />);
     expect(screen.getByTestId('stat-root')).toHaveAttribute('aria-label', '指标');
+  });
+});
+
+describe('formatStatisticValue precision clamp (regression)', () => {
+  it('negative precision clamps to 0 and matches precision=0 output', () => {
+    expect(() => formatStatisticValue(1234.5678, -1)).not.toThrow();
+    expect(formatStatisticValue(1234.5678, -1)).toBe(formatStatisticValue(1234.5678, 0));
+    expect(formatStatisticValue(1234.5678, -1)).toBe('1,235');
+    expect(formatStatisticValue(1234.5678, Number.NEGATIVE_INFINITY)).toBe('1,235');
+  });
+
+  it('precision >100 clamps to 100 and matches precision=100 output', () => {
+    expect(() => formatStatisticValue(1234.5678, 101)).not.toThrow();
+    expect(formatStatisticValue(1234.5678, 101)).toBe(formatStatisticValue(1234.5678, 100));
+    expect(formatStatisticValue(1234.5678, Number.POSITIVE_INFINITY)).toBe(
+      formatStatisticValue(1234.5678, 100)
+    );
+  });
+
+  it('clamped precision keeps correct decimal digits', () => {
+    const cap = Math.min(100, runtimeMaxFractionDigits());
+    expect(formatStatisticValue(2, -5)).toBe('2'); // clamp 到 0 位小数
+    expect(formatStatisticValue(2, 0)).toBe('2');
+    expect(formatStatisticValue(2, 200)).toBe(`2.${'0'.repeat(cap)}`); // clamp 到规范/运行时上限
+    expect(formatStatisticValue(2, 100)).toBe(`2.${'0'.repeat(cap)}`);
+    expect(formatStatisticValue(1.25, -1)).toBe('1'); // 0 位小数四舍五入
+  });
+
+  it('boundary values 0 and 100 stay unchanged; invalid precision falls back to default decimals', () => {
+    const cap = Math.min(100, runtimeMaxFractionDigits());
+    expect(formatStatisticValue(1.5, 0)).toBe('2');
+    expect(formatStatisticValue(1.5, 100)).toBe(`1.5${'0'.repeat(cap - 1)}`);
+    expect(formatStatisticValue(1.25, undefined)).toBe('1.25');
+    expect(formatStatisticValue(1.25, Number.NaN)).toBe('1.25'); // 不抛 RangeError
+  });
+
+  it('numeric strings route through the same clamp and locale', () => {
+    expect(formatStatisticValue('1234.5678', -1)).toBe('1,235');
+    expect(formatStatisticValue('1234.5', 1, 'de-DE')).toBe('1.234,5');
+  });
+
+  it('accepts a locale tag without changing the default output', () => {
+    expect(formatStatisticValue(12345, undefined, 'zh-CN')).toBe('12,345');
+    expect(formatStatisticValue(12345, undefined)).toBe('12,345'); // 缺省仍为 zh-CN
   });
 });
 

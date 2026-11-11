@@ -76,10 +76,11 @@ describe('Affix 固定切换', () => {
     scroller.remove();
   });
 
-  it('offsetBottom 模式：rect.bottom 低于视口阈值时固定在底部', async () => {
+  it('offsetBottom 模式：自然位置在阈值线之下时钉底，滚到线上方时释放', async () => {
     const scroller = makeScroller();
     const onChange = vi.fn();
-    // clientHeight 0，bottomLimit = 0 - 20 = -20；bottom <= -20 才固定
+    // clientHeight 0，bottomLimit = 0 - 20 = -20
+    // 自然位置在线之下（rect.bottom=100 >= -20）→ 钉在视口底部
     rect.bottom = 100;
     render(
       <Affix target={() => scroller} offsetBottom={20} onChange={onChange}>
@@ -87,13 +88,16 @@ describe('Affix 固定切换', () => {
       </Affix>
     );
     await flushRaf();
-    expect(onChange).not.toHaveBeenCalledWith(true);
-    rect.bottom = -50;
-    await scroll(scroller);
     expect(onChange).toHaveBeenCalledWith(true);
     const content = getContent();
     expect(content.style.position).toBe('fixed');
     expect(content.style.bottom).toBe('20px');
+    // 自然位置滚到线上方（rect.bottom < bottomLimit）→ 释放回文档流
+    rect.bottom = -50;
+    await scroll(scroller);
+    expect(onChange).toHaveBeenCalledWith(false);
+    const root = screen.getByText('工具条').closest('[data-part="root"]') as HTMLElement;
+    expect(root).toHaveAttribute('data-affixed', 'false');
     scroller.remove();
   });
 

@@ -33,6 +33,30 @@ function getBodyRows(container: HTMLElement): HTMLElement[] {
   return Array.from(container.querySelectorAll<HTMLElement>('[data-part="row"]'));
 }
 
+/**
+ * jsdom 无布局（getBoundingClientRect 全 0），这里模拟浏览器真实布局：
+ * CSS 固定表头高 2.5rem = 40px（--z-virtual-table-header-height），与 rowHeight 无关。
+ * 只需在首次 render 时生效（挂布局效果同步测量一次），测试内手动恢复。
+ */
+let restoreHeaderStub: null | (() => void) = null;
+
+function stubHeaderHeight(px: number): void {
+  const spy = vi
+    .spyOn(Element.prototype, 'getBoundingClientRect')
+    .mockReturnValue({ height: px } as DOMRect);
+  restoreHeaderStub = () => {
+    spy.mockRestore();
+    restoreHeaderStub = null;
+  };
+}
+
+afterEach(() => {
+  restoreHeaderStub?.();
+});
+
+/** rowHeight=32 + 表头 40px + height=480 时 100 行的真实滚动上限 */
+const TRUE_BOTTOM_100_ROWS = 100 * 32 + 40 - 480; // 2760
+
 describe('VirtualTable', () => {
   it('renders root with data-part/role=fixed height and header', () => {
     render(<VirtualTable data={makeRows(3)} columns={COLUMNS} height={400} />);
@@ -128,6 +152,86 @@ describe('VirtualTable', () => {
     const withOverscan = getBodyRows(c2).length;
     expect(withOverscan).toBeGreaterThan(withoutOverscan);
     expect(withOverscan).toBeLessThanOrEqual(30);
+  });
+
+  /* ------------------- 滚底回归：表头高度参与滚动上限 ------------------- */
+
+  it('rowHeight=32: scrolling to the true bottom is not yanked back and the window covers the last row', async () => {
+    stubHeaderHeight(40);
+    const { container } = render(
+      <VirtualTable data={makeRows(100)} columns={COLUMNS} height={480} rowHeight={32} />
+    );
+    restoreHeaderStub?.();
+
+    const root = screen.getByRole('table');
+    // writable: true —— clamp 修复逻辑会回写 scrollTop
+    Object.defineProperty(root, 'scrollTop', {
+      configurable: true,
+      writable: true,
+      value: TRUE_BOTTOM_100_ROWS,
+    });
+    fireEvent.scroll(root);
+    await flushFrame();
+
+    // 底部是合法位置（= 表头 40 + 表体 3200 - 视口 480），scrollTop 不得被拉回
+    expect(root.scrollTop).toBe(TRUE_BOTTOM_100_ROWS);
+    // 窗口覆盖最后一行（第 100 行 → aria-rowindex 101）
+    const rows = getBodyRows(container);
+    expect(rows[rows.length - 1]).toHaveAttribute('aria-rowindex', '101');
+    expect(screen.getByText('名称100')).toBeInTheDocument();
+  });
+
+  it('rowHeight=32: data shrink clamps scrollTop to the header-aware legal ceiling', async () => {
+    stubHeaderHeight(40);
+    const { container, rerender } = render(
+      <VirtualTable data={makeRows(100)} columns={COLUMNS} height={480} rowHeight={32} />
+    );
+    restoreHeaderStub?.();
+
+    const root = screen.getByRole('table');
+    // writable: true —— clamp 修复逻辑会回写 scrollTop
+    Object.defineProperty(root, 'scrollTop', {
+      configurable: true,
+      writable: true,
+      value: TRUE_BOTTOM_100_ROWS,
+    });
+    fireEvent.scroll(root);
+    await flushFrame();
+
+    // 数据 100 → 98 行：新真实上限 = 98*32 + 40 - 480 = 2696。
+    // 旧实现按 rowHeight 充当表头高会 clamp 到 2688（低于真实上限，多拉回 8px）。
+    rerender(<VirtualTable data={makeRows(98)} columns={COLUMNS} height={480} rowHeight={32} />);
+    await flushFrame();
+
+    expect(root.scrollTop).toBe(98 * 32 + 40 - 480);
+    // clamp 后窗口仍覆盖收缩后的最后一行（第 98 行 → aria-rowindex 99）
+    const rows = getBodyRows(container);
+    expect(rows[rows.length - 1]).toHaveAttribute('aria-rowindex', '99');
+  });
+
+  it('data shrink below the viewport clamps scrollTop back to 0', async () => {
+    stubHeaderHeight(40);
+    const { container, rerender } = render(
+      <VirtualTable data={makeRows(100)} columns={COLUMNS} height={480} rowHeight={32} />
+    );
+    restoreHeaderStub?.();
+
+    const root = screen.getByRole('table');
+    // writable: true —— clamp 修复逻辑会回写 scrollTop
+    Object.defineProperty(root, 'scrollTop', {
+      configurable: true,
+      writable: true,
+      value: TRUE_BOTTOM_100_ROWS,
+    });
+    fireEvent.scroll(root);
+    await flushFrame();
+
+    // 数据收缩到 10 行：320 + 40 - 480 < 0 → 上限 clamp 为 0
+    rerender(<VirtualTable data={makeRows(10)} columns={COLUMNS} height={480} rowHeight={32} />);
+    await flushFrame();
+
+    expect(root.scrollTop).toBe(0);
+    expect(getBodyRows(container)[0]).toHaveAttribute('aria-rowindex', '2');
   });
 
   /* ------------------------------- 交互与定制 ------------------------------- */
