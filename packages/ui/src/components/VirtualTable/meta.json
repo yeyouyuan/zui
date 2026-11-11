@@ -7,6 +7,7 @@
   "props": {
     "data": { "type": "T[]", "default": "—", "desc": "行数据" },
     "columns": { "type": "Array<VirtualTableColumn<T>>", "default": "—", "desc": "列定义（key/title/width/render/fixed）" },
+    "rowKey": { "type": "keyof T | ((row, index) => React.Key)", "default": "index", "desc": "稳定行 key；排序/筛选时避免按索引复用有状态单元格" },
     "rowHeight": { "type": "number", "default": "48", "desc": "行高（px），定高虚拟滚动前提" },
     "height": { "type": "number", "default": "—", "desc": "容器高度（px），必填" },
     "overscan": { "type": "number", "default": "5", "desc": "可视区上下额外渲染行数" },
@@ -15,7 +16,8 @@
   "a11yNotes": [
     "role=table/row/cell 语义，行带 aria-rowindex（表头为第 1 行）",
     "根元素 aria-rowcount 反映总行数（含表头）",
-    "固定列用 sticky CSS，不改变 DOM 顺序"
+    "固定列用 sticky CSS，不改变 DOM 顺序",
+    "根滚动容器 tabIndex=0，支持方向键、PageUp/PageDown、Home/End 键盘滚动"
   ],
   "related": ["Table", "List"]
 }

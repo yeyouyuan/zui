@@ -298,3 +298,26 @@
   color: var(--z-cascader-empty-fg);
   text-align: center;
 }
+
+@media (forced-colors: active) {
+  .z-cascader-trigger,
+  .z-cascader-panel,
+  .z-cascader-search-input {
+    border-color: CanvasText;
+  }
+
+  .z-cascader-item[data-active='true'],
+  .z-cascader-item[aria-selected='true'] {
+    color: HighlightText;
+    background: Highlight;
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
+
+  .z-cascader-trigger:focus-visible,
+  .z-cascader-panel:focus-visible,
+  .z-cascader-search-input:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}

@@ -365,3 +365,27 @@
     animation: none;
   }
 }
+
+@media (forced-colors: active) {
+  .z-tree-select-trigger,
+  .z-tree-select-panel,
+  .z-tree-select-node-checkbox {
+    border-color: CanvasText;
+  }
+
+  .z-tree-select-node[data-selected='true'] > .z-tree-select-node-row,
+  .z-tree-select-node-checkbox[data-checked='true'],
+  .z-tree-select-node-checkbox[data-indeterminate='true'] {
+    color: HighlightText;
+    background: Highlight;
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
+
+  .z-tree-select-trigger:focus-visible,
+  .z-tree-select-node:focus-visible,
+  .z-tree-select-tag-remove:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}

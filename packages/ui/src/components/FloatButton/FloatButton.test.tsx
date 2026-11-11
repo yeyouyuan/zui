@@ -55,7 +55,8 @@ describe('FloatButton 菜单', () => {
     await user.click(trigger);
     expect(trigger).toHaveAttribute('aria-expanded', 'true');
     expect(document.querySelector('[data-part="menu"]')).toHaveAttribute('data-open', 'true');
-    expect(screen.getAllByRole('button')).toHaveLength(3);
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(screen.getAllByRole('menuitem')).toHaveLength(2);
   });
 
   it('点击菜单项触发 onClick 并收起', async () => {
@@ -63,7 +64,7 @@ describe('FloatButton 菜单', () => {
     const itemClick = vi.fn();
     render(<FloatButton menu={[{ description: '操作项', onClick: itemClick }]} />);
     await user.click(getTrigger());
-    await user.click(screen.getByRole('button', { name: '操作项' }));
+    await user.click(screen.getByRole('menuitem', { name: '操作项' }));
     expect(itemClick).toHaveBeenCalledTimes(1);
     expect(getTrigger()).toHaveAttribute('aria-expanded', 'false');
   });
@@ -100,6 +101,21 @@ describe('FloatButton 菜单', () => {
     expect(getTrigger()).toHaveAttribute('aria-expanded', 'true');
     await user.unhover(root);
     expect(getTrigger()).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('hover 模式仍支持键盘和触控点击，菜单语义完整', async () => {
+    const user = userEvent.setup();
+    render(<FloatButton menu={menu} trigger="hover" />);
+    const trigger = getTrigger();
+    await user.tab();
+    expect(trigger).toHaveFocus();
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(screen.getAllByRole('menuitem')).toHaveLength(menu.length);
+    await user.keyboard('{Escape}');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
   });
 });
 

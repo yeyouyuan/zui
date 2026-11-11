@@ -246,3 +246,28 @@
   color: var(--z-select-empty-fg);
   text-align: center;
 }
+
+@media (forced-colors: active) {
+  .z-select-trigger,
+  .z-select-listbox {
+    border-color: CanvasText;
+  }
+
+  .z-select-option[data-active='true'],
+  .z-select-option[aria-selected='true'] {
+    color: HighlightText;
+    background: Highlight;
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
+
+  .z-select-option[aria-selected='true']::after {
+    color: HighlightText;
+  }
+
+  .z-select-trigger:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}

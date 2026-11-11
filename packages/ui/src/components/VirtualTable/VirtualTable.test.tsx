@@ -329,6 +329,35 @@ describe('VirtualTable', () => {
     expect(body).toHaveStyle({ height: `${10000 * 48}px` });
   });
 
+  it('root is keyboard-scrollable with rows, pages and bounds', () => {
+    const { container } = render(
+      <VirtualTable data={makeRows(100)} columns={COLUMNS} height={240} rowHeight={40} />
+    );
+    const root = screen.getByRole('table');
+    Object.defineProperty(root, 'scrollTop', { configurable: true, writable: true, value: 0 });
+    root.focus();
+    fireEvent.keyDown(root, { key: 'ArrowDown' });
+    expect(root.scrollTop).toBe(40);
+    fireEvent.keyDown(root, { key: 'PageDown' });
+    expect(root.scrollTop).toBeGreaterThan(40);
+    fireEvent.keyDown(root, { key: 'End' });
+    expect(root.scrollTop).toBeGreaterThan(3000);
+    fireEvent.keyDown(root, { key: 'Home' });
+    expect(root.scrollTop).toBe(0);
+    expect(container.querySelector('[data-part="root"]')).toHaveAttribute('tabindex', '0');
+  });
+
+  it('rowKey preserves row DOM identity when data order changes', () => {
+    const data = makeRows(3);
+    const { container, rerender } = render(
+      <VirtualTable data={data} columns={COLUMNS} height={480} rowKey="id" />
+    );
+    const rowForFirst = getBodyRows(container).find((row) => row.textContent?.includes('User 0'))!;
+    rerender(<VirtualTable data={[...data].reverse()} columns={COLUMNS} height={480} rowKey="id" />);
+    const sameRowAfterSort = getBodyRows(container).find((row) => row.textContent?.includes('User 0'))!;
+    expect(sameRowAfterSort).toBe(rowForFirst);
+  });
+
   it('cancels the pending rAF frame on unmount', () => {
     const cancelSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
     const { unmount } = render(<VirtualTable data={makeRows(100)} columns={COLUMNS} height={400} />);

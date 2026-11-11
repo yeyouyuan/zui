@@ -165,3 +165,24 @@
     transition: none;
   }
 }
+
+@media (forced-colors: active) {
+  .z-tabs-list {
+    border-color: CanvasText;
+  }
+
+  .z-tab[aria-selected='true'] {
+    color: Highlight;
+    forced-color-adjust: none;
+  }
+
+  .z-tab[aria-selected='true']::after {
+    background: Highlight;
+  }
+
+  .z-tab:focus-visible,
+  .z-tabs-panel:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}

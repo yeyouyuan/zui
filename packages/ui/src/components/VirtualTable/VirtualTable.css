@@ -138,3 +138,8 @@
     transition: none;
   }
 }
+
+.z-virtual-table:focus-visible {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: -2px;
+}

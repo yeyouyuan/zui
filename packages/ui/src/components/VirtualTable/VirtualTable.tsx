@@ -18,6 +18,8 @@ export interface VirtualTableColumn<T = Record<string, unknown>> {
 export interface VirtualTableProps<T = Record<string, unknown>> {
   data: T[];
   columns: Array<VirtualTableColumn<T>>;
+  /** 稳定行 key；排序/筛选时避免按索引复用有状态单元格。 */
+  rowKey?: keyof T | ((row: T, index: number) => React.Key);
   rowHeight?: number; // 行高（px），默认 48
   height: number; // 容器高度（px），必填
   overscan?: number; // 可视区上下额外渲染行数，默认 5
@@ -62,6 +64,7 @@ function defaultCellValue(row: unknown, key: string): React.ReactNode {
 export function VirtualTable<T = Record<string, unknown>>({
   data,
   columns,
+  rowKey,
   rowHeight = 48,
   height,
   overscan = 5,
@@ -159,9 +162,26 @@ export function VirtualTable<T = Record<string, unknown>>({
       data-part="root"
       role="table"
       aria-rowcount={data.length + 1}
+      tabIndex={0}
       className={cx('z-virtual-table', className, classNames?.root)}
       style={{ height }}
       onScroll={handleScroll}
+      onKeyDown={(event) => {
+        if (event.target !== event.currentTarget) return;
+        const root = rootRef.current;
+        if (!root) return;
+        let next = root.scrollTop;
+        if (event.key === 'ArrowDown') next += rowHeight;
+        else if (event.key === 'ArrowUp') next -= rowHeight;
+        else if (event.key === 'PageDown') next += Math.max(rowHeight, height - headerHeight);
+        else if (event.key === 'PageUp') next -= Math.max(rowHeight, height - headerHeight);
+        else if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = maxScrollTop;
+        else return;
+        event.preventDefault();
+        root.scrollTop = Math.min(maxScrollTop, Math.max(0, next));
+        setScrollTop(root.scrollTop);
+      }}
     >
       {/* 表头：sticky 顶栏 */}
       <div
@@ -210,7 +230,13 @@ export function VirtualTable<T = Record<string, unknown>>({
           const index = startIndex + i;
           return (
             <div
-              key={index}
+              key={
+                typeof rowKey === 'function'
+                  ? rowKey(row, index)
+                  : rowKey != null
+                    ? (row as Record<PropertyKey, unknown>)[rowKey] as React.Key
+                    : index
+              }
               data-part="row"
               role="row"
               aria-rowindex={index + 2}

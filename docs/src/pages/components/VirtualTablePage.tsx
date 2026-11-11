@@ -116,6 +116,12 @@ export default function VirtualTablePage(): React.ReactNode {
             description: '列配置（width 默认 120px）。',
           },
           {
+            name: 'rowKey',
+            type: 'keyof T | ((row, index) => React.Key)',
+            defaultValue: 'index',
+            description: '稳定行 key；排序或筛选时建议显式提供，避免有状态单元格按索引复用。',
+          },
+          {
             name: 'rowHeight',
             type: 'number',
             defaultValue: '48',

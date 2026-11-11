@@ -6,7 +6,9 @@
 
 - **P0：0 项。** 未发现会造成全局不可用、数据破坏或无法绕过的阻断问题。
 - **P1：已完成。** 全部 P1 交互缺陷已在提交 `aa67673`（`fix: resolve all P1 interaction defects from full component audit`）修复并补回归。
-- **第一批 P2：已完成。** 提交 `112dfe3` 完成第一批实现修复；其后的当前工作树补齐复核中仍缺的明确测试。覆盖类别包括焦点、ARIA、受控状态、`forced-colors`、RTL、`prefers-reduced-motion`、触控目标与 Pointer Events，以及 docs 可访问性/响应式细节。
+- **第一批 P2：已完成。** 提交 `112dfe3` 完成焦点、ARIA、受控时序、弹层分层、日期/树键盘及第一轮视觉修复。
+- **第二批 P2：已完成。** 提交 `5ce5c58` 完成 SideNav 焦点回退与定位性能、选择器大数据查找、RTL/reduced-motion、令牌收口、触控热区和 docs 门面一致性；其后自动扫描补齐 TreeSelect/Tabs/Cascader/Select 的 `forced-colors`、FloatButton 菜单键盘语义，以及 VirtualTable 根键盘滚动与稳定 `rowKey`。
+- **自动残余扫描：高风险项清零。** 所有声明 transition/animation 的组件 CSS 均有组件级 `prefers-reduced-motion`；所有带 selected/checked 状态的组件 CSS 均有 `forced-colors: active`；组件 CSS 中无未令牌化的 hex/oklch 颜色字面量。保留的物理属性均属于中心定位、勾形绘制或明确的物理方向公共 API。
 
 ## 第一批测试缺口复核
 

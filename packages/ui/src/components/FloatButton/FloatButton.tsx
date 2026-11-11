@@ -64,7 +64,11 @@ export function FloatButton(props: FloatButtonProps) {
 
   const onTriggerClick = () => {
     onClick?.();
-    if (hasMenu && trigger === 'click') setOpen((prev) => !prev);
+    if (!hasMenu) return;
+    // hover 模式的 mouseenter 会先于 click 打开；点击保持打开，避免立即反向关闭。
+    // 收起仍由 pointerleave、Escape 或点击外部负责。
+    if (trigger === 'hover') setOpen(true);
+    else setOpen((prev) => !prev);
   };
 
   return (
@@ -83,6 +87,7 @@ export function FloatButton(props: FloatButtonProps) {
       {hasMenu ? (
         <ul
           data-part="menu"
+          role="menu"
           className={cx('z-float-button-menu', classNames?.menu)}
           data-open={open ? 'true' : 'false'}
         >
@@ -90,6 +95,8 @@ export function FloatButton(props: FloatButtonProps) {
             <li key={index} data-part="item" className={cx('z-float-button-item', classNames?.item)}>
               <button
                 type="button"
+                role="menuitem"
+                tabIndex={open ? 0 : -1}
                 className="z-float-button-item-button"
                 onClick={() => {
                   item.onClick?.();
@@ -118,6 +125,7 @@ export function FloatButton(props: FloatButtonProps) {
         aria-label={ariaLabel ?? locale.accessibility.floatAction}
         aria-haspopup={hasMenu ? 'menu' : undefined}
         aria-expanded={hasMenu ? open : undefined}
+        onFocus={trigger === 'hover' && hasMenu ? () => setOpen(true) : undefined}
         onClick={onTriggerClick}
       >
         {icon ?? (
