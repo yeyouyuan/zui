@@ -100,7 +100,7 @@ export default function CodeBlock({
         <span className="doc-code-lang">{language ?? 'text'}</span>
         {copyButton}
       </div>
-      <pre className="doc-code" tabIndex={0}>
+      <pre className="doc-code" tabIndex={0} aria-label="代码示例，可横向滚动">
         {highlight ? (
           <code dangerouslySetInnerHTML={{ __html: highlightJsx(code) }} />
         ) : (

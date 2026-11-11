@@ -65,7 +65,7 @@ function ComponentPreview(): React.ReactNode {
         <div className="doc-preview-heading">
           <div>
             <p className="doc-eyebrow">WORKSPACE</p>
-            <h2>项目概览</h2>
+            <div className="doc-preview-title">项目概览</div>
           </div>
           <Avatar name="ZUI" size="sm" />
         </div>

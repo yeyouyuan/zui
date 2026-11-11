@@ -24,7 +24,7 @@
 .z-float-button {
   box-sizing: border-box;
   position: fixed;
-  right: var(--z-float-button-right);
+  inset-inline-end: var(--z-float-button-right);
   bottom: var(--z-float-button-bottom);
   z-index: var(--z-z-sticky);
   display: flex;
@@ -129,4 +129,11 @@
   color: var(--z-float-button-fg);
   cursor: pointer;
   box-shadow: var(--z-float-button-shadow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-float-button-trigger,
+  .z-float-button-menu {
+    transition: none;
+  }
 }

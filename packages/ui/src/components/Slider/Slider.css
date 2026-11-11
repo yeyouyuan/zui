@@ -6,6 +6,7 @@
   --z-slider-track-radius: var(--z-radius-full);
   --z-slider-fill-bg: var(--z-color-primary);
   --z-slider-thumb-size: 16px;
+  --z-slider-thumb-hit-size: 24px;
   --z-slider-thumb-bg: var(--z-color-bg);
   --z-slider-thumb-border: 2px solid var(--z-color-primary);
   --z-slider-thumb-shadow: var(--z-shadow-sm);
@@ -61,6 +62,17 @@
   transform: translate(-50%, -50%);
   cursor: grab;
   transition: left var(--z-slider-transition);
+}
+
+/* 保持 16px 圆点视觉，伪元素提供至少 24px 的拖动命中区。 */
+.z-slider-thumb::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, var(--z-slider-thumb-hit-size));
+  height: max(100%, var(--z-slider-thumb-hit-size));
+  content: '';
+  transform: translate(-50%, -50%);
 }
 
 .z-slider-thumb:active {

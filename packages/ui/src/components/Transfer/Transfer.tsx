@@ -77,6 +77,14 @@ export function Transfer(props: TransferProps) {
     source: React.useRef<HTMLUListElement>(null),
     target: React.useRef<HTMLUListElement>(null),
   };
+  const buttonRefs = {
+    right: React.useRef<HTMLButtonElement>(null),
+    left: React.useRef<HTMLButtonElement>(null),
+  };
+  const pendingFocusRef = React.useRef<{
+    destination: 'source' | 'target';
+    direction: 'right' | 'left';
+  } | null>(null);
 
   const filterItems = (items: TransferItem[], query: string) => {
     const keyword = query.trim().toLowerCase();
@@ -120,10 +128,26 @@ export function Transfer(props: TransferProps) {
       direction === 'right'
         ? sortBySource([...target, ...moving], dataSource)
         : target.filter((key) => !moving.includes(key));
+    pendingFocusRef.current = {
+      destination: direction === 'right' ? 'target' : 'source',
+      direction,
+    };
     setTarget(next);
     if (direction === 'right') setSourceChecked([]);
     else setTargetChecked([]);
   };
+
+  React.useLayoutEffect(() => {
+    const pending = pendingFocusRef.current;
+    if (!pending) return;
+    pendingFocusRef.current = null;
+
+    const firstItem = listRefs[pending.destination].current?.querySelector<HTMLInputElement>(
+      'input[type="checkbox"]:not(:disabled)'
+    );
+    const fallbackButton = buttonRefs[pending.direction].current;
+    (firstItem ?? fallbackButton)?.focus({ preventScroll: true });
+  });
 
   /* ------------------------------ 键盘导航 ------------------------------- */
 
@@ -285,6 +309,7 @@ export function Transfer(props: TransferProps) {
 
       <div data-part="buttons" className={cx('z-transfer-buttons', classNames?.buttons)}>
         <button
+          ref={buttonRefs.right}
           type="button"
           className="z-transfer-button"
           aria-label={locale.transfer.moveRight}
@@ -303,6 +328,7 @@ export function Transfer(props: TransferProps) {
           </svg>
         </button>
         <button
+          ref={buttonRefs.left}
           type="button"
           className="z-transfer-button"
           aria-label={locale.transfer.moveLeft}

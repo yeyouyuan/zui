@@ -159,19 +159,42 @@ describe('Notification 关闭与生命周期', () => {
     expect(screen.getByText('N3')).toBeInTheDocument();
   });
 
-  it('onClick 点击卡片触发；关闭按钮不冒泡触发卡片点击', () => {
+  it('onClick 通知可聚焦，并由点击、Enter 与 Space 激活', () => {
+    const onClick = vi.fn();
+    renderWithProvider();
+    act(() => {
+      api.info({ title: 'clickable', duration: 0, closable: false, onClick });
+    });
+    const item = screen.getByText('clickable').closest('[data-part="item"]') as HTMLElement;
+    expect(item).toHaveAttribute('role', 'status');
+    expect(item).toHaveAttribute('aria-live', 'polite');
+    expect(item).toHaveAttribute('tabindex', '0');
+
+    fireEvent.click(item);
+    fireEvent.keyDown(item, { key: 'Enter' });
+    fireEvent.keyDown(item, { key: ' ' });
+
+    expect(onClick).toHaveBeenCalledTimes(3);
+  });
+
+  it('无 onClick 的通知不可 Tab；关闭按钮键盘事件不触发卡片 onClick', () => {
     vi.useFakeTimers();
     try {
       const onClick = vi.fn();
       renderWithProvider();
       act(() => {
         api.info({ title: 'clickable', duration: 0, onClick });
+        api.info({ title: 'static', duration: 0, closable: false });
       });
       const item = screen.getByText('clickable').closest('[data-part="item"]') as HTMLElement;
-      fireEvent.click(item);
-      expect(onClick).toHaveBeenCalledTimes(1);
-      fireEvent.click(screen.getByRole('button', { name: '关闭' }));
-      expect(onClick).toHaveBeenCalledTimes(1);
+      const staticItem = screen.getByText('static').closest('[data-part="item"]') as HTMLElement;
+      const close = item.querySelector('[data-part="close"]') as HTMLButtonElement;
+      expect(staticItem).not.toHaveAttribute('tabindex');
+
+      fireEvent.keyDown(close, { key: 'Enter' });
+      expect(onClick).not.toHaveBeenCalled();
+      fireEvent.click(close);
+      expect(onClick).not.toHaveBeenCalled();
       act(() => {
         vi.advanceTimersByTime(250);
       });

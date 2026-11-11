@@ -174,3 +174,29 @@
     transition: none;
   }
 }
+
+@media (forced-colors: active) {
+  .z-calendar {
+    color: CanvasText;
+    background: Canvas;
+    border-color: CanvasText;
+  }
+
+  .z-calendar-day[data-today]:not([aria-selected='true']) {
+    border-color: ButtonText;
+  }
+
+  .z-calendar-day[aria-selected='true'] {
+    color: HighlightText;
+    background: Highlight;
+    border-color: Highlight;
+    outline: 1px solid Highlight;
+  }
+
+  .z-calendar-nav:focus-visible,
+  .z-calendar-day:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}

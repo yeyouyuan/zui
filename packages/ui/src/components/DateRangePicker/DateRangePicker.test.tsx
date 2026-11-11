@@ -137,6 +137,23 @@ describe('DateRangePicker 双月面板', () => {
     expect(grids[1]).toHaveAttribute('aria-labelledby', rightLabel.id);
   });
 
+  it('重复日期按所属月窗口只保留一个 roving tab stop', async () => {
+    const user = userEvent.setup();
+    render(<DateRangePicker defaultValue={['2024-03-01', '2024-03-05']} />);
+    await user.click(getStartInput());
+    await user.keyboard('{PageDown}');
+
+    const aprilFirstCells = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-date="2024-04-01"]')
+    );
+    expect(aprilFirstCells).toHaveLength(2);
+    expect(aprilFirstCells.filter((cell) => cell.tabIndex === 0)).toHaveLength(1);
+    expect(aprilFirstCells.find((cell) => cell.tabIndex === 0)).not.toHaveAttribute(
+      'data-out-month'
+    );
+    expect(getPanel().querySelectorAll('[role="gridcell"][tabindex="0"]')).toHaveLength(1);
+  });
+
   it('共享导航：‹ › 同时平移左右两月标题', async () => {
     const user = userEvent.setup();
     render(<DateRangePicker defaultValue={RANGE} />);

@@ -281,6 +281,25 @@ describe('Statistic.CountDown', () => {
     expect(onFinish).toHaveBeenCalledTimes(1);
   });
 
+  it('fires again when a completed target returns after a different target (A → B → A)', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-01-01T00:00:00Z'));
+    const targetA = Date.now() + 1_000;
+    const targetB = Date.now() + 2_000;
+    const onFinish = vi.fn();
+    const { rerender } = render(<StatisticCountDown value={targetA} onFinish={onFinish} />);
+
+    act(() => {
+      vi.advanceTimersByTime(1_000);
+    });
+    expect(onFinish).toHaveBeenCalledTimes(1);
+
+    rerender(<StatisticCountDown value={targetB} onFinish={onFinish} />);
+    rerender(<StatisticCountDown value={targetA} onFinish={onFinish} />);
+
+    expect(onFinish).toHaveBeenCalledTimes(2);
+  });
+
   it('hydrates from a deterministic placeholder even when time crosses a second boundary', async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-01-01T00:00:00.000Z'));

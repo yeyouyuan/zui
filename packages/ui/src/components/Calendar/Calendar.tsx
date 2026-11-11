@@ -306,7 +306,11 @@ export function Calendar(props: CalendarProps) {
                     event.preventDefault();
                   }}
                   onKeyDown={onDayKeyDown}
-                  onClick={() => selectDate(date)}
+                  onClick={() => {
+                    // MouseDown 被阻止后让副作用显式恢复焦点；跨月点击时旧格会卸载
+                    navFocusRef.current = true;
+                    selectDate(date);
+                  }}
                 >
                   {date.getDate()}
                 </span>

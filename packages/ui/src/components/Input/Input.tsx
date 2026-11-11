@@ -191,6 +191,7 @@ function Input({
           data-part="clear"
           className={cx('z-input-clear', classNames?.clear)}
           aria-label={locale.input.clear}
+          onPointerDown={(event) => event.preventDefault()}
           onClick={handleClear}
         >
           <Close />
@@ -280,6 +281,7 @@ function InputTextarea({
           data-part="clear"
           className={cx('z-input-clear', classNames?.clear)}
           aria-label={locale.input.clear}
+          onPointerDown={(event) => event.preventDefault()}
           onClick={handleClear}
         >
           <Close />
@@ -471,6 +473,7 @@ function InputSearch({
           data-part="clear"
           className={cx('z-input-clear', classNames?.clear)}
           aria-label={locale.input.clear}
+          onPointerDown={(event) => event.preventDefault()}
           onClick={handleClear}
         >
           <Close />

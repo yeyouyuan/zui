@@ -168,3 +168,30 @@
     transition: none;
   }
 }
+
+@media (forced-colors: active) {
+  .z-tree-node[data-selected='true'] > .z-tree-node-row {
+    color: HighlightText;
+    background: Highlight;
+    outline: 1px solid Highlight;
+  }
+
+  .z-tree-node:focus-visible > .z-tree-node-row {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  .z-tree-node-checkbox {
+    color: CanvasText;
+    background: Canvas;
+    border-color: CanvasText;
+  }
+
+  .z-tree-node-checkbox[data-checked='true'],
+  .z-tree-node-checkbox[data-indeterminate='true'] {
+    color: HighlightText;
+    background: Highlight;
+    border-color: Highlight;
+  }
+}

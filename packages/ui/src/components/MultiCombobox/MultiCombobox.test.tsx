@@ -210,6 +210,57 @@ describe('MultiCombobox 选中与标签', () => {
       'true'
     );
   });
+
+  it('受控父级拒绝选择时在提交周期后恢复搜索草稿', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(<MultiCombobox options={options} value={[]} onChange={onChange} aria-label="标签" />);
+
+    await user.type(getInput(), 'ban');
+    await user.click(screen.getByRole('option', { name: 'Banana' }));
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(['banana'], { reason: 'selection' });
+    expect(getInput()).toHaveValue('ban');
+    expect(screen.getByRole('option', { name: 'Banana' })).toHaveAttribute(
+      'aria-selected',
+      'false'
+    );
+  });
+
+  it('受控父级接受选择时按约定清空搜索草稿', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+
+    function AcceptedSelection() {
+      const [value, setValue] = React.useState<string[]>([]);
+      return (
+        <MultiCombobox
+          options={options}
+          value={value}
+          onChange={(next, details) => {
+            onChange(next, details);
+            setValue(next);
+          }}
+          aria-label="标签"
+        />
+      );
+    }
+
+    const { container } = render(<AcceptedSelection />);
+    await user.type(getInput(), 'ban');
+    await user.click(screen.getByRole('option', { name: 'Banana' }));
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith(['banana'], { reason: 'selection' });
+    expect(getInput()).toHaveValue('');
+    expect(getTags(getRoot(container))).toHaveLength(1);
+    expect(getTags(getRoot(container))[0]).toHaveTextContent('Banana');
+    expect(screen.getByRole('option', { name: 'Banana' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+  });
 });
 
 describe('MultiCombobox 键盘与 IME', () => {

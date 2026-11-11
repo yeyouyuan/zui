@@ -397,10 +397,16 @@ function Splitter({
   const keyboardRef = React.useRef<KeyboardSession | null>(null);
   const availableSizeRef = React.useRef(0);
   const previousExpanded = React.useRef(new Map<string, number>());
-  const pendingCollapse = React.useRef<{ key: string; value: boolean; requested: number[] } | null>(
-    null
-  );
+  const pendingCollapse = React.useRef<{
+    key: string;
+    value: boolean;
+    requested: number[];
+  } | null>(null);
   const [, forceMeasurement] = React.useReducer((value) => value + 1, 0);
+  const [collapseRequestVersion, advanceCollapseRequest] = React.useReducer(
+    (value: number) => value + 1,
+    0
+  );
 
   const childArray: React.ReactNode[] = [];
   React.Children.forEach(children, (child) => {
@@ -543,22 +549,34 @@ function Splitter({
 
   const previousCollapsedSignature = React.useRef(collapsedSignature);
   React.useEffect(() => {
-    if (previousCollapsedSignature.current === collapsedSignature) return;
-    previousCollapsedSignature.current = collapsedSignature;
+    const previousSignature = previousCollapsedSignature.current;
     const pending = pendingCollapse.current;
     const pendingIndex = pending
       ? panelRecords.findIndex((panel) => panel.key === pending.key)
       : -1;
-    if (pending && pendingIndex >= 0 && collapsedStates[pendingIndex] === pending.value) {
+    const changedIndexes = collapsedStates
+      .map((value, index) => (value !== (previousSignature[index] === '1') ? index : -1))
+      .filter((index) => index >= 0);
+    const acceptsOnlyPendingRequest =
+      pending !== null &&
+      pendingIndex >= 0 &&
+      changedIndexes.length === 1 &&
+      changedIndexes[0] === pendingIndex &&
+      collapsedStates[pendingIndex] === pending.value;
+
+    // 每个受控请求只允许当前 commit 接受；未改变 props 即视为拒绝，不能留给未来变化套用。
+    pendingCollapse.current = null;
+    if (previousSignature === collapsedSignature) return;
+    previousCollapsedSignature.current = collapsedSignature;
+    if (acceptsOnlyPendingRequest) {
       if (sizesProp === undefined) setInternalLayout(pending.requested);
-      pendingCollapse.current = null;
       return;
     }
-    pendingCollapse.current = null;
     const requested = normalizeSplitterSizes(specs, sizesRef.current);
     if (sizesProp === undefined) setInternalLayout(requested);
     onSizesChange?.(requested, { reason: 'collapse', handleIndex: null });
   }, [
+    collapseRequestVersion,
     collapsedSignature,
     collapsedStates,
     onSizesChange,
@@ -783,6 +801,7 @@ function Splitter({
         requestedSizes: requested,
       }
     );
+    advanceCollapseRequest();
     return true;
   };
 
@@ -993,7 +1012,9 @@ function Splitter({
               onKeyDown?.(event);
               if (event.defaultPrevented || config.disabled) return;
               if (event.key === 'Enter') {
-                if (toggleCollapsed(panelIndex, config.collapseTarget)) event.preventDefault();
+                // 长按 Enter 的自动重复仍属于同一次切换。
+                if (!event.repeat && toggleCollapsed(panelIndex, config.collapseTarget))
+                  event.preventDefault();
                 return;
               }
               if (resizeBlocked) return;

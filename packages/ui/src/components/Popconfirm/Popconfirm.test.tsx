@@ -111,6 +111,33 @@ describe('Popconfirm 交互', () => {
     await user.click(getTrigger());
     expect(screen.getByRole('button', { name: '确定' })).toHaveFocus();
   });
+
+  it('打开后 Tab 与 Shift+Tab 在弹层按钮间循环，不逃到背景', async () => {
+    const user = userEvent.setup();
+    render(
+      <div>
+        <Popconfirm title="确认删除？">
+          <button type="button">删除</button>
+        </Popconfirm>
+        <button type="button">背景按钮</button>
+      </div>
+    );
+    await user.click(getTrigger());
+
+    const ok = screen.getByRole('button', { name: '确定' });
+    const cancel = screen.getByRole('button', { name: '取消' });
+    const background = screen.getByRole('button', { name: '背景按钮' });
+    expect(ok).toHaveFocus();
+
+    await user.tab();
+    expect(cancel).toHaveFocus();
+    expect(background).not.toHaveFocus();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    await user.tab({ shift: true });
+    expect(ok).toHaveFocus();
+    expect(background).not.toHaveFocus();
+  });
 });
 
 describe('Popconfirm 定制', () => {

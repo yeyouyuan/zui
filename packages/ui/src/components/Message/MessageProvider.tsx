@@ -64,7 +64,8 @@ export function MessageProvider({
     (id: string) => {
       const item = itemsRef.current.find((entry) => entry.id === id);
       if (!item || item.state === 'closing') return;
-      item.onClose?.();
+
+      // 先提交 closing，确保 onClose 内部重入 dismiss/create 时也只通知一次。
       commit((prev) =>
         prev.map((entry) => (entry.id === id ? { ...entry, state: 'closing' } : entry))
       );
@@ -75,6 +76,7 @@ export function MessageProvider({
         commit((prev) => prev.filter((entry) => entry.id !== id));
       }, EXIT_MS);
       timersRef.current.set(id, timers);
+      item.onClose?.();
     },
     [commit]
   );
@@ -94,14 +96,15 @@ export function MessageProvider({
         state: 'open',
       };
 
-      // max 超出时挤掉最旧：立即移除、清理计时器并触发 onClose
-      const overflow = Math.max(itemsRef.current.length + 1 - max, 0);
-      const evicted = overflow > 0 ? itemsRef.current.slice(0, overflow) : [];
-      for (const old of evicted) {
-        clearTimers(old.id);
-        old.onClose?.();
-      }
-      commit((prev) => [...prev.slice(evicted.length), item]);
+      // max 只限制 open 条目；closing 条目保留退场动画，也不应被再次驱逐/通知。
+      const openItems = itemsRef.current.filter((entry) => entry.state === 'open');
+      const normalizedMax = Math.max(1, Math.floor(max));
+      const overflow = Math.max(openItems.length + 1 - normalizedMax, 0);
+      const evicted = openItems.slice(0, overflow);
+      const evictedIds = new Set(evicted.map((entry) => entry.id));
+      for (const old of evicted) clearTimers(old.id);
+      commit((prev) => [...prev.filter((entry) => !evictedIds.has(entry.id)), item]);
+      for (const old of evicted) old.onClose?.();
 
       if (item.duration > 0) {
         const timers = timersRef.current.get(id) ?? {};

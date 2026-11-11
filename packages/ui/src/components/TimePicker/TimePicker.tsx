@@ -88,6 +88,8 @@ export function TimePicker(props: TimePickerProps) {
   const baseId = React.useId();
   const triggerId = `${baseId}-trigger`;
   const panelId = `${baseId}-panel`;
+  const optionId = (unit: TimeUnit, optionIndex: number) =>
+    `${baseId}-option-${unit}-${optionIndex}`;
 
   const [open, setOpen] = React.useState(false);
   const [draft, setDraft] = React.useState<TimeValue>({ hour: 0, minute: 0, second: 0 });
@@ -194,6 +196,8 @@ export function TimePicker(props: TimePickerProps) {
   const outsideRefs = React.useMemo(() => [rootRef, panelRef], []);
   useOnClickOutside(outsideRefs, () => closePanel(false), open);
 
+  const activeDescendantId = open ? optionId(focusUnit, draft[focusUnit]) : undefined;
+
   /* -------------------------------- 渲染 --------------------------------- */
 
   return (
@@ -214,6 +218,7 @@ export function TimePicker(props: TimePickerProps) {
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={panelId}
+        aria-activedescendant={activeDescendantId}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         disabled={disabled}
@@ -263,6 +268,7 @@ export function TimePicker(props: TimePickerProps) {
         data-part="panel"
         className={cx('z-time-picker-panel', classNames?.panel)}
         data-open={open ? 'true' : 'false'}
+        aria-activedescendant={activeDescendantId}
         onKeyDown={onKeyDown}
       >
         {units.map((unit) => (
@@ -278,6 +284,7 @@ export function TimePicker(props: TimePickerProps) {
             {Array.from({ length: UNIT_MAX[unit] + 1 }, (_, index) => (
               <div
                 key={index}
+                id={optionId(unit, index)}
                 role="option"
                 data-part="item"
                 className={cx('z-time-picker-item', classNames?.item)}

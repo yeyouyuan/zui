@@ -23,7 +23,7 @@
 }
 
 .z-anchor-sublist {
-  padding-left: var(--z-anchor-sublist-indent);
+  padding-inline-start: var(--z-anchor-sublist-indent);
 }
 
 .z-anchor-item {
@@ -46,11 +46,11 @@
     background var(--z-anchor-transition);
 }
 
-/* 左侧 2px 激活指示条 */
+/* 行内起始侧 2px 激活指示条 */
 .z-anchor-link::before {
   content: '';
   position: absolute;
-  left: 0;
+  inset-inline-start: 0;
   top: 50%;
   width: var(--z-anchor-indicator-width);
   height: 1.25em;
@@ -77,4 +77,11 @@
 .z-anchor-link:focus-visible {
   outline: 2px solid var(--z-color-border-focus);
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-anchor-link,
+  .z-anchor-link::before {
+    transition: none;
+  }
 }

@@ -438,7 +438,7 @@ export function DateRangePicker(props: DateRangePickerProps) {
                 aria-selected={isSelected}
                 aria-disabled={disabledDay || undefined}
                 aria-current={iso === todayISO ? 'date' : undefined}
-                tabIndex={iso === focusedISO ? 0 : -1}
+                tabIndex={iso === focusedISO && !outMonth ? 0 : -1}
                 data-out-month={outMonth ? '' : undefined}
                 data-today={iso === todayISO ? '' : undefined}
                 data-in-range={inRange ? 'true' : undefined}

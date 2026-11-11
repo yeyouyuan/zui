@@ -34,20 +34,44 @@ describe('Rate', () => {
     expect(getStars()).toHaveLength(3);
   });
 
-  it('defaultValue：整星与半星填充状态（data-filled / aria-checked）', () => {
+  it('defaultValue：所有星明确 aria-checked，半星不伪报为完整选中', () => {
     const { rerender } = render(<Rate defaultValue={2} />);
     let stars = getStars();
-    expect(stars[0]).toHaveAttribute('data-filled', 'full');
-    expect(stars[1]).toHaveAttribute('data-filled', 'full');
-    expect(stars[2]).toHaveAttribute('data-filled', 'none');
-    expect(stars[1]).toHaveAttribute('aria-checked', 'true');
-    expect(stars[0]).toHaveAttribute('aria-checked', 'false');
+    expect(stars.map((star) => star.getAttribute('data-filled'))).toEqual([
+      'full',
+      'full',
+      'none',
+      'none',
+      'none',
+    ]);
+    expect(stars.map((star) => star.getAttribute('aria-checked'))).toEqual([
+      'false',
+      'true',
+      'false',
+      'false',
+      'false',
+    ]);
+
+    rerender(<Rate value={0} allowHalf />);
+    stars = getStars();
+    expect(stars.every((star) => star.getAttribute('aria-checked') === 'false')).toBe(true);
 
     rerender(<Rate value={2.5} allowHalf />);
     stars = getStars();
-    expect(stars[1]).toHaveAttribute('data-filled', 'full');
-    expect(stars[2]).toHaveAttribute('data-filled', 'half');
-    expect(stars[2]).toHaveAttribute('aria-checked', 'true');
+    expect(stars.map((star) => star.getAttribute('data-filled'))).toEqual([
+      'full',
+      'full',
+      'half',
+      'none',
+      'none',
+    ]);
+    expect(stars.map((star) => star.getAttribute('aria-checked'))).toEqual([
+      'false',
+      'true',
+      'false',
+      'false',
+      'false',
+    ]);
   });
 
   it('点击星设值（非半星模式）', async () => {
@@ -111,6 +135,8 @@ describe('Rate', () => {
     fireEvent.keyDown(stars[4], { key: 'ArrowLeft' });
     expect(onChange).toHaveBeenLastCalledWith(4.5);
     expect(stars[4]).toHaveAttribute('data-filled', 'half');
+    expect(stars[4]).toHaveAttribute('aria-checked', 'false');
+    expect(stars[3]).toHaveAttribute('aria-checked', 'true');
   });
 
   it('键盘：0 处 clamp 不越界', () => {

@@ -40,6 +40,7 @@ export function Timeline({
   return (
     <div
       {...rest}
+      role="list"
       data-part="root"
       data-mode={mode}
       className={cx('z-timeline', className, classNames?.root)}
@@ -49,6 +50,7 @@ export function Timeline({
         return (
           <div
             key={key}
+            role="listitem"
             data-part="item"
             data-color={item.color ?? 'neutral'}
             data-side={index % 2 === 1 ? 'right' : 'left'}
@@ -76,7 +78,12 @@ export function Timeline({
       })}
 
       {pending != null ? (
-        <div data-part="pending" data-pending="true" className={cx('z-timeline-item', classNames?.item)}>
+        <div
+          role="listitem"
+          data-part="pending"
+          data-pending="true"
+          className={cx('z-timeline-item', classNames?.item)}
+        >
           <div data-part="dot" className={cx('z-timeline-dot', classNames?.dot)}>
             <span data-part="dot-pending" className="z-timeline-dot-pending" aria-hidden="true" />
           </div>

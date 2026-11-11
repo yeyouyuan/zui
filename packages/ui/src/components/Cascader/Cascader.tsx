@@ -126,6 +126,9 @@ export function Cascader(props: CascaderProps) {
   const baseId = React.useId();
   const triggerId = `${baseId}-trigger`;
   const panelId = `${baseId}-panel`;
+  const optionId = (columnIndex: number, optionIndex: number) =>
+    `${baseId}-option-${columnIndex}-${optionIndex}`;
+  const searchOptionId = (optionIndex: number) => `${baseId}-search-option-${optionIndex}`;
 
   const [open, setOpen] = React.useState(false);
   const [activePath, setActivePath] = React.useState<string[]>([]);
@@ -271,6 +274,11 @@ export function Cascader(props: CascaderProps) {
 
   const onSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (!searchMode) return;
+    const native = event.nativeEvent as KeyboardEvent & {
+      isComposing?: boolean;
+      keyCode?: number;
+    };
+    if (native.isComposing || native.keyCode === 229) return;
     const { key } = event;
     switch (key) {
       case 'ArrowDown':
@@ -290,6 +298,9 @@ export function Cascader(props: CascaderProps) {
       case 'Escape':
         event.preventDefault();
         closePanel(true);
+        break;
+      case 'Tab':
+        closePanel(false);
         break;
       default:
         break;
@@ -314,6 +325,20 @@ export function Cascader(props: CascaderProps) {
   const outsideRefs = React.useMemo(() => [rootRef, panelRef], []);
   useOnClickOutside(outsideRefs, () => closePanel(false), open);
 
+  const focusedColumnIndex = Math.min(focusCol, columns.length - 1);
+  const focusedOptionIndex = (columns[focusedColumnIndex] ?? []).findIndex(
+    (option) => option.value === activePath[focusedColumnIndex]
+  );
+  const activeDescendantId = !open
+    ? undefined
+    : searchMode
+      ? searchActive >= 0 && searchActive < searchResults.length
+        ? searchOptionId(searchActive)
+        : undefined
+      : focusedOptionIndex >= 0
+        ? optionId(focusedColumnIndex, focusedOptionIndex)
+        : undefined;
+
   /* -------------------------------- 渲染 --------------------------------- */
 
   const renderColumns = () => (
@@ -327,13 +352,13 @@ export function Cascader(props: CascaderProps) {
           aria-label={locale.accessibility.column.replace('{index}', String(colIndex + 1))}
           data-focused={focusCol === colIndex ? 'true' : undefined}
         >
-          {list.map((option) => {
+          {list.map((option, optionIndex) => {
             const selected = path[colIndex] === option.value;
             const active = activePath[colIndex] === option.value;
             return (
               <div
                 key={option.value}
-                id={`${baseId}-item-${colIndex}-${option.value}`}
+                id={optionId(colIndex, optionIndex)}
                 role="option"
                 data-part="item"
                 className={cx('z-cascader-item', classNames?.item)}
@@ -394,6 +419,7 @@ export function Cascader(props: CascaderProps) {
         searchResults.map((entry, index) => (
           <div
             key={entry.path.join('/')}
+            id={searchOptionId(index)}
             role="option"
             data-part="item"
             className={cx('z-cascader-item', classNames?.item)}
@@ -500,6 +526,7 @@ export function Cascader(props: CascaderProps) {
         data-part="panel"
         className={cx('z-cascader-panel', classNames?.panel)}
         data-open={open ? 'true' : 'false'}
+        aria-activedescendant={searchMode ? undefined : activeDescendantId}
         onKeyDown={onKeyDown}
       >
         {showSearch ? (
@@ -510,6 +537,7 @@ export function Cascader(props: CascaderProps) {
               value={query}
               placeholder={locale.transfer.search}
               aria-label={locale.accessibility.searchCascader}
+              aria-activedescendant={searchMode ? activeDescendantId : undefined}
               onChange={(event) => {
                 setQuery(event.target.value);
                 setSearchActive(0);

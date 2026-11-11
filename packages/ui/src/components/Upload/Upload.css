@@ -259,3 +259,12 @@
   border-radius: var(--z-radius-full);
   transition: width var(--z-duration-normal) var(--z-ease-standard);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .z-upload-button,
+  .z-upload-dragzone,
+  .z-upload-item-remove,
+  .z-upload-item-progress-fill {
+    transition: none;
+  }
+}

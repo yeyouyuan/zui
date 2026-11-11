@@ -31,10 +31,16 @@ function PrototypeHeader({
   return (
     <header className="splitter-prototype-header">
       <div>
-        <p className="splitter-prototype-eyebrow">Splitter RFC-003 · 隐藏迁移原型</p>
+        <div className="splitter-prototype-kicker">
+          <span className="splitter-prototype-badge">准入原型</span>
+          <p className="splitter-prototype-eyebrow">Splitter RFC-003 · 隐藏迁移原型</p>
+        </div>
         <h1>{variant === 'ide' ? 'IDE 三栏工作区' : '客户主从详情'}</h1>
       </div>
       <div className="splitter-prototype-header-actions">
+        <a className="splitter-prototype-back" href="#/components/splitter">
+          ← 返回组件文档
+        </a>
         <nav aria-label="Splitter 原型切换">
           <a href={`#${SPLITTER_IDE_ROUTE}`} aria-current={variant === 'ide' ? 'page' : undefined}>
             IDE
@@ -284,8 +290,18 @@ function DetailPrototype() {
 
 export default function SplitterPrototype({ variant }: SplitterPrototypeProps) {
   usePageTitle(variant === 'ide' ? 'Splitter IDE 三栏原型' : 'Splitter 主从详情原型');
+  const entryThemeRef = useRef(document.documentElement.getAttribute('data-theme'));
   const [dark, setDark] = useState(() => document.documentElement.dataset.theme === 'dark');
   const [direction, setDirection] = useState<Direction>('ltr');
+
+  useEffect(
+    () => () => {
+      const entryTheme = entryThemeRef.current;
+      if (entryTheme === null) document.documentElement.removeAttribute('data-theme');
+      else document.documentElement.setAttribute('data-theme', entryTheme);
+    },
+    []
+  );
 
   useEffect(() => {
     document.documentElement.dir = direction;

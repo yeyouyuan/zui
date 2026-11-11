@@ -153,6 +153,10 @@ function warnInDevelopment(message: string): void {
   if (!isProductionRuntime()) console.warn(`[ZUI MultiCombobox] ${message}`);
 }
 
+/** 在浏览器绘制前确认受控选择，SSR 时退化为普通 effect。 */
+const useIsomorphicLayoutEffect: typeof React.useLayoutEffect =
+  typeof window === 'undefined' ? React.useEffect : React.useLayoutEffect;
+
 /* --------------------------------- 组件实现 -------------------------------- */
 
 export function MultiCombobox(props: MultiComboboxProps) {
@@ -207,6 +211,11 @@ export function MultiCombobox(props: MultiComboboxProps) {
   const compositionRef = React.useRef(false);
   const skipNextCompositionChangeRef = React.useRef<string | null>(null);
   const outsideClosingRef = React.useRef(false);
+  const pendingControlledSelectionRef = React.useRef<{
+    optionValue: string;
+    shouldBeSelected: boolean;
+    query: string;
+  } | null>(null);
 
   const defaultsRef = React.useRef<{ value: string[]; input: string } | null>(null);
   if (defaultsRef.current === null) {
@@ -330,11 +339,19 @@ export function MultiCombobox(props: MultiComboboxProps) {
         ? [...selectedRef.current, option.value]
         : selectedRef.current.filter((value) => value !== option.value);
       lastKnownTextByValueRef.current.set(option.value, getOptionText(option));
+      const previousQuery = draftRef.current;
+      if (valueControlled) {
+        pendingControlledSelectionRef.current = {
+          optionValue: option.value,
+          shouldBeSelected: isAdding,
+          query: previousQuery,
+        };
+      }
       commitValues(next, { reason: isAdding ? 'selection' : 'remove' });
       requestInput('', 'selection', false);
       focusInput();
     },
-    [commitValues, disabled, focusInput, isLoading, readOnly, requestInput]
+    [commitValues, disabled, focusInput, isLoading, readOnly, requestInput, valueControlled]
   );
 
   const removeValue = React.useCallback(
@@ -543,6 +560,18 @@ export function MultiCombobox(props: MultiComboboxProps) {
 
   const outsideRefs = React.useMemo(() => [rootRef, panelRef], []);
   useOnClickOutside(outsideRefs, handleOutside, effectiveOpen);
+
+  useIsomorphicLayoutEffect(() => {
+    const pending = pendingControlledSelectionRef.current;
+    if (!valueControlled || pending === null) return;
+    pendingControlledSelectionRef.current = null;
+
+    const accepted =
+      selectedValues.includes(pending.optionValue) === pending.shouldBeSelected;
+    if (!accepted && pending.query !== '' && draftRef.current === '') {
+      requestInput(pending.query, 'reset', false);
+    }
+  });
 
   React.useEffect(() => {
     if (!effectiveOpen) {

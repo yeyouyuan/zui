@@ -214,6 +214,30 @@ describe('Anchor 滚动侦测', () => {
       'true'
     );
   });
+
+  it('target 容器重挂后迁移滚动监听', async () => {
+    let scroller = document.createElement('div');
+    document.body.appendChild(scroller);
+    makeSection('remount-first', 100);
+    const second = makeSection('remount-second', 300);
+    render(
+      <Anchor target={() => scroller}>
+        <Anchor.Link href="#remount-first" title="重挂一" />
+        <Anchor.Link href="#remount-second" title="重挂二" />
+      </Anchor>
+    );
+    expect(screen.getByRole('link', { name: '重挂一' })).toHaveAttribute('aria-current', 'true');
+
+    const previous = scroller;
+    const replacement = document.createElement('div');
+    previous.replaceWith(replacement);
+    scroller = replacement;
+    await act(async () => undefined);
+
+    setTop(second, 2);
+    await fireScroll(replacement);
+    expect(screen.getByRole('link', { name: '重挂二' })).toHaveAttribute('aria-current', 'true');
+  });
 });
 
 describe('Anchor 点击行为', () => {
@@ -269,6 +293,31 @@ describe('Anchor 点击行为', () => {
     } finally {
       document.removeEventListener('click', listener);
     }
+  });
+
+  it('平滑滚动途中锁定点击项，scrollend 后才恢复位置侦测', async () => {
+    const user = userEvent.setup();
+    makeSection('lock-1', 0);
+    const middle = makeSection('lock-2', 300);
+    makeSection('lock-3', 600);
+    render(
+      <Anchor>
+        <Anchor.Link href="#lock-1" title="锁定一" />
+        <Anchor.Link href="#lock-2" title="锁定二" />
+        <Anchor.Link href="#lock-3" title="锁定三" />
+      </Anchor>
+    );
+
+    await user.click(screen.getByRole('link', { name: '锁定三' }));
+    setTop(middle, 2);
+    await fireScroll();
+    expect(screen.getByRole('link', { name: '锁定三' })).toHaveAttribute('aria-current', 'true');
+    expect(screen.getByRole('link', { name: '锁定二' })).not.toHaveAttribute('aria-current');
+
+    await act(async () => {
+      window.dispatchEvent(new Event('scrollend'));
+    });
+    expect(screen.getByRole('link', { name: '锁定二' })).toHaveAttribute('aria-current', 'true');
   });
 
   it('offsetTop 通过 scroll-margin-top 抵消，滚动目的地计算后还原', async () => {

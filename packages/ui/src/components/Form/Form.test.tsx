@@ -3,6 +3,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Form, FormItem, useForm, type FormInstance, type FormValidateResult } from './Form';
+import { Switch } from '../Switch';
 
 afterEach(cleanup);
 
@@ -302,6 +303,31 @@ describe('Form', () => {
     expect(screen.getByRole('checkbox')).toBeChecked();
     fireEvent.submit(container.querySelector('form') as HTMLFormElement);
     expect(target.current?.getFieldsValue()).toEqual({ agree: true });
+  });
+
+  it('裸 Switch 未显式 checked 时仍注入 checked 并跟随表单值', () => {
+    const target: { current: FormInstance | null } = { current: null };
+    render(
+      <Form initialValues={{ enabled: true }}>
+        <Form.Item name="enabled">
+          <Switch aria-label="启用" />
+        </Form.Item>
+        <CaptureInstance target={target} />
+      </Form>
+    );
+
+    const control = screen.getByRole('switch', { name: '启用' });
+    expect(control).toHaveAttribute('aria-checked', 'true');
+    expect(control).not.toHaveAttribute('value');
+
+    act(() => {
+      target.current?.setFieldsValue({ enabled: false });
+    });
+    expect(control).toHaveAttribute('aria-checked', 'false');
+
+    fireEvent.click(control);
+    expect(control).toHaveAttribute('aria-checked', 'true');
+    expect(target.current?.getFieldsValue()).toEqual({ enabled: true });
   });
 
   it('useForm：getFieldsValue / setFieldsValue', () => {

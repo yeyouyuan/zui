@@ -265,7 +265,15 @@ export default function DataGridPrototype(): React.ReactNode {
 
   return (
     <div className="datagrid-prototype" data-testid="datagrid-prototype">
-      <h1>DataGrid 性能原型</h1>
+      <header className="datagrid-prototype-heading">
+        <div>
+          <span className="datagrid-prototype-badge">性能原型</span>
+          <h1>DataGrid 性能原型</h1>
+        </div>
+        <a className="datagrid-prototype-back" href="#/components/virtual-table">
+          ← 返回组件文档
+        </a>
+      </header>
       <p className="datagrid-prototype-lead">
         10,000 行 × 9 列；验证虚拟化渲染、排序、选择、列宽拖动与固定列（RFC-005
         立项前置）。本页是一次性测量脚手架，不进入组件库。

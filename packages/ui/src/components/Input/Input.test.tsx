@@ -101,16 +101,30 @@ describe('Input', () => {
     expect(screen.queryByRole('button', { name: '清除' })).not.toBeInTheDocument();
   });
 
-  it('clearable: clicking clear empties the value, focuses input and fires onClear', async () => {
+  it('clearable: pointerdown 防止输入失焦，点击后清空并触发 onClear', async () => {
     const user = userEvent.setup();
     const onClear = vi.fn();
-    render(<Input aria-label="名称" clearable defaultValue="有值" onClear={onClear} />);
+    const onBlur = vi.fn();
+    render(
+      <Input
+        aria-label="名称"
+        clearable
+        defaultValue="有值"
+        onClear={onClear}
+        onBlur={onBlur}
+      />
+    );
     const input = getInput();
-    expect(input).toHaveValue('有值');
-    await user.click(screen.getByRole('button', { name: '清除' }));
+    input.focus();
+    const clear = screen.getByRole('button', { name: '清除' });
+    expect(fireEvent.pointerDown(clear)).toBe(false);
+    expect(input).toHaveFocus();
+    expect(onBlur).not.toHaveBeenCalled();
+    await user.click(clear);
     expect(input).toHaveValue('');
     expect(onClear).toHaveBeenCalledTimes(1);
     expect(input).toHaveFocus();
+    expect(onBlur).not.toHaveBeenCalled();
     expect(screen.queryByRole('button', { name: '清除' })).not.toBeInTheDocument();
   });
 
@@ -253,8 +267,9 @@ describe('Input.Textarea', () => {
     expect(onChange).toHaveBeenCalled();
   });
 
-  it('clearable: clicking clear empties the textarea through the native setter', async () => {
+  it('clearable: pointerdown 保持 textarea 焦点并通过原生 setter 清空', async () => {
     const user = userEvent.setup();
+    const onBlur = vi.fn();
     function Controlled() {
       const [value, setValue] = React.useState('草稿');
       return (
@@ -262,15 +277,22 @@ describe('Input.Textarea', () => {
           aria-label="备注"
           clearable
           value={value}
+          onBlur={onBlur}
           onChange={(event) => setValue(event.target.value)}
         />
       );
     }
     render(<Controlled />);
     const textarea = screen.getByRole('textbox') as HTMLTextAreaElement;
+    textarea.focus();
     expect(textarea).toHaveValue('草稿');
-    await user.click(screen.getByRole('button', { name: '清除' }));
+    const clear = screen.getByRole('button', { name: '清除' });
+    expect(fireEvent.pointerDown(clear)).toBe(false);
+    expect(textarea).toHaveFocus();
+    await user.click(clear);
     expect(textarea).toHaveValue('');
+    expect(textarea).toHaveFocus();
+    expect(onBlur).not.toHaveBeenCalled();
     expect(screen.queryByRole('button', { name: '清除' })).not.toBeInTheDocument();
   });
 
@@ -446,12 +468,28 @@ describe('Input.Search', () => {
     expect(onSearch).not.toHaveBeenCalled();
   });
 
-  it('clearable: clicking clear empties the value and fires onClear', async () => {
+  it('clearable: pointerdown 保持搜索框焦点，点击后清空并触发 onClear', async () => {
     const user = userEvent.setup();
     const onClear = vi.fn();
-    render(<InputSearch aria-label="搜索" clearable defaultValue="关键词" onClear={onClear} />);
-    await user.click(screen.getByRole('button', { name: '清除' }));
-    expect(screen.getByRole('searchbox')).toHaveValue('');
+    const onBlur = vi.fn();
+    render(
+      <InputSearch
+        aria-label="搜索"
+        clearable
+        defaultValue="关键词"
+        onClear={onClear}
+        onBlur={onBlur}
+      />
+    );
+    const input = screen.getByRole('searchbox');
+    input.focus();
+    const clear = screen.getByRole('button', { name: '清除' });
+    expect(fireEvent.pointerDown(clear)).toBe(false);
+    expect(input).toHaveFocus();
+    await user.click(clear);
+    expect(input).toHaveValue('');
+    expect(input).toHaveFocus();
+    expect(onBlur).not.toHaveBeenCalled();
     expect(onClear).toHaveBeenCalledTimes(1);
   });
 

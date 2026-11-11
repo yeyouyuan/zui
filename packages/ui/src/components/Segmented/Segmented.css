@@ -119,3 +119,32 @@
   width: var(--z-segmented-icon-size);
   height: var(--z-segmented-icon-size);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .z-segmented-thumb,
+  .z-segmented-item {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .z-segmented {
+    background: Canvas;
+    border: 1px solid CanvasText;
+  }
+
+  .z-segmented-thumb {
+    display: none;
+  }
+
+  .z-segmented-item[data-active='true'] {
+    color: HighlightText;
+    background: Highlight;
+    outline: 1px solid Highlight;
+  }
+
+  .z-segmented-item:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}

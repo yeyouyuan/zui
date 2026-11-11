@@ -142,6 +142,22 @@ describe('Slider', () => {
     expect(thumb).toHaveAttribute('aria-valuenow', '40');
   });
 
+  it('指针：点按轨道聚焦实际 thumb，随后方向键继续调节', () => {
+    const { container } = render(
+      <Slider min={0} max={100} step={10} defaultValue={0} aria-label="音量" />
+    );
+    const track = container.querySelector('[data-part="track"]') as HTMLElement;
+    mockTrackRect(track);
+
+    firePointer('pointerdown', track, 33);
+
+    const thumb = getThumb();
+    expect(thumb).toHaveFocus();
+    expect(thumb).toHaveAttribute('aria-valuenow', '30');
+    fireEvent.keyDown(document.activeElement as HTMLElement, { key: 'ArrowRight' });
+    expect(thumb).toHaveAttribute('aria-valuenow', '40');
+  });
+
   it('指针：点按轨道按位置取值（含 step 吸附），拖动连续更新', () => {
     const onChange = vi.fn();
     const { container } = render(

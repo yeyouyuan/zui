@@ -57,7 +57,7 @@
   background: none;
   color: inherit;
   font: inherit;
-  text-align: left;
+  text-align: start;
 }
 
 button.z-steps-trigger {
@@ -192,8 +192,7 @@ button.z-steps-trigger:focus-visible {
   content: '';
   position: absolute;
   top: 50%;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   height: var(--z-steps-line-width);
   transform: translateY(-50%);
   border-radius: var(--z-radius-full);
@@ -221,11 +220,11 @@ button.z-steps-trigger:focus-visible {
   min-height: var(--z-steps-icon-size);
 }
 
-/* 垂直连接线：绝对定位在左侧图标列下方，延伸到下一项图标顶部（含行间距） */
+/* 垂直连接线：绝对定位在行内起始侧图标列下方，延伸到下一项图标顶部（含行间距） */
 .z-steps[data-direction='vertical'] .z-steps-connector {
   position: absolute;
   flex: none;
-  left: 0;
+  inset-inline-start: 0;
   width: var(--z-steps-icon-size);
   top: calc(var(--z-steps-icon-size) + var(--z-steps-vertical-line-gap));
   bottom: calc(-1 * var(--z-steps-item-gap));
@@ -236,11 +235,11 @@ button.z-steps-trigger:focus-visible {
 .z-steps[data-direction='vertical'] .z-steps-connector::after {
   top: 0;
   bottom: 0;
-  left: 50%;
-  right: auto;
+  inset-inline-start: calc(50% - var(--z-steps-line-width) / 2);
+  inset-inline-end: auto;
   width: var(--z-steps-line-width);
   height: auto;
-  transform: translateX(-50%);
+  transform: none;
 }
 
 /* ---------------------------------- size ---------------------------------- */
@@ -257,7 +256,7 @@ button.z-steps-trigger:focus-visible {
 /* --------------------------------- motion --------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
-  .z-steps,
+  button.z-steps-trigger,
   .z-steps-icon,
   .z-steps-title,
   .z-steps-connector::after {

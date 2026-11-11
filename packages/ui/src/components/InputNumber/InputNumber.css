@@ -13,6 +13,7 @@
   --z-input-number-focus-border: var(--z-color-border-focus);
   --z-input-number-focus-ring: var(--z-color-focus-ring);
   --z-input-number-control-width: 1.25rem;
+  --z-input-number-control-hit-size: 1.5rem; /* 24px，按钮视觉尺寸保持不变 */
   --z-input-number-control-color: var(--z-color-fg-muted);
   --z-input-number-control-hover-bg: var(--z-color-bg-muted);
   --z-input-number-control-hover-color: var(--z-color-fg);
@@ -101,6 +102,7 @@
 }
 
 .z-input-number-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -117,6 +119,24 @@
   transition:
     background-color var(--z-input-number-transition),
     color var(--z-input-number-transition);
+}
+
+/* 伪元素把每个 stepper 的命中区扩到至少 24px；相邻热区在中线处拼接。 */
+.z-input-number-btn::before {
+  position: absolute;
+  left: 50%;
+  width: max(100%, var(--z-input-number-control-hit-size));
+  height: max(100%, var(--z-input-number-control-hit-size));
+  content: '';
+  transform: translateX(-50%);
+}
+
+.z-input-number-increase::before {
+  bottom: 0;
+}
+
+.z-input-number-decrease::before {
+  top: 0;
 }
 
 .z-input-number-btn:hover:not(:disabled) {

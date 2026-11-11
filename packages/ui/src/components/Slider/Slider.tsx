@@ -86,6 +86,7 @@ export function Slider(props: SliderProps) {
   });
 
   const trackRef = React.useRef<HTMLDivElement | null>(null);
+  const thumbRef = React.useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = React.useState(false);
   const [focused, setFocused] = React.useState(false);
 
@@ -110,6 +111,7 @@ export function Slider(props: SliderProps) {
   const handleTrackPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (disabled) return;
     event.preventDefault();
+    thumbRef.current?.focus({ preventScroll: true });
     setDragging(true);
     const next = valueFromClientX(event.clientX);
     if (next !== null && next !== value) setValue(next);
@@ -203,6 +205,7 @@ export function Slider(props: SliderProps) {
           style={{ width: `${percent}%` }}
         />
         <div
+          ref={thumbRef}
           data-part="thumb"
           role="slider"
           tabIndex={disabled ? -1 : 0}

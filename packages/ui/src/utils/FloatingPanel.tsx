@@ -31,43 +31,57 @@ export function FloatingPanel({ open, anchorRef, children, side = 'bottom', alig
   React.useLayoutEffect(() => {
     if (!open || !node || !anchorRef.current) return;
     const anchor = anchorRef.current;
+
+    // 浏览器将 rem/calc/嵌套变量解析为 px。公开间距变量只需在本次挂载时
+    // 探测一次，避免每次滚动都 append/remove DOM 节点并强制布局。
+    let offset = 4;
+    if (offsetVariable) {
+      const probe = document.createElement('span');
+      probe.style.cssText = 'position:absolute;visibility:hidden;display:block;height:0;padding:0;border:0;pointer-events:none';
+      probe.style.width = `var(${offsetVariable}, 4px)`;
+      node.append(probe);
+      const pixels = parseFloat(window.getComputedStyle(probe).width);
+      if (Number.isFinite(pixels)) offset = pixels;
+      probe.remove();
+    }
+
+    // 层级只依赖当前 panel 与锚点祖先的 stacking context；挂载时计算一次。
+    const panelLayer = Number.parseInt(window.getComputedStyle(node).zIndex, 10) || 0;
+    let layer = panelLayer;
+    for (let parent: HTMLElement | null = anchor; parent; parent = parent.parentElement) {
+      const parentLayer = Number.parseInt(window.getComputedStyle(parent).zIndex, 10);
+      if (Number.isFinite(parentLayer) && parentLayer >= layer) layer = parentLayer + 1;
+    }
+
     const update = () => {
       const rect = anchor.getBoundingClientRect();
       const viewport = { width: window.innerWidth, height: window.innerHeight };
       const width = matchWidth ? Math.min(rect.width, Math.max(0, viewport.width - 16)) : undefined;
       if (width !== undefined) node.style.width = `${width}px`;
-      // 浏览器将 rem/calc/嵌套变量解析为 px，保留组件公开的间距变量。
-      let offset = 4;
-      if (offsetVariable) {
-        const probe = document.createElement('span');
-        probe.style.cssText = 'position:absolute;visibility:hidden;display:block;height:0;padding:0;border:0;pointer-events:none';
-        probe.style.width = `var(${offsetVariable}, 4px)`;
-        node.append(probe);
-        const pixels = parseFloat(window.getComputedStyle(probe).width);
-        if (Number.isFinite(pixels)) offset = pixels;
-        probe.remove();
-      }
       const next = floatingPosition(rect, node.getBoundingClientRect(), viewport, { side, align, offset });
-      const panelLayer = Number.parseInt(window.getComputedStyle(node).zIndex, 10) || 0;
-      let layer = panelLayer;
-      for (let parent: HTMLElement | null = anchor; parent; parent = parent.parentElement) {
-        const parentLayer = Number.parseInt(window.getComputedStyle(parent).zIndex, 10);
-        if (Number.isFinite(parentLayer) && parentLayer >= layer) layer = parentLayer + 1;
-      }
       setPosition({ position: 'fixed', top: next.top, left: next.left, right: 'auto', bottom: 'auto',
         margin: 0, zIndex: layer, ...(width !== undefined ? { width } : {}) });
       node.dataset.floatingSide = next.side;
     };
+    let frame = 0;
+    const scheduleUpdate = () => {
+      if (frame !== 0) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        update();
+      });
+    };
     update();
-    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : undefined;
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(scheduleUpdate) : undefined;
     observer?.observe(node);
     observer?.observe(anchor);
-    window.addEventListener('resize', update);
-    window.addEventListener('scroll', update, true);
+    window.addEventListener('resize', scheduleUpdate);
+    window.addEventListener('scroll', scheduleUpdate, true);
     return () => {
       observer?.disconnect();
-      window.removeEventListener('resize', update);
-      window.removeEventListener('scroll', update, true);
+      if (frame !== 0) window.cancelAnimationFrame(frame);
+      window.removeEventListener('resize', scheduleUpdate);
+      window.removeEventListener('scroll', scheduleUpdate, true);
     };
   }, [open, node, anchorRef, side, align, matchWidth, offsetVariable]);
 

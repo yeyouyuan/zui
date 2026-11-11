@@ -68,6 +68,22 @@ describe('Transfer 选择与移动', () => {
     expect(within(getList('目标列表')).getByRole('option', { name: 'Apple' })).toBeInTheDocument();
   });
 
+  it('移动后将焦点迁移到目标列表首个可用项', async () => {
+    const user = userEvent.setup();
+    render(<Transfer dataSource={data} defaultTargetKeys={['b']} />);
+
+    await user.click(
+      within(getList('源列表')).getByRole('option', { name: 'Apple' }).querySelector('input')!
+    );
+    await user.click(screen.getByRole('button', { name: '移动到目标列表' }));
+
+    const firstTargetInput = within(getList('目标列表'))
+      .getByRole('option', { name: 'Apple' })
+      .querySelector('input');
+    expect(firstTargetInput).toHaveFocus();
+    expect(document.activeElement).not.toBe(document.body);
+  });
+
   it('非受控内部维护 targetKeys，可移回源列表', async () => {
     const user = userEvent.setup();
     render(<Transfer dataSource={data} defaultTargetKeys={['a', 'b']} />);

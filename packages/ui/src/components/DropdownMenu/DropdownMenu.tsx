@@ -42,6 +42,7 @@ interface DropdownMenuContextValue {
   rootRef: React.RefObject<HTMLDivElement | null>;
   triggerRef: React.RefObject<HTMLButtonElement | null>;
   contentRef: React.RefObject<HTMLDivElement | null>;
+  initialFocusRef: React.MutableRefObject<'first' | 'last'>;
 }
 
 const DropdownMenuContext = React.createContext<DropdownMenuContextValue | null>(null);
@@ -92,6 +93,7 @@ function DropdownMenu(props: DropdownMenuProps) {
   const rootRef = React.useRef<HTMLDivElement | null>(null);
   const triggerRef = React.useRef<HTMLButtonElement | null>(null);
   const contentRef = React.useRef<HTMLDivElement | null>(null);
+  const initialFocusRef = React.useRef<'first' | 'last'>('first');
 
   const contextValue = React.useMemo<DropdownMenuContextValue>(
     () => ({
@@ -102,6 +104,7 @@ function DropdownMenu(props: DropdownMenuProps) {
       rootRef,
       triggerRef,
       contentRef,
+      initialFocusRef,
     }),
     [open, setOpen, triggerId, contentId]
   );
@@ -148,14 +151,17 @@ function DropdownMenuTrigger(props: DropdownMenuTriggerProps) {
       aria-controls={ctx.open ? ctx.contentId : undefined}
       onClick={(event) => {
         onClick?.(event);
-        if (!event.defaultPrevented) ctx.setOpen(!ctx.open);
+        if (event.defaultPrevented) return;
+        if (!ctx.open) ctx.initialFocusRef.current = 'first';
+        ctx.setOpen(!ctx.open);
       }}
       onKeyDown={(event) => {
         onKeyDown?.(event);
         if (event.defaultPrevented) return;
-        // 关闭态 ↑↓ 打开菜单（打开后焦点进首项由 Content 挂载效应负责）
+        // 关闭态方向键打开菜单，并按按键决定挂载后的初始焦点。
         if (!ctx.open && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
           event.preventDefault();
+          ctx.initialFocusRef.current = event.key === 'ArrowUp' ? 'last' : 'first';
           ctx.setOpen(true);
         }
       }}
@@ -284,19 +290,23 @@ function DropdownMenuContentInner(props: DropdownMenuContentProps) {
     }
   };
 
-  // 打开时焦点进入菜单首项（roving tabindex：首项 0、其余 -1）
+  // 打开时按 Trigger 的打开手势进入首项或末项（其余项保持 tabindex=-1）。
   React.useEffect(() => {
     if (!contentNode) return;
     const items = getItemElements(contentNode);
     for (const item of items) item.tabIndex = -1;
-    const first = items.find(isEnabledItem);
-    if (first) {
-      first.tabIndex = 0;
-      first.focus();
+    const enabled = items.filter(isEnabledItem);
+    const target =
+      ctx.initialFocusRef.current === 'last' ? enabled[enabled.length - 1] : enabled[0];
+    // 本次打开消费完方向；点击或后续默认打开仍从首项开始。
+    ctx.initialFocusRef.current = 'first';
+    if (target) {
+      target.tabIndex = 0;
+      target.focus();
     } else {
       contentNode.focus();
     }
-  }, [contentNode]);
+  }, [contentNode, ctx.initialFocusRef]);
 
   // 点击外部关闭
   const outsideRefs = React.useMemo(() => [ctx.rootRef, ctx.contentRef], [ctx.rootRef, ctx.contentRef]);

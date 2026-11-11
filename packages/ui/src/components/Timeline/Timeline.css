@@ -48,7 +48,7 @@
   bottom: calc(-1 * var(--z-timeline-item-gap));
   width: var(--z-timeline-line-width);
   background: var(--z-timeline-line-color);
-  left: calc(var(--z-timeline-dot-size) / 2 - var(--z-timeline-line-width) / 2);
+  inset-inline-start: calc(var(--z-timeline-dot-size) / 2 - var(--z-timeline-line-width) / 2);
 }
 
 .z-timeline-dot {
@@ -127,18 +127,18 @@
 }
 
 .z-timeline[data-mode='right'] .z-timeline-item:not(:last-child)::before {
-  left: auto;
-  right: calc(var(--z-timeline-dot-size) / 2 - var(--z-timeline-line-width) / 2);
+  inset-inline-start: auto;
+  inset-inline-end: calc(var(--z-timeline-dot-size) / 2 - var(--z-timeline-line-width) / 2);
 }
 
 .z-timeline[data-mode='right'] .z-timeline-label {
-  text-align: right;
+  text-align: end;
 }
 
 /* mode=alternate：奇偶交替左右，竖线居中 */
 .z-timeline[data-mode='alternate'] .z-timeline-item {
   justify-content: center;
-  text-align: left;
+  text-align: start;
 }
 
 .z-timeline[data-mode='alternate'] .z-timeline-item[data-side='right'] {
@@ -146,18 +146,30 @@
 }
 
 .z-timeline[data-mode='alternate'] .z-timeline-item:not(:last-child)::before {
-  left: 50%;
-  right: auto;
-  transform: translateX(-50%);
+  inset-inline-start: calc(50% - var(--z-timeline-line-width) / 2);
+  inset-inline-end: auto;
 }
 
 .z-timeline[data-mode='alternate'] .z-timeline-item[data-side='left'] .z-timeline-content,
 .z-timeline[data-mode='alternate'] .z-timeline-item[data-side='left'] .z-timeline-label {
-  text-align: right;
+  text-align: end;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .z-timeline {
-    transition: none;
+@media (max-width: 480px) {
+  .z-timeline[data-mode='alternate'] .z-timeline-item,
+  .z-timeline[data-mode='alternate'] .z-timeline-item[data-side='right'] {
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: start;
+  }
+
+  .z-timeline[data-mode='alternate'] .z-timeline-item:not(:last-child)::before {
+    inset-inline-start: calc(var(--z-timeline-dot-size) / 2 - var(--z-timeline-line-width) / 2);
+    inset-inline-end: auto;
+  }
+
+  .z-timeline[data-mode='alternate'] .z-timeline-item[data-side='left'] .z-timeline-content,
+  .z-timeline[data-mode='alternate'] .z-timeline-item[data-side='left'] .z-timeline-label {
+    text-align: start;
   }
 }

@@ -356,3 +356,42 @@
     grid-template-columns: auto 1fr auto;
   }
 }
+
+@media (forced-colors: active) {
+  .z-daterange-trigger,
+  .z-daterange-panel {
+    color: CanvasText;
+    background: Canvas;
+    border-color: CanvasText;
+  }
+
+  .z-daterange-trigger:focus-within {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  .z-daterange-day[data-in-range='true'] {
+    color: Highlight;
+    background: Canvas;
+    border-color: Highlight;
+  }
+
+  .z-daterange-day[data-today]:not([aria-selected='true']) {
+    border-color: ButtonText;
+  }
+
+  .z-daterange-day[aria-selected='true'] {
+    color: HighlightText;
+    background: Highlight;
+    border-color: Highlight;
+    outline: 1px solid Highlight;
+  }
+
+  .z-daterange-clear:focus-visible,
+  .z-daterange-nav:focus-visible,
+  .z-daterange-day:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}

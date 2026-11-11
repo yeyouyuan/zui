@@ -194,6 +194,11 @@ export function DatePicker(props: DatePickerProps) {
     if (refocus) triggerRef.current?.focus();
   };
 
+  const cancelEditing = () => {
+    editingRef.current = false;
+    setDraft(currentValue);
+  };
+
   const selectDate = (date: Date) => {
     const iso = toISO(date);
     if (isDateDisabled(iso)) return;
@@ -205,18 +210,20 @@ export function DatePicker(props: DatePickerProps) {
 
   /* ---------------------------- 触发器文本输入 ---------------------------- */
 
-  /** Enter / blur 时提交草稿：仅编辑态生效；合法 ISO 提交，否则还原显示 */
+  /** Enter / blur 时提交草稿：仅编辑态生效；合法日期统一回写 ISO，否则还原显示 */
   const commitDraft = (): boolean => {
     if (!editingRef.current) return false;
     editingRef.current = false;
     const parsed = parseISO(draft);
     if (draft.trim() === '') {
       setCurrentValue('');
+      setDraft('');
       return true;
     }
     if (parsed && !isDateDisabled(toISO(parsed))) {
       const iso = toISO(parsed);
       setFocusedDate(parsed);
+      setDraft(iso);
       if (iso !== currentValue) setCurrentValue(iso);
       return true;
     }
@@ -247,6 +254,7 @@ export function DatePicker(props: DatePickerProps) {
     if (open) {
       if (key === 'Escape') {
         event.preventDefault();
+        cancelEditing();
         closePanel(true);
       } else if (key === 'Tab') {
         closePanel(false);
@@ -307,6 +315,7 @@ export function DatePicker(props: DatePickerProps) {
       }
       case 'Escape':
         event.preventDefault();
+        cancelEditing();
         closePanel(true);
         break;
       case 'Tab':
@@ -419,6 +428,7 @@ export function DatePicker(props: DatePickerProps) {
               if (event.key === 'Escape' && !event.defaultPrevented) {
                 event.preventDefault();
                 event.stopPropagation();
+                cancelEditing();
                 closePanel(true);
               }
             }}

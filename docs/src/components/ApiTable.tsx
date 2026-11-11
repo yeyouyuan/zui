@@ -16,7 +16,12 @@ interface ApiTableProps {
 /** Props API 表格：name / type / default / description（与 CONTRACTS.md §2 一致） */
 export default function ApiTable({ rows }: ApiTableProps): React.ReactNode {
   return (
-    <div className="doc-table-wrap" role="region" aria-label="组件属性表，可横向滚动" tabIndex={0}>
+    <div
+      className="doc-table-wrap doc-table-wrap--scroll-hint"
+      role="region"
+      aria-label="组件属性表，可横向滚动"
+      tabIndex={0}
+    >
       <table className="doc-api-table">
         <thead>
           <tr>

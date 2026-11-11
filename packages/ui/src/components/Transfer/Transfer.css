@@ -323,3 +323,46 @@
   border-color: var(--z-color-disabled-border);
   cursor: not-allowed;
 }
+
+@media (forced-colors: active) {
+  .z-transfer-list,
+  .z-transfer-list-header,
+  .z-transfer-search,
+  .z-transfer-search-input,
+  .z-transfer-checkbox-box,
+  .z-transfer-button {
+    border-color: CanvasText;
+  }
+
+  .z-transfer-item[data-checked='true'] .z-transfer-item-label {
+    color: HighlightText;
+    background: Highlight;
+    outline: 1px solid Highlight;
+  }
+
+  :is(.z-transfer-checkbox, .z-transfer-item-label) input:checked ~ .z-transfer-checkbox-box,
+  :is(.z-transfer-checkbox, .z-transfer-item-label) input:indeterminate ~ .z-transfer-checkbox-box {
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  :is(.z-transfer-checkbox, .z-transfer-item-label)
+    input:checked
+    ~ .z-transfer-checkbox-box::after {
+    border-color: HighlightText;
+  }
+
+  :is(.z-transfer-checkbox, .z-transfer-item-label)
+    input:indeterminate
+    ~ .z-transfer-checkbox-box::after {
+    background: HighlightText;
+  }
+
+  .z-transfer-search-input:focus-visible,
+  :is(.z-transfer-checkbox, .z-transfer-item-label) input:focus-visible ~ .z-transfer-checkbox-box,
+  .z-transfer-button:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}

@@ -11,12 +11,14 @@ const ITEMS = [
 ];
 
 describe('Timeline', () => {
-  it('renders items with content and label parts', () => {
+  it('renders a semantic list with listitem entries', () => {
     render(<Timeline items={ITEMS} />);
-    const root = document.querySelector('[data-part="root"]') as HTMLElement;
+    const root = screen.getByRole('list');
+    expect(root).toHaveAttribute('data-part', 'root');
     expect(root).toHaveClass('z-timeline');
-    const items = root.querySelectorAll('[data-part="item"]');
+    const items = screen.getAllByRole('listitem');
     expect(items).toHaveLength(3);
+    items.forEach((item) => expect(item).toHaveAttribute('data-part', 'item'));
     expect(screen.getByText('起床')).toHaveAttribute('data-part', 'content');
     expect(screen.getByText('09:00')).toHaveAttribute('data-part', 'label');
   });
@@ -48,9 +50,12 @@ describe('Timeline', () => {
     expect(document.querySelectorAll('[data-part="dot-default"]')).toHaveLength(2);
   });
 
-  it('renders pending node with pending dot when provided', () => {
+  it('renders pending node as the final listitem with pending dot', () => {
     render(<Timeline items={ITEMS} pending="加载中…" />);
-    const pending = document.querySelector('[data-part="pending"]') as HTMLElement;
+    const listItems = screen.getAllByRole('listitem');
+    expect(listItems).toHaveLength(4);
+    const pending = listItems[3];
+    expect(pending).toHaveAttribute('data-part', 'pending');
     expect(pending).toHaveAttribute('data-pending', 'true');
     expect(pending.querySelector('[data-part="dot-pending"]')).toBeInTheDocument();
     expect(screen.getByText('加载中…')).toHaveAttribute('data-part', 'content');

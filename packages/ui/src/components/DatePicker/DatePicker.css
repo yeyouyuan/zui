@@ -280,3 +280,35 @@
 .z-datepicker-day[aria-disabled='true']:hover {
   background: transparent;
 }
+
+@media (forced-colors: active) {
+  .z-datepicker-trigger,
+  .z-datepicker-panel {
+    color: CanvasText;
+    background: Canvas;
+    border-color: CanvasText;
+  }
+
+  .z-datepicker-trigger:focus-within {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  .z-datepicker-day[data-today]:not([aria-selected='true']) {
+    border-color: ButtonText;
+  }
+
+  .z-datepicker-day[aria-selected='true'] {
+    color: HighlightText;
+    background: Highlight;
+    border-color: Highlight;
+    outline: 1px solid Highlight;
+  }
+
+  .z-datepicker-nav:focus-visible,
+  .z-datepicker-day:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}

@@ -605,17 +605,19 @@ export function Combobox(props: ComboboxProps) {
 
   const previousCommittedValueRef = React.useRef(committedValue);
   React.useEffect(() => {
-    if (previousCommittedValueRef.current === committedValue) return;
+    const committedChanged = previousCommittedValueRef.current !== committedValue;
     previousCommittedValueRef.current = committedValue;
 
     const nextText = resolveCommittedText(committedValue);
-    if (!inputControlled) {
+    if (!inputControlled && (committedChanged || !editingRef.current)) {
       draftRef.current = nextText;
       lastReportedInputRef.current = nextText;
       setDraftValue(nextText);
     }
-    setEditingState(false);
-    setFilterQuery('');
+    if (committedChanged) {
+      setEditingState(false);
+      setFilterQuery('');
+    }
   }, [committedValue, inputControlled, resolveCommittedText, setDraftValue, setEditingState]);
 
   React.useEffect(() => {

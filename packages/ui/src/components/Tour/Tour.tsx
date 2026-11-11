@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useZuiConfig } from '../../config';
-import { cx, floatingPosition, Portal, useControllableState } from '../../utils';
+import { cx, floatingPosition, Portal, useControllableState, useFocusTrap } from '../../utils';
 import './Tour.css';
 
 /* ---------------------------------- 类型 ---------------------------------- */
@@ -71,8 +71,10 @@ export function Tour(props: TourProps) {
     classNames,
   } = props;
 
+  const cardRef = React.useRef<HTMLDivElement | null>(null);
   const [cardNode, setCardNode] = React.useState<HTMLDivElement | null>(null);
   const setCardRef = React.useCallback((node: HTMLDivElement | null) => {
+    cardRef.current = node;
     setCardNode(node);
   }, []);
   const baseId = React.useId();
@@ -94,23 +96,27 @@ export function Tour(props: TourProps) {
   const step = steps[index];
 
   const [rect, setRect] = React.useState<Rect | null>(null);
+  const target = step?.target;
+  const targetRef = React.useRef<TourStep['target'] | undefined>(target);
+  React.useLayoutEffect(() => {
+    targetRef.current = target;
+  });
 
   /* ------------------------------- 测量定位 ------------------------------ */
 
   const measure = React.useCallback(() => {
-    if (!step) {
+    const target = targetRef.current;
+    if (!target) {
       setRect(null);
       return;
     }
-    const element =
-      typeof step.target === 'function' ? step.target() : document.querySelector(step.target);
+    const element = typeof target === 'function' ? target() : document.querySelector(target);
     if (!element) {
       setRect(null);
       return;
     }
     const box = element.getBoundingClientRect();
     const next: Rect = { top: box.top, left: box.left, width: box.width, height: box.height };
-    // 数值未变时返回原对象，避免 steps 内联数组导致的重复渲染
     setRect((prev) =>
       prev &&
       prev.top === next.top &&
@@ -120,26 +126,40 @@ export function Tour(props: TourProps) {
         ? prev
         : next
     );
-  }, [step]);
+  }, []);
+
+  const rafRef = React.useRef(0);
+  const scheduleMeasure = React.useCallback(() => {
+    if (rafRef.current) return;
+    rafRef.current = window.requestAnimationFrame(() => {
+      rafRef.current = 0;
+      measure();
+    });
+  }, [measure]);
 
   React.useEffect(() => {
     if (!isOpen) return;
     measure();
-    window.addEventListener('resize', measure);
-    window.addEventListener('scroll', measure, true);
+    window.addEventListener('resize', scheduleMeasure);
+    window.addEventListener('scroll', scheduleMeasure, true);
     return () => {
-      window.removeEventListener('resize', measure);
-      window.removeEventListener('scroll', measure, true);
+      window.removeEventListener('resize', scheduleMeasure);
+      window.removeEventListener('scroll', scheduleMeasure, true);
+      if (rafRef.current) {
+        window.cancelAnimationFrame(rafRef.current);
+        rafRef.current = 0;
+      }
     };
-  }, [isOpen, measure]);
+  }, [isOpen, measure, scheduleMeasure]);
 
-  // 打开后焦点移入卡片
-  React.useEffect(() => {
-    if (!isOpen || !cardNode) return;
-    const previous = document.activeElement as HTMLElement | null;
-    cardNode.focus();
-    return () => previous?.focus();
-  }, [isOpen, cardNode]);
+  React.useLayoutEffect(() => {
+    if (isOpen) measure();
+  }, [isOpen, index, target, measure]);
+
+  useFocusTrap(cardRef, {
+    active: isOpen && cardNode !== null,
+    returnFocus: true,
+  });
 
   const [cardStyle, setCardStyle] = React.useState<React.CSSProperties>({});
   React.useLayoutEffect(() => {
@@ -209,6 +229,7 @@ export function Tour(props: TourProps) {
         <div
           ref={setCardRef}
           role="dialog"
+          aria-modal="true"
           tabIndex={-1}
           data-part="card"
           className={cx('z-tour-card', classNames?.card)}

@@ -208,6 +208,70 @@ describe('Message', () => {
     expect(screen.getByText('c')).toBeInTheDocument();
   });
 
+  it('max eviction skips closing entries and never repeats their onClose', () => {
+    vi.useFakeTimers();
+    try {
+      renderWithProvider({ max: 2 });
+      const firstClose = vi.fn();
+      const secondClose = vi.fn();
+      let firstId = '';
+      act(() => {
+        firstId = api.info({ content: 'first', duration: 0, onClose: firstClose });
+        api.info({ content: 'second', duration: 0, onClose: secondClose });
+      });
+      act(() => {
+        api.dismiss(firstId);
+        api.info({ content: 'third', duration: 0 });
+      });
+
+      expect(screen.getByText('first').closest('[data-part="item"]')).toHaveAttribute(
+        'data-state',
+        'closing'
+      );
+      expect(screen.getByText('second')).toBeInTheDocument();
+      expect(screen.getByText('third')).toBeInTheDocument();
+      expect(firstClose).toHaveBeenCalledTimes(1);
+
+      act(() => {
+        api.info({ content: 'fourth', duration: 0 });
+      });
+      expect(screen.getByText('first')).toBeInTheDocument();
+      expect(screen.queryByText('second')).not.toBeInTheDocument();
+      expect(secondClose).toHaveBeenCalledTimes(1);
+      expect(firstClose).toHaveBeenCalledTimes(1);
+
+      act(() => {
+        vi.advanceTimersByTime(200);
+      });
+      expect(screen.queryByText('first')).not.toBeInTheDocument();
+      expect(firstClose).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('onClose reentrant dismiss is notified only once', () => {
+    vi.useFakeTimers();
+    try {
+      renderWithProvider();
+      let id = '';
+      const onClose = vi.fn(() => api.dismiss(id));
+      act(() => {
+        id = api.info({ content: 'reentrant', duration: 0, onClose });
+      });
+      act(() => {
+        api.dismiss(id);
+      });
+      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(screen.getByText('reentrant').closest('[data-part="item"]')).toHaveAttribute(
+        'data-state',
+        'closing'
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('closable shows a close button (aria-label="关闭") that dismisses the message', () => {
     vi.useFakeTimers();
     try {

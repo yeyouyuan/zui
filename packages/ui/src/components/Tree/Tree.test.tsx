@@ -253,6 +253,16 @@ describe('Tree', () => {
     expect(document.activeElement).toBe(getItem('子节点一'));
   });
 
+  it('keyboard: Home/End move focus to the first/last visible node', async () => {
+    const user = userEvent.setup();
+    render(<Tree data={TREE_DATA} defaultExpandedKeys={['p', 'c1']} />);
+    act(() => { getItem('子节点一').focus(); });
+    await user.keyboard('{End}');
+    expect(document.activeElement).toBe(getItem('独立节点'));
+    await user.keyboard('{Home}');
+    expect(document.activeElement).toBe(getItem('父节点'));
+  });
+
   it('keyboard: ArrowRight expands then jumps to first child; ArrowLeft collapses then jumps to parent', async () => {
     const user = userEvent.setup();
     const onExpand = vi.fn();
@@ -283,6 +293,16 @@ describe('Tree', () => {
     expect(getItem('父节点')).toHaveAttribute('aria-checked', 'false');
   });
 
+  it('keyboard: Space selects the active node when the tree is not checkable', async () => {
+    const user = userEvent.setup();
+    const onSelect = vi.fn();
+    render(<Tree data={TREE_DATA} onSelect={onSelect} />);
+    act(() => { getItem('父节点').focus(); });
+    await user.keyboard(' ');
+    expect(onSelect).toHaveBeenCalledWith('p');
+    expect(getItem('父节点')).toHaveAttribute('aria-selected', 'true');
+  });
+
   it('keyboard: Enter selects node with aria-selected and onSelect', async () => {
     const user = userEvent.setup();
     const onSelect = vi.fn();
@@ -296,6 +316,18 @@ describe('Tree', () => {
     expect(onSelect).toHaveBeenLastCalledWith('s');
     expect(getItem('独立节点')).toHaveAttribute('aria-selected', 'true');
     expect(getItem('父节点')).toHaveAttribute('aria-selected', 'false');
+  });
+
+  it('keeps DOM focus in the tree when a controlled ancestor collapse hides the active node', () => {
+    const { rerender } = render(<Tree data={TREE_DATA} expandedKeys={['p', 'c1']} />);
+    act(() => { getItem('孙节点一').focus(); });
+    expect(document.activeElement).toBe(getItem('孙节点一'));
+
+    rerender(<Tree data={TREE_DATA} expandedKeys={[]} />);
+
+    expect(screen.queryByText('孙节点一')).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(getItem('父节点'));
+    expect(getItem('父节点')).toHaveAttribute('tabindex', '0');
   });
 
   /* ------------------------------ 选中/禁用 ------------------------------ */

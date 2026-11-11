@@ -102,3 +102,29 @@
     transition: none;
   }
 }
+
+@media (forced-colors: active) {
+  .z-switch-track {
+    background: Canvas;
+    border: 1px solid CanvasText;
+  }
+
+  .z-switch-thumb {
+    background: ButtonText;
+    box-shadow: none;
+  }
+
+  .z-switch[data-checked] .z-switch-track {
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  .z-switch[data-checked] .z-switch-thumb {
+    background: HighlightText;
+  }
+
+  .z-switch:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}

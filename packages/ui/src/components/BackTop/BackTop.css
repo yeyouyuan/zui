@@ -17,7 +17,7 @@
 .z-back-top {
   box-sizing: border-box;
   position: fixed;
-  right: var(--z-back-top-right);
+  inset-inline-end: var(--z-back-top-right);
   bottom: var(--z-back-top-bottom);
   z-index: var(--z-z-sticky);
   display: flex;
@@ -59,4 +59,10 @@
 .z-back-top svg {
   width: var(--z-back-top-icon-size);
   height: var(--z-back-top-icon-size);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-back-top {
+    transition: none;
+  }
 }

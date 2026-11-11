@@ -66,6 +66,29 @@ export function Popconfirm(props: PopconfirmProps) {
       event.preventDefault();
       event.stopPropagation();
       close(true);
+      return;
+    }
+    if (event.key !== 'Tab') return;
+
+    const panel = panelRef.current;
+    if (!panel) return;
+    const focusable = Array.from(
+      panel.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((element) => element.tabIndex >= 0 && element.getAttribute('aria-hidden') !== 'true');
+    if (focusable.length === 0) {
+      event.preventDefault();
+      panel.focus();
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+    if (event.shiftKey ? active === first : active === last) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus();
     }
   };
 
@@ -111,6 +134,7 @@ export function Popconfirm(props: PopconfirmProps) {
             data-part="content"
             className={cx('z-popconfirm-content', classNames?.content)}
             role="dialog"
+            tabIndex={-1}
             aria-labelledby={titleId}
             aria-describedby={description ? descId : undefined}
             onKeyDown={onPanelKeyDown}

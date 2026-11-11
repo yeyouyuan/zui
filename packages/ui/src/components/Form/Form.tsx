@@ -141,7 +141,7 @@ interface FormImpl {
 }
 
 type InternalFormInstance = FormInstance & {
-  /** @internal：由 Form 在渲染期绑定实现 */
+  /** @internal：由 Form 在 layout effect 中绑定实现 */
   attach: (impl: FormImpl) => void;
 };
 
@@ -279,42 +279,49 @@ function Form(props: FormProps) {
 
   /* ------------------------------ 命令式 API ------------------------------ */
 
-  instance.attach({
-    validateFields: (names) => runValidate(names),
-    setFieldsValue: (next) => {
-      Object.assign(valuesRef.current, next);
-      rerender();
-    },
-    getFieldsValue: (names) => {
-      const all: Record<string, unknown> = { ...valuesRef.current };
-      for (const name of fieldsRef.current.keys()) {
-        if (!(name in all)) all[name] = undefined;
-      }
-      if (!names) return all;
-      const picked: Record<string, unknown> = {};
-      for (const name of names) picked[name] = all[name];
-      return picked;
-    },
-    resetFields: () => {
-      valuesRef.current = { ...initialRef.current };
-      errorsRef.current = {};
-      rerender();
-    },
-    scrollToField: (name) => {
-      const root = rootRef.current;
-      if (!root) return;
-      let item: HTMLElement | null = null;
-      for (const el of root.querySelectorAll<HTMLElement>('[data-field]')) {
-        if (el.getAttribute('data-field') === name) {
-          item = el;
-          break;
+  const formImpl = React.useMemo<FormImpl>(
+    () => ({
+      validateFields: (names) => runValidate(names),
+      setFieldsValue: (next) => {
+        Object.assign(valuesRef.current, next);
+        rerender();
+      },
+      getFieldsValue: (names) => {
+        const all: Record<string, unknown> = { ...valuesRef.current };
+        for (const name of fieldsRef.current.keys()) {
+          if (!(name in all)) all[name] = undefined;
         }
-      }
-      if (!item) return;
-      item.scrollIntoView?.({ block: 'center' });
-      item.querySelector<HTMLElement>('input, textarea, select, button, [tabindex]')?.focus();
-    },
-  });
+        if (!names) return all;
+        const picked: Record<string, unknown> = {};
+        for (const name of names) picked[name] = all[name];
+        return picked;
+      },
+      resetFields: () => {
+        valuesRef.current = { ...initialRef.current };
+        errorsRef.current = {};
+        rerender();
+      },
+      scrollToField: (name) => {
+        const root = rootRef.current;
+        if (!root) return;
+        let item: HTMLElement | null = null;
+        for (const el of root.querySelectorAll<HTMLElement>('[data-field]')) {
+          if (el.getAttribute('data-field') === name) {
+            item = el;
+            break;
+          }
+        }
+        if (!item) return;
+        item.scrollIntoView?.({ block: 'center' });
+        item.querySelector<HTMLElement>('input, textarea, select, button, [tabindex]')?.focus();
+      },
+    }),
+    [runValidate]
+  );
+
+  React.useLayoutEffect(() => {
+    instance.attach(formImpl);
+  }, [formImpl, instance]);
 
   /* -------------------------------- 提交 --------------------------------- */
 
@@ -379,9 +386,14 @@ function FormItem(props: FormItemProps) {
   const child = React.Children.only(children) as React.ReactElement<Record<string, unknown>>;
   const childProps = child.props;
   const controlId = typeof childProps.id === 'string' ? childProps.id : ctx.controlId(name);
+  const childType = child.type as { displayName?: string; name?: string } | string;
+  const componentName =
+    typeof childType === 'string' ? childType : (childType.displayName ?? childType.name);
   const isCheckboxLike =
     childProps.type === 'checkbox' ||
     childProps.type === 'radio' ||
+    componentName === 'Switch' ||
+    componentName === 'Checkbox' ||
     'checked' in childProps ||
     'defaultChecked' in childProps;
 

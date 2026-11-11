@@ -55,3 +55,12 @@
     animation: none;
   }
 }
+
+@media (forced-colors: active) {
+  .z-tooltip {
+    color: CanvasText;
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+}

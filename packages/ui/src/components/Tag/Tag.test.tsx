@@ -37,7 +37,7 @@ describe('Tag', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
-  it('closable: renders × button with aria-label="移除标签" and removes tag on click', async () => {
+  it('closable: close button name includes the tag text and removes the tag on click', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
     render(
@@ -45,7 +45,7 @@ describe('Tag', () => {
         标签
       </Tag>
     );
-    const close = screen.getByRole('button', { name: '移除标签' });
+    const close = screen.getByRole('button', { name: '移除标签: 标签' });
     expect(close).toHaveAttribute('data-part', 'close');
     expect(close).toHaveClass('z-tag-close');
 
@@ -53,7 +53,42 @@ describe('Tag', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(onClose).toHaveBeenCalledWith(expect.any(Object));
     expect(screen.queryByText('标签')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '移除标签' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '移除标签: 标签' })).not.toBeInTheDocument();
+  });
+
+  it('closable: multiple tags have distinct close button names', () => {
+    render(
+      <>
+        <Tag closable>开发</Tag>
+        <Tag closable>设计</Tag>
+      </>
+    );
+
+    expect(screen.getByRole('button', { name: '移除标签: 开发' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '移除标签: 设计' })).toBeInTheDocument();
+  });
+
+  it('closable: safely derives a normalized name from complex children', () => {
+    render(
+      <Tag closable>
+        <>项目 <strong>Alpha</strong></>
+        {null}
+        {false}
+        {[' ', <span key="version">v2</span>, 3]}
+      </Tag>
+    );
+
+    expect(screen.getByRole('button', { name: '移除标签: 项目 Alpha v23' })).toBeInTheDocument();
+  });
+
+  it('closable: falls back to the generic name when children contain no text', () => {
+    render(
+      <Tag closable>
+        <svg aria-hidden="true" />
+      </Tag>
+    );
+
+    expect(screen.getByRole('button', { name: '移除标签' })).toBeInTheDocument();
   });
 
   it('passes className and classNames to parts', () => {

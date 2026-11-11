@@ -66,3 +66,5 @@ export function Switch({
     </button>
   );
 }
+
+Switch.displayName = 'Switch';

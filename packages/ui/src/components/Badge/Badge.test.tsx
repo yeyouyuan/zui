@@ -67,6 +67,14 @@ describe('Badge', () => {
       expect(screen.queryByText('消息')).not.toBeInTheDocument();
     });
 
+    it('returns null for count=0 unless showZero is true', () => {
+      const { container, rerender } = render(<Badge count={0} />);
+      expect(container).toBeEmptyDOMElement();
+
+      rerender(<Badge count={0} showZero />);
+      expect(screen.getByText('0')).toHaveAttribute('data-part', 'indicator');
+    });
+
     it('still respects max in standalone mode', () => {
       render(<Badge count={120} />);
       expect(screen.getByText('99+')).toHaveAttribute('data-part', 'indicator');

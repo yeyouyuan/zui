@@ -187,19 +187,24 @@ function StatisticCountDown({
   // calculate the live value after hydration.
   const [remaining, setRemaining] = React.useState<number | null>(null);
   const onFinishRef = React.useRef(onFinish);
-  const finishedTargetsRef = React.useRef(new Set<number>());
+  const activeTargetRef = React.useRef<number | null>(null);
+  const finishedTargetRef = React.useRef<number | null>(null);
   React.useEffect(() => {
     onFinishRef.current = onFinish;
   });
 
   React.useEffect(() => {
+    if (activeTargetRef.current !== target) {
+      activeTargetRef.current = target;
+      finishedTargetRef.current = null;
+    }
     if (target == null) {
       setRemaining(0);
       return undefined;
     }
     const finish = () => {
-      if (finishedTargetsRef.current.has(target)) return;
-      finishedTargetsRef.current.add(target);
+      if (finishedTargetRef.current === target) return;
+      finishedTargetRef.current = target;
       onFinishRef.current?.();
     };
     const initial = target - Date.now();

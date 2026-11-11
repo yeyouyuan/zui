@@ -250,26 +250,36 @@ function FloatingSurface({
           : { left: next.left, top: next.top, direction }
       );
     };
+    let frame = 0;
+    const scheduleUpdate = () => {
+      if (frame !== 0) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        update();
+      });
+    };
     update();
-    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(update);
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(scheduleUpdate);
     observer?.observe(element);
     observer?.observe(root);
-    const mutations = new MutationObserver(update);
-    mutations.observe(root, {
+    const mutations = new MutationObserver(scheduleUpdate);
+    const mutationOptions: MutationObserverInit = {
       attributes: true,
-      childList: true,
-      characterData: true,
-      subtree: true,
-    });
+      attributeFilter: ['class', 'style', 'dir', 'data-theme'],
+    };
+    // 触发器自身可能因布局/动画修改 class/style；根节点需要覆盖子树，
+    // 但只观察会影响几何/方向的属性，避免 characterData/childList 全量开销。
+    mutations.observe(root, { ...mutationOptions, subtree: true });
     for (let source = root.parentElement; source; source = source.parentElement)
-      mutations.observe(source, { attributes: true });
-    window.addEventListener('resize', update);
-    window.addEventListener('scroll', update, true);
+      mutations.observe(source, mutationOptions);
+    window.addEventListener('resize', scheduleUpdate);
+    window.addEventListener('scroll', scheduleUpdate, true);
     return () => {
       observer?.disconnect();
       mutations.disconnect();
-      window.removeEventListener('resize', update);
-      window.removeEventListener('scroll', update, true);
+      if (frame !== 0) window.cancelAnimationFrame(frame);
+      window.removeEventListener('resize', scheduleUpdate);
+      window.removeEventListener('scroll', scheduleUpdate, true);
     };
   }, [anchor, rootRef]);
   const positioned = !!position;

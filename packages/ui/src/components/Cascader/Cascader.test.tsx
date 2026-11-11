@@ -155,7 +155,12 @@ describe('Cascader 键盘', () => {
     expect(getTrigger()).toHaveAttribute('aria-expanded', 'true');
 
     await user.keyboard('{ArrowDown}'); // 高亮浙江
-    expect(getItems(0)[0]).toHaveAttribute('data-active', 'true');
+    const activeOption = getItems(0)[0];
+    const panel = document.querySelector('[data-part="panel"]') as HTMLElement;
+    expect(activeOption).toHaveAttribute('data-active', 'true');
+    expect(activeOption.id).not.toBe('');
+    expect(document.getElementById(activeOption.id)).toBe(activeOption);
+    expect(panel).toHaveAttribute('aria-activedescendant', activeOption.id);
 
     await user.keyboard('{Enter}'); // 展开第二列
     expect(getMenus()).toHaveLength(2);
@@ -206,6 +211,28 @@ describe('Cascader 搜索', () => {
     expect(results[0]).toHaveTextContent('西湖');
     await user.keyboard('{Enter}');
     expect(onChange).toHaveBeenCalledWith(['zhejiang', 'hangzhou', 'xihu']);
+  });
+
+  it('搜索框同步活动项 aria-activedescendant，Tab 关闭面板', async () => {
+    const user = userEvent.setup();
+    render(<Cascader options={options} showSearch />);
+    await user.click(getTrigger());
+    const input = screen.getByRole('searchbox', { name: '搜索级联选项' });
+    await user.type(input, '浙江');
+
+    const results = within(screen.getByRole('listbox', { name: '搜索结果' })).getAllByRole('option');
+    expect(results.length).toBeGreaterThan(1);
+    expect(results[0].id).not.toBe('');
+    expect(document.getElementById(results[0].id)).toBe(results[0]);
+    expect(input).toHaveAttribute('aria-activedescendant', results[0].id);
+
+    await user.keyboard('{ArrowDown}');
+    expect(document.getElementById(results[1].id)).toBe(results[1]);
+    expect(input).toHaveAttribute('aria-activedescendant', results[1].id);
+
+    await user.tab();
+    expect(getTrigger()).toHaveAttribute('aria-expanded', 'false');
+    expect(document.querySelector('[data-part="panel"]')).toHaveAttribute('data-open', 'false');
   });
 
   it('搜索无匹配显示空态', async () => {

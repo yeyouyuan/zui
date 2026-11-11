@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Pagination } from './Pagination';
 
@@ -165,14 +165,23 @@ describe('Pagination', () => {
     expect(onPageChange).toHaveBeenLastCalledWith(1);
   });
 
-  it('showJumper：非法输入 + Enter 不回调', async () => {
-    const user = userEvent.setup();
+  it('showJumper：非有限数 + Enter 不回调并清空文本', () => {
     const onPageChange = vi.fn();
     render(<Pagination total={50} showJumper onPageChange={onPageChange} />);
-    const input = screen.getByRole('spinbutton', { name: '跳至页码' });
+    const input = screen.getByRole('spinbutton', { name: '跳至页码' }) as HTMLInputElement;
 
-    await user.type(input, 'abc{Enter}');
+    // jsdom 会过滤 number 输入中的非有限文本，因此覆盖一次 getter 来验证 Enter 防御分支。
+    let reads = 0;
+    const nativeValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!;
+    Object.defineProperty(input, 'value', {
+      configurable: true,
+      get: () => (reads++ === 0 ? '1e309' : nativeValue.get!.call(input)),
+      set: (value: string) => nativeValue.set!.call(input, value),
+    });
+    fireEvent.keyDown(input, { key: 'Enter' });
+
     expect(onPageChange).not.toHaveBeenCalled();
+    expect(input.value).toBe('');
   });
 
   it('disabled：页码/上下页/跳页全部禁用且不可点击', async () => {

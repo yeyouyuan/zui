@@ -40,8 +40,9 @@ export function Badge({
   const formatted = dot ? null : formatCount(count, max);
   const isSingle = !dot && formatted != null && formatted.length === 1;
 
-  // 独立数字模式：indicator 本身就是可见内容（不隐藏，作为根）
+  // 独立模式也遵循零值可见性；dot 始终可见。
   if (!wrapped) {
+    if (!visible) return null;
     return (
       <span
         data-part="indicator"

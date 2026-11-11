@@ -104,6 +104,7 @@ a:hover {
 
 /* 统一双层 focus ring：贴底色内圈 + 半透明主色外圈 */
 :where(
+  .doc-page a:not([class]),
   .doc-menu-btn,
   .doc-chip-btn,
   .doc-brand,
@@ -618,7 +619,7 @@ a:hover {
   align-items: center;
   justify-content: space-between;
   min-height: 40px;
-  padding: 6px 16px;
+  padding: 0 16px;
   border-bottom: 1px solid #ffffff14;
   background: var(--doc-code-bg);
 }
@@ -659,8 +660,10 @@ a:hover {
 }
 
 .doc-copy-btn {
+  min-width: 40px;
+  min-height: 40px;
+  margin-right: -8px;
   padding: 4px 8px;
-  min-height: 28px;
   border: 1px solid #ffffff20;
   border-radius: 5px;
   background: transparent;
@@ -880,6 +883,19 @@ a:hover {
   border-radius: 12px;
 }
 
+/* 固定在滚动视口两侧的语义色渐隐，提示表格可能向左右继续。 */
+.doc-table-wrap--scroll-hint {
+  background:
+    linear-gradient(to right, var(--doc-bg-elevated) 30%, transparent) left center / 32px 100%
+      no-repeat local,
+    linear-gradient(to left, var(--doc-bg-elevated) 30%, transparent) right center / 32px 100%
+      no-repeat local,
+    linear-gradient(to right, color-mix(in srgb, var(--z-color-fg) 16%, transparent), transparent)
+      left center / 12px 100% no-repeat scroll,
+    linear-gradient(to left, color-mix(in srgb, var(--z-color-fg) 16%, transparent), transparent)
+      right center / 12px 100% no-repeat scroll;
+}
+
 .doc-api-table {
   width: 100%;
   border-collapse: collapse;
@@ -1001,8 +1017,8 @@ a:hover {
   border-radius: 8px;
 }
 .doc-hero-install .doc-code-toolbar {
-  min-height: 32px;
-  padding: 2px 10px;
+  min-height: 40px;
+  padding: 0 10px;
 }
 .doc-hero-install .doc-code {
   padding: 10px 12px;
@@ -1462,7 +1478,8 @@ a:hover {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  height: 34px;
+  min-width: 40px;
+  height: 40px;
   padding: 0 10px;
   margin-right: 14px;
   border: 1px solid var(--doc-border);
@@ -1515,22 +1532,22 @@ a:hover {
 .doc-nav-search svg {
   position: absolute;
   left: 10px;
-  top: 11px;
+  top: 13px;
   color: var(--z-color-fg-muted);
   pointer-events: none;
 }
 .doc-nav-search-input {
-  height: 36px;
-  padding-inline: 32px 28px;
+  height: 40px;
+  padding-inline: 32px 40px;
   border-color: var(--doc-border);
   background: var(--doc-bg);
 }
 .doc-nav-clear {
   position: absolute;
-  right: 4px;
-  top: 4px;
-  width: 28px;
-  height: 28px;
+  right: 0;
+  top: 0;
+  width: 40px;
+  height: 40px;
   border: 0;
   border-radius: 4px;
   background: transparent;
@@ -1584,9 +1601,7 @@ a:hover {
   .doc-command-trigger,
   .doc-demo-code-toggle,
   .doc-nav-clear,
-  .doc-table-wrap,
-  .doc-feature a,
-  .doc-explore-grid a
+  .doc-table-wrap
 ):focus-visible {
   outline: 2px solid var(--z-color-primary);
   outline-offset: 3px;
@@ -1601,7 +1616,7 @@ a:hover {
   border: 1px solid var(--doc-border);
   border-radius: 14px;
   background: var(--doc-bg-elevated);
-  box-shadow: 0 12px 36px -18px #14284a30;
+  box-shadow: 0 12px 36px -18px color-mix(in srgb, var(--z-color-fg) 20%, transparent);
   overflow: hidden;
 }
 .doc-preview-bar {
@@ -1638,10 +1653,12 @@ a:hover {
   margin-bottom: 5px;
   font-size: 9px;
 }
-.doc-preview-heading h2 {
+.doc-preview-title {
   margin: 0;
   font-size: 19px;
+  font-weight: var(--z-weight-semibold);
   letter-spacing: -0.02em;
+  line-height: 1.35;
 }
 .doc-preview-metric {
   display: flex;
@@ -1958,7 +1975,7 @@ a:hover {
 }
 @media (max-width: 767px) {
   .doc-command-trigger {
-    width: 32px;
+    width: 40px;
     padding: 0 8px;
     justify-content: center;
     margin: 0 2px 0 0;

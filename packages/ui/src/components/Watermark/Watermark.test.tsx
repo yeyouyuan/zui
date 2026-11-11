@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
+import { renderToString } from 'react-dom/server';
 import { cleanup, render, screen } from '@testing-library/react';
 import { Watermark } from './index';
 
@@ -81,5 +82,18 @@ describe('Watermark 定制与安全', () => {
     expect(decoded).toContain('&lt;b&gt;');
     expect(decoded).toContain('&amp;');
     expect(decoded).not.toContain('<b>');
+  });
+
+  it('SSR 渲染不访问 DOM，输出稳定的 SVG data-uri', () => {
+    expect(() =>
+      renderToString(
+        <Watermark content="CONFIDENTIAL">
+          <span>正文</span>
+        </Watermark>
+      )
+    ).not.toThrow();
+    const html = renderToString(<Watermark content="CONFIDENTIAL">正文</Watermark>);
+    expect(html).toContain('z-watermark');
+    expect(html).toContain('data:image/svg+xml');
   });
 });

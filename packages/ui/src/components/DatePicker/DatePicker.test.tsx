@@ -386,6 +386,55 @@ describe('DatePicker 输入解析与高亮', () => {
     expect(getDayCell('2024-03-20')).toHaveAttribute('aria-selected', 'true');
   });
 
+  it('非规范合法文本 blur 后归一为 ISO', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <div>
+        <DatePicker defaultValue={MON} onChange={onChange} />
+        <button type="button">下一项</button>
+      </div>
+    );
+    const input = getInput();
+
+    await user.click(input);
+    await user.clear(input);
+    await user.type(input, ' 2024-03-05 ');
+    await user.tab();
+
+    expect(screen.getByRole('button', { name: '下一项' })).toHaveFocus();
+    expect(input).toHaveValue('2024-03-05');
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenCalledWith('2024-03-05');
+  });
+
+  it('Escape 还原 committed 草稿并让后续 blur 不误提交', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <div>
+        <DatePicker defaultValue={MON} onChange={onChange} />
+        <button type="button">下一项</button>
+      </div>
+    );
+    const input = getInput();
+
+    await user.click(input);
+    await user.clear(input);
+    await user.type(input, '2024-03-20');
+    await user.keyboard('{Escape}');
+
+    expect(screen.queryByRole('grid')).toBeNull();
+    expect(input).toHaveValue(MON);
+    expect(input).toHaveFocus();
+    expect(onChange).not.toHaveBeenCalled();
+
+    await user.tab();
+    expect(screen.getByRole('button', { name: '下一项' })).toHaveFocus();
+    expect(input).toHaveValue(MON);
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it('非法输入 blur 还原为当前值', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();

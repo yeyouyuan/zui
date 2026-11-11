@@ -161,3 +161,12 @@
     transition: none;
   }
 }
+
+@media (forced-colors: active) {
+  .z-list[data-bordered='true'],
+  .z-list-header,
+  .z-list-footer,
+  .z-list-item + .z-list-item {
+    border-color: CanvasText;
+  }
+}

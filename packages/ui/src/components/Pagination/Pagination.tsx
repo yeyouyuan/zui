@@ -99,10 +99,11 @@ export function Pagination({
     event.preventDefault();
     const raw = event.currentTarget.value.trim();
     if (raw === '') return;
-    const parsed = Number.parseInt(raw, 10);
-    if (!Number.isFinite(parsed)) return;
-    const next = clampPage(parsed, pageCount);
-    if (next !== rawPage) setPage(next);
+    const parsed = Number(raw);
+    if (Number.isFinite(parsed)) {
+      const next = clampPage(parsed, pageCount);
+      if (next !== rawPage) setPage(next);
+    }
     setJumperText('');
   };
 

@@ -135,3 +135,30 @@
     transition: none;
   }
 }
+
+@media (forced-colors: active) {
+  .z-checkbox-box {
+    color: CanvasText;
+    background: Canvas;
+    border-color: CanvasText;
+  }
+
+  .z-checkbox input:checked ~ .z-checkbox-box,
+  .z-checkbox input:indeterminate ~ .z-checkbox-box {
+    background: Highlight;
+    border-color: Highlight;
+  }
+
+  .z-checkbox input:checked ~ .z-checkbox-box::after {
+    border-color: HighlightText;
+  }
+
+  .z-checkbox input:indeterminate ~ .z-checkbox-box::after {
+    border-bottom-color: HighlightText;
+  }
+
+  .z-checkbox input:focus-visible ~ .z-checkbox-box {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}

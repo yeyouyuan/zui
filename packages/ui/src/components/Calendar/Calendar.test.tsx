@@ -50,6 +50,22 @@ describe('Calendar', () => {
     expect(getDay(container, '2026-11-20')).toHaveAttribute('aria-selected', 'true');
   });
 
+  it('clicking a day focuses its cell so arrow navigation continues from it', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<Calendar defaultValue="2026-11-04" />);
+
+    await user.click(getDay(container, '2026-11-04'));
+    expect(getDay(container, '2026-11-04')).toHaveFocus();
+
+    await user.keyboard('{ArrowRight}');
+    expect(getDay(container, '2026-11-05')).toHaveFocus();
+
+    await user.click(getDay(container, '2026-12-01'));
+    expect(getDay(container, '2026-12-01')).toHaveFocus();
+    await user.keyboard('{ArrowRight}');
+    expect(getDay(container, '2026-12-02')).toHaveFocus();
+  });
+
   it('controlled: selection follows value prop only', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();

@@ -151,7 +151,9 @@ export function Rate(props: RateProps) {
             data-index={index}
             data-filled={fraction >= 1 ? 'full' : fraction >= 0.5 ? 'half' : 'none'}
             className={cx('z-rate-star', classNames?.star)}
-            aria-checked={display > 0 && Math.ceil(display) === index}
+            // 选中星 = 最后一颗满星（display 为 x.5 时落在第 x 颗），
+            // 半星档不置 checked，保证 aria 与视觉填充一致
+            aria-checked={Math.floor(display) === index}
             aria-label={locale.accessibility.ratingValue.replace('{index}', String(index))}
             disabled={disabled}
             tabIndex={interactive && focusIndex === index ? 0 : -1}

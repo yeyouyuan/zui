@@ -11,9 +11,54 @@
   color: var(--z-color-fg);
 }
 
+.datagrid-prototype-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--z-space-4);
+}
+
 .datagrid-prototype h1 {
+  margin: var(--z-space-2) 0 0;
   font-size: var(--z-text-xl);
   font-weight: var(--z-weight-semibold);
+}
+
+.datagrid-prototype-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 9px;
+  color: var(--z-color-warning-subtle-fg);
+  border: 1px solid color-mix(in srgb, var(--z-color-warning) 45%, transparent);
+  border-radius: var(--z-radius-full);
+  background: var(--z-color-warning-subtle);
+  font-size: var(--z-text-xs);
+  font-weight: var(--z-weight-semibold);
+}
+
+.datagrid-prototype-back {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  padding: 6px 12px;
+  color: var(--z-color-primary);
+  border: 1px solid color-mix(in srgb, var(--z-color-primary) 45%, var(--z-color-border));
+  border-radius: var(--z-radius-md);
+  background: var(--z-color-bg-elevated);
+  font-size: var(--z-text-sm);
+  font-weight: var(--z-weight-medium);
+  text-decoration: none;
+}
+
+.datagrid-prototype-back:hover {
+  border-color: var(--z-color-primary);
+}
+
+.datagrid-prototype-back:focus-visible {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: 2px;
 }
 
 .datagrid-prototype-lead {

@@ -122,16 +122,21 @@ describe('DropdownMenu 打开/关闭', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
 
-  it('关闭态 ArrowDown 打开', () => {
+  it('关闭态 ArrowDown 打开并聚焦首个可用项', () => {
     render(<TestMenu />);
     fireEvent.keyDown(screen.getByTestId('trigger'), { key: 'ArrowDown' });
     expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(screen.getByTestId('item-new')).toHaveFocus();
+    expect(screen.getByTestId('item-new')).toHaveAttribute('tabindex', '0');
   });
 
-  it('关闭态 ArrowUp 打开', () => {
+  it('关闭态 ArrowUp 打开并聚焦最后一个可用项', () => {
     render(<TestMenu />);
     fireEvent.keyDown(screen.getByTestId('trigger'), { key: 'ArrowUp' });
     expect(screen.getByRole('menu')).toBeInTheDocument();
+    expect(screen.getByTestId('item-delete')).toHaveFocus();
+    expect(screen.getByTestId('item-delete')).toHaveAttribute('tabindex', '0');
+    expect(screen.getByTestId('item-open')).toHaveAttribute('tabindex', '-1');
   });
 
   it('Esc 关闭并焦点归还 Trigger', async () => {

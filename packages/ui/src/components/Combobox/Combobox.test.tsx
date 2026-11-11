@@ -125,6 +125,28 @@ describe('Combobox 渲染与 ARIA', () => {
     expect(hidden).toHaveAttribute('name', 'fruit');
     expect(hidden).toHaveValue('banana');
   });
+
+  it('defaultValue 早于异步 options 到达且未编辑时同步为解析后的 label', () => {
+    const { rerender } = render(
+      <Combobox options={[]} defaultValue="banana" aria-label="异步水果" />
+    );
+    expect(getInput()).toHaveValue('banana');
+
+    rerender(<Combobox options={options} defaultValue="banana" aria-label="异步水果" />);
+
+    expect(getInput()).toHaveValue('Banana');
+  });
+
+  it('异步 options 到达时不覆盖 defaultValue 上正在编辑的草稿', () => {
+    const { rerender } = render(
+      <Combobox options={[]} defaultValue="banana" aria-label="异步水果" />
+    );
+    fireEvent.change(getInput(), { target: { value: '我的草稿' } });
+
+    rerender(<Combobox options={options} defaultValue="banana" aria-label="异步水果" />);
+
+    expect(getInput()).toHaveValue('我的草稿');
+  });
 });
 
 describe('Combobox 状态与搜索', () => {

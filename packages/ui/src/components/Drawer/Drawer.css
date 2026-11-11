@@ -297,3 +297,22 @@
   outline: 2px solid var(--z-color-focus-ring);
   outline-offset: 2px;
 }
+
+@media (forced-colors: active) {
+  .z-drawer {
+    color: CanvasText;
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  .z-drawer-close[data-has-label] {
+    border-color: CanvasText;
+  }
+
+  .z-drawer:focus-visible,
+  .z-drawer-close:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}

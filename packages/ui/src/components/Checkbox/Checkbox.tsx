@@ -75,3 +75,5 @@ export function Checkbox({
     </label>
   );
 }
+
+Checkbox.displayName = 'Checkbox';

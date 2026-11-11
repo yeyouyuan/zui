@@ -224,3 +224,22 @@
   outline: 2px solid var(--z-color-focus-ring);
   outline-offset: 2px;
 }
+
+@media (forced-colors: active) {
+  .z-modal {
+    color: CanvasText;
+    background: Canvas;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  .z-modal-close[data-has-label] {
+    border-color: CanvasText;
+  }
+
+  .z-modal:focus-visible,
+  .z-modal-close:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}

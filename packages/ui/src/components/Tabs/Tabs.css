@@ -44,7 +44,7 @@
 .z-tabs[data-orientation='vertical'] > .z-tabs-list {
   flex-direction: column;
   border-bottom: none;
-  border-right: 1px solid var(--z-color-border);
+  border-inline-end: 1px solid var(--z-color-border);
   align-self: stretch;
 }
 
@@ -74,8 +74,11 @@
 
 .z-tabs[data-orientation='vertical'] .z-tab {
   margin-bottom: 0;
-  margin-right: -1px;
-  border-radius: var(--z-tabs-trigger-radius) 0 0 var(--z-tabs-trigger-radius);
+  margin-inline-end: -1px;
+  border-start-start-radius: var(--z-tabs-trigger-radius);
+  border-start-end-radius: 0;
+  border-end-end-radius: 0;
+  border-end-start-radius: var(--z-tabs-trigger-radius);
   justify-content: flex-start;
 }
 
@@ -99,8 +102,7 @@
 .z-tab::after {
   content: '';
   position: absolute;
-  left: 0;
-  right: 0;
+  inset-inline: 0;
   bottom: 0;
   height: var(--z-tabs-indicator-size);
   background-color: var(--z-tabs-indicator-color);
@@ -112,10 +114,9 @@
 }
 
 .z-tabs[data-orientation='vertical'] .z-tab::after {
-  left: auto;
+  inset-inline: auto 0;
   top: 0;
   bottom: 0;
-  right: 0;
   width: var(--z-tabs-indicator-size);
   height: auto;
   transform: scaleY(0.6);
@@ -156,4 +157,11 @@
   outline: 2px solid var(--z-color-focus-ring);
   outline-offset: -2px;
   border-radius: var(--z-radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .z-tab,
+  .z-tab::after {
+    transition: none;
+  }
 }

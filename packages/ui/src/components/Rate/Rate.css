@@ -2,6 +2,7 @@
 
 .z-rate {
   --z-rate-star-size: 1.25rem; /* 20px */
+  --z-rate-star-hit-size: 1.5rem; /* 24px 命中热区，不放大星形 */
   --z-rate-gap: var(--z-space-1);
   --z-rate-star-empty-color: var(--z-color-border-strong);
   --z-rate-star-filled-color: var(--z-color-warning);
@@ -19,8 +20,9 @@
   gap: var(--z-rate-gap);
 }
 
-/* 单星按钮：左右两半拼合（overflow 裁剪半边星形） */
+/* 单星按钮：左右两半保持视觉尺寸，伪元素把命中区扩到至少 24px。 */
 .z-rate-star {
+  position: relative;
   box-sizing: border-box;
   display: inline-flex;
   width: var(--z-rate-star-size);
@@ -31,6 +33,17 @@
   cursor: pointer;
 }
 
+.z-rate-star::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  width: max(100%, var(--z-rate-star-hit-size));
+  height: max(100%, var(--z-rate-star-hit-size));
+  content: '';
+  transform: translate(-50%, -50%);
+}
+
 .z-rate-star:focus-visible {
   outline: 2px solid var(--z-rate-focus-ring);
   outline-offset: 2px;
@@ -38,8 +51,10 @@
 }
 
 .z-rate-star-half {
-  width: 50%;
-  height: 100%;
+  position: relative;
+  z-index: 1;
+  width: calc(var(--z-rate-star-size) / 2);
+  height: var(--z-rate-star-size);
   overflow: hidden;
   color: var(--z-rate-star-empty-color);
   transition: color var(--z-rate-transition);

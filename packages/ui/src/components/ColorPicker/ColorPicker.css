@@ -63,6 +63,8 @@
 .z-color-picker-swatch {
   box-sizing: border-box;
   display: inline-flex;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
   align-items: center;
   gap: var(--z-color-picker-gap);
   height: var(--z-color-picker-height);
@@ -96,6 +98,7 @@
   cursor: not-allowed;
 }
 
+/* 色块保留视觉尺寸；其父级 button 在所有尺寸下都至少为 24px 命中目标。 */
 .z-color-picker-swatch-color {
   flex: none;
   width: var(--z-color-picker-swatch-size);

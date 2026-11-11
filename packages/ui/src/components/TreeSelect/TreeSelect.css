@@ -20,6 +20,7 @@
   --z-tree-select-tag-fg: var(--z-color-fg);
   --z-tree-select-tag-remove-fg: var(--z-color-fg-muted);
   --z-tree-select-tag-remove-hover-fg: var(--z-color-danger);
+  --z-tree-select-tag-remove-hit-size: 1.5rem;
   --z-tree-select-panel-bg: var(--z-color-bg-elevated);
   --z-tree-select-panel-border: var(--z-color-border-subtle);
   --z-tree-select-panel-radius: 0.5rem;
@@ -136,6 +137,7 @@
 }
 
 .z-tree-select-tag-remove {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -153,9 +155,25 @@
     background-color var(--z-tree-select-transition);
 }
 
+/* 删除图标保持 14px 视觉盒，伪元素向四周扩到 24px。 */
+.z-tree-select-tag-remove::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, var(--z-tree-select-tag-remove-hit-size));
+  height: max(100%, var(--z-tree-select-tag-remove-hit-size));
+  content: '';
+  transform: translate(-50%, -50%);
+}
+
 .z-tree-select-tag-remove:hover {
   color: var(--z-tree-select-tag-remove-hover-fg);
   background-color: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.z-tree-select-tag-remove:focus-visible {
+  outline: 2px solid var(--z-tree-select-focus-ring);
+  outline-offset: 1px;
 }
 
 .z-tree-select-arrow {

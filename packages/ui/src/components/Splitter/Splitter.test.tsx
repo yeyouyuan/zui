@@ -541,6 +541,26 @@ describe('折叠、焦点与受控状态', () => {
     expect(screen.getByRole('button', { name: '内容按钮', hidden: true })).toBeInTheDocument();
   });
 
+  it('Enter key repeat 只切换一次', () => {
+    const onCollapsedChange = vi.fn();
+    const onSizesChange = vi.fn();
+    const onResizeEnd = vi.fn();
+    renderTwo(
+      { handleProps: () => ({ collapseTarget: 'before' }), onSizesChange, onResizeEnd },
+      { collapsible: true, collapsedSize: 5, onCollapsedChange }
+    );
+    const handle = handles()[0];
+    fireEvent.keyDown(handle, { key: 'Enter' });
+    fireEvent.keyDown(handle, { key: 'Enter', repeat: true });
+    fireEvent.keyDown(handle, { key: 'Enter', repeat: true });
+
+    expect(onCollapsedChange).toHaveBeenCalledTimes(1);
+    expect(onCollapsedChange).toHaveBeenCalledWith(true);
+    expect(onSizesChange).toHaveBeenCalledTimes(1);
+    expect(onResizeEnd).toHaveBeenCalledTimes(1);
+    expect(panels()[0]).toHaveAttribute('data-collapsed', 'true');
+  });
+
   it('collapseTarget=none 或不可折叠目标不拦截 Enter', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const onSizesChange = vi.fn();
@@ -564,6 +584,130 @@ describe('折叠、焦点与受控状态', () => {
     expect(onCollapsedChange).toHaveBeenCalledWith(true);
     expect(panels()[0]).toHaveAttribute('data-collapsed', 'false');
     expect(onResizeEnd.mock.calls[0][0]).toEqual([40, 60]);
+  });
+
+  it('受控 collapsed 拒绝后，之后接受同值不会套用旧请求尺寸或重复回调', () => {
+    const onCollapsedChange = vi.fn();
+    const onSizesChange = vi.fn();
+    const onResizeEnd = vi.fn();
+    const view = renderTwo(
+      {
+        defaultSizes: [40, 60],
+        handleProps: () => ({ collapseTarget: 'before' }),
+        onSizesChange,
+        onResizeEnd,
+      },
+      { collapsible: true, collapsed: false, collapsedSize: 5, onCollapsedChange }
+    );
+
+    fireEvent.keyDown(handles()[0], { key: 'Enter' });
+    expect(onSizesChange).toHaveBeenCalledTimes(1);
+    expect(onSizesChange).toHaveBeenLastCalledWith([5, 95], {
+      reason: 'collapse',
+      handleIndex: 0,
+    });
+
+    view.rerender(
+      <Splitter
+        aria-label="工作台"
+        defaultSizes={[40, 60]}
+        handleProps={() => ({ collapseTarget: 'before' })}
+        onSizesChange={onSizesChange}
+        onResizeEnd={onResizeEnd}
+      >
+        <Splitter.Panel
+          key="before"
+          label="目录"
+          collapsible
+          collapsed
+          collapsedSize={5}
+          onCollapsedChange={onCollapsedChange}
+        >
+          <button type="button">目录按钮</button>
+        </Splitter.Panel>
+        <Splitter.Panel key="after" label="内容">
+          <button type="button">内容按钮</button>
+        </Splitter.Panel>
+      </Splitter>
+    );
+
+    expect(root().style.gridTemplateColumns).toBe('5fr var(--z-splitter-handle-size) 95fr');
+    expect(onSizesChange).toHaveBeenCalledTimes(2);
+    expect(onSizesChange).toHaveBeenLastCalledWith([5, 95], {
+      reason: 'collapse',
+      handleIndex: null,
+    });
+    expect(onResizeEnd).toHaveBeenCalledTimes(1);
+  });
+
+  it('受控请求被拒绝后，其他 Panel 折叠不会套用旧尺寸或多发事件', () => {
+    const onSizesChange = vi.fn();
+    const onResizeEnd = vi.fn();
+    const onFirstCollapsedChange = vi.fn();
+    const view = render(
+      <Splitter
+        aria-label="布局"
+        defaultSizes={[30, 30, 40]}
+        handleProps={({ index }) => ({ collapseTarget: index === 0 ? 'before' : 'after' })}
+        onSizesChange={onSizesChange}
+        onResizeEnd={onResizeEnd}
+      >
+        <Splitter.Panel
+          key="first"
+          collapsible
+          collapsed={false}
+          collapsedSize={5}
+          onCollapsedChange={onFirstCollapsedChange}
+        >
+          一
+        </Splitter.Panel>
+        <Splitter.Panel key="middle">二</Splitter.Panel>
+        <Splitter.Panel key="last" collapsible collapsed={false} collapsedSize={10}>
+          三
+        </Splitter.Panel>
+      </Splitter>
+    );
+
+    fireEvent.keyDown(handles()[0], { key: 'Enter' });
+    expect(onSizesChange).toHaveBeenCalledTimes(1);
+    expect(onSizesChange).toHaveBeenLastCalledWith([5, 55, 40], {
+      reason: 'collapse',
+      handleIndex: 0,
+    });
+
+    view.rerender(
+      <Splitter
+        aria-label="布局"
+        defaultSizes={[30, 30, 40]}
+        handleProps={({ index }) => ({ collapseTarget: index === 0 ? 'before' : 'after' })}
+        onSizesChange={onSizesChange}
+        onResizeEnd={onResizeEnd}
+      >
+        <Splitter.Panel
+          key="first"
+          collapsible
+          collapsed={false}
+          collapsedSize={5}
+          onCollapsedChange={onFirstCollapsedChange}
+        >
+          一
+        </Splitter.Panel>
+        <Splitter.Panel key="middle">二</Splitter.Panel>
+        <Splitter.Panel key="last" collapsible collapsed collapsedSize={10}>
+          三
+        </Splitter.Panel>
+      </Splitter>
+    );
+
+    expect(root().style.gridTemplateColumns).toBe(
+      '45fr var(--z-splitter-handle-size) 45fr var(--z-splitter-handle-size) 10fr'
+    );
+    expect(onSizesChange).toHaveBeenCalledTimes(2);
+    expect(onSizesChange).toHaveBeenLastCalledWith([45, 45, 10], {
+      reason: 'collapse',
+      handleIndex: null,
+    });
+    expect(onResizeEnd).toHaveBeenCalledTimes(1);
   });
 
   it('外部受控折叠时，Panel 内焦点回退到相关 Handle', () => {

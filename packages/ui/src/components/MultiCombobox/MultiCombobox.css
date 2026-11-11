@@ -22,6 +22,7 @@
   --z-multicombobox-tag-radius: var(--z-radius-sm);
   --z-multicombobox-tag-remove-fg: var(--z-color-fg-muted);
   --z-multicombobox-tag-remove-hover-fg: var(--z-color-danger);
+  --z-multicombobox-tag-remove-hit-size: 1.5rem;
   --z-multicombobox-panel-bg: var(--z-color-bg-elevated);
   --z-multicombobox-panel-border: var(--z-color-border-subtle);
   --z-multicombobox-panel-radius: 0.5rem;
@@ -133,6 +134,7 @@
 }
 
 .z-multicombobox-tag-remove {
+  position: relative;
   box-sizing: border-box;
   display: inline-flex;
   flex: none;
@@ -149,6 +151,17 @@
   transition:
     color var(--z-duration-fast) var(--z-ease-standard),
     background-color var(--z-duration-fast) var(--z-ease-standard);
+}
+
+/* 删除图标保持 14px 视觉盒，伪元素向四周扩到 24px。 */
+.z-multicombobox-tag-remove::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, var(--z-multicombobox-tag-remove-hit-size));
+  height: max(100%, var(--z-multicombobox-tag-remove-hit-size));
+  content: '';
+  transform: translate(-50%, -50%);
 }
 
 .z-multicombobox-tag-remove:hover:not(:disabled) {

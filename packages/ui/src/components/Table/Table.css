@@ -108,3 +108,29 @@
 .z-table[data-bordered='true'] .z-table-cell:last-child {
   border-right: none;
 }
+
+@media (forced-colors: active) {
+  .z-table-header-cell,
+  .z-table-cell,
+  .z-table[data-bordered='true'],
+  .z-table[data-bordered='true'] .z-table-header-cell,
+  .z-table[data-bordered='true'] .z-table-cell {
+    border-color: CanvasText;
+  }
+
+  .z-table-row[data-selected='true'] {
+    color: HighlightText;
+    background: Highlight;
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
+
+  .z-table-row[data-selected='true'] .z-table-cell {
+    border-bottom-color: HighlightText;
+  }
+
+  .z-table-row:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+}

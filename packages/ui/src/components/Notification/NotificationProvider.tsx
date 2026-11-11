@@ -171,7 +171,23 @@ export function NotificationProvider({
                   data-clickable={item.onClick ? 'true' : undefined}
                   role={item.variant === 'error' ? 'alert' : 'status'}
                   aria-live={item.variant === 'error' ? 'assertive' : 'polite'}
+                  tabIndex={item.onClick ? 0 : undefined}
                   onClick={item.onClick}
+                  onKeyDown={
+                    item.onClick
+                      ? (event) => {
+                          if (
+                            event.target === event.currentTarget &&
+                            (event.key === 'Enter' ||
+                              event.key === ' ' ||
+                              event.key === 'Spacebar')
+                          ) {
+                            event.preventDefault();
+                            item.onClick?.();
+                          }
+                        }
+                      : undefined
+                  }
                 >
                   {item.icon ? (
                     item.icon

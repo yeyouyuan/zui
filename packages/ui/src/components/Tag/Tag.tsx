@@ -18,6 +18,21 @@ export interface TagProps extends Omit<React.ComponentPropsWithRef<'span'>, 'col
   classNames?: { root?: string; icon?: string; close?: string };
 }
 
+/* ---------------------------------- 工具 ---------------------------------- */
+
+/** 从 ReactNode 递归提取纯文本，用于关闭按钮的可访问名。 */
+function getNodeText(node: React.ReactNode): string {
+  if (node == null || typeof node === 'boolean') return '';
+  if (typeof node === 'string' || typeof node === 'number' || typeof node === 'bigint') {
+    return String(node);
+  }
+  if (Array.isArray(node)) return node.map(getNodeText).join('');
+  if (React.isValidElement<{ children?: React.ReactNode }>(node)) {
+    return getNodeText(node.props.children);
+  }
+  return '';
+}
+
 /* --------------------------------- 组件实现 -------------------------------- */
 
 export function Tag({
@@ -34,6 +49,8 @@ export function Tag({
   // 关闭后自我隐藏（非受控），同时通知外部
   const [dismissed, setDismissed] = React.useState(false);
   if (dismissed) return null;
+  // 关闭按钮可访问名拼入标签文本，同屏多 tag 时可区分。
+  const tagText = getNodeText(children).replace(/\s+/g, ' ').trim();
 
   return (
     <span {...rest} data-part="root" data-color={color} className={cx('z-tag', className, classNames?.root)}>
@@ -47,7 +64,11 @@ export function Tag({
         <button
           type="button"
           data-part="close"
-          aria-label={locale.accessibility.removeTag}
+          aria-label={
+            tagText
+              ? `${locale.accessibility.removeTag}: ${tagText}`
+              : locale.accessibility.removeTag
+          }
           className={cx('z-tag-close', classNames?.close)}
           onClick={(e: React.MouseEvent) => {
             setDismissed(true);

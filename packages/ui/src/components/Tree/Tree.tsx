@@ -187,16 +187,27 @@ export function Tree({
 
   const [focusedKey, setFocusedKey] = React.useState('');
   const shouldFocusRef = React.useRef(false);
+  const treeRef = React.useRef<HTMLUListElement>(null);
   const nodeRefs = React.useRef(new Map<string, HTMLLIElement>());
 
-  const activeFocusKey =
-    focusedKey && visibleKeys.has(focusedKey) ? focusedKey : (visibleNodes[0]?.key ?? '');
+  let activeFocusKey = focusedKey;
+  while (activeFocusKey && !visibleKeys.has(activeFocusKey)) {
+    activeFocusKey = parentMap.get(activeFocusKey) ?? '';
+  }
+  if (!activeFocusKey) activeFocusKey = visibleNodes[0]?.key ?? '';
+
+  // 在这次 render 期间焦点仍指向旧 DOM；节点随后因祖先收起被卸载时，用它判定是否应回焦。
+  const focusWasInsideTree =
+    typeof document !== 'undefined' &&
+    treeRef.current != null &&
+    treeRef.current.contains(document.activeElement);
+  const focusedNodeBecameHidden = focusedKey !== '' && !visibleKeys.has(focusedKey);
 
   React.useEffect(() => {
-    if (!shouldFocusRef.current) return;
+    if (!shouldFocusRef.current && !(focusWasInsideTree && focusedNodeBecameHidden)) return;
     shouldFocusRef.current = false;
     nodeRefs.current.get(activeFocusKey)?.focus();
-  }, [activeFocusKey]);
+  }, [activeFocusKey, focusWasInsideTree, focusedNodeBecameHidden]);
 
   const focusNode = (key: string) => {
     shouldFocusRef.current = true;
@@ -290,6 +301,14 @@ export function Tree({
         event.preventDefault();
         if (index > 0) focusNode(visibleNodes[index - 1]!.key);
         break;
+      case 'Home':
+        event.preventDefault();
+        focusNode(visibleNodes[0]!.key);
+        break;
+      case 'End':
+        event.preventDefault();
+        focusNode(visibleNodes[visibleNodes.length - 1]!.key);
+        break;
       case 'ArrowRight':
         event.preventDefault();
         if (!isExpandable(current)) break;
@@ -313,6 +332,7 @@ export function Tree({
       case 'Spacebar':
         event.preventDefault();
         if (checkable) toggleCheck(current);
+        else selectNode(current);
         break;
       case 'Enter':
         event.preventDefault();
@@ -417,6 +437,7 @@ export function Tree({
 
   return (
     <ul
+      ref={treeRef}
       role="tree"
       data-part="root"
       className={cx('z-tree', className, classNames?.root)}

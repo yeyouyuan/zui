@@ -7,6 +7,8 @@ import './Anchor.css';
 
 /** 激活判定容差：top ≤ offsetTop + 8px 的节视为已到达阈值 */
 const ACTIVATION_TOLERANCE = 8;
+/** 不支持 scrollend 时，以最后一次 scroll 后的空闲窗口作为平滑滚动结束。 */
+const SCROLL_IDLE_DELAY = 120;
 
 export interface AnchorLinkInfo {
   href: string;
@@ -76,7 +78,11 @@ function Anchor(props: AnchorProps) {
 
   const navRef = React.useRef<HTMLElement | null>(null);
   const rafRef = React.useRef(0);
+  const scrollIdleTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const clickedHrefRef = React.useRef<string | null>(null);
+  const measureRef = React.useRef<() => void>(() => undefined);
   const [activeHref, setActiveHref] = React.useState<string | null>(null);
+  const [targetElement, setTargetElement] = React.useState<HTMLElement | Window | null>(null);
 
   const setNavRef = React.useCallback(
     (el: HTMLElement | null) => {
@@ -96,6 +102,8 @@ function Anchor(props: AnchorProps) {
    */
   const measure = React.useCallback(() => {
     rafRef.current = 0;
+    // 平滑滚动尚未结束时保持用户点击项，避免途经章节覆盖 active。
+    if (clickedHrefRef.current) return;
     const nav = navRef.current;
     if (!nav) return;
     const links = nav.querySelectorAll<HTMLAnchorElement>('a[href]');
@@ -113,10 +121,9 @@ function Anchor(props: AnchorProps) {
       setActiveHref((prev) => (prev === null ? prev : null));
       return;
     }
-    const scroller = target ? target() : window;
     const containerTop =
-      scroller instanceof window.HTMLElement
-        ? scroller.getBoundingClientRect().top + scroller.clientTop
+      targetElement instanceof window.HTMLElement
+        ? targetElement.getBoundingClientRect().top + targetElement.clientTop
         : 0;
     const threshold = containerTop + offsetTop + ACTIVATION_TOLERANCE;
     let next = sections[0].href;
@@ -124,28 +131,66 @@ function Anchor(props: AnchorProps) {
       if (section.top <= threshold) next = section.href;
     }
     setActiveHref((prev) => (prev === next ? prev : next));
-  }, [offsetTop, target]);
+  }, [offsetTop, targetElement]);
+  measureRef.current = measure;
 
-  // rAF 节流监听 target 滚动 + resize，卸载清理
+  const finishClickScroll = React.useCallback(() => {
+    if (!clickedHrefRef.current) return;
+    clickedHrefRef.current = null;
+    if (scrollIdleTimerRef.current) {
+      clearTimeout(scrollIdleTimerRef.current);
+      scrollIdleTimerRef.current = null;
+    }
+    measureRef.current();
+  }, []);
+
+  // target() 可能在外层容器重挂后返回新节点；观察 DOM 并迁移监听目标。
   React.useEffect(() => {
-    const scroller: HTMLElement | Window = target ? target() : window;
+    const resolveTarget = (): HTMLElement | Window => target ? target() : window;
+    const syncTarget = () => {
+      const next = resolveTarget();
+      setTargetElement((previous) => (previous === next ? previous : next));
+    };
+    syncTarget();
+    if (!target || typeof MutationObserver === 'undefined') return;
+    const observer = new MutationObserver(syncTarget);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [target]);
+
+  // rAF 节流监听当前 target 滚动 + resize；target 变化时自动迁移监听。
+  React.useEffect(() => {
     const onScroll = () => {
+      if (clickedHrefRef.current) {
+        if (scrollIdleTimerRef.current) clearTimeout(scrollIdleTimerRef.current);
+        scrollIdleTimerRef.current = setTimeout(finishClickScroll, SCROLL_IDLE_DELAY);
+      }
       if (rafRef.current) return;
       rafRef.current = window.requestAnimationFrame(measure);
     };
+    if (!targetElement) return;
+    const scrollTarget = targetElement instanceof window.HTMLElement ? targetElement : window;
     measure();
-    const scrollTarget = scroller instanceof window.HTMLElement ? scroller : window;
     scrollTarget.addEventListener('scroll', onScroll, { passive: true });
+    scrollTarget.addEventListener('scrollend', finishClickScroll);
     window.addEventListener('resize', onScroll, { passive: true });
     return () => {
       scrollTarget.removeEventListener('scroll', onScroll);
+      scrollTarget.removeEventListener('scrollend', finishClickScroll);
       window.removeEventListener('resize', onScroll);
       if (rafRef.current) {
         window.cancelAnimationFrame(rafRef.current);
         rafRef.current = 0;
       }
     };
-  }, [measure, target]);
+  }, [finishClickScroll, measure, targetElement]);
+
+  React.useEffect(
+    () => () => {
+      if (scrollIdleTimerRef.current) clearTimeout(scrollIdleTimerRef.current);
+    },
+    []
+  );
 
   const handleLinkClick = React.useCallback(
     (event: React.MouseEvent<HTMLAnchorElement>, link: AnchorLinkInfo) => {
@@ -153,11 +198,15 @@ function Anchor(props: AnchorProps) {
       if (link.href.startsWith('#')) event.preventDefault();
       onClick?.(event, link);
       if (!link.href.startsWith('#')) return;
-      // 点击即置 active
+      // 点击即置 active，并锁定到平滑滚动结束，避免途经章节覆盖。
       setActiveHref(link.href);
       const section = document.getElementById(link.href.slice(1));
       if (!section) return;
-      const scroller = target ? target() : window;
+      clickedHrefRef.current = link.href;
+      if (scrollIdleTimerRef.current) clearTimeout(scrollIdleTimerRef.current);
+      scrollIdleTimerRef.current = setTimeout(finishClickScroll, SCROLL_IDLE_DELAY);
+      const scroller: HTMLElement | Window = target ? target() : window;
+      if (scroller !== targetElement) setTargetElement(scroller);
       if (scroller instanceof window.HTMLElement) {
         // 仅滚动指定容器，避免 scrollIntoView 同时移动外层页面。
         scroller.scrollTo({
@@ -183,7 +232,7 @@ function Anchor(props: AnchorProps) {
         section.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     },
-    [offsetTop, onClick, target]
+    [finishClickScroll, offsetTop, onClick, target, targetElement]
   );
 
   const contextValue = React.useMemo<AnchorContextValue>(

@@ -130,3 +130,21 @@
     transition: none;
   }
 }
+
+@media (forced-colors: active) {
+  .z-tag {
+    color: CanvasText;
+    background: Canvas;
+    border-color: CanvasText;
+  }
+
+  .z-tag-close {
+    color: ButtonText;
+  }
+
+  .z-tag-close:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
