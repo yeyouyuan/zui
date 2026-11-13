@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
+import { Buffer, btoa } from 'node:buffer';
 import { createHmac, webcrypto } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import test from 'node:test';
-import { URL } from 'node:url';
+import { URL, URLSearchParams } from 'node:url';
+import { TextEncoder } from 'node:util';
 import { runInNewContext } from 'node:vm';
 
 const require = createRequire(new URL('../package.json', import.meta.url));
@@ -71,7 +73,7 @@ test('官方在线 Demo 为三种格式生成可验证的样例配置', async ()
 
     const [header, payload, signature] = config.token.split('.');
     assert.deepEqual(JSON.parse(fromBase64Url(header)), { typ: 'JWT', alg: 'HS256' });
-    const unsigned = structuredClone(config);
+    const unsigned = JSON.parse(JSON.stringify(config));
     delete unsigned.token;
     assert.deepEqual(JSON.parse(fromBase64Url(payload)), unsigned);
     assert.equal(
