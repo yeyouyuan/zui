@@ -26,6 +26,8 @@ import {
   type StudioSheetMatch,
 } from './studio-sheet-editing';
 import {
+  STUDIO_MAX_ROW_HEIGHT,
+  STUDIO_POINTS_TO_PIXELS,
   studioBuildRowLayout,
   studioViewportRows,
   studioRowTop,
@@ -231,6 +233,11 @@ export function StudioSheet({
     col: number;
     width: number;
   } | null>(null);
+  const [heightPreview, setHeightPreview] = React.useState<{
+    sheetId: string;
+    row: number;
+    height: number;
+  } | null>(null);
   const [search, setSearch] = React.useState<{
     mode: 'find' | 'replace';
     snapshot: { sheetId: string; selection: SheetSelection };
@@ -298,8 +305,15 @@ export function StudioSheet({
     [hiddenRows, rowCount]
   );
   const rowLayout = React.useMemo(
-    () => studioBuildRowLayout(shownRows, sheet?.rowHeights, sheet?.defaultRowHeight),
-    [shownRows, sheet?.rowHeights, sheet?.defaultRowHeight]
+    () =>
+      studioBuildRowLayout(
+        shownRows,
+        heightPreview?.sheetId === sheet?.id
+          ? { ...sheet?.rowHeights, [String(heightPreview.row)]: heightPreview.height }
+          : sheet?.rowHeights,
+        sheet?.defaultRowHeight
+      ),
+    [heightPreview, shownRows, sheet?.id, sheet?.rowHeights, sheet?.defaultRowHeight]
   );
   const rowIndexes = rowLayout.indexes;
   const freezeRows = shownRows.filter((row) => row <= (sheet?.freeze?.rows ?? 0)).length;
@@ -910,6 +924,72 @@ export function StudioSheet({
     const cancel = () => {
       cleanup();
       setNotice('已取消列宽拖动。');
+    };
+    const escape = (keyEvent: KeyboardEvent) => {
+      if (keyEvent.key === 'Escape') {
+        keyEvent.preventDefault();
+        cancel();
+      }
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', finish);
+    window.addEventListener('pointercancel', cancel);
+    window.addEventListener('keydown', escape);
+    window.addEventListener('blur', cancel);
+    resizeCleanup.current = cleanup;
+  }
+
+  function startRowResize(event: React.PointerEvent<HTMLElement>, row: number) {
+    event.stopPropagation();
+    event.preventDefault();
+    if (blocked || event.button !== 0 || !sheet || !commitEditing()) return;
+    resizeCleanup.current?.();
+    const initial = latestRef.current;
+    const currentSheet = initial.sheets.find((item) => item.id === sheet.id)!;
+    const initialY = event.clientY;
+    const height = currentSheet.rowHeights?.[String(row)] ?? currentSheet.defaultRowHeight ?? 18;
+    let nextHeight = height;
+    const pointerId = event.pointerId;
+    const move = (moveEvent: PointerEvent) => {
+      if (moveEvent.pointerId !== pointerId) return;
+      nextHeight =
+        Math.round(
+          Math.max(
+            0.75,
+            Math.min(
+              STUDIO_MAX_ROW_HEIGHT,
+              height + (moveEvent.clientY - initialY) / STUDIO_POINTS_TO_PIXELS
+            )
+          ) * 4
+        ) / 4;
+      setHeightPreview({ sheetId: sheet.id, row, height: nextHeight });
+    };
+    const cleanup = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', finish);
+      window.removeEventListener('pointercancel', cancel);
+      window.removeEventListener('keydown', escape);
+      window.removeEventListener('blur', cancel);
+      resizeCleanup.current = null;
+      setHeightPreview(null);
+    };
+    const finish = (upEvent: PointerEvent) => {
+      if (upEvent.pointerId !== pointerId) return;
+      move(upEvent);
+      cleanup();
+      if (permissionRef.current || latestRef.current !== initial || height === nextHeight) return;
+      try {
+        replaceDocument(
+          studioSetRowHeight(initial, sheet.id, { firstRow: row, lastRow: row }, nextHeight)
+        );
+        setNotice('已调整行高；可撤销。');
+      } catch (error) {
+        setNotice(error instanceof Error ? error.message : '行高调整失败。');
+      }
+    };
+    const cancel = () => {
+      cleanup();
+      setNotice('已取消行高拖动。');
     };
     const escape = (keyEvent: KeyboardEvent) => {
       if (keyEvent.key === 'Escape') {
@@ -2766,6 +2846,66 @@ export function StudioSheet({
                   }}
                 >
                   {row}
+                  <span
+                    role="separator"
+                    aria-label={`${row} 行高`}
+                    aria-disabled={!!blocked}
+                    aria-orientation="horizontal"
+                    aria-valuemin={0.75}
+                    aria-valuemax={STUDIO_MAX_ROW_HEIGHT}
+                    aria-valuenow={Number(
+                      (sheet.rowHeights?.[String(row)] ?? sheet.defaultRowHeight ?? 18).toFixed(2)
+                    )}
+                    tabIndex={blocked ? -1 : 0}
+                    className="z-studio-sheet-row-resize"
+                    onPointerDown={(event) => startRowResize(event, row)}
+                    onDoubleClick={(event) => {
+                      event.stopPropagation();
+                      fitRowHeights({ firstRow: row, lastRow: row });
+                    }}
+                    onKeyDown={(event) => {
+                      if (blocked || !commitEditing()) return;
+                      const height =
+                        sheet.rowHeights?.[String(row)] ?? sheet.defaultRowHeight ?? 18;
+                      if (event.key === 'Enter') {
+                        event.preventDefault();
+                        setSelection({
+                          anchor: { row, col: 1 },
+                          focus: { row, col: columnCount },
+                        });
+                        setHeightDraft(String(height));
+                        setHeightError('');
+                        setHeightDialog({ firstRow: row, lastRow: row });
+                      }
+                      if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
+                        event.preventDefault();
+                        const next =
+                          event.key === 'Home'
+                            ? 0.75
+                            : event.key === 'End'
+                              ? STUDIO_MAX_ROW_HEIGHT
+                              : Math.max(
+                                  0.75,
+                                  Math.min(
+                                    STUDIO_MAX_ROW_HEIGHT,
+                                    height +
+                                      (event.key === 'ArrowDown' ? 0.75 : -0.75) *
+                                        (event.shiftKey ? 4 : 1)
+                                  )
+                                );
+                        transform(
+                          (current) =>
+                            studioSetRowHeight(
+                              current,
+                              sheet.id,
+                              { firstRow: row, lastRow: row },
+                              next
+                            ),
+                          '已通过键盘调整行高；可撤销。'
+                        );
+                      }
+                    }}
+                  />
                 </div>
                 {visibleColumns.map((col) => {
                   const merge = studioMergedRange(sheet, { row, col });

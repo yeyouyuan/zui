@@ -204,6 +204,23 @@ describe('StudioSheet Office editing details', () => {
     expect(handle).toHaveAttribute('aria-orientation', 'vertical');
   });
 
+  it('resizes row headers by pointer, supports keyboard steps and opens the exact row dialog', () => {
+    const view = setup({ document: smallFixture() });
+    const handle = screen.getByRole('separator', { name: '1 行高' });
+    fireEvent.pointerDown(handle, { button: 0, clientY: 24, pointerId: 9 });
+    fireEvent.pointerMove(window, { clientY: 40, pointerId: 9 });
+    expect(view.changed).not.toHaveBeenCalled();
+    fireEvent.pointerUp(window, { clientY: 40, pointerId: 9 });
+    expect(view.current().sheets[0].rowHeights?.['1']).toBe(30);
+    expect(view.changed).toHaveBeenCalledOnce();
+    fireEvent.keyDown(handle, { key: 'ArrowDown' });
+    expect(view.current().sheets[0].rowHeights?.['1']).toBe(30.75);
+    fireEvent.keyDown(handle, { key: 'Enter' });
+    expect(screen.getByRole('dialog', { name: '设置行高' })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: '行高（磅）' })).toHaveValue('30.75');
+    expect(handle).toHaveAttribute('aria-orientation', 'horizontal');
+  });
+
   it('applies borders and vertical alignment and clears formatting while retaining formulas', async () => {
     const user = userEvent.setup();
     const view = setup({ document: smallFixture() });

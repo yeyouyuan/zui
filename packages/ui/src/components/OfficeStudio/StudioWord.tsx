@@ -9,6 +9,7 @@ import {
   Bold,
   Book,
   Clipboard,
+  Close,
   Copy,
   FileText,
   Image as ImageIcon,
@@ -252,6 +253,7 @@ function WordRuler({
 
 type WordRegion = 'header' | 'footer';
 const EMPTY_REGION: StudioRichNode = { type: 'doc', content: [{ type: 'paragraph' }] };
+const DEFAULT_REGION_DISTANCE = 12.5;
 
 function RegionEditor({
   region,
@@ -417,6 +419,7 @@ export function StudioWord({
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const imageOperationRef = React.useRef(false);
   const clipboardOperationRef = React.useRef(false);
+  const previousTabRef = React.useRef('home');
   const insertImageRef = React.useRef<(file: File, target: Editor | null) => Promise<void>>(
     async () => undefined
   );
@@ -425,7 +428,7 @@ export function StudioWord({
     {
       extensions: EXTENSIONS,
       content: document.content,
-      editable,
+      editable: editable && region === 'content',
       immediatelyRender: false,
       shouldRerenderOnTransaction: false,
       editorProps: {
@@ -433,7 +436,7 @@ export function StudioWord({
           role: 'textbox',
           'aria-label': 'Word 文档正文',
           'aria-multiline': 'true',
-          'aria-readonly': String(!editable),
+          'aria-readonly': String(!editable || region !== 'content'),
           spellcheck: 'false',
         },
         handlePaste: (_view, event) => {
@@ -446,7 +449,10 @@ export function StudioWord({
           return true;
         },
       },
-      onFocus: () => setRegion('content'),
+      onFocus: () => {
+        setRegion('content');
+        setTab((current) => (current === 'header-footer' ? previousTabRef.current : current));
+      },
       onUpdate: ({ editor: current }) => {
         const state = latest.current;
         if (!state.editable) return;
@@ -472,6 +478,7 @@ export function StudioWord({
   }, []);
   React.useEffect(() => {
     setRegion('content');
+    setTab((current) => (current === 'header-footer' ? 'home' : current));
     setSidePanel(null);
     setStatisticsOpen(false);
     setLinkOpen(false);
@@ -479,11 +486,28 @@ export function StudioWord({
   }, [document.id]);
   React.useEffect(() => {
     const requested = focusRegionRef.current;
-    if (requested && regions[requested] && !regions[requested]!.isDestroyed) {
+    if (
+      requested &&
+      requested === region &&
+      regions[requested] &&
+      !regions[requested]!.isDestroyed
+    ) {
       focusRegionRef.current = null;
       regions[requested]!.commands.focus('end');
     }
   }, [regions, region]);
+  const focusBodyOnCloseRef = React.useRef(false);
+  React.useEffect(() => {
+    if (
+      region === 'content' &&
+      focusBodyOnCloseRef.current &&
+      bodyEditor &&
+      !bodyEditor.isDestroyed
+    ) {
+      focusBodyOnCloseRef.current = false;
+      bodyEditor.commands.focus();
+    }
+  }, [bodyEditor, region]);
   React.useEffect(() => {
     if (sidePanel === 'search') searchInputRef.current?.focus();
   }, [sidePanel]);
@@ -562,14 +586,14 @@ export function StudioWord({
 
   React.useLayoutEffect(() => {
     if (!bodyEditor || bodyEditor.isDestroyed || !bodyEditor.schema) return;
-    bodyEditor.setEditable(editable, false);
+    bodyEditor.setEditable(editable && region === 'content', false);
     bodyEditor.setOptions({
       editorProps: {
         attributes: {
           role: 'textbox',
           'aria-label': 'Word 文档正文',
           'aria-multiline': 'true',
-          'aria-readonly': String(!editable),
+          'aria-readonly': String(!editable || region !== 'content'),
           spellcheck: 'false',
         },
         handlePaste: (_view, event) => {
@@ -583,7 +607,7 @@ export function StudioWord({
         },
       },
     });
-  }, [bodyEditor, editable]);
+  }, [bodyEditor, editable, region]);
 
   React.useLayoutEffect(() => {
     if (!bodyEditor || bodyEditor.isDestroyed) return;
@@ -602,6 +626,8 @@ export function StudioWord({
   const margin = Math.min(60, Math.max(5, document.page.margin)) * MM_TO_PX;
   const scale =
     zoom === 'fit' ? Math.min(1, Math.max(0.25, (stageWidth - 48) / pageWidth)) : Number(zoom);
+  const headerDistance = document.page.headerDistance ?? DEFAULT_REGION_DISTANCE;
+  const footerDistance = document.page.footerDistance ?? DEFAULT_REGION_DISTANCE;
 
   React.useEffect(() => {
     const stage = stageRef.current;
@@ -654,12 +680,23 @@ export function StudioWord({
     if (!editable) return;
     const state = latest.current;
     if (!state.document[name]) state.onChange({ ...state.document, [name]: EMPTY_REGION });
+    if (tab !== 'header-footer') previousTabRef.current = tab;
     focusRegionRef.current = name;
     setRegion(name);
-    if (regions[name]) {
-      focusRegionRef.current = null;
-      regions[name]!.commands.focus('end');
-    }
+    setTab('header-footer');
+  };
+
+  const closeRegion = () => {
+    if (region === 'content') return;
+    focusRegionRef.current = null;
+    focusBodyOnCloseRef.current = true;
+    setRegion('content');
+    setTab((current) => (current === 'header-footer' ? previousTabRef.current : current));
+  };
+
+  const changeTab = (value: string) => {
+    if (region !== 'content' && value !== 'header-footer') previousTabRef.current = value;
+    setTab(value);
   };
 
   const updateRegion = (name: WordRegion, content: StudioRichNode) => {
@@ -911,7 +948,8 @@ export function StudioWord({
         ] as const) {
           if (!current || current.isDestroyed || !current.view.dom.contains(image)) continue;
           event.preventDefault();
-          const position = current.view.posAtDOM(image, 0);
+          const node = image.closest('[data-word-image-node]') || image;
+          const position = current.view.posAtDOM(node, 0);
           current.chain().focus().setNodeSelection(position).run();
           setRegion(name);
           setTab('insert');
@@ -928,10 +966,16 @@ export function StudioWord({
           setSidePanel('search');
           if (event.key.toLowerCase() === 'h') setNotice('输入查找内容和替换文本。');
           searchInputRef.current?.focus();
-        } else if (event.key === 'Escape' && sidePanel) setSidePanel(null);
+        } else if (event.key === 'Escape' && sidePanel) {
+          event.preventDefault();
+          setSidePanel(null);
+        } else if (event.key === 'Escape' && region !== 'content') {
+          event.preventDefault();
+          closeRegion();
+        }
       }}
     >
-      <Tabs value={tab} onValueChange={setTab} className="z-studio-word-ribbon z-studio-ribbon">
+      <Tabs value={tab} onValueChange={changeTab} className="z-studio-word-ribbon z-studio-ribbon">
         <StudioRibbonTabs>
           <Tabs.List aria-label="Word 工具">
             <Tabs.Trigger value="home">开始</Tabs.Trigger>
@@ -940,6 +984,11 @@ export function StudioWord({
             <Tabs.Trigger value="references">引用</Tabs.Trigger>
             <Tabs.Trigger value="review">审阅</Tabs.Trigger>
             <Tabs.Trigger value="view">视图</Tabs.Trigger>
+            {region !== 'content' && (
+              <Tabs.Trigger value="header-footer" className="z-studio-word-context-tab">
+                页眉和页脚
+              </Tabs.Trigger>
+            )}
           </Tabs.List>
         </StudioRibbonTabs>
         <Tabs.Panel value="home" className="z-studio-word-tool-row">
@@ -1816,6 +1865,111 @@ export function StudioWord({
             </Button>
           </RibbonGroup>
         </Tabs.Panel>
+        {region !== 'content' && (
+          <Tabs.Panel value="header-footer" className="z-studio-word-tool-row">
+            <RibbonGroup label="导航" className="z-studio-word-header-group">
+              <Button
+                variant="ghost"
+                size="sm"
+                aria-pressed={region === 'header'}
+                disabled={!editable}
+                onClick={() => openRegion('header')}
+              >
+                转到页眉
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                aria-pressed={region === 'footer'}
+                disabled={!editable}
+                onClick={() => openRegion('footer')}
+              >
+                转到页脚
+              </Button>
+            </RibbonGroup>
+            <RibbonGroup label="插入">
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={toolsDisabled}
+                onMouseDown={keepSelection}
+                onClick={() =>
+                  editor
+                    ?.chain()
+                    .focus()
+                    .insertContent({ type: 'pageNumber', attrs: { kind: 'current' } })
+                    .run()
+                }
+              >
+                插入页码
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={toolsDisabled}
+                onMouseDown={keepSelection}
+                onClick={() =>
+                  editor
+                    ?.chain()
+                    .focus()
+                    .insertContent({ type: 'pageNumber', attrs: { kind: 'total' } })
+                    .run()
+                }
+              >
+                插入总页数
+              </Button>
+            </RibbonGroup>
+            <RibbonGroup label="位置" className="z-studio-word-distance-group">
+              <label className="z-studio-word-distance-label">
+                页眉距顶端
+                <Input
+                  type="number"
+                  min={0}
+                  max={80}
+                  step={0.5}
+                  size="sm"
+                  aria-label="页眉距顶端（mm）"
+                  disabled={!editable}
+                  value={String(headerDistance)}
+                  onChange={(event) => {
+                    const value = Number(event.target.value);
+                    if (event.target.value && Number.isFinite(value) && value >= 0 && value <= 80)
+                      updatePage({ headerDistance: value });
+                  }}
+                />
+              </label>
+              <label className="z-studio-word-distance-label">
+                页脚距底端
+                <Input
+                  type="number"
+                  min={0}
+                  max={80}
+                  step={0.5}
+                  size="sm"
+                  aria-label="页脚距底端（mm）"
+                  disabled={!editable}
+                  value={String(footerDistance)}
+                  onChange={(event) => {
+                    const value = Number(event.target.value);
+                    if (event.target.value && Number.isFinite(value) && value >= 0 && value <= 80)
+                      updatePage({ footerDistance: value });
+                  }}
+                />
+              </label>
+            </RibbonGroup>
+            <RibbonGroup label="关闭">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="z-studio-word-large-tool"
+                iconStart={<Close size={22} />}
+                onClick={closeRegion}
+              >
+                关闭页眉和页脚
+              </Button>
+            </RibbonGroup>
+          </Tabs.Panel>
+        )}
       </Tabs>
       <div className="z-studio-word-workspace" data-part="word-workspace">
         <div className="z-studio-word-navigation-rail" role="toolbar" aria-label="Word 文档工具">
@@ -2033,26 +2187,50 @@ export function StudioWord({
               className="z-studio-word-paper"
               data-part="word-paper"
               aria-label="文档纸张"
-              style={{
-                width: pageWidth,
-                minHeight: pageHeight,
-                padding: margin,
-                transform: `scale(${scale})`,
+              style={
+                {
+                  width: pageWidth,
+                  minHeight: pageHeight,
+                  paddingInline: margin,
+                  transform: `scale(${scale})`,
+                  '--z-studio-word-page-margin': `${margin}px`,
+                  '--z-studio-word-header-distance': `${headerDistance * MM_TO_PX}px`,
+                  '--z-studio-word-footer-distance': `${footerDistance * MM_TO_PX}px`,
+                } as React.CSSProperties
+              }
+              data-editing-region={region !== 'content' ? region : undefined}
+              onDoubleClick={(event) => {
+                if (!editable) return;
+                const target = event.target instanceof Element ? event.target : null;
+                const requested = target?.closest<HTMLElement>('[data-region]')?.dataset.region;
+                if (requested === 'header' || requested === 'footer') {
+                  openRegion(requested);
+                  return;
+                }
+                if (region !== 'content') {
+                  closeRegion();
+                  return;
+                }
+                const box = event.currentTarget.getBoundingClientRect();
+                const localY = (event.clientY - box.top) / Math.max(0.01, scale);
+                if (localY <= margin) openRegion('header');
+                else if (localY >= event.currentTarget.offsetHeight - margin) openRegion('footer');
               }}
             >
-              {document.header && (
-                <section
-                  className="z-studio-word-region"
-                  data-region="header"
-                  data-active={region === 'header' || undefined}
-                  aria-label="页眉区域"
-                >
-                  <span className="z-studio-word-region-label">页眉</span>
+              <section
+                className="z-studio-word-region"
+                data-region="header"
+                data-active={region === 'header' || undefined}
+                data-empty={!document.header || undefined}
+                aria-label="页眉区域"
+              >
+                <span className="z-studio-word-region-label">页眉</span>
+                {document.header && (
                   <RegionEditor
                     region="header"
                     documentId={document.id}
                     content={document.header}
-                    editable={editable}
+                    editable={editable && region === 'header'}
                     onReady={registerRegion}
                     onActive={setRegion}
                     onImagePaste={(file, target) => {
@@ -2060,25 +2238,26 @@ export function StudioWord({
                     }}
                     onChange={(content) => updateRegion('header', content)}
                   />
-                </section>
-              )}
+                )}
+              </section>
               <EditorContent
                 editor={bodyEditor}
                 className="z-studio-word-content z-studio-word-body"
               />
-              {document.footer && (
-                <section
-                  className="z-studio-word-region"
-                  data-region="footer"
-                  data-active={region === 'footer' || undefined}
-                  aria-label="页脚区域"
-                >
-                  <span className="z-studio-word-region-label">页脚</span>
+              <section
+                className="z-studio-word-region"
+                data-region="footer"
+                data-active={region === 'footer' || undefined}
+                data-empty={!document.footer || undefined}
+                aria-label="页脚区域"
+              >
+                <span className="z-studio-word-region-label">页脚</span>
+                {document.footer && (
                   <RegionEditor
                     region="footer"
                     documentId={document.id}
                     content={document.footer}
-                    editable={editable}
+                    editable={editable && region === 'footer'}
                     onReady={registerRegion}
                     onActive={setRegion}
                     onImagePaste={(file, target) => {
@@ -2086,8 +2265,8 @@ export function StudioWord({
                     }}
                     onChange={(content) => updateRegion('footer', content)}
                   />
-                </section>
-              )}
+                )}
+              </section>
             </article>
           </div>
         </div>

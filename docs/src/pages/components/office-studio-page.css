@@ -83,6 +83,9 @@
   font-size: var(--z-text-xs);
   color: var(--z-color-fg-subtle);
 }
+.office-studio-inline-path {
+  overflow-wrap: anywhere;
+}
 .office-studio-recovery {
   display: flex;
   flex-wrap: wrap;

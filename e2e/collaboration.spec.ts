@@ -353,18 +353,14 @@ async function saved(page: Page) {
     '已保存到本机'
   );
 }
-async function downloaded(
-  page: Page,
-  button: string,
-  within: Page | Locator = page
-): Promise<Buffer> {
+async function downloaded(page: Page, button: string, within?: Locator): Promise<Buffer> {
   const pending = page.waitForEvent('download');
-  if (button === '下载文件') {
+  if (button === '下载文件' && within) {
     // 下载文件入口在编辑器「文件」菜单内，菜单内容通过 Portal 渲染在 body 上。
     await within.getByRole('button', { name: '文件', exact: true }).click();
     await page.getByRole('menuitem', { name: '下载文件', exact: true }).click();
   } else {
-    await within.getByRole('button', { name: button, exact: true }).click();
+    await page.getByRole('button', { name: button, exact: true }).click();
   }
   const download = await pending;
   const path = await download.path();

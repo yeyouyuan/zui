@@ -308,6 +308,16 @@
   vector-effect: non-scaling-stroke;
 }
 
+.z-studio-pdf-mark-resize {
+  fill: var(--z-studio-pdf-paper);
+  stroke: var(--z-color-primary);
+  stroke-width: 2;
+  cursor: nwse-resize;
+  pointer-events: all;
+  touch-action: none;
+  vector-effect: non-scaling-stroke;
+}
+
 .z-studio-pdf-form-layer {
   pointer-events: none;
 }

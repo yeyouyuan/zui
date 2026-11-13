@@ -476,7 +476,10 @@ export default function OfficeStudioPage(): React.ReactNode {
       </p>
       <p className="doc-p">
         PDF 的 worker、字体与渲染由 <code>pdfRenderer</code> 提供。本页的适配代码位于{' '}
-        <code>docs/src/pages/collaboration/office-studio/</code>。当前组件为尚未发布的源码新增。
+        <code className="office-studio-inline-path">
+          docs/src/pages/collaboration/office-studio/
+        </code>
+        。组件自 v0.4.0 起随 <code>@zui/react</code> 和 Registry 发布。
       </p>
       <ApiTable
         rows={[

@@ -57,6 +57,147 @@ export const WordImage = Node.create({
       'data-word-image': '',
     },
   ],
+  addNodeView() {
+    return ({ node, editor, getPos }) => {
+      const dom = document.createElement('span');
+      const image = document.createElement('img');
+      const handle = document.createElement('span');
+      let current = node;
+      let dragCleanup: (() => void) | null = null;
+
+      dom.className = 'z-studio-word-image-node';
+      dom.dataset.wordImageNode = '';
+      dom.contentEditable = 'false';
+      dom.draggable = true;
+      image.className = 'z-studio-word-image';
+      image.dataset.wordImage = '';
+      image.draggable = false;
+      handle.className = 'z-studio-word-image-resize';
+      handle.dataset.wordImageResize = '';
+      handle.title = '拖动调整图片大小';
+      handle.setAttribute('aria-hidden', 'true');
+      dom.append(image, handle);
+
+      const render = (attrs: Record<string, unknown>) => {
+        const width = Math.max(1, Math.min(2000, Number(attrs.width) || 320));
+        const height = Math.max(1, Math.min(2000, Number(attrs.height) || 180));
+        image.src = safeWordImageSource(attrs.src) ? attrs.src : '';
+        image.width = width;
+        image.height = height;
+        image.alt = String(attrs.alt || '').slice(0, 1000);
+        image.style.aspectRatio = `${width} / ${height}`;
+      };
+      render(current.attrs);
+
+      const startResize = (event: PointerEvent) => {
+        if (!editor.isEditable || event.button !== 0) return;
+        event.preventDefault();
+        event.stopPropagation();
+        dragCleanup?.();
+        const position = getPos();
+        if (typeof position !== 'number') return;
+        const width = Math.max(1, Math.min(2000, Number(current.attrs.width) || 320));
+        const height = Math.max(1, Math.min(2000, Number(current.attrs.height) || 180));
+        const ratio = width / height;
+        const box = image.getBoundingClientRect();
+        const scaleX = box.width > 0 ? box.width / width : 1;
+        const scaleY = box.height > 0 ? box.height / height : scaleX;
+        const initialX = event.clientX;
+        const initialY = event.clientY;
+        const pointerId = event.pointerId;
+        let nextWidth = width;
+        let nextHeight = height;
+        const move = (moveEvent: PointerEvent) => {
+          if (moveEvent.pointerId !== pointerId) return;
+          const fromX = width + (moveEvent.clientX - initialX) / Math.max(0.01, scaleX);
+          const fromY = (height + (moveEvent.clientY - initialY) / Math.max(0.01, scaleY)) * ratio;
+          nextWidth = Math.round(
+            Math.max(
+              1,
+              Math.min(
+                2000,
+                Math.abs(moveEvent.clientX - initialX) >= Math.abs(moveEvent.clientY - initialY)
+                  ? fromX
+                  : fromY
+              )
+            )
+          );
+          nextHeight = Math.max(1, Math.min(2000, Math.round(nextWidth / ratio)));
+          render({ ...current.attrs, width: nextWidth, height: nextHeight });
+        };
+        const cleanup = () => {
+          window.removeEventListener('pointermove', move);
+          window.removeEventListener('pointerup', finish);
+          window.removeEventListener('pointercancel', cancel);
+          window.removeEventListener('keydown', escape);
+          window.removeEventListener('blur', cancel);
+          dragCleanup = null;
+        };
+        const finish = (upEvent: PointerEvent) => {
+          if (upEvent.pointerId !== pointerId) return;
+          move(upEvent);
+          cleanup();
+          if (!editor.isEditable || (nextWidth === width && nextHeight === height)) return;
+          const nextPosition = getPos();
+          if (
+            typeof nextPosition !== 'number' ||
+            editor.state.doc.nodeAt(nextPosition)?.type !== node.type
+          )
+            return;
+          editor.view.dispatch(
+            editor.state.tr.setNodeMarkup(nextPosition, undefined, {
+              ...current.attrs,
+              width: nextWidth,
+              height: nextHeight,
+            })
+          );
+          editor.commands.setNodeSelection(nextPosition);
+        };
+        const cancel = () => {
+          cleanup();
+          render(current.attrs);
+        };
+        const escape = (keyEvent: KeyboardEvent) => {
+          if (keyEvent.key !== 'Escape') return;
+          keyEvent.preventDefault();
+          cancel();
+        };
+        window.addEventListener('pointermove', move);
+        window.addEventListener('pointerup', finish);
+        window.addEventListener('pointercancel', cancel);
+        window.addEventListener('keydown', escape);
+        window.addEventListener('blur', cancel);
+        dragCleanup = cancel;
+      };
+      handle.addEventListener('pointerdown', startResize);
+
+      return {
+        dom,
+        update(next) {
+          if (next.type !== current.type) return false;
+          current = next;
+          render(next.attrs);
+          return true;
+        },
+        selectNode() {
+          dom.dataset.selected = '';
+        },
+        deselectNode() {
+          delete dom.dataset.selected;
+        },
+        stopEvent(event) {
+          return event.target === handle;
+        },
+        ignoreMutation() {
+          return true;
+        },
+        destroy() {
+          dragCleanup?.();
+          handle.removeEventListener('pointerdown', startResize);
+        },
+      };
+    };
+  },
 });
 
 export const WordPageNumber = Node.create({

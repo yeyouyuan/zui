@@ -324,6 +324,42 @@ describe('StudioPdf document editing', () => {
     expect(f.renderPage).toHaveBeenCalledTimes(1);
   });
 
+  it('resizes selected rectangles directly on the page as one undoable action', async () => {
+    const model = document();
+    model.marks.push({
+      id: 'box',
+      page: 0,
+      type: 'rectangle',
+      x: 100,
+      y: 200,
+      width: 60,
+      height: 40,
+      size: 16,
+      text: '',
+      lineWidth: 2,
+    });
+    const f = host(model);
+    await ready();
+    rectangle();
+    const box = window.document.querySelector<SVGGElement>('[data-mark="box"]')!;
+    fireEvent.click(box);
+    const handle = window.document.querySelector<SVGRectElement>('[data-mark-resize="box"]')!;
+    expect(handle).not.toBeNull();
+    pointer(handle, 'pointerdown', 120, 220);
+    pointer(handle.ownerSVGElement!, 'pointermove', 140, 240);
+    pointer(handle.ownerSVGElement!, 'pointerup', 140, 240);
+    expect(f.document().marks.find((entry) => entry.id === 'box')).toMatchObject({
+      width: 80,
+      height: 60,
+      y: 180,
+    });
+    fireEvent.click(screen.getByRole('button', { name: '撤销' }));
+    expect(f.document().marks.find((entry) => entry.id === 'box')).toMatchObject({
+      width: 60,
+      height: 40,
+    });
+  });
+
   it('supports keyboard placement and clamps highlights inside the visible crop box', async () => {
     const f = host();
     await ready();

@@ -366,6 +366,7 @@ export default function StudioPdf({
   const drawingRef = useRef<Drawing | null>(null);
   const suppressClick = useRef(false);
   const drag = useRef<{
+    mode: 'move' | 'resize';
     pointer: number;
     mark: StudioPdfMark;
     point: [number, number];
@@ -1185,15 +1186,30 @@ export default function StudioPdf({
                             remember(current.snapshot);
                             current.saved = true;
                           }
-                          changeMark(
-                            current.mark.id,
-                            {
-                              x: current.mark.x + point[0] - current.point[0],
-                              y: current.mark.y + point[1] - current.point[1],
-                            },
-                            true,
-                            false
-                          );
+                          if (current.mode === 'resize') {
+                            const top = current.mark.y + (current.mark.height ?? 18);
+                            const bottom = Math.min(top - 2, point[1]);
+                            changeMark(
+                              current.mark.id,
+                              {
+                                width: Math.max(2, point[0] - current.mark.x),
+                                y: bottom,
+                                height: top - bottom,
+                              },
+                              true,
+                              false
+                            );
+                          } else {
+                            changeMark(
+                              current.mark.id,
+                              {
+                                x: current.mark.x + point[0] - current.point[0],
+                                y: current.mark.y + point[1] - current.point[1],
+                              },
+                              true,
+                              false
+                            );
+                          }
                         }
                       }}
                       onPointerUp={(event) => {
@@ -1255,6 +1271,7 @@ export default function StudioPdf({
                                 const point = eventPoint(event.clientX, event.clientY);
                                 if (canModify && point) {
                                   drag.current = {
+                                    mode: 'move',
                                     pointer: event.pointerId,
                                     mark,
                                     point,
@@ -1307,6 +1324,37 @@ export default function StudioPdf({
                                 height={dimensions.above + dimensions.below + 4}
                               />
                               {markContent(mark)}
+                              {selectedMark &&
+                                canModify &&
+                                (mark.type === 'rectangle' || mark.type === 'highlight') && (
+                                  <rect
+                                    className="z-studio-pdf-mark-resize"
+                                    data-mark-resize={mark.id}
+                                    aria-hidden="true"
+                                    x={dimensions.width - 4}
+                                    y={-4}
+                                    width={8}
+                                    height={8}
+                                    rx={1.5}
+                                    onPointerDown={(event) => {
+                                      event.stopPropagation();
+                                      const point = eventPoint(event.clientX, event.clientY);
+                                      if (!point) return;
+                                      drag.current = {
+                                        mode: 'resize',
+                                        pointer: event.pointerId,
+                                        mark,
+                                        point,
+                                        snapshot: documentRef.current,
+                                        saved: false,
+                                      };
+                                      event.currentTarget.ownerSVGElement?.setPointerCapture?.(
+                                        event.pointerId
+                                      );
+                                      event.preventDefault();
+                                    }}
+                                  />
+                                )}
                             </g>
                           );
                         })}

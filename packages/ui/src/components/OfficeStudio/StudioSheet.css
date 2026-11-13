@@ -395,6 +395,22 @@
   outline-offset: -2px;
 }
 
+.z-studio-sheet-row-resize {
+  position: absolute;
+  right: 0;
+  bottom: -3px;
+  left: 0;
+  z-index: 8;
+  height: 8px;
+  cursor: row-resize;
+  touch-action: none;
+}
+
+.z-studio-sheet-row-resize:focus-visible {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: -2px;
+}
+
 .z-studio-sheet-search {
   flex-shrink: 0;
   display: grid;

@@ -4,7 +4,12 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { StudioWord } from './StudioWord';
 import { OfficeStudio } from './OfficeStudio';
-import type { OfficeStudioHandle, StudioEditorProps, StudioWordDocument } from './studio-types';
+import type {
+  OfficeStudioHandle,
+  StudioEditorProps,
+  StudioRichNode,
+  StudioWordDocument,
+} from './studio-types';
 
 const documentModel = (text = '项目评审内容'): StudioWordDocument => ({
   version: 1,
@@ -14,6 +19,7 @@ const documentModel = (text = '项目评审内容'): StudioWordDocument => ({
   page: { size: 'A4', orientation: 'portrait', margin: 20 },
   content: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] },
 });
+const emptyRegion = (): StudioRichNode => ({ type: 'doc', content: [{ type: 'paragraph' }] });
 const PNG =
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y3nRmwAAAAASUVORK5CYII=';
 const JPEG =
@@ -300,7 +306,8 @@ describe('StudioWord Office ribbon actions', () => {
     };
     const { container, onChange } = await mount({ document: model });
     const header = await screen.findByRole('textbox', { name: 'Word 页眉' });
-    act(() => header.focus());
+    fireEvent.doubleClick(screen.getByLabelText('页眉区域'));
+    await waitFor(() => expect(header).toHaveAttribute('contenteditable', 'true'));
     fireEvent.click(screen.getByRole('button', { name: '打开字数统计' }));
     const dialog = await screen.findByRole('dialog', { name: '字数统计' });
     const count = (label: string) =>
@@ -654,6 +661,46 @@ describe('StudioWord structured editing', () => {
     await waitFor(() => expect(textbox.querySelector('img[data-word-image]')).not.toBeNull());
   });
 
+  it('previews a direct image resize and commits it as one undoable change', async () => {
+    const model = documentModel();
+    model.content.content![0].content!.unshift({
+      type: 'image',
+      attrs: { src: `data:image/png;base64,${PNG}`, width: 320, height: 160, alt: '示意图' },
+    });
+    const { textbox, onChange } = await mount({ document: model });
+    const image = textbox.querySelector<HTMLImageElement>('img[data-word-image]')!;
+    fireEvent.click(image);
+    const imageNode = image.closest<HTMLElement>('[data-word-image-node]')!;
+    const handle = imageNode.querySelector<HTMLElement>('[data-word-image-resize]')!;
+    expect(imageNode).toHaveAttribute('data-selected');
+
+    const pointer = (target: Element | Window, type: string, clientX: number, clientY: number) => {
+      const event = new MouseEvent(type, { bubbles: true, button: 0, clientX, clientY });
+      Object.defineProperty(event, 'pointerId', { value: 11 });
+      fireEvent(target, event);
+    };
+    pointer(handle, 'pointerdown', 100, 100);
+    pointer(window, 'pointermove', 180, 110);
+    expect(image).toHaveAttribute('width', '400');
+    expect(image).toHaveAttribute('height', '200');
+    expect(onChange).not.toHaveBeenCalled();
+    pointer(window, 'pointerup', 180, 110);
+
+    await waitFor(() =>
+      expect(onChange.mock.lastCall?.[0].content.content[0].content[0].attrs).toMatchObject({
+        width: 400,
+        height: 200,
+      })
+    );
+    expect(onChange).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('tab', { name: '开始' }));
+    fireEvent.click(screen.getByRole('button', { name: '撤销' }));
+    await waitFor(() => {
+      expect(textbox.querySelector('img[data-word-image]')).toHaveAttribute('width', '320');
+      expect(textbox.querySelector('img[data-word-image]')).toHaveAttribute('height', '160');
+    });
+  });
+
   it('pastes a local JPEG and retains its real pixel dimensions', async () => {
     const { textbox, onChange } = await mount();
     const file = new File(
@@ -709,6 +756,66 @@ describe('StudioWord structured editing', () => {
     expect(onChange.mock.lastCall?.[0].pageNumbers).toBe(false);
     expect(header).toHaveTextContent('公司抬头');
     expect(textbox).toHaveTextContent('项目评审内容');
+  });
+
+  it('uses the contextual ribbon and numeric position controls while the body is locked', async () => {
+    const { textbox, onChange } = await mount();
+    fireEvent.doubleClick(screen.getByLabelText('页眉区域'));
+    const header = await screen.findByRole('textbox', { name: 'Word 页眉' });
+
+    await waitFor(() => expect(header).toHaveAttribute('contenteditable', 'true'));
+    expect(textbox).toHaveAttribute('contenteditable', 'false');
+    expect(textbox).toHaveAttribute('aria-readonly', 'true');
+    expect(screen.getByRole('tab', { name: '页眉和页脚' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+    expect(screen.queryByRole('separator')).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole('spinbutton', { name: '页眉距顶端（mm）' }), {
+      target: { value: '18' },
+    });
+    fireEvent.change(screen.getByRole('spinbutton', { name: '页脚距底端（mm）' }), {
+      target: { value: '9.5' },
+    });
+    await waitFor(() =>
+      expect(onChange.mock.lastCall?.[0].page).toMatchObject({
+        headerDistance: 18,
+        footerDistance: 9.5,
+      })
+    );
+
+    fireEvent.keyDown(header, { key: 'Escape' });
+    await waitFor(() => expect(textbox).toHaveAttribute('contenteditable', 'true'));
+    expect(header).toHaveAttribute('contenteditable', 'false');
+    expect(screen.queryByRole('tab', { name: '页眉和页脚' })).not.toBeInTheDocument();
+  });
+
+  it('requires a double click to edit page regions and exits by the close action or body double click', async () => {
+    const model = documentModel();
+    model.header = emptyRegion();
+    model.footer = emptyRegion();
+    const { textbox } = await mount({ document: model });
+    const header = await screen.findByRole('textbox', { name: 'Word 页眉' });
+    const footer = await screen.findByRole('textbox', { name: 'Word 页脚' });
+
+    expect(header).toHaveAttribute('contenteditable', 'false');
+    fireEvent.click(header);
+    expect(header).toHaveAttribute('contenteditable', 'false');
+    expect(screen.queryByRole('tab', { name: '页眉和页脚' })).not.toBeInTheDocument();
+
+    fireEvent.doubleClick(screen.getByLabelText('页眉区域'));
+    await waitFor(() => expect(header).toHaveAttribute('contenteditable', 'true'));
+    fireEvent.click(screen.getByRole('button', { name: '关闭页眉和页脚' }));
+    await waitFor(() => expect(textbox).toHaveAttribute('contenteditable', 'true'));
+    expect(header).toHaveAttribute('contenteditable', 'false');
+
+    fireEvent.doubleClick(screen.getByLabelText('页脚区域'));
+    await waitFor(() => expect(footer).toHaveAttribute('contenteditable', 'true'));
+    expect(textbox).toHaveAttribute('contenteditable', 'false');
+    fireEvent.doubleClick(textbox);
+    await waitFor(() => expect(textbox).toHaveAttribute('contenteditable', 'true'));
+    expect(footer).toHaveAttribute('contenteditable', 'false');
   });
 
   it('finds across styled runs and replaces plain text in one undoable transaction', async () => {
