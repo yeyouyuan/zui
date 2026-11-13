@@ -8,4 +8,7 @@ export type {
   TableHeaderCellProps,
   TableDensity,
   TableAlign,
+  TableColumn,
+  TableColumnState,
+  TableSortOrder,
 } from './Table';

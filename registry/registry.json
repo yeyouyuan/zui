@@ -351,6 +351,9 @@
     "TableHeaderCellProps": "packages/ui/src/components/Table/index.ts",
     "TableDensity": "packages/ui/src/components/Table/index.ts",
     "TableAlign": "packages/ui/src/components/Table/index.ts",
+    "TableColumn": "packages/ui/src/components/Table/index.ts",
+    "TableColumnState": "packages/ui/src/components/Table/index.ts",
+    "TableSortOrder": "packages/ui/src/components/Table/index.ts",
     "Tabs": "packages/ui/src/components/Tabs/index.ts",
     "TabsList": "packages/ui/src/components/Tabs/index.ts",
     "TabsTrigger": "packages/ui/src/components/Tabs/index.ts",
@@ -2516,9 +2519,14 @@
       "name": "table",
       "type": "registry:component",
       "title": "Table 表格",
-      "description": "表格：语义化 table 展示（复合组件，presentational）",
-      "dependencies": [],
-      "registryDependencies": [],
+      "description": "表格：语义化 table 展示，可选数据驱动模式（columns/data）支持列拖拽排序、点击表头排序与列显隐",
+      "dependencies": [
+        "@zui/icons"
+      ],
+      "registryDependencies": [
+        "checkbox",
+        "popover"
+      ],
       "files": [
         "packages/ui/src/components/Table/Table.css",
         "packages/ui/src/components/Table/Table.tsx",

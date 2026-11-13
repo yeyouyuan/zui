@@ -1,22 +1,56 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-} from '@zui/react';
+import { useState } from 'react';
+import type { TableColumn } from '@zui/react';
+import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@zui/react';
 
 import ApiTable from '../../components/ApiTable';
 import CustomizeOutlet from '../../components/CustomizeOutlet';
 import Demo from '../../components/Demo';
 import { usePageTitle } from '../../components/usePageTitle';
 
+interface DemoRow {
+  name: string;
+  role: string;
+  dept: string;
+  count: number;
+}
+
 const ROWS = [
   { name: '张三', role: '前端工程师', dept: '产品研发部', count: 12 },
   { name: '李四', role: '设计师', dept: '体验设计部', count: 8 },
   { name: '王五', role: '产品经理', dept: '平台产品部', count: 15 },
 ];
+
+const DATA_ROWS = [
+  { name: '张三', role: '前端工程师', dept: '产品研发部', count: 12 },
+  { name: '李四', role: '设计师', dept: '体验设计部', count: 8 },
+  { name: '王五', role: '产品经理', dept: '平台产品部', count: 15 },
+  { name: '赵六', role: '测试工程师', dept: '质量保障部', count: 21 },
+  { name: '孙七', role: '后端工程师', dept: '产品研发部', count: 9 },
+];
+
+const DATA_COLUMNS: TableColumn<DemoRow>[] = [
+  { key: 'name', title: '姓名', sortable: true },
+  { key: 'role', title: '职位', sortable: true },
+  { key: 'dept', title: '部门' },
+  { key: 'count', title: '任务数', sortable: true, align: 'right' },
+];
+
+const DATA_CODE = `const columns = [
+  { key: 'name', title: '姓名', sortable: true },
+  { key: 'role', title: '职位', sortable: true },
+  { key: 'dept', title: '部门' },
+  { key: 'count', title: '任务数', sortable: true, align: 'right' },
+];
+
+<Table
+  data={rows}
+  columns={columns}
+  rowKey="name"
+  onColumnStateChange={(state) => persist(state)}
+/>;
+// 表头按住可左右拖动调整列顺序；
+// 点击 sortable 列表头按 ascend → descend → 取消 三态排序；
+// 「列设置」面板可拖动排序、勾选显隐、一键重置。`;
 
 const BASIC_CODE = `<Table>
   <Table.Head>
@@ -49,6 +83,7 @@ const SELECT_CODE = `<Table.Row selected>
 
 export default function TablePage(): React.ReactNode {
   usePageTitle('Table 表格');
+  const [columnState, setColumnState] = useState<{ order?: string[]; hidden?: string[] }>({});
 
   return (
     <div className="doc-page">
@@ -60,7 +95,13 @@ export default function TablePage(): React.ReactNode {
 
       <h2 className="doc-h2">示例</h2>
 
-      <Demo scroll title="基础用法" description="Table.Head / Body / Row / HeaderCell / Cell 组合出语义化表格，th 自带 scope=col。" code={BASIC_CODE} stack>
+      <Demo
+        scroll
+        title="基础用法"
+        description="Table.Head / Body / Row / HeaderCell / Cell 组合出语义化表格，th 自带 scope=col。"
+        code={BASIC_CODE}
+        stack
+      >
         <Table>
           <TableHead>
             <TableRow>
@@ -81,7 +122,8 @@ export default function TablePage(): React.ReactNode {
         </Table>
       </Demo>
 
-      <Demo scroll
+      <Demo
+        scroll
         title="密度、斑马纹与边框"
         description="density=compact 收紧行高；striped 斑马纹；bordered 加列分隔线（行分隔线始终存在）。"
         code={STYLE_CODE}
@@ -109,7 +151,8 @@ export default function TablePage(): React.ReactNode {
         </Table>
       </Demo>
 
-      <Demo scroll
+      <Demo
+        scroll
         title="行选中与对齐"
         description="Table.Row 的 selected 写入 data-selected；Cell / HeaderCell 的 align 控制 left / center / right。"
         code={SELECT_CODE}
@@ -135,6 +178,23 @@ export default function TablePage(): React.ReactNode {
         </Table>
       </Demo>
 
+      <Demo
+        scroll
+        title="数据驱动：字段排序与列设置"
+        description="传入 data + columns 启用数据模式：拖动表头调整字段显示顺序，点击 sortable 列表头对数据行三态排序，「列设置」面板可拖动排序、勾选显隐并重置。"
+        code={DATA_CODE}
+        stack
+      >
+        <Table
+          data={DATA_ROWS}
+          columns={DATA_COLUMNS}
+          rowKey="name"
+          columnState={columnState}
+          onColumnStateChange={setColumnState}
+          striped
+        />
+      </Demo>
+
       <h2 className="doc-h2">API</h2>
       <h3 className="doc-h3">Table</h3>
       <ApiTable
@@ -156,6 +216,23 @@ export default function TablePage(): React.ReactNode {
             type: 'boolean',
             defaultValue: 'false',
             description: '斑马纹，写入 data-striped。',
+          },
+          {
+            name: 'data / columns',
+            type: 'T[] / TableColumn<T>[]',
+            description:
+              '数据驱动模式：columns 声明 key/title/width/align/sortable/sorter/render；启用后表头可拖拽换列、sortable 列可点击三态排序。',
+          },
+          {
+            name: 'rowKey',
+            type: 'string | ((row, index) => Key)',
+            description: '数据模式的行 key 字段名或取值函数。',
+          },
+          {
+            name: 'columnState / defaultColumnState / onColumnStateChange',
+            type: '{ order?: string[]; hidden?: string[] }',
+            description:
+              '列状态受控/非受控与变更回调：order 为列 key 展示顺序（缺失 key 追加末尾），hidden 为隐藏列；表头拖拽与「列设置」面板共享同一状态，至少保留一列可见。',
           },
           {
             name: 'classNames',

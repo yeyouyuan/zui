@@ -1,22 +1,65 @@
 {
   "name": "Table",
-  "description": "表格：语义化 table 展示（复合组件，presentational）",
+  "description": "表格：语义化 table 展示，可选数据驱动模式（columns/data）支持列拖拽排序、点击表头排序与列显隐",
   "category": "数据展示",
-  "useCase": ["配置/记录类数据列表", "表单内的数据展示", "中小数据量（非虚拟滚动）"],
+  "useCase": [
+    "配置/记录类数据列表",
+    "需要调整字段显示顺序或按列排序的数据表",
+    "中小数据量（非虚拟滚动）"
+  ],
   "dontUse": ["上万行大数据用 VirtualTable（虚拟滚动）", "层级数据用 Tree", "卡片流式布局用 List"],
   "props": {
-    "density": { "type": "'comfortable' | 'compact'", "default": "'comfortable'", "desc": "行高密度（根 data-density）" },
+    "density": {
+      "type": "'comfortable' | 'compact'",
+      "default": "'comfortable'",
+      "desc": "行高密度（根 data-density）"
+    },
     "bordered": { "type": "boolean", "default": "false", "desc": "外框（行分隔线始终有）" },
     "striped": { "type": "boolean", "default": "false", "desc": "斑马纹" },
-    "Table.Row.selected": { "type": "boolean", "default": "false", "desc": "行选中态（data-selected）" },
-    "Table.HeaderCell.align": { "type": "'left' | 'center' | 'right'", "default": "'left'", "desc": "表头对齐（th scope=\"col\"）" },
-    "Table.Cell.align": { "type": "'left' | 'center' | 'right'", "default": "'left'", "desc": "单元格对齐（data-align）" },
+    "data": { "type": "T[]", "desc": "数据驱动模式的行数组；与 columns 同时传入时启用" },
+    "columns": {
+      "type": "TableColumn<T>[]",
+      "desc": "列配置：key/title/width/align/sortable/sorter/render"
+    },
+    "rowKey": {
+      "type": "string | ((row, index) => Key)",
+      "desc": "行 key 字段名或取值函数，用于 React key"
+    },
+    "columnState": {
+      "type": "{ order?: string[]; hidden?: string[] }",
+      "desc": "受控列状态：显示顺序与隐藏列"
+    },
+    "defaultColumnState": {
+      "type": "{ order?: string[]; hidden?: string[] }",
+      "desc": "非受控初始列状态"
+    },
+    "onColumnStateChange": {
+      "type": "(state) => void",
+      "desc": "列顺序或显隐变化回调（表头拖拽与设置面板共享）"
+    },
+    "Table.Row.selected": {
+      "type": "boolean",
+      "default": "false",
+      "desc": "行选中态（data-selected）"
+    },
+    "Table.HeaderCell.align": {
+      "type": "'left' | 'center' | 'right'",
+      "default": "'left'",
+      "desc": "表头对齐（th scope=\"col\"）"
+    },
+    "Table.Cell.align": {
+      "type": "'left' | 'center' | 'right'",
+      "default": "'left'",
+      "desc": "单元格对齐（data-align）"
+    },
     "classNames": { "type": "{ root? }", "default": "—", "desc": "slot 级类名追加" }
   },
   "a11yNotes": [
     "纯语义 table 标记：<table>/<thead>/<tbody>/<tr>/<th scope=\"col\">/<td>",
     "复合结构：Table / Table.Head / Table.Body / Table.Row / Table.HeaderCell / Table.Cell",
-    "排序/筛选等交互需自行在表头单元格内实现并补 aria-sort"
+    "数据模式：sortable 列表头带 aria-sort（ascending/descending/none），排序按钮可键盘操作",
+    "表头与列设置面板均可指针拖拽调整列顺序；列设置面板为 Popover，提供重置",
+    "至少保留一列可见；不渲染隐藏列的 th/td"
   ],
-  "related": ["Pagination", "VirtualTable", "Card"]
+  "related": ["Pagination", "VirtualTable", "Card", "Checkbox", "Popover"]
 }

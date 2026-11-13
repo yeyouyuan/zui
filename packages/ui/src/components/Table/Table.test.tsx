@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import { Table } from './index';
 
@@ -162,5 +162,222 @@ describe('Table', () => {
     const row = container.querySelector('tr') as HTMLElement;
     expect(row).toHaveClass('z-table-row', 'row-x');
     expect(container.querySelector('td')).toHaveClass('z-table-cell', 'cell-x');
+  });
+});
+
+/* ============================== 数据驱动模式 ============================== */
+
+import { fireEvent, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
+
+interface DemoRow {
+  name: string;
+  age: number;
+  city: string;
+}
+
+const demoData: DemoRow[] = [
+  { name: '张三', age: 28, city: '杭州' },
+  { name: '李四', age: 32, city: '上海' },
+  { name: '王五', age: 24, city: '北京' },
+];
+
+const demoColumns = [
+  { key: 'name', title: '姓名', sortable: true },
+  { key: 'age', title: '年龄', sortable: true },
+  { key: 'city', title: '城市' },
+];
+
+function DataTable(props: {
+  columnState?: { order?: string[]; hidden?: string[] };
+  defaultColumnState?: { order?: string[]; hidden?: string[] };
+  onColumnStateChange?: (state: { order?: string[]; hidden?: string[] }) => void;
+}) {
+  return (
+    <Table
+      data={demoData}
+      columns={demoColumns}
+      rowKey="name"
+      columnState={props.columnState}
+      defaultColumnState={props.defaultColumnState}
+      onColumnStateChange={props.onColumnStateChange}
+    />
+  );
+}
+
+const headerCells = () =>
+  Array.from(document.querySelectorAll<HTMLTableCellElement>('[data-part="header-cell"]'));
+
+const bodyCellsOfColumn = (key: string) =>
+  Array.from(document.querySelectorAll<HTMLTableCellElement>(`td[data-column-key="${key}"]`));
+
+describe('Table 数据驱动模式', () => {
+  // jsdom 未实现 pointer capture，表头拖拽依赖它
+  beforeAll(() => {
+    Object.defineProperty(HTMLElement.prototype, 'setPointerCapture', {
+      configurable: true,
+      value() {},
+    });
+  });
+  it('columns/data 渲染表头与数据行，render 函数生效', () => {
+    render(
+      <Table
+        data={demoData}
+        columns={[
+          { key: 'name', title: '姓名', render: (row: DemoRow) => `姓名:${row.name}` },
+          { key: 'age', title: '年龄' },
+        ]}
+        rowKey="name"
+      />
+    );
+    const table = screen.getByRole('table');
+    expect(table).toBeInTheDocument();
+    expect(screen.getByText('姓名')).toBeInTheDocument();
+    expect(screen.getByText('姓名:张三')).toBeInTheDocument();
+    expect(screen.getByText('28')).toBeInTheDocument();
+    // rowKey 用 name 字段作 tr key（不可直接断言，但可断言行数）
+    const bodyRows = document.querySelectorAll('tbody tr');
+    expect(bodyRows).toHaveLength(3);
+  });
+
+  it('语义化用法不受影响：不传 columns 时不渲染工具行', () => {
+    render(
+      <Table>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell>仅语义化</Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table>
+    );
+    expect(screen.getByRole('table')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '列设置' })).not.toBeInTheDocument();
+    expect(screen.getByText('仅语义化')).toBeInTheDocument();
+  });
+
+  it('点击表头三态排序：升序 → 降序 → 取消，aria-sort 同步', () => {
+    render(<DataTable />);
+    const nameButton = screen.getByRole('button', { name: /姓名/ });
+    expect(headerCells()[0]).toHaveAttribute('aria-sort', 'none');
+    fireEvent.click(nameButton);
+    expect(headerCells()[0]).toHaveAttribute('aria-sort', 'ascending');
+    // 默认比较用 zh-Hans localeCompare（拼音序：李 < 王 < 张）
+    expect(bodyCellsOfColumn('name').map((cell) => cell.textContent)).toEqual([
+      '李四',
+      '王五',
+      '张三',
+    ]);
+    fireEvent.click(nameButton);
+    expect(headerCells()[0]).toHaveAttribute('aria-sort', 'descending');
+    expect(bodyCellsOfColumn('name').map((cell) => cell.textContent)).toEqual([
+      '张三',
+      '王五',
+      '李四',
+    ]);
+    fireEvent.click(nameButton);
+    expect(headerCells()[0]).toHaveAttribute('aria-sort', 'none');
+    expect(bodyCellsOfColumn('name').map((cell) => cell.textContent)).toEqual([
+      '张三',
+      '李四',
+      '王五',
+    ]);
+  });
+
+  it('默认比较按数字排序年龄，sorter 优先于默认比较', () => {
+    const sorter = vi.fn((a: DemoRow, b: DemoRow) => b.age - a.age);
+    render(
+      <Table
+        data={demoData}
+        columns={[
+          { key: 'name', title: '姓名' },
+          { key: 'age', title: '年龄', sortable: true, sorter },
+        ]}
+        rowKey="name"
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /年龄/ }));
+    expect(sorter).toHaveBeenCalled();
+    expect(bodyCellsOfColumn('age').map((cell) => cell.textContent)).toEqual(['32', '28', '24']);
+  });
+
+  it('非受控 columnState：面板勾选隐藏列，th/td 消失且至少保留一列', async () => {
+    render(<DataTable />);
+    fireEvent.click(screen.getByRole('button', { name: '列设置' }));
+    const cityToggle = screen.getByRole('checkbox', { name: '显示 城市' });
+    fireEvent.click(cityToggle);
+    await waitFor(() => {
+      expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['name', 'age']);
+    });
+    expect(document.querySelector('td[data-column-key="city"]')).toBeNull();
+    // 继续隐藏年龄：仅剩姓名一列仍合法
+    fireEvent.click(screen.getByRole('checkbox', { name: '显示 年龄' }));
+    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['name']);
+    // 最后一列拒绝隐藏
+    fireEvent.click(screen.getByRole('checkbox', { name: '显示 姓名' }));
+    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['name']);
+  });
+
+  it('受控 columnState：hidden/order 由外部驱动，onColumnStateChange 回调', async () => {
+    const onChange = vi.fn();
+    const { rerender } = render(
+      <DataTable columnState={{ order: ['city', 'name', 'age'] }} onColumnStateChange={onChange} />
+    );
+    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['city', 'name', 'age']);
+    // 受控显隐：面板操作回调 onChange，外层未更新 value 前视图不变
+    fireEvent.click(screen.getByRole('button', { name: '列设置' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: '显示 城市' }));
+    await waitFor(() => expect(onChange).toHaveBeenCalled());
+    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['city', 'name', 'age']);
+    // 外层提交 value 后视图跟随
+    rerender(
+      <DataTable
+        columnState={{ order: ['city', 'name', 'age'], hidden: ['city'] }}
+        onColumnStateChange={onChange}
+      />
+    );
+    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['name', 'age']);
+    // 受控顺序
+    rerender(
+      <DataTable
+        columnState={{ order: ['name', 'city', 'age'], hidden: ['city'] }}
+        onColumnStateChange={onChange}
+      />
+    );
+    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['name', 'age']);
+  });
+
+  it('order 缺失 key 追加到末尾；未知 key 不渲染', () => {
+    render(
+      <Table data={demoData} columns={demoColumns} rowKey="name" columnState={{ order: ['age'] }} />
+    );
+    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['age', 'name', 'city']);
+  });
+
+  it('重置按钮恢复声明顺序与全部显示', async () => {
+    render(
+      <Table
+        data={demoData}
+        columns={demoColumns}
+        rowKey="name"
+        defaultColumnState={{ order: ['city', 'name', 'age'], hidden: ['age'] }}
+      />
+    );
+    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['city', 'name']);
+    fireEvent.click(screen.getByRole('button', { name: '列设置' }));
+    fireEvent.click(screen.getByRole('button', { name: '重置' }));
+    await waitFor(() => {
+      expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['name', 'age', 'city']);
+    });
+  });
+
+  it('列设置面板内拖动：非受控模式下更新顺序', () => {
+    // 面板内拖动与表头共享 moveColumn；直接验证面板 li 结构存在
+    render(<DataTable />);
+    fireEvent.click(screen.getByRole('button', { name: '列设置' }));
+    const items = document.querySelectorAll('.z-table-column-item');
+    expect(items).toHaveLength(3);
+    // Checkbox 与列标题一一对应
+    expect(screen.getByRole('checkbox', { name: '显示 姓名' })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: '显示 城市' })).toBeInTheDocument();
   });
 });

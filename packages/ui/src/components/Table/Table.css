@@ -109,6 +109,211 @@
   border-inline-end: none;
 }
 
+/* ============================ 数据驱动模式 ============================= */
+
+.z-table-data-wrap {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+/* 工具行：列设置入口 */
+.z-table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  flex: none;
+  padding-block: var(--z-space-2);
+}
+
+.z-table-settings-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--z-space-1);
+  height: 28px;
+  padding: 0 var(--z-space-2);
+  border: 1px solid var(--z-color-border);
+  border-radius: var(--z-radius-md);
+  background: var(--z-color-bg);
+  color: var(--z-color-fg-muted);
+  font-size: var(--z-text-xs);
+  cursor: pointer;
+}
+
+.z-table-settings-button:hover {
+  color: var(--z-color-fg);
+  border-color: var(--z-color-border-strong);
+}
+
+.z-table-settings-button:focus-visible {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: 1px;
+}
+
+/* 表头内容：标题 + 排序图标 */
+.z-table-header-content {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.z-table-header-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.z-table-sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+}
+
+.z-table-sort-button:focus-visible {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.z-table-sort-icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--z-color-fg-subtle);
+}
+
+.z-table-header-cell[data-sort='ascend'] .z-table-sort-icon,
+.z-table-header-cell[data-sort='descend'] .z-table-sort-icon {
+  color: var(--z-color-primary);
+}
+
+.z-table-sort-icon-idle {
+  opacity: 0.45;
+}
+
+.z-table-sort-button:hover .z-table-sort-icon-idle {
+  opacity: 0.8;
+}
+
+/* 表头拖拽：抓取光标 + 拖动反馈 */
+.z-table-data .z-table-header-cell {
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.z-table-data .z-table-header-cell:active {
+  cursor: grabbing;
+}
+
+.z-table-data .z-table-header-cell[data-dragging='true'] {
+  opacity: 0.55;
+}
+
+/* 插入指示线：落点列的前缘 */
+.z-table-data .z-table-header-cell[data-drop-before='true'] {
+  box-shadow: inset 2px 0 0 var(--z-color-primary);
+}
+
+.z-table-data .z-table-header-cell:first-child[data-drop-before='true'] {
+  box-shadow: inset 2px 0 0 var(--z-color-primary);
+}
+
+/* ----------------------------- 列设置面板 ------------------------------ */
+
+.z-table-column-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--z-space-2);
+  width: 220px;
+  max-height: 320px;
+}
+
+.z-table-column-panel-head {
+  padding: var(--z-space-2) var(--z-space-3) 0;
+  font-size: var(--z-text-xs);
+  font-weight: var(--z-weight-semibold);
+  color: var(--z-color-fg-muted);
+}
+
+.z-table-column-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0 var(--z-space-2);
+  overflow-y: auto;
+  list-style: none;
+}
+
+.z-table-column-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--z-space-2);
+  min-height: 32px;
+  padding: 0 var(--z-space-2);
+  border-radius: var(--z-radius-md);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.z-table-column-item:active {
+  cursor: grabbing;
+}
+
+.z-table-column-item[data-dragging='true'] {
+  opacity: 0.55;
+}
+
+.z-table-column-item:hover {
+  background: var(--z-color-bg-subtle);
+}
+
+.z-table-column-item-label {
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--z-text-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.z-table-column-panel-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--z-space-2) var(--z-space-3);
+  border-top: 1px solid var(--z-color-border-subtle);
+}
+
+.z-table-reset-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--z-color-primary);
+  font-size: var(--z-text-sm);
+  cursor: pointer;
+}
+
+.z-table-reset-button:hover {
+  text-decoration: underline;
+}
+
+.z-table-reset-button:focus-visible {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ----------------------------- 动效与对比度降级 ------------------------ */
+
 @media (prefers-reduced-motion: reduce) {
   .z-table-row {
     transition: none;
@@ -122,6 +327,15 @@
   .z-table[data-bordered='true'] .z-table-header-cell,
   .z-table[data-bordered='true'] .z-table-cell {
     border-color: CanvasText;
+  }
+
+  .z-table-header-cell[data-sort='ascend'] .z-table-sort-icon,
+  .z-table-header-cell[data-sort='descend'] .z-table-sort-icon {
+    color: Highlight;
+  }
+
+  .z-table-data .z-table-header-cell[data-drop-before='true'] {
+    box-shadow: inset 2px 0 0 Highlight;
   }
 
   .z-table-row[data-selected='true'] {
