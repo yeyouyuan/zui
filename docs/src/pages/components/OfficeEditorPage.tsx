@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button, Tag } from '@zui/react';
 import ApiTable from '../../components/ApiTable';
 import Demo from '../../components/Demo';
@@ -49,6 +49,8 @@ const formats = [
   { kind: 'pdf', label: 'PDF', detail: '分页预览、已有文字编辑、批注与表单' },
 ] as const;
 
+const officeAccept = '.docx,.xlsx,.pdf';
+
 export default function OfficeEditorPage(): React.ReactNode {
   usePageTitle('OfficeEditor 文档编辑器');
   const snapshot = useWorkspace();
@@ -56,8 +58,40 @@ export default function OfficeEditorPage(): React.ReactNode {
   const [readOnly, setReadOnly] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const openInputRef = useRef<HTMLInputElement>(null);
   const file = snapshot.data?.files.find((entry) => entry.id === demoId);
   const blocked = !snapshot.data || snapshot.status === 'conflict' || busy;
+
+  const openWorkspaceFile = async (source: File) => {
+    if (blocked) return;
+    setBusy(true);
+    setError('');
+    try {
+      await saveAllOfficeSessions();
+      const result = await importFile(source);
+      const current = workspaceStore.getSnapshot().data;
+      if (!current || workspaceStore.getSnapshot().status === 'conflict')
+        throw new Error('当前工作区需要处理保存冲突，请先打开文件工作区。');
+      if (current.files.length >= MAX_FILES)
+        throw new Error('工作区最多保留 100 个文件，请先清理不需要的文件。');
+      if (
+        current.files.reduce((sum, entry) => sum + entry.size, 0) + result.file.size >
+        MAX_WORKSPACE_BYTES
+      )
+        throw new Error('工作区文件总量超过 100 MB，请先导出并清理文件。');
+      workspaceStore.update(
+        (data) => ({ ...data, files: [...data.files, result.file], activeFile: result.file.id }),
+        result.asset ? new Map([[result.file.assetKey!, result.asset]]) : undefined
+      );
+      await workspaceStore.confirmOfficeFile(result.file.id, result.file.revision);
+      setDemoId(result.file.id);
+      setReadOnly(false);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : '文件无法打开，请重试。');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const createExample = async (kind: 'word' | 'excel' | 'pdf') => {
     if (blocked) return;
@@ -152,6 +186,14 @@ export default function OfficeEditorPage(): React.ReactNode {
               创建 {label} 示例
             </Button>
           ))}
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={blocked}
+            onClick={() => openInputRef.current?.click()}
+          >
+            打开本地文件
+          </Button>
           {file && (
             <Button
               size="sm"
@@ -190,6 +232,19 @@ export default function OfficeEditorPage(): React.ReactNode {
           </div>
         )}
       </Demo>
+
+      <input
+        ref={openInputRef}
+        type="file"
+        accept={officeAccept}
+        hidden
+        aria-label="打开本地 Office 文件"
+        onChange={(event) => {
+          const source = event.target.files?.[0];
+          event.target.value = '';
+          if (source) void openWorkspaceFile(source);
+        }}
+      />
 
       <h2 className="doc-h2">格式与接入</h2>
       <div className="doc-table-wrap">
