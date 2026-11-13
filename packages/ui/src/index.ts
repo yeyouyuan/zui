@@ -84,6 +84,8 @@ export * from './components/Upload';
 export * from './components/Steps';
 export * from './components/DateRangePicker';
 export * from './components/Anchor';
+export * from './components/OfficeEditor';
+export * from './components/OfficeStudio';
 
 // Components (v0.2.0 quality + skeleton)
 export * from './components/Typography';

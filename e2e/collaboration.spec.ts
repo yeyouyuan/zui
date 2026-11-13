@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 const axeSource = readFileSync(
   new URL('../packages/ui/node_modules/axe-core/axe.min.js', import.meta.url),
@@ -7,6 +7,9 @@ const axeSource = readFileSync(
 async function open(page: Page) {
   await page.goto('/#/collaboration');
   await expect(page.getByRole('heading', { level: 1, name: '内容协作实验室' })).toBeVisible();
+  await expect(page.locator('.collaboration-intro .doc-lead')).toHaveText(
+    '在线预览和修改 Word、Excel、PDF 与文本，文件和讨论保存在本机。'
+  );
   await expect(page.getByRole('region', { name: '本地文件工作台', exact: true })).toBeVisible();
   await expect(page.getByRole('status', { name: '工作区保存状态', exact: true })).toHaveText(
     '已保存到本机'
@@ -350,9 +353,19 @@ async function saved(page: Page) {
     '已保存到本机'
   );
 }
-async function downloaded(page: Page, button: string): Promise<Buffer> {
+async function downloaded(
+  page: Page,
+  button: string,
+  within: Page | Locator = page
+): Promise<Buffer> {
   const pending = page.waitForEvent('download');
-  await page.getByRole('button', { name: button, exact: true }).click();
+  if (button === '下载文件') {
+    // 下载文件入口在编辑器「文件」菜单内，菜单内容通过 Portal 渲染在 body 上。
+    await within.getByRole('button', { name: '文件', exact: true }).click();
+    await page.getByRole('menuitem', { name: '下载文件', exact: true }).click();
+  } else {
+    await within.getByRole('button', { name: button, exact: true }).click();
+  }
   const download = await pending;
   const path = await download.path();
   expect(path).not.toBeNull();
@@ -662,7 +675,27 @@ function pdfFixture(): Buffer {
   return Buffer.from(pdf);
 }
 
-test('真实 PDF 与二进制附件可预览或回退下载，原始字节刷新后不变', async ({ page }) => {
+test('宿主回退集成：文档服务不可用时 PDF 与二进制附件仍可下载，原件刷新后不变', async ({
+  page,
+}) => {
+  let sessionRequests = 0;
+  await page.route('**/api/office/**', async (route) => {
+    const health = new URL(route.request().url()).pathname === '/api/office/health';
+    if (!health) sessionRequests++;
+    await route.fulfill({
+      status: health ? 200 : 503,
+      contentType: 'application/json',
+      body: JSON.stringify(
+        health
+          ? {
+              available: false,
+              documentServerUrl: 'http://127.0.0.1:8082',
+              error: '测试文档服务暂不可用。',
+            }
+          : { error: '文档服务不可用时不应创建编辑会话。' }
+      ),
+    });
+  });
   await open(page);
   const pdf = pdfFixture();
   const binary = Buffer.from([0, 255, 128, 65, 32, 0, 10]);
@@ -670,14 +703,23 @@ test('真实 PDF 与二进制附件可预览或回退下载，原始字节刷新
     { name: '阅读文件.pdf', mimeType: 'application/pdf', buffer: pdf },
     { name: '附件.bin', mimeType: 'application/octet-stream', buffer: binary },
   ]);
-  await expect(page.getByTitle('阅读文件.pdf PDF 预览', { exact: true })).toHaveAttribute(
-    'src',
-    /^blob:/
-  );
-  expect(await downloaded(page, '下载文件')).toEqual(pdf);
+  const editor = page.getByRole('region', { name: '阅读文件.pdf 在线编辑器', exact: true });
+  await expect(editor).toBeVisible();
+  await expect(
+    editor.getByRole('heading', { name: '完整文档编辑器尚未连接', exact: true })
+  ).toBeVisible();
+  await expect(editor.getByRole('alert')).toContainText('测试文档服务暂不可用。');
+  await expect(editor.getByRole('button', { name: '保存到工作台', exact: true })).toBeDisabled();
+  await expect(editor.locator('iframe')).toHaveCount(0);
+  expect(await downloaded(page, '下载文件', editor)).toEqual(pdf);
   await saved(page);
   await page.reload();
-  await expect(page.getByTitle('阅读文件.pdf PDF 预览', { exact: true })).toBeVisible();
+  await expect(
+    editor.getByRole('heading', { name: '完整文档编辑器尚未连接', exact: true })
+  ).toBeVisible();
+  expect(await downloaded(page, '下载文件', editor)).toEqual(pdf);
+  expect(sessionRequests).toBe(0);
+  await editor.getByRole('button', { name: '返回工作台', exact: true }).click();
   const files = page.getByRole('navigation', { name: '协作文件', exact: true });
   await files.getByRole('button', { name: /^附件\.bin/ }).click();
   await expect(page.getByText('此文件类型暂不支持预览', { exact: true })).toBeVisible();

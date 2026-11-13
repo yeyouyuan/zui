@@ -29,8 +29,5 @@ jobs:
         run: node scripts/check-distribution.mjs
       - name: Compile installed sources and MCP examples
         run: node scripts/check-consumer.mjs
-      - name: Check bundle size budget (JS gzip < 96 KiB)
-        run: |
-          SIZE=$(gzip -c packages/ui/dist/index.js | wc -c | tr -d ' ')
-          echo "index.js gzip: ${SIZE} bytes"
-          [ "$SIZE" -lt 98304 ] || { echo "bundle exceeds budget"; exit 1; }
+      - name: Check complete entry bundle budget (JS gzip < 112 KiB)
+        run: node scripts/check-bundle-size.mjs

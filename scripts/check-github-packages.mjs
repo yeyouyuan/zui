@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 import { parseArgs } from 'node:util';
+import { officeRuleConsumerLines } from './office-consumer-fixture.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const { values } = parseArgs({
@@ -140,10 +141,15 @@ try {
       "import { createRequire } from 'node:module';",
       "import React from 'react';",
       "import { renderToStaticMarkup } from 'react-dom/server';",
-      "import { Button } from '@zui/react';",
+      "import { Button, OfficeEditor, OfficeStudio, createOfficeStudioDocument } from '@zui/react';",
       'const require = createRequire(import.meta.url);',
       "for (const name of ['tokens', 'icons', 'i18n', 'react', 'blocks']) assert.ok(Object.keys(await import('@zui/' + name)).length);",
       "assert.equal(typeof require('@zui/react').Button, 'function');",
+      "assert.equal(typeof OfficeEditor, 'function');",
+      "assert.equal(typeof OfficeStudio, 'function');",
+      "assert.equal(require('@zui/react/office-editor').OfficeEditor, require('@zui/react').OfficeEditor);",
+      "assert.equal(require('@zui/react/office-studio').OfficeStudio, require('@zui/react').OfficeStudio);",
+      "assert.equal(createOfficeStudioDocument('word').kind, 'word');",
       "assert.match(renderToStaticMarkup(React.createElement(Button, null, 'Installed ZUI')), /Installed ZUI/);",
       "require.resolve('@zui/react/styles.css');",
       "require.resolve('@zui/tokens/css');",
@@ -156,7 +162,7 @@ try {
     [path.join(cwd, 'node_modules/@zui/cli/dist/index.js'), 'list'],
     { cwd, encoding: 'utf8' }
   );
-  for (const name of ['button', 'splitter', 'kanban'])
+  for (const name of ['button', 'splitter', 'office-editor', 'office-studio', 'kanban'])
     assert.ok(cli.includes(name), 'Installed CLI finds ' + name);
   const requests = [
     { jsonrpc: '2.0', id: 1, method: 'initialize' },
@@ -180,12 +186,22 @@ try {
     path.join(cwd, 'consumer.tsx'),
     [
       "import { Button } from '@zui/react';",
+      "import { OfficeStudio, createOfficeStudioDocument, type OfficeStudioHandle, type StudioPdfSearchResult, type StudioSheetChart, type StudioSheetStructureEdit } from '@zui/react/office-studio';",
+      "import { OfficeEditor, type OfficeEditorConfig } from '@zui/react/office-editor';",
       "import { DashboardBlock } from '@zui/blocks';",
       "import { tokens } from '@zui/tokens';",
       "import { Search } from '@zui/icons';",
       "import { useAutoTranslate } from '@zui/i18n';",
       "export const example = <><Button variant='primary'>发布检查</Button><DashboardBlock /><Search /></>;",
       'export const api = { tokens, useAutoTranslate };',
+      'export function OfficeExample({ config, documentServerUrl }: { config: OfficeEditorConfig; documentServerUrl: string }) {',
+      "  return <><OfficeEditor config={config} documentServerUrl={documentServerUrl} /><OfficeStudio defaultValue={createOfficeStudioDocument('word')} onPrint={async (document) => { void document; }} /></>;",
+      '}',
+      'export function printStudio(handle: OfficeStudioHandle) { return handle.print(); }',
+      'export type OfficeSearchHit = StudioPdfSearchResult;',
+      'export type OfficeChart = StudioSheetChart;',
+      'export type OfficeStructureEdit = StudioSheetStructureEdit;',
+      ...officeRuleConsumerLines(),
     ].join('\n')
   );
   fs.writeFileSync(
@@ -208,6 +224,33 @@ try {
     [path.join(root, 'node_modules/typescript/bin/tsc'), '-p', path.join(cwd, 'tsconfig.json')],
     { stdio: 'inherit' }
   );
+  execFileSync(
+    process.execPath,
+    [path.join(cwd, 'node_modules/@zui/cli/dist/index.js'), 'add', 'office-studio'],
+    { cwd, stdio: 'inherit' }
+  );
+  fs.writeFileSync(path.join(cwd, 'src/styles.d.ts'), "declare module '*.css';\n");
+  fs.writeFileSync(
+    path.join(cwd, 'tsconfig-cli.json'),
+    JSON.stringify({
+      compilerOptions: {
+        target: 'ES2022',
+        module: 'ESNext',
+        moduleResolution: 'Bundler',
+        lib: ['ES2022', 'DOM', 'DOM.Iterable'],
+        jsx: 'react-jsx',
+        strict: true,
+        skipLibCheck: true,
+        noEmit: true,
+      },
+      include: ['src'],
+    })
+  );
+  execFileSync(
+    process.execPath,
+    [path.join(root, 'node_modules/typescript/bin/tsc'), '-p', path.join(cwd, 'tsconfig-cli.json')],
+    { stdio: 'inherit' }
+  );
   fs.writeFileSync(
     path.join(directory, values.local ? 'consumer-local.json' : 'consumer-registry.json'),
     JSON.stringify(
@@ -223,6 +266,9 @@ try {
           'CLI registry',
           'MCP stdio',
           'strict TypeScript declarations',
+          'Office component subpaths and public APIs',
+          'Public Excel conditional formatting and validation types; internal runtimes remain private',
+          'Installed CLI OfficeStudio source compilation',
         ],
       },
       null,

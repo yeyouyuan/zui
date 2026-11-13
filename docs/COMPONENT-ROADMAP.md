@@ -2,6 +2,8 @@
 
 状态：2026-11-09 实施后复核。Combobox、MultiCombobox、SideNav、Splitter、CommandPalette 均已实现并进入 Registry（71 个组件 + 16 个业务块，共 87 个条目），随下一版本发布。DataGrid 立项前置已完成：性能原型已复测（10k 行：排序 30.9ms / 全选 21.8ms / 列宽更新到下一帧 34.3ms；列宽测量已排除指针输入间隔），独立大型 RFC 已起草（rfcs/datagrid.md），待评审后分期实现。
 
+2026-11-12 工作区补充：新增 `OfficeEditor` 与独立 `OfficeStudio`，当前 Registry 为 73 个组件和 16 个业务块，共 89 条目。新增编辑器尚未发布；上面的性能数值与首轮组件状态保留为 2026-11-09 记录。
+
 ## 现状与判断标准
 
 ### 新增设计探索（2026-11-09）
@@ -105,3 +107,9 @@ DataGrid 价值高，但不能把功能继续堆入 `Table`：
 ## 内容协作方向（2026-11-09）
 
 下一组设计优先 FilePreview、ContentEditor、CommentThread，覆盖文件预览、纯文本编辑与上下文讨论。文档站 `#/collaboration` 已于 2026-11-10 补齐[可用的本地文件工作台](collaboration-local-2026-11-10.md)：真实文件导入、完整文本编辑、评论、IndexedDB 持久保存、下载与完整备份恢复。[RFC-006](rfcs/content-collaboration.md) 的通用组件 API、远端存储与权限契约仍为提案，未加入正式导出与 Registry，不增加 71 个源码组件的计数。
+
+2026-11-12 工作台新增 [Word、Excel、PDF 页面内完整编辑器](office-full-editor.md)，使用本机部署的 ONLYOFFICE Docs 10.0：DOCX 正文与排版、XLSX 工作表与公式/图表、PDF 已有可识别文字直接在文档画布中编辑，桥接服务持久保存原格式结果并回写工作区。后续将原生画布提炼为公共 `OfficeEditor` 组件，加入 UI 导出与 Registry，并用于工作台和 `#/components/office-editor` 的组件示例；源码组件数为 72，本次尚未发布。部署、保存与恢复链路、Community 能力与商用授权边界在实施说明中列明。[首版浏览器实现](office-preview-2026-11-12.md)保留为旧草稿迁移与历史验证记录。
+
+同日按用户选择新增并深化 [OfficeStudio 独立文档工作台](office-studio.md)：直接使用 ZUI 控件，Word 提供本地图片、默认页眉页脚、原生页码域、查找替换与大纲；Excel 提供公式、工作表与行列增删、合并拆分、冻结、筛选排序和原生柱状/折线图；PDF 提供缩略图、全文查找、文字/高亮/矩形/手写笔迹及普通表单。三种编辑器都支持撤销重做，示例提供真实文件导入导出、打印、本地恢复、最近 20 次历史版本及恢复为新文件。`#/components/office-studio` 无需 ONLYOFFICE 服务。
+
+这些能力仍有明确格式边界：Word 不具备完整自动分页或多节版式兼容，Excel 拒绝透视和不支持的复杂对象，PDF 不提供任意原文修改与 OCR；PDF 查找依赖可提取文字和宿主 renderer。`OfficeStudio` 是公共 UI 组件，文件 codec、worker/字体、打印和历史版本存储由宿主适配。当前源码组件数为 73，新增组件尚未发布；本轮 Node 验证及浏览器验收边界见 [验证记录](office-verification-2026-11-12.md)。

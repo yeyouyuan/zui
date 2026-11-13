@@ -1,0 +1,36 @@
+.office-editor-demo-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--z-space-2);
+  padding: var(--z-space-8) var(--z-space-6);
+  border: 1px dashed var(--z-color-border);
+  border-radius: var(--z-radius-lg);
+  background: var(--z-color-bg-subtle);
+  text-align: center;
+}
+.office-editor-demo-empty strong {
+  font-size: var(--z-text-sm);
+  font-weight: var(--z-weight-semibold);
+}
+.office-editor-demo-empty p {
+  margin: 0;
+  color: var(--z-color-fg-muted);
+  font-size: var(--z-text-sm);
+  line-height: 1.7;
+}
+.office-editor-demo-alert {
+  margin: var(--z-space-2) 0 0;
+  padding: var(--z-space-2) var(--z-space-3);
+  border-radius: var(--z-radius-md);
+  color: var(--z-color-danger-subtle-fg);
+  background: var(--z-color-danger-subtle);
+  font-size: var(--z-text-sm);
+  overflow-wrap: anywhere;
+}
+.office-editor-demo-status {
+  margin: var(--z-space-2) 0 0;
+  color: var(--z-color-fg-muted);
+  font-size: var(--z-text-sm);
+}

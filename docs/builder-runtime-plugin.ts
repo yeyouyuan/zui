@@ -8,6 +8,22 @@ const bundler = require(require.resolve('esbuild', { paths: [require.resolve('vi
   build(options: Record<string, unknown>): Promise<{ outputFiles: { text: string }[] }>;
 };
 
+// chevrotain 的主入口再导出 diagrams 工具，其源码模板内嵌 <script src=…> 外链；
+// CJS 命名空间引入让摇树失效，离线导出禁止任何外链，因此在打包层替换该模块。
+const chevrotainDiagramsStub = {
+  name: 'zui-builder-chevrotain-diagrams-stub',
+  setup(build: { onLoad(options: unknown, callback: (args: unknown) => unknown): void }) {
+    build.onLoad(
+      { filter: /chevrotain[\\/]lib(?:_esm)?[\\/]src[\\/]diagrams[\\/]render_public\.js$/ },
+      () => ({
+        contents:
+          'exports.createSyntaxDiagramsCode = () => { throw new Error("语法图仅在完整 chevrotain 环境可用，离线运行时不包含。"); };',
+        loader: 'js' as const,
+      })
+    );
+  },
+};
+
 export function builderRuntimePlugin(): Plugin {
   const publicId = 'virtual:zui-builder-runtime';
   const resolvedId = `\0${publicId}`;
@@ -32,6 +48,7 @@ export function builderRuntimePlugin(): Plugin {
           target: ['es2022'],
           jsx: 'automatic',
           loader: { '.css': 'empty' },
+          plugins: [chevrotainDiagramsStub],
           define: {
             'process.env.NODE_ENV': '"production"',
             'import.meta': '{"env":{"DEV":false,"PROD":true,"MODE":"production"}}',

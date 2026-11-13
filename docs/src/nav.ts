@@ -78,9 +78,12 @@ const LabPage = lazy(() => import('./pages/lab/LabPage'));
 const BlocksPage = lazy(() => import('./pages/blocks/BlocksPage'));
 const SideNavPage = lazy(() => import('./pages/components/SideNavPage'));
 const SplitterPage = lazy(() => import('./pages/components/SplitterPage'));
+const OfficeEditorPage = lazy(() => import('./pages/components/OfficeEditorPage'));
+const OfficeStudioPage = lazy(() => import('./pages/components/OfficeStudioPage'));
 
 /** 按使用目的组织导航，页面、搜索和命令面板共享同一分类。 */
-export type NavGroup = 'start' | 'basic' | 'layout' | 'navigation' | 'input' | 'data' | 'feedback' | 'configuration';
+export type NavGroup =
+  'start' | 'basic' | 'layout' | 'navigation' | 'input' | 'data' | 'feedback' | 'configuration';
 
 export const GROUP_LABELS: Record<NavGroup, string> = {
   start: '开始',
@@ -93,7 +96,16 @@ export const GROUP_LABELS: Record<NavGroup, string> = {
   configuration: '全局配置',
 };
 
-export const GROUP_ORDER: NavGroup[] = ['start', 'basic', 'layout', 'navigation', 'input', 'data', 'feedback', 'configuration'];
+export const GROUP_ORDER: NavGroup[] = [
+  'start',
+  'basic',
+  'layout',
+  'navigation',
+  'input',
+  'data',
+  'feedback',
+  'configuration',
+];
 
 export interface NavItem {
   /** 导航显示名（侧栏搜索按此过滤） */
@@ -128,6 +140,8 @@ export const navItems: NavItem[] = [
   { title: 'CommandPalette 命令面板', path: '/components/command-palette', group: 'navigation' },
   { title: 'SideNav 侧边导航', path: '/components/side-nav', group: 'navigation' },
   { title: 'Splitter 可调分栏', path: '/components/splitter', group: 'layout' },
+  { title: 'OfficeEditor 文档编辑器', path: '/components/office-editor', group: 'input' },
+  { title: 'OfficeStudio 独立文档工作台', path: '/components/office-studio', group: 'input' },
   { title: 'Modal 对话框', path: '/components/modal', group: 'feedback' },
   { title: 'Tabs 标签页', path: '/components/tabs', group: 'navigation' },
   { title: 'Table 表格', path: '/components/table', group: 'data' },
@@ -210,6 +224,8 @@ export const routeComponents: Record<string, ComponentType> = {
   '/components/command-palette': CommandPalettePage,
   '/components/side-nav': SideNavPage,
   '/components/splitter': SplitterPage,
+  '/components/office-editor': OfficeEditorPage,
+  '/components/office-studio': OfficeStudioPage,
   '/components/modal': ModalPage,
   '/components/tabs': TabsPage,
   '/components/table': TablePage,

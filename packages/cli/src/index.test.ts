@@ -332,7 +332,7 @@ describe('registry 定位', () => {
   });
 });
 
-describe('真实 registry 契约校验（71 组件 + 16 业务块）', () => {
+describe('真实 registry 契约校验（73 组件 + 16 业务块）', () => {
   const realRegistry = path.resolve(
     fileURLToPath(new URL('../../../registry/registry.json', import.meta.url))
   );
@@ -346,7 +346,7 @@ describe('真实 registry 契约校验（71 组件 + 16 业务块）', () => {
     };
     expect(registry.name).toBe('zui');
     expect(registry.homepage).toBe('https://zui.dev');
-    expect(registry.items.filter((item) => item.type === 'registry:component')).toHaveLength(71);
+    expect(registry.items.filter((item) => item.type === 'registry:component')).toHaveLength(73);
     expect(registry.items.filter((item) => item.type === 'registry:block')).toHaveLength(16);
     for (const item of registry.items) {
       expect(item.name).toMatch(/^[a-z0-9-]+$/);
@@ -379,6 +379,74 @@ describe('真实 registry 契约校验（71 组件 + 16 业务块）', () => {
 
     const d = await diff({ ctx, names: ['button'] });
     expect(d.files.every((f) => f.state === 'same')).toBe(true);
+  });
+
+  it('安装 OfficeEditor 时包含编辑器与全部接入辅助文件，diff 可完整回读', async () => {
+    const project = tmpDir();
+    const ctx = createContext({ cwd: project, registryPath: realRegistry, log: silent });
+    const result = await add({ ctx, names: ['office-editor'] });
+    const destDir = path.join(project, 'src', 'components', 'ui', 'office-editor');
+    for (const file of [
+      'OfficeEditor.tsx',
+      'OfficeEditor.css',
+      'office-types.ts',
+      'office-config.ts',
+      'office-script.ts',
+      'index.ts',
+    ]) {
+      expect(fs.existsSync(path.join(destDir, file))).toBe(true);
+    }
+    expect(fs.readFileSync(path.join(destDir, 'index.ts'), 'utf8')).toContain('OfficeEditor');
+    expect(result.written.every((file) => file.status === 'created')).toBe(true);
+    const d = await diff({ ctx, names: ['office-editor'] });
+    expect(d.files.every((file) => file.state === 'same')).toBe(true);
+  });
+
+  it('安装 OfficeStudio 时包含三种编辑内核、公式声明及 ZUI 控件依赖', async () => {
+    const project = tmpDir();
+    const ctx = createContext({ cwd: project, registryPath: realRegistry, log: silent });
+    const result = await add({ ctx, names: ['office-studio'] });
+    const destDir = path.join(project, 'src', 'components', 'ui', 'office-studio');
+    for (const file of [
+      'OfficeStudio.tsx',
+      'OfficeStudio.css',
+      'StudioWord.tsx',
+      'StudioWord.css',
+      'StudioSheet.tsx',
+      'StudioSheet.css',
+      'StudioSheetSearch.tsx',
+      'StudioFontControl.tsx',
+      'StudioFontControl.css',
+      'studio-cell-style.ts',
+      'studio-font-input.ts',
+      'studio-sheet-editing.ts',
+      'studio-sheet-layout.ts',
+      'StudioPdf.tsx',
+      'StudioPdf.css',
+      'studio-sheet-model.ts',
+      'studio-formula-parser.d.ts',
+      'studio-model.ts',
+      'studio-types.ts',
+      'index.ts',
+    ]) {
+      expect(fs.existsSync(path.join(destDir, file))).toBe(true);
+    }
+    expect(result.dependencies).toEqual(
+      expect.arrayContaining(['@tiptap/react', '@tiptap/starter-kit', 'fast-formula-parser'])
+    );
+    expect(fs.existsSync(path.join(project, 'src/components/ui/button/Button.tsx'))).toBe(true);
+    expect(fs.existsSync(path.join(project, 'src/components/ui/select/Select.tsx'))).toBe(true);
+    for (const [component, file] of [
+      ['collapse', 'Collapse.tsx'],
+      ['table', 'Table.tsx'],
+      ['radio', 'Radio.tsx'],
+      ['combobox', 'Combobox.tsx'],
+    ]) {
+      expect(fs.existsSync(path.join(project, 'src/components/ui', component, file))).toBe(true);
+    }
+    expect(fs.existsSync(path.join(project, 'src/components/ui/office-editor'))).toBe(false);
+    const d = await diff({ ctx, names: ['office-studio'] });
+    expect(d.files.every((file) => file.state === 'same')).toBe(true);
   });
 
   it('安装业务块时补齐组件、公共源码并转换内联类型及 CSS 路径', async () => {

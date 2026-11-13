@@ -1,0 +1,91 @@
+{
+  "name": "OfficeEditor",
+  "description": "ONLYOFFICE 原生在线编辑器的 React 内嵌容器，支持 Word、Excel、PDF 等文档，提供脚本共享、生命周期管理、状态反馈、业务工具栏与全屏布局",
+  "category": "数据展示",
+  "useCase": [
+    "业务系统内嵌完整 Office 编辑器",
+    "文档预览与编辑工作台",
+    "已有 ONLYOFFICE Docs 服务的 React 集成"
+  ],
+  "dontUse": ["没有完整文档服务的纯静态预览", "仅编辑富文本片段时使用轻量富文本编辑器"],
+  "props": {
+    "disabled": {
+      "type": "boolean",
+      "default": "false",
+      "desc": "暂停宿主保存、下载、重载与画布交互，保留原生实例；只读权限需由后端签名 config 指定"
+    },
+    "documentServerUrl": {
+      "type": "string",
+      "desc": "ONLYOFFICE Docs 服务地址，可包含反向代理路径"
+    },
+    "config": {
+      "type": "OfficeEditorConfig",
+      "desc": "后端生成的文档配置及 JWT；签名字段原样传递"
+    },
+    "kind": {
+      "type": "'word' | 'excel' | 'pdf'",
+      "desc": "文档族主题色，作用于外层标题栏；原生权限仍由签名配置决定"
+    },
+    "customization": {
+      "type": "Record<string, unknown>",
+      "desc": "填充签名配置未设置的 editorConfig.customization 键；逐键以后端配置优先，变更会重建实例"
+    },
+    "events": {
+      "type": "OfficeEditorEvents",
+      "desc": "原生事件，和 config.events 一并触发；订阅变化保留实例，同一函数不重复调用。原生请求菜单能力改变需显式重建"
+    },
+    "onReady": {
+      "type": "(editor, event) => void",
+      "desc": "onDocumentReady 后触发，区别于脚本或应用加载完成"
+    },
+    "onStatusChange": {
+      "type": "(status: 'loading' | 'ready' | 'error') => void",
+      "desc": "编辑器生命周期状态变化"
+    },
+    "onError": {
+      "type": "(error: OfficeEditorError) => void",
+      "desc": "加载、原生错误及业务回调失败"
+    },
+    "onSave": {
+      "type": "(editor) => void | Promise<void>",
+      "desc": "业务保存回调；组件不调用未经确认的原生保存方法"
+    },
+    "onDownload": { "type": "(editor) => void | Promise<void>", "desc": "业务下载回调" },
+    "header": { "type": "ReactNode | (context) => ReactNode", "desc": "可选业务页头，false 隐藏" },
+    "title": { "type": "ReactNode", "desc": "默认顶栏文档名称，默认取 config.document.title" },
+    "toolbar": {
+      "type": "ReactNode | (context) => ReactNode",
+      "desc": "自定义工具栏，false 隐藏默认顶栏"
+    },
+    "height": { "type": "number | string", "default": "640", "desc": "容器高度，支持 100%" },
+    "fullscreen": { "type": "boolean", "desc": "受控全屏布局；不改变文档权限" },
+    "defaultFullscreen": { "type": "boolean", "default": "false", "desc": "非受控初始全屏布局" },
+    "onFullscreenChange": { "type": "(value: boolean) => void", "desc": "全屏布局变更请求" },
+    "allowFullscreen": { "type": "boolean", "default": "true", "desc": "显示默认全屏按钮" },
+    "loading": { "type": "ReactNode", "desc": "自定义加载占位内容" },
+    "renderError": {
+      "type": "(error, retry) => ReactNode",
+      "desc": "自定义错误内容；retry 重试原业务动作或重新连接编辑器"
+    },
+    "scriptTimeout": { "type": "number", "default": "15000", "desc": "共享脚本加载超时，毫秒" },
+    "readyTimeout": { "type": "number", "default": "60000", "desc": "文档就绪超时，毫秒；0 禁用" },
+    "scriptNonce": { "type": "string", "desc": "宿主 CSP nonce" },
+    "rebuildKey": { "type": "string | number", "desc": "显式重建同 key 的会话" },
+    "labels": { "type": "Partial<OfficeEditorLabels>", "desc": "界面文案本地化" },
+    "ref": {
+      "type": "OfficeEditorHandle",
+      "desc": "reload、getEditor、setFullscreen；禁用或业务动作进行中不重载"
+    },
+    "classNames": {
+      "type": "{ root?; header?; toolbar?; heading?; title?; brand?; status?; actions?; stage?; canvas?; overlay?; error?; notice? }",
+      "desc": "slot 类名"
+    }
+  },
+  "a11yNotes": [
+    "加载区提供 role=status，失败提供 role=alert，根节点通过 aria-busy 表达加载状态",
+    "工具栏使用可聚焦按钮与可见文字；全屏按钮提供 aria-pressed",
+    "全屏布局复用多层滚动锁与顶层 Esc 仲裁；不拦截跨域编辑器内部的键盘操作",
+    "文档 iframe 未提供 title 时补充可访问名称，原生编辑区域无障碍由引擎提供"
+  ],
+  "related": ["Upload", "Splitter", "Button", "Spin"]
+}

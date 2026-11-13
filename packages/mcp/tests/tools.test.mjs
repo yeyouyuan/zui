@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { URL } from 'node:url';
 import { loadCatalog, resolveRepoRoot } from '../dist/tools/search.js';
@@ -8,8 +9,16 @@ import { formatAttribute, generateCode } from '../dist/tools/generate.js';
 import { handleLine, SERVER_VERSION } from '../dist/index.js';
 
 const catalog = loadCatalog();
-test('catalog resolves all 71 shipped components from bundled data', () => {
-  assert.equal(catalog.size, 71);
+test('catalog resolves every shipped component from bundled data', () => {
+  const registry = JSON.parse(
+    readFileSync(new URL('../data/registry/registry.json', import.meta.url), 'utf8')
+  );
+  assert.equal(
+    catalog.size,
+    registry.items.filter((item) => item.type === 'registry:component').length
+  );
+  assert.ok(catalog.has('officeeditor'));
+  assert.ok(catalog.has('officestudio'));
   assert.equal(resolveRepoRoot(), fileURLToPath(new URL('../data', import.meta.url)));
 });
 test('server reports the published package version', () => {
@@ -35,6 +44,20 @@ test('all components have generated examples with real imports and required prop
   assert.match(generateCode(catalog, 'Progress').code, /aria-label="Task progress"/);
   assert.match(generateCode(catalog, 'Message').code, /useMessage/);
   assert.doesNotMatch(generateCode(catalog, 'Notification').code, /import \{ Notification \}/);
+});
+test('Office examples accept backend configuration and expose standalone document creation', () => {
+  const editor = generateCode(catalog, 'OfficeEditor');
+  assert.equal(editor.ok, true);
+  assert.match(editor.code, /type OfficeEditorConfig/);
+  assert.match(editor.code, /documentServerUrl=\{documentServerUrl\}/);
+  assert.match(editor.code, /config=\{config\}/);
+  assert.match(editor.code, /documentServerUrl: string; config: OfficeEditorConfig/);
+  assert.doesNotMatch(editor.code, /https?:\/\//);
+  const studio = generateCode(catalog, 'OfficeStudio');
+  assert.equal(studio.ok, true);
+  assert.match(studio.code, /createOfficeStudioDocument\('word'\)/);
+  assert.match(studio.code, /onSave, onImport and onExport/);
+  assert.doesNotMatch(studio.code, /documentServerUrl/);
 });
 test('RPC gives useful failures and recognizes all three tools', () => {
   const call = (name, args) =>

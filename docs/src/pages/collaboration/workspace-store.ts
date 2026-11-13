@@ -1,6 +1,13 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import coverSource from '../../assets/demo-cover.svg?raw';
-import { createTextFile, textBlob, type Workspace } from './workspace-model';
+import {
+  createTextFile,
+  fileKind,
+  textBlob,
+  MAX_FILE_BYTES,
+  MAX_WORKSPACE_BYTES,
+  type Workspace,
+} from './workspace-model';
 
 const DATABASE = 'zui-content-workspace';
 interface StoredWorkspace {
@@ -199,6 +206,7 @@ class WorkspaceStore {
   private token: string | null = null;
   private dirty = false;
   private writing = false;
+  private writePromise: Promise<void> | undefined;
   private initialized = false;
   private pendingAssets = new Map<string, Blob>();
   private timer: ReturnType<typeof setTimeout> | undefined;
@@ -241,7 +249,13 @@ class WorkspaceStore {
         if (stored.data?.schema !== 1 || !Array.isArray(stored.data.files))
           throw new Error('工作区数据格式无法读取，请保留浏览器数据并联系维护者。');
         this.token = stored.token;
-        this.publish({ data: stored.data, status: 'saved', error: '' });
+        const data = {
+          ...stored.data,
+          files: stored.data.files.map((file) =>
+            file.kind === 'binary' ? { ...file, kind: fileKind(file.name, file.mime) } : file
+          ),
+        };
+        this.publish({ data, status: 'saved', error: '' });
       } else {
         this.token = null;
         const initial = initialWorkspace();
@@ -257,6 +271,7 @@ class WorkspaceStore {
   update = (change: (current: Workspace) => Workspace, assets?: Map<string, Blob>) => {
     if (!this.snapshot.data || this.snapshot.status === 'conflict') return;
     const data = change(this.snapshot.data);
+    if (data === this.snapshot.data) return;
     for (const [key, blob] of assets ?? []) this.pendingAssets.set(key, blob);
     this.dirty = true;
     const failed = this.snapshot.status === 'error';
@@ -278,9 +293,16 @@ class WorkspaceStore {
           : `未能保存或读取本机数据：${error instanceof Error ? error.message : '浏览器存储不可用'}。修改仍保留在当前页面，可重试或导出备份。`,
     });
   }
-  flush = async () => {
+  flush = (): Promise<void> => {
+    if (this.writePromise) return this.writePromise;
     if (this.writing || !this.dirty || !this.snapshot.data || this.snapshot.status === 'conflict')
-      return;
+      return Promise.resolve();
+    this.writePromise = this.writePending().finally(() => {
+      this.writePromise = undefined;
+    });
+    return this.writePromise;
+  };
+  private writePending = async () => {
     this.writing = true;
     try {
       while (this.dirty && this.snapshot.data) {
@@ -298,6 +320,68 @@ class WorkspaceStore {
     } finally {
       this.writing = false;
     }
+  };
+  commitOfficeFile = async (
+    fileId: string,
+    blob: Blob,
+    expectedRevision: number
+  ): Promise<number> => {
+    const current = this.snapshot.data;
+    const file = current?.files.find((entry) => entry.id === fileId);
+    if (!current || !file || this.snapshot.status === 'conflict')
+      throw new Error('无法回写此文件，服务端副本已保留。请恢复工作区后重试。');
+    if (file.revision !== expectedRevision)
+      throw new Error('文件已被另一个编辑会话修改，服务端副本已保留。请下载编辑副本再处理冲突。');
+    if (
+      blob.size > MAX_FILE_BYTES ||
+      current.files.reduce((sum, entry) => sum + entry.size, 0) - file.size + blob.size >
+        MAX_WORKSPACE_BYTES
+    )
+      throw new Error('文件超过 20 MB 或工作区超过 100 MB，编辑副本仍保留在本机文档服务。');
+    const assetKey = crypto.randomUUID();
+    const revision = file.revision + 1;
+    this.update(
+      (data) => {
+        const target = data.files.find((entry) => entry.id === fileId);
+        if (!target || target.revision !== expectedRevision) return data;
+        const drafts = { ...data.officeDrafts };
+        delete drafts[fileId];
+        return {
+          ...data,
+          officeDrafts: drafts,
+          files: data.files.map((entry) =>
+            entry.id === fileId
+              ? {
+                  ...entry,
+                  assetKey,
+                  revision,
+                  size: blob.size,
+                  mime: blob.type || entry.mime,
+                  updatedAt: new Date().toISOString(),
+                }
+              : entry
+          ),
+        };
+      },
+      new Map([[assetKey, blob]])
+    );
+    await this.confirmOfficeFile(fileId, revision);
+    return revision;
+  };
+  confirmOfficeFile = async (fileId: string, revision: number): Promise<void> => {
+    if (this.snapshot.status === 'conflict')
+      throw new Error('工作区存在版本冲突，编辑副本仍保留在本机文档服务。');
+    const file = this.snapshot.data?.files.find((entry) => entry.id === fileId);
+    if (!file || file.revision !== revision)
+      throw new Error('文件版本已变化，编辑副本仍保留在本机文档服务。');
+    const assetKey = file.assetKey;
+    await this.flush();
+    const persisted = await readWorkspace();
+    const storedFile = persisted?.data.files.find((entry) => entry.id === fileId);
+    if (storedFile?.assetKey !== assetKey || storedFile.revision !== revision)
+      throw new Error(
+        this.snapshot.error || '文件尚未写入浏览器存储，编辑副本仍保留在本机文档服务。'
+      );
   };
   retry = async () => {
     if (this.snapshot.data) {

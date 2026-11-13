@@ -1,0 +1,157 @@
+.z-studio-ribbon {
+  --z-studio-ribbon-control-height: 24px;
+  --z-studio-ribbon-icon-size: 16px;
+  --z-studio-ribbon-font-size: 12px;
+  background: var(--z-office-studio-ribbon-bg, var(--z-color-bg-subtle));
+}
+
+.z-studio-ribbon-tabbar {
+  display: flex;
+  align-items: stretch;
+  flex: none;
+  min-width: 0;
+  height: 32px;
+  padding-inline: 8px;
+  background: var(--z-office-studio-header-bg, var(--z-color-bg-subtle));
+  color: var(--z-office-studio-header-fg, var(--z-color-fg));
+}
+
+.z-studio-ribbon-tabbar > .z-tabs-list {
+  flex: 1;
+  min-width: 0;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  border: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.z-studio-ribbon-tabbar .z-tab {
+  flex: none;
+  min-height: 0;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 3px 3px 0 0;
+  color: inherit;
+  font-size: var(--z-studio-ribbon-font-size, 12px);
+  font-weight: var(--z-weight-regular);
+  white-space: nowrap;
+}
+
+.z-studio-ribbon-tabbar .z-tab::after {
+  display: none;
+}
+
+.z-studio-ribbon-tabbar .z-tab:hover:not(:disabled) {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.z-studio-ribbon-tabbar .z-tab[aria-selected='true'] {
+  background: var(--z-office-studio-ribbon-bg, var(--z-color-bg-subtle));
+  color: var(--z-color-fg);
+}
+
+.z-office-studio-file-menu {
+  display: flex;
+  flex: none;
+  align-items: stretch;
+}
+
+.z-office-studio-file-trigger {
+  padding: 0 18px;
+  border: 0;
+  border-radius: 3px 3px 0 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--z-studio-ribbon-font-size, 12px);
+  cursor: pointer;
+}
+
+.z-office-studio-file-trigger:hover,
+.z-office-studio-file-trigger[aria-expanded='true'] {
+  background: color-mix(in srgb, currentColor 15%, transparent);
+}
+
+.z-office-studio-file-trigger:focus-visible {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: -3px;
+}
+
+.z-studio-ribbon > .z-tabs-panel {
+  padding: 0;
+}
+
+.z-studio-ribbon .z-button {
+  --z-button-height: var(--z-studio-ribbon-control-height);
+  --z-button-padding-x: 7px;
+  --z-button-font-size: var(--z-studio-ribbon-font-size);
+  --z-button-radius: var(--z-radius-sm);
+  --z-button-fg: var(--z-color-fg);
+  --z-button-hover-bg: var(--z-color-bg-muted);
+  --z-button-hover-fg: var(--z-color-fg);
+  --z-button-active-bg: color-mix(in srgb, var(--z-color-primary) 12%, var(--z-color-bg-muted));
+  min-width: var(--z-studio-ribbon-control-height);
+  white-space: nowrap;
+}
+
+.z-studio-ribbon .z-button[data-variant='ghost'] {
+  --z-button-bg: transparent;
+  --z-button-border: transparent;
+}
+
+.z-studio-ribbon .z-button[data-variant='outline'] {
+  --z-button-border: transparent;
+  --z-button-bg: transparent;
+  --z-button-fg: var(--z-color-fg);
+  --z-button-hover-bg: var(--z-color-bg-muted);
+  --z-button-hover-fg: var(--z-color-fg);
+  --z-button-active-bg: var(--z-color-bg-muted);
+}
+
+.z-studio-ribbon .z-button[aria-pressed='true'] {
+  --z-button-bg: var(--z-color-primary-subtle);
+  --z-button-fg: var(--z-color-primary-subtle-fg);
+  --z-button-border: color-mix(in srgb, var(--z-color-primary) 42%, var(--z-color-border));
+  --z-button-hover-bg: color-mix(in srgb, var(--z-color-primary) 16%, var(--z-color-bg));
+  --z-button-hover-fg: var(--z-color-primary-subtle-fg);
+  --z-button-active-bg: color-mix(in srgb, var(--z-color-primary) 22%, var(--z-color-bg));
+  background: var(--z-button-bg);
+  border-color: var(--z-button-border);
+  color: var(--z-button-fg);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--z-color-primary) 12%, transparent);
+}
+
+.z-studio-ribbon .z-input,
+.z-studio-ribbon .z-select {
+  font-size: var(--z-studio-ribbon-font-size);
+}
+
+.z-studio-ribbon .z-input-field,
+.z-studio-ribbon .z-select-trigger {
+  min-height: var(--z-studio-ribbon-control-height);
+  height: var(--z-studio-ribbon-control-height);
+  padding: 2px 7px;
+  border-radius: 2px;
+  font-size: var(--z-studio-ribbon-font-size);
+}
+
+.z-studio-ribbon .z-button svg,
+.z-studio-ribbon .z-color-picker-trigger svg {
+  flex: none;
+}
+
+@media (max-width: 560px) {
+  .z-studio-ribbon-tabbar {
+    padding-inline: 0;
+  }
+
+  .z-studio-ribbon-tabbar .z-tab {
+    padding-inline: 12px;
+  }
+
+  .z-office-studio-file-trigger {
+    padding-inline: 14px;
+  }
+}

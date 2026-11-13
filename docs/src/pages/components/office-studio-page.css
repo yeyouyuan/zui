@@ -1,0 +1,136 @@
+.office-studio-page-tags {
+  display: flex;
+  gap: var(--z-space-2);
+  flex-wrap: wrap;
+  margin-block: var(--z-space-5);
+}
+.office-studio-demo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: 100%;
+  gap: var(--z-space-3);
+}
+.office-studio-launcher {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--z-space-2);
+}
+.office-studio-launcher .z-button {
+  height: auto;
+  min-width: 0;
+  padding: var(--z-space-3);
+  justify-content: flex-start;
+  text-align: left;
+  border: 1px solid var(--z-color-border-subtle);
+}
+.office-studio-launcher .z-button-label {
+  display: flex;
+  align-items: center;
+  gap: var(--z-space-3);
+  min-width: 0;
+}
+.office-studio-launcher strong {
+  display: block;
+  font-size: var(--z-text-md);
+  font-weight: var(--z-weight-semibold);
+}
+.office-studio-launcher small {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--z-text-xs);
+  color: var(--z-color-fg-muted);
+  white-space: normal;
+}
+.office-studio-launcher-letter {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 40px;
+  flex: 0 0 36px;
+  border-radius: var(--z-radius-md);
+  background: var(--z-color-primary-subtle);
+  color: var(--z-color-primary);
+  font-size: var(--z-text-lg);
+  font-weight: var(--z-weight-semibold);
+}
+.office-studio-launcher-letter[data-kind='excel'] {
+  background: var(--z-color-success-subtle);
+  color: var(--z-color-success-subtle-fg);
+}
+.office-studio-launcher-letter[data-kind='pdf'] {
+  background: var(--z-color-danger-subtle);
+  color: var(--z-color-danger-subtle-fg);
+}
+.office-studio-library {
+  display: flex;
+  align-items: center;
+  gap: var(--z-space-3);
+  flex-wrap: wrap;
+  color: var(--z-color-fg-muted);
+  font-size: var(--z-text-sm);
+}
+.office-studio-library .z-select {
+  flex: 1 1 200px;
+  max-width: 420px;
+  min-width: 0;
+}
+.office-studio-library .z-switch {
+  margin-inline-start: auto;
+}
+.office-studio-demo-note {
+  margin: 0;
+  font-size: var(--z-text-xs);
+  color: var(--z-color-fg-subtle);
+}
+.office-studio-recovery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--z-space-2);
+  margin-top: var(--z-space-2);
+}
+.office-studio-page-loading {
+  display: grid;
+  place-items: center;
+  min-height: 380px;
+  background: var(--z-color-bg-subtle);
+  border: 1px dashed var(--z-color-border);
+  border-radius: var(--z-radius-lg);
+  color: var(--z-color-fg-muted);
+}
+.office-studio-history-modal {
+  --z-modal-content-width-lg: 1120px;
+}
+.office-studio-history-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--z-space-2);
+  max-height: 150px;
+  overflow: auto;
+  margin-bottom: var(--z-space-3);
+}
+.office-studio-history-error {
+  color: var(--z-color-danger);
+}
+@media (max-width: 560px) {
+  .office-studio-launcher .z-button {
+    padding: var(--z-space-2);
+  }
+  .office-studio-launcher .z-button-label {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--z-space-2);
+  }
+  .office-studio-launcher-letter {
+    width: 24px;
+    height: 28px;
+    flex-basis: 28px;
+    font-size: var(--z-text-sm);
+  }
+  .office-studio-library > span {
+    display: none;
+  }
+  .office-studio-library .z-select {
+    flex-basis: 150px;
+  }
+}

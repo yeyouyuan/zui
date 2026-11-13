@@ -1,4 +1,4 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { Button, Modal, Skeleton, Tag } from '@zui/react';
 import {
   Archive,
@@ -39,10 +39,25 @@ import {
 } from './workspace-model';
 import { useWorkspace, workspaceStore } from './workspace-store';
 import { downloadBlob, exportBackup, importBackup } from './workspace-backup';
+import {
+  currentOfficeSession,
+  downloadOfficeCopy,
+  releaseOfficeFile,
+  saveAllOfficeSessions,
+  saveOfficeSession,
+} from './office/office-client';
 import './collaboration.css';
+const OfficeWorkbench = lazy(() => import('./office/OfficeWorkbench'));
 
 type PreviewState = 'ready' | 'loading' | 'error';
-const ICONS = { text: FileText, image: ImageIcon, pdf: FileText, binary: Archive };
+const ICONS = {
+  text: FileText,
+  image: ImageIcon,
+  pdf: FileText,
+  word: FileText,
+  excel: FileText,
+  binary: Archive,
+};
 
 export default function CollaborationPage(): React.ReactNode {
   usePageTitle('内容协作实验室');
@@ -113,7 +128,7 @@ function WorkspaceView({
     }));
   };
   const hasDraft = (id: string) =>
-    Boolean(data.editorDrafts[id]) ||
+    Boolean(data.editorDrafts[id] || data.officeDrafts?.[id]) ||
     Object.entries(data.commentDrafts).some(
       ([key, text]) => key.startsWith(`${id}:`) && text.trim()
     );
@@ -138,7 +153,7 @@ function WorkspaceView({
   useEffect(() => {
     let disposed = false;
     let url = '';
-    if (!file?.assetKey || file.kind === 'binary') {
+    if (!file?.assetKey || ['binary', 'word', 'excel', 'pdf'].includes(file.kind)) {
       setPreview({ id: fileId, state: 'ready', url: '', error: '' });
       return;
     }
@@ -147,9 +162,7 @@ function WorkspaceView({
       .asset(file.assetKey)
       .then((blob) => {
         if (disposed) return;
-        url = URL.createObjectURL(
-          file.kind === 'pdf' ? new Blob([blob], { type: 'application/pdf' }) : blob
-        );
+        url = URL.createObjectURL(blob);
         setPreview({ id: fileId, state: 'loading', url, error: '' });
       })
       .catch((error) => {
@@ -186,13 +199,22 @@ function WorkspaceView({
     file?.blocks.find((block) => block.id === anchor)?.title ?? '原段落';
   const bodyFor = (anchor: string) => file?.blocks.find((block) => block.id === anchor)?.body;
   const composerQuote = selectedThread?.quote ?? (commentAnchor ? bodyFor(commentAnchor) : null);
-  const selectFile = (next: string) => {
-    if (next === fileId || editing) return;
-    update((current) => ({ ...current, activeFile: next }));
-    setActiveAnchor(null);
-    setFeedback(
-      `已打开 ${data.files.find((item) => item.id === next)!.name}${hasDraft(next) ? '，已恢复本地草稿。' : ''}`
-    );
+  const selectFile = async (next: string) => {
+    if (next === fileId || editing || busy) return;
+    setBusy(true);
+    setActionError('');
+    try {
+      await saveAllOfficeSessions();
+      update((current) => ({ ...current, activeFile: next }));
+      setActiveAnchor(null);
+      setFeedback(
+        `已打开 ${data.files.find((item) => item.id === next)!.name}${hasDraft(next) ? '，已恢复本地草稿。' : ''}`
+      );
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : '当前文档尚未保存，请重试。');
+    } finally {
+      setBusy(false);
+    }
   };
   const startEditing = (blockId: string) => {
     if (!file || blocked) return;
@@ -334,9 +356,21 @@ function WorkspaceView({
   };
   const downloadFile = async (target: WorkspaceFile) => {
     try {
+      const session = currentOfficeSession(target.id);
+      if (session?.dirty) {
+        try {
+          await saveOfficeSession(session);
+        } catch {
+          downloadBlob(await downloadOfficeCopy(session), target.name);
+          setActionError('本次保存尚未完成，已下载最近生成的服务端副本。请保留编辑页面并重试。');
+          return;
+        }
+      }
+      const latest =
+        workspaceStore.getSnapshot().data?.files.find((entry) => entry.id === target.id) ?? target;
       downloadBlob(
-        target.kind === 'text' ? textBlob(target) : await workspaceStore.asset(target.assetKey!),
-        target.name
+        latest.kind === 'text' ? textBlob(latest) : await workspaceStore.asset(latest.assetKey!),
+        latest.name
       );
     } catch (error) {
       setActionError(error instanceof Error ? error.message : '文件下载失败。');
@@ -346,8 +380,10 @@ function WorkspaceView({
     setBusy(true);
     setActionError('');
     try {
+      await saveAllOfficeSessions();
+      const latest = workspaceStore.getSnapshot().data!;
       downloadBlob(
-        await exportBackup(data, workspaceStore.asset),
+        await exportBackup(latest, workspaceStore.asset),
         `内容工作区-${new Date().toISOString().slice(0, 10)}.zui.json`
       );
       setFeedback('工作区备份已导出，包含文件、讨论和草稿。');
@@ -361,50 +397,59 @@ function WorkspaceView({
     if (blocked || busy || editing || !sources.length) return;
     setBusy(true);
     setActionError('');
-    const imported: WorkspaceFile[] = [];
-    const assets = new Map<string, Blob>();
-    const errors: string[] = [];
-    let total = data.files.reduce((sum, file) => sum + file.size, 0);
-    for (const source of sources) {
-      try {
-        if (data.files.length + imported.length >= MAX_FILES)
-          throw new Error('工作区最多保留 100 个文件。');
-        const result = await importFile(source);
-        if (total + result.file.size > MAX_WORKSPACE_BYTES)
-          throw new Error('工作区文件总量超过 100 MB，请先导出并删除不需要的文件。');
-        total += result.file.size;
-        imported.push(result.file);
-        if (result.asset) assets.set(result.file.assetKey!, result.asset);
-      } catch (error) {
-        errors.push(error instanceof Error ? error.message : `${source.name} 导入失败。`);
+    try {
+      await saveAllOfficeSessions();
+      const latest = workspaceStore.getSnapshot().data!;
+      const imported: WorkspaceFile[] = [];
+      const assets = new Map<string, Blob>();
+      const errors: string[] = [];
+      let total = latest.files.reduce((sum, file) => sum + file.size, 0);
+      for (const source of sources) {
+        try {
+          if (latest.files.length + imported.length >= MAX_FILES)
+            throw new Error('工作区最多保留 100 个文件。');
+          const result = await importFile(source);
+          if (total + result.file.size > MAX_WORKSPACE_BYTES)
+            throw new Error('工作区文件总量超过 100 MB，请先导出并删除不需要的文件。');
+          total += result.file.size;
+          imported.push(result.file);
+          if (result.asset) assets.set(result.file.assetKey!, result.asset);
+        } catch (error) {
+          errors.push(error instanceof Error ? error.message : `${source.name} 导入失败。`);
+        }
       }
+      if (imported.length) {
+        update(
+          (current) => ({
+            ...current,
+            files: [...current.files, ...imported],
+            activeFile: imported[0].id,
+          }),
+          assets
+        );
+        setActiveAnchor(null);
+        setSearch('');
+        setFeedback(`已导入 ${imported.length} 个文件，正在保存到本地。`);
+      }
+      setActionError(errors.join(' '));
+      await workspaceStore.flush();
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : '当前文档尚未保存，请重试。');
+    } finally {
+      setBusy(false);
     }
-    if (imported.length) {
-      update(
-        (current) => ({
-          ...current,
-          files: [...current.files, ...imported],
-          activeFile: imported[0].id,
-        }),
-        assets
-      );
-      setActiveAnchor(null);
-      setSearch('');
-      setFeedback(`已导入 ${imported.length} 个文件，正在保存到本地。`);
-    }
-    setActionError(errors.join(' '));
-    setBusy(false);
-    void workspaceStore.flush();
   };
   const restoreBackup = async (source: File) => {
     if (blocked || busy || editing) return;
     setBusy(true);
     setActionError('');
     try {
+      await saveAllOfficeSessions();
       const restored = await importBackup(source);
+      const latest = workspaceStore.getSnapshot().data!;
       if (
-        data.files.length + restored.data.files.length > MAX_FILES ||
-        [...data.files, ...restored.data.files].reduce((sum, file) => sum + file.size, 0) >
+        latest.files.length + restored.data.files.length > MAX_FILES ||
+        [...latest.files, ...restored.data.files].reduce((sum, file) => sum + file.size, 0) >
           MAX_WORKSPACE_BYTES
       )
         throw new Error('导入备份后将超出工作区 100 文件或 100 MB 上限。');
@@ -416,6 +461,7 @@ function WorkspaceView({
           activeFile: restored.data.activeFile ?? current.activeFile,
           commentDrafts: { ...current.commentDrafts, ...restored.data.commentDrafts },
           editorDrafts: { ...current.editorDrafts, ...restored.data.editorDrafts },
+          officeDrafts: { ...current.officeDrafts, ...restored.data.officeDrafts },
         }),
         restored.assets
       );
@@ -429,12 +475,41 @@ function WorkspaceView({
       setBusy(false);
     }
   };
+  const openSample = async (kind: 'word' | 'excel' | 'pdf') => {
+    if (blocked || busy) return;
+    setBusy(true);
+    try {
+      const { officeSample } = await import('./office/samples');
+      const sample = await officeSample(kind);
+      setBusy(false);
+      await addFiles([sample]);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : '示例文件生成失败。');
+      setBusy(false);
+    }
+  };
   const openDialog = (kind: typeof dialog) => {
     setDialog(kind);
     setName(kind === 'rename' ? (file?.name ?? '') : '新建文档.txt');
     setNameError('');
   };
-  const confirmDialog = () => {
+  const changeAccess = async (next: boolean) => {
+    if (busy) return;
+    setBusy(true);
+    setActionError('');
+    try {
+      await saveAllOfficeSessions();
+      setReadOnly(next);
+      if (next) setEditing(null);
+      setFeedback(next ? '已进入只读预览，修改已保存。' : '已恢复编辑权限。');
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : '当前文档尚未保存，请重试。');
+    } finally {
+      setBusy(false);
+    }
+  };
+  const confirmDialog = async () => {
+    if (busy) return;
     if (dialog === 'reload') {
       setEditing(null);
       void workspaceStore.reload();
@@ -442,16 +517,31 @@ function WorkspaceView({
       return;
     }
     if (blocked) return;
+    setBusy(true);
     if (dialog === 'delete' && file) {
+      try {
+        await saveAllOfficeSessions();
+      } catch (error) {
+        setNameError(error instanceof Error ? error.message : '当前文档尚未保存。');
+        setBusy(false);
+        return;
+      }
+      releaseOfficeFile(fileId);
       update((current) => removeFile(current, fileId));
       setEditing(null);
       setActiveAnchor(null);
       setFeedback(`已删除 ${file.name} 及其本地讨论与草稿。`);
       setDialog(null);
+      setBusy(false);
       return;
     }
     try {
       let nextName = validName(name);
+      if (dialog === 'rename' && file && ['word', 'excel', 'pdf'].includes(file.kind)) {
+        const extension = file.kind === 'word' ? '.docx' : file.kind === 'excel' ? '.xlsx' : '.pdf';
+        if (!nextName.toLowerCase().endsWith(extension))
+          nextName = validName(`${nextName}${extension}`);
+      }
       if (dialog === 'create' && fileKind(nextName, '') !== 'text')
         nextName = validName(`${nextName}.txt`);
       if (
@@ -461,6 +551,7 @@ function WorkspaceView({
       )
         throw new Error('已有同名文件，请换一个名称。');
       if (dialog === 'create') {
+        await saveAllOfficeSessions();
         if (data.files.length >= MAX_FILES) throw new Error('工作区最多保留 100 个文件。');
         const next = createTextFile(nextName);
         update((current) => ({ ...current, files: [...current.files, next], activeFile: next.id }));
@@ -478,6 +569,8 @@ function WorkspaceView({
       setDialog(null);
     } catch (error) {
       setNameError(error instanceof Error ? error.message : '文件操作失败。');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -492,7 +585,7 @@ function WorkspaceView({
             CONTENT WORKSPACE <span className="collaboration-prototype">本地文件工作台</span>
           </div>
           <h1 className="doc-h1">内容协作实验室</h1>
-          <p className="doc-lead">导入自己的文件，编辑、讨论并保存，随时回来继续。</p>
+          <p className="doc-lead">在线预览和修改 Word、Excel、PDF 与文本，文件和讨论保存在本机。</p>
         </div>
         <ol className="collaboration-steps" aria-label="协作流程">
           <li>
@@ -550,13 +643,10 @@ function WorkspaceView({
               <select
                 aria-label="访问权限"
                 value={readOnly ? 'read' : 'edit'}
+                disabled={busy}
                 onChange={(event) => {
                   const next = event.target.value === 'read';
-                  setReadOnly(next);
-                  if (next) setEditing(null);
-                  setFeedback(
-                    next ? '已进入只读模式，正文与评论草稿继续保存在本地。' : '已恢复编辑权限。'
-                  );
+                  void changeAccess(next);
                 }}
               >
                 <option value="edit">可编辑</option>
@@ -575,7 +665,10 @@ function WorkspaceView({
                 }
               />
             </label>
-            <p>仅保存在当前浏览器，不会上传文件。清理网站数据会移除工作区，请定期导出备份。</p>
+            <p>
+              Office
+              文件由本机文档服务编辑，保存后写回当前浏览器。清理网站数据会移除工作区，请定期导出备份。
+            </p>
             <p>
               {data.files.length} / 100 个文件 ·{' '}
               {formatSize(data.files.reduce((sum, item) => sum + item.size, 0))} / 100 MB
@@ -708,6 +801,34 @@ function WorkspaceView({
             </span>
           </div>
         </header>
+        <div className="collaboration-office-examples" role="group" aria-label="在线文档示例">
+          <span>试用真实文件</span>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={blocked || busy}
+            onClick={() => void openSample('word')}
+          >
+            Word 示例
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={blocked || busy}
+            onClick={() => void openSample('excel')}
+          >
+            Excel 示例
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={blocked || busy}
+            onClick={() => void openSample('pdf')}
+          >
+            PDF 示例
+          </Button>
+          <span>也可导入自己的 DOCX、XLSX、PDF</span>
+        </div>
         <div className="collaboration-file-panel">
           <div className="collaboration-files-heading">
             <span>工作区文件</span>
@@ -735,8 +856,10 @@ function WorkspaceView({
                     title={item.name}
                     aria-current={fileId === item.id ? 'true' : undefined}
                     data-kind={item.kind}
-                    disabled={status === 'conflict' || (Boolean(editing) && fileId !== item.id)}
-                    onClick={() => selectFile(item.id)}
+                    disabled={
+                      busy || status === 'conflict' || (Boolean(editing) && fileId !== item.id)
+                    }
+                    onClick={() => void selectFile(item.id)}
                   >
                     <span className="collaboration-file-type" aria-hidden="true">
                       <ItemIcon />
@@ -794,6 +917,8 @@ function WorkspaceView({
             <p>
               支持拖入文件
               <span>
+                DOCX · XLSX · PDF · 文本与图片
+                <br />
                 文本 1 MB · 其他文件 20 MB
                 <br />
                 刷新后继续，备份可迁移到其他浏览器。
@@ -833,7 +958,7 @@ function WorkspaceView({
                   iconStart={<Download />}
                   onClick={() => void downloadFile(file)}
                 >
-                  下载文件
+                  {data.officeDrafts?.[fileId] ? '下载已保存版本' : '下载文件'}
                 </Button>
                 <Button
                   size="sm"
@@ -906,22 +1031,15 @@ function WorkspaceView({
                   {file.name} · {formatSize(file.size)}
                 </figcaption>
               </figure>
-            ) : file.kind === 'pdf' ? (
-              <div className="collaboration-pdf">
-                <iframe
-                  key={preview.url}
-                  src={preview.url}
-                  title={`${file.name} PDF 预览`}
-                  onLoad={() => setPreview((current) => ({ ...current, state: 'ready' }))}
+            ) : ['word', 'excel', 'pdf'].includes(file.kind) ? (
+              <Suspense fallback={<p role="status">正在打开文档编辑器…</p>}>
+                <OfficeWorkbench
+                  key={file.id}
+                  file={file}
+                  draft={data.officeDrafts?.[fileId]}
+                  disabled={blocked}
                 />
-                <p>
-                  PDF 由浏览器预览。若当前浏览器无法显示，请
-                  <Button size="sm" variant="ghost" onClick={() => void downloadFile(file)}>
-                    下载 PDF
-                  </Button>
-                  后阅读。
-                </p>
-              </div>
+              </Suspense>
             ) : file.kind === 'binary' ? (
               <div className="collaboration-placeholder">
                 <span className="collaboration-unsupported" aria-hidden="true">
@@ -1345,15 +1463,15 @@ function WorkspaceView({
             <span>01 / VIEW</span>
             <h3>FilePreview</h3>
             <p>
-              统一文件信息、加载、失败与不支持状态。文本、图片和浏览器 PDF
-              预览已接入；其他附件可下载。
+              统一文件信息、加载、失败与不支持状态。已接入
+              Word、Excel、PDF、文本和图片预览；其他附件可下载。
             </p>
           </div>
           <div>
             <span>02 / EDIT</span>
             <h3>ContentEditor</h3>
             <p>
-              先聚焦纯文本与明确的保存操作，管理草稿、只读、保存中和冲突。为成熟编辑器保留接入边界。
+              Word、Excel、PDF 接入完整文档编辑器，管理保存回写、只读和版本冲突；文本支持段落草稿。
             </p>
           </div>
           <div>
@@ -1416,7 +1534,7 @@ function WorkspaceView({
           <form
             onSubmit={(event) => {
               event.preventDefault();
-              confirmDialog();
+              void confirmDialog();
             }}
           >
             <Modal.Header>
@@ -1459,13 +1577,19 @@ function WorkspaceView({
                 )}
               </Modal.Body>
             )}
+            {nameError && dialog !== 'create' && dialog !== 'rename' && (
+              <Modal.Body>
+                <p role="alert">{nameError}</p>
+              </Modal.Body>
+            )}
             <Modal.Footer>
               <Modal.Close
                 data-autofocus={dialog === 'delete' || dialog === 'reload' ? '' : undefined}
+                disabled={busy}
               >
                 取消
               </Modal.Close>
-              <Button type="submit" variant="primary">
+              <Button type="submit" variant="primary" disabled={busy}>
                 {dialog === 'delete' ? '确认删除' : dialog === 'reload' ? '确认载入' : '确定'}
               </Button>
             </Modal.Footer>

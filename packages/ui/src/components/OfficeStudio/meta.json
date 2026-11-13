@@ -1,0 +1,67 @@
+{
+  "name": "OfficeStudio",
+  "title": "OfficeStudio 独立文档工作台",
+  "description": "以 ZUI 控件构建的独立文档工作台：Word 富文本页面、Excel 单元格和公式、PDF 分页批注与表单，支持文件适配、保存反馈、只读预览和全屏，不依赖 ONLYOFFICE 服务",
+  "category": "数据输入",
+  "useCase": [
+    "在 React 业务页面内编辑 DOCX、XLSX 和 PDF",
+    "浏览器本地文档工作台",
+    "业务自定义文件导入、持久化与导出"
+  ],
+  "dontUse": ["要求全部 Office 复杂版式无损兼容", "要求修改 PDF 任意原始文字或扫描件 OCR"],
+  "props": {
+    "value": { "type": "OfficeStudioDocument", "desc": "受控文档模型" },
+    "defaultValue": {
+      "type": "OfficeStudioDocument",
+      "desc": "非受控初始文档，默认可编辑的 Word 提案"
+    },
+    "onChange": {
+      "type": "(document: OfficeStudioDocument) => void",
+      "desc": "内容或文档名称变更"
+    },
+    "source": { "type": "Blob", "desc": "当前文档的原始文件，PDF 渲染必需" },
+    "pdfRenderer": {
+      "type": "StudioPdfRenderer",
+      "desc": "宿主提供 PDF 分页渲染与坐标转换，worker 和资源由宿主管理"
+    },
+    "onSave": {
+      "type": "(document) => void | Promise<void>",
+      "desc": "确认持久化后返回；保存期间的新输入保持未保存"
+    },
+    "onExport": {
+      "type": "(document) => void | Promise<void>",
+      "desc": "宿主将当前模型导出为实际文件"
+    },
+    "onImport": {
+      "type": "(file: File) => void | Promise<void>",
+      "desc": "宿主解析文件并更新受控模型"
+    },
+    "onCreate": {
+      "type": "(kind: OfficeStudioKind) => void | Promise<void>",
+      "desc": "创建文档；PDF 创建需要此回调提供源文件"
+    },
+    "onError": { "type": "(error: Error) => void", "desc": "保存、导出、导入或创建失败" },
+    "readOnly": { "type": "boolean", "default": "false", "desc": "只读预览；保留分页、缩放与导出" },
+    "disabled": { "type": "boolean", "default": "false", "desc": "禁用文档编辑与文件操作" },
+    "height": {
+      "type": "number | string",
+      "default": "760",
+      "desc": "确定容器高度，100% 需要父容器设置高度"
+    },
+    "saveState": { "type": "'saved' | 'saving' | 'unsaved' | 'error'", "desc": "宿主自动保存状态" },
+    "fullscreen": { "type": "boolean", "desc": "受控全屏布局" },
+    "defaultFullscreen": { "type": "boolean", "default": "false", "desc": "初始全屏布局" },
+    "onFullscreenChange": { "type": "(value: boolean) => void", "desc": "全屏状态变更" },
+    "ref": { "type": "OfficeStudioHandle", "desc": "getDocument、save、export、setFullscreen" },
+    "classNames": {
+      "type": "{ root?; header?; title?; actions?; stage?; loading?; status?; error? }",
+      "desc": "语义结构类名追加"
+    }
+  },
+  "a11yNotes": [
+    "编辑控件直接使用 ZUI 的可访问组件",
+    "保存状态通过 role=status 表达，失败提供 alert 和重试",
+    "支持 Ctrl/Command S 保存，全屏通过 Esc 退出，编辑内容保持挂载"
+  ],
+  "related": ["OfficeEditor", "Button", "Input", "Tabs", "Select", "DropdownMenu"]
+}

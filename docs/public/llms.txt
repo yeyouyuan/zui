@@ -10,6 +10,13 @@ Version 0.3.0 is distributed through GitHub Packages, not npmjs. Configure
 with a GitHub account that has package read access. Install aliases below keep
 source imports at @zui/*.
 
+The working tree also adds OfficeEditor and OfficeStudio (not yet released).
+OfficeEditor requires a separately deployed ONLYOFFICE Docs service and backend
+configuration. OfficeStudio uses ZUI controls and independent document models with
+host file codecs, printing and persistence; it does not require an Office server.
+The current source Registry has 73 components and 16 blocks. The published
+0.3.0 package does not contain these source additions.
+
 ```
 pnpm add @zui/react@npm:@yeyouyuan/zui-react@0.3.0          # components + bundled styles
 pnpm add @zui/tokens@npm:@yeyouyuan/zui-tokens@0.3.0         # optional: TS constants + CSS variable references
@@ -238,6 +245,94 @@ Collapsed content stays mounted with inert + aria-hidden and returns focus to a 
 Parts: root | panel | content | handle | handle-indicator
 ```
 
+### OfficeEditor (embedded ONLYOFFICE native document editor; unreleased source addition)
+```
+import { OfficeEditor } from '@zui/react';
+OfficeEditor: (props: OfficeEditorProps) => JSX.Element
+  documentServerUrl: string                                            // REQUIRED, browser-accessible Docs server
+  config: OfficeEditorConfig                                           // REQUIRED, backend-issued signed configuration
+  height?: number | string                                             // parent needs a height for '100%'
+  onSave?/onDownload?: (editor) => void | Promise<void>                  // app persists/downloads the generated result
+  events?: Record<string, (event: OfficeEditorEvent) => void>            // combines with config.events
+  onReady?: (editor, event) => void
+  onStatusChange?: (status: 'loading' | 'ready' | 'error') => void
+  onError?: (error: OfficeEditorError) => void
+  toolbar?/header?: ReactNode | (context) => ReactNode                  // false hides the outer bar, native UI remains
+  fullscreen?/defaultFullscreen?/onFullscreenChange?(value)
+  scriptTimeout?/readyTimeout?: number                                 // milliseconds
+  scriptNonce?: string                                                 // CSP nonce for the official API script
+  rebuildKey?: string | number                                         // save before an explicit rebuild
+  ref?: Ref<OfficeEditorHandle>                                        // reload(), getEditor(), setFullscreen(boolean)
+Word/Excel/PDF editing is supplied by the external Docs engine. Keep JWT secrets,
+file permissions and generated-file persistence on the backend. Token rotation
+and event callback reference changes preserve the active instance; document key,
+mode and permission changes recreate it. Business callbacks must await durable
+save completion. Community has AGPL and branding requirements; closed-source
+product/SaaS embedding has an explicit Docs Developer commercial license path.
+Parts: root | header | toolbar | title | brand | status | actions | stage | canvas | overlay | error
+```
+
+### OfficeStudio (independent Word, Excel and PDF workspace; unreleased source addition)
+```
+import { OfficeStudio, createOfficeStudioDocument } from '@zui/react';
+OfficeStudio: (props: OfficeStudioProps) => JSX.Element
+  value?/defaultValue?: OfficeStudioDocument                            // version:1, id, name, kind:'word'|'excel'|'pdf'
+  onChange?: (document: OfficeStudioDocument) => void
+  source?: Blob                                                        // original file; required for PDF rendering
+  pdfRenderer?: StudioPdfRenderer                                      // host worker/assets and point-coordinate transforms
+  onSave?/onExport?/onPrint?: (document) => void | Promise<void>         // host durability/file output/print dialog
+  onImport?: (file: File) => void | Promise<void>                        // update controlled model after parsing
+  onCreate?: (kind: OfficeStudioKind) => void | Promise<void>            // PDF creation supplies source bytes
+  onError?: (error: Error) => void
+  readOnly?/disabled?: boolean                                         // readOnly retains search, browsing, export and print
+  height?: number | string                                             // default 760; parent needs height for 100%
+  saveState?: 'saved'|'saving'|'unsaved'|'error'                          // host autosave status
+  fullscreen?/defaultFullscreen?/onFullscreenChange?(value)
+  ref?: Ref<OfficeStudioHandle>                                        // getDocument(), save(), export(), print(), setFullscreen()
+createOfficeStudioDocument(kind='word'): OfficeStudioDocument
+isOfficeStudioDocument(value: unknown): value is OfficeStudioDocument
+Word: Tiptap/ProseMirror rich content, nested lists, tables and merges, embedded
+PNG/JPEG insertion/resizing/alt text, default header/footer, PAGE/NUMPAGES fields,
+current-region find/replace, heading outline, page setup and undo/redo. DOCX codecs
+preserve supported images and single-section default headers/footers; floating or
+external images, multi-section layouts, tracked changes, TOC and unknown fields are
+rejected. The canvas has continuous content and explicit page breaks, not Office's
+complete automatic pagination; native page fields are calculated by the DOCX reader.
+Excel: cells, range selection, TSV clipboard with internal relative-formula
+relocation, formatting, worksheet creation/rename/deletion, row/column insertion
+and deletion, formulas, cross-sheet references, auto-sum, merging/splitting,
+frozen rows/columns, single conditions per filter column, row sorting and native clustered column/standard line
+charts. Limits: 10,000 rows/256 columns/32 sheets/100,000 stored cells; clipboard
+10,000 cells, 500 structural edits per sheet before export/reimport. Structural
+edits relocate absolute and relative A1/whole-row/whole-column references across
+sheets; partial ranges shrink and deleted references become #REF!. Unsupported
+dynamic, 3D and structured references fail atomically. Charts use a continuous
+range with first-row series names and first-column categories. Pivot tables,
+complex charts, images, protection, validation,
+conditional formatting, named ranges and macros are rejected by the docs codec.
+PDF: original page and thumbnail previews, zoom/rotation, extractable-text search
+and result navigation, text/highlight/rectangle/freehand ink overlays, dragging,
+undo/redo and ordinary AcroForm fields. Search requires session.search(query,
+{signal}); results contain page, text and an original-PDF point rectangle.
+PDF supports 1-200 pages; no arbitrary original text editing/reflow/OCR. Handwritten
+signatures are vector ink, not certificate signatures. Encrypted files, XFA and
+unsupported native fields are rejected rather than silently discarded.
+The docs demo uses a separate zui-office-studio IndexedDB database with original
+Blobs, revision-checked commits, coalesced saves and conflict copy recovery. It
+keeps 20 prior committed versions per document; preview/export/print are read-only,
+and restoration creates a new document. The local workspace limit is 100 documents.
+Adapters: docs/src/pages/collaboration/office-studio/. UI: @zui/react/office-studio.
+Codecs, PDF worker/fonts, print support and local history storage are host adapters,
+not public UI-package exports or part of the CLI office-studio UI source item.
+Editors and PDF rendering resources load on demand. Saving/exporting/printing/
+getDocument commits focused editor input before reading a document snapshot.
+Ctrl/Command S calls save; Ctrl/Command P calls onPrint when supplied. The docs
+print adapter outputs current Word/Excel content or the exported PDF; browser
+pagination can differ from Office, and Excel print regions above 50,000 cells fail
+with an explicit export-XLSX suggestion.
+Parts: root | header | title | actions | stage | loading | status | error
+```
+
 ### CommandPalette (global command search, Modal + grouped listbox)
 ```
 CommandPaletteCommand: { key; label; textValue?; group?; shortcut?; icon?; disabled?; keywords?; meta?; onSelect?(event) }
@@ -431,7 +526,7 @@ function useAutoTranslate(config: TranslateConfig): {
 
 ## meta.json — per-component AI metadata (CONTRACTS-V3 §2)
 
-Path: `packages/ui/src/components/<Name>/meta.json` (all 71 source Registry components ship metadata). Consumed by `@zui/mcp` tools
+Path: `packages/ui/src/components/<Name>/meta.json` (all 73 source Registry components ship metadata). Consumed by `@zui/mcp` tools
 and the registry generator.
 
 ```json
@@ -460,7 +555,7 @@ Field meaning:
 
 ## Registry & CLI (packages/cli + registry/)
 
-The registry (`registry/registry.json`) contains 71 source components and 16 blocks, generated from sources +
+The registry (`registry/registry.json`) contains 73 source components and 16 blocks, generated from sources +
 `meta.json`; `@zui/cli` copies component source into your project (free to edit) with an
 upstream update channel.
 

@@ -12,12 +12,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontsource/noto-sans-sc": "^5.3.1",
+    "@pdf-lib/fontkit": "^1.1.1",
     "@puckeditor/core": "^0.24.0",
     "@zui/blocks": "workspace:*",
     "@zui/i18n": "workspace:*",
     "@zui/icons": "workspace:*",
     "@zui/react": "workspace:*",
     "@zui/tokens": "workspace:*",
+    "docx": "^9.15.3",
+    "docx-preview": "^0.4.1",
+    "exceljs": "^4.4.0",
+    "fast-formula-parser": "^1.0.19",
+    "jszip": "^3.10.2",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.5.438",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -25,6 +34,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "fake-indexeddb": "^6.2.8",
     "react-router-dom": "^7.18.5",
     "typescript": "^5.7.2",
     "vite": "^6.0.5"

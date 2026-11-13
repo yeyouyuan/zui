@@ -1,0 +1,821 @@
+.z-studio-sheet {
+  --z-studio-sheet-accent: var(--z-office-studio-accent, var(--z-color-success));
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--z-color-bg);
+  color: var(--z-color-fg);
+  font-size: 12px;
+}
+
+.z-studio-sheet-ribbon {
+  flex: none;
+  min-width: 0;
+  background: var(--z-office-studio-ribbon-bg, var(--z-color-bg-subtle));
+  border-bottom: 1px solid var(--z-color-border);
+}
+
+.z-studio-sheet-ribbon > .z-tabs-panel {
+  padding: 0;
+}
+
+.z-studio-sheet-tools {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  min-height: 84px;
+  box-sizing: border-box;
+  padding: 8px 4px 4px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.z-studio-sheet-toolgroup {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  padding: 0 9px;
+  border-right: 1px solid var(--z-color-border);
+}
+
+.z-studio-sheet-toolgroup:last-child {
+  border-right: 0;
+}
+
+.z-studio-sheet-toolgroup > span {
+  color: var(--z-color-fg-muted);
+  font-size: 11px;
+}
+
+.z-studio-sheet-toolrow {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+
+.z-studio-sheet-toolrow .z-button {
+  min-width: 30px;
+}
+
+.z-studio-sheet-numbergroup {
+  width: 148px;
+}
+
+.z-studio-sheet-fontgroup > .z-studio-sheet-toolrow {
+  width: 100%;
+}
+
+.z-studio-sheet-font {
+  flex: 1;
+  min-width: 0;
+  width: 132px;
+}
+
+.z-studio-sheet-fontsize {
+  flex: none;
+  width: 76px;
+}
+
+.z-studio-sheet-fontgroup .z-color-picker-swatch {
+  position: relative;
+  width: 28px;
+  min-width: 28px;
+  padding: 0 4px;
+  border-radius: 2px;
+}
+
+.z-studio-sheet-fontgroup .z-color-picker-swatch-hex {
+  display: none;
+}
+
+.z-studio-sheet-numbergroup > .z-select {
+  width: 100%;
+}
+
+.z-studio-sheet-help {
+  align-self: center;
+  margin: 0 18px;
+  font-size: 12px;
+  color: var(--z-color-fg-muted);
+}
+
+.z-studio-sheet-formulabar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 29px;
+  box-sizing: border-box;
+  padding: 2px 6px;
+  border-bottom: 1px solid var(--z-color-border);
+  background: var(--z-color-bg-subtle);
+}
+
+.z-studio-sheet-address {
+  width: 88px;
+  flex: none;
+}
+
+.z-studio-sheet-address .z-input-field {
+  padding-inline: 7px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.z-studio-sheet-formulabar .z-input {
+  --z-input-height: 23px;
+  --z-input-radius: 1px;
+  --z-input-font-size: 12px;
+}
+
+.z-studio-sheet-formulabar .z-button {
+  --z-button-height: 23px;
+  --z-button-padding-x: 4px;
+}
+
+.z-studio-sheet-fx {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-style: italic;
+  color: var(--z-color-fg-muted);
+}
+
+.z-studio-sheet-formula {
+  flex: 1;
+  min-width: 0;
+}
+
+.z-studio-sheet-grid {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  outline: 0;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  font-variant-numeric: tabular-nums;
+  isolation: isolate;
+}
+
+.z-studio-sheet-workarea {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.z-studio-sheet-chartpanel {
+  flex: none;
+  width: min(340px, 38%);
+  min-width: 260px;
+  overflow: auto;
+  border-left: 1px solid var(--z-color-border);
+  background: var(--z-color-bg-subtle);
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.z-studio-sheet-chartheading,
+.z-studio-sheet-chartcontrols {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+.z-studio-sheet-chartcard {
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid var(--z-color-border);
+  border-radius: var(--z-radius-md);
+  background: var(--z-color-bg);
+}
+
+.z-studio-sheet-chartcard[data-selected] {
+  border-color: var(--z-color-primary);
+}
+
+.z-studio-sheet-chartcontrols {
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--z-color-fg-muted);
+}
+
+.z-studio-sheet-chart {
+  width: 100%;
+  overflow: visible;
+  margin: 10px 0;
+  color: var(--z-color-fg-muted);
+  font-size: 10px;
+}
+
+.z-studio-sheet-chartdata {
+  max-height: 200px;
+  overflow: auto;
+  font-size: 11px;
+}
+
+.z-studio-sheet-chartdata .z-collapse-header,
+.z-studio-sheet-chartdata .z-collapse-content-inner {
+  padding: 5px 7px;
+  font-size: inherit;
+}
+
+.z-studio-sheet-chartdata table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.z-studio-sheet-chartdata td,
+.z-studio-sheet-chartdata th {
+  border: 1px solid var(--z-color-border);
+  padding: 4px;
+  text-align: left;
+}
+
+.z-studio-sheet-data-tools {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+
+.z-studio-sheet-data-tools .z-studio-sheet-toolrow {
+  flex-wrap: wrap;
+}
+
+.z-studio-sheet-data-tools .z-input {
+  width: 135px;
+}
+
+.z-studio-sheet-data-tools .z-select {
+  min-width: 70px;
+}
+
+.z-studio-sheet-cell[data-merged] {
+  align-items: center;
+}
+
+.z-studio-sheet-cell[data-wrap] > span {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.15;
+  max-height: 100%;
+}
+
+.z-studio-sheet-cell[data-frozen],
+.z-studio-sheet-columnheader[data-frozen] {
+  border-right-color: var(--z-color-border-strong);
+}
+
+.z-studio-sheet-row[data-frozen] .z-studio-sheet-cell {
+  border-bottom-color: var(--z-color-border-strong);
+}
+
+.z-studio-sheet-grid:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--z-color-primary);
+}
+
+.z-studio-sheet-canvas {
+  position: relative;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.z-studio-sheet-columnheaders {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  height: 24px;
+  background: var(--z-color-bg-subtle);
+  user-select: none;
+}
+
+.z-studio-sheet-corner {
+  position: sticky;
+  left: 0;
+  z-index: 6;
+  width: 40px;
+  height: 24px;
+  border-right: 1px solid var(--z-color-border);
+  border-bottom: 1px solid var(--z-color-border);
+  background: var(--z-color-bg-subtle);
+}
+
+.z-studio-sheet-columnheader,
+.z-studio-sheet-rowheader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  box-sizing: border-box;
+  border-right: 1px solid var(--z-color-border);
+  border-bottom: 1px solid var(--z-color-border);
+  background: var(--z-color-bg-subtle);
+  color: var(--z-color-fg-muted);
+  font-size: 12px;
+  cursor: default;
+}
+
+.z-studio-sheet-columnheader {
+  position: absolute;
+  top: 0;
+}
+
+.z-studio-sheet-row {
+  position: absolute;
+  left: 0;
+  height: 24px;
+}
+
+.z-studio-sheet-rowheader {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  width: 40px;
+  user-select: none;
+}
+
+.z-studio-sheet-columnheader[data-selected],
+.z-studio-sheet-rowheader[data-selected] {
+  background: color-mix(in srgb, var(--z-studio-sheet-accent) 15%, var(--z-color-bg-subtle));
+  color: var(--z-studio-sheet-accent);
+  font-weight: 600;
+}
+
+.z-studio-sheet-cell {
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: center;
+  height: 24px;
+  overflow: hidden;
+  box-sizing: border-box;
+  border-right: 1px solid var(--z-color-border);
+  border-bottom: 1px solid var(--z-color-border);
+  background-color: var(--z-color-bg);
+  cursor: cell;
+  user-select: none;
+  font-family: Calibri, Arial, var(--z-font-sans);
+  font-size: 11pt;
+}
+
+.z-studio-sheet-cell > span {
+  display: block;
+  width: 100%;
+  padding: 0 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.z-studio-sheet-column-resize {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  bottom: 0;
+  z-index: 8;
+  width: 8px;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.z-studio-sheet-column-resize:focus-visible {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: -2px;
+}
+
+.z-studio-sheet-search {
+  flex-shrink: 0;
+  display: grid;
+  gap: var(--z-space-2);
+  padding: var(--z-space-3);
+  border-bottom: 1px solid var(--z-color-border);
+  background: var(--z-color-bg-subtle);
+  font-size: var(--z-text-sm);
+}
+
+.z-studio-sheet-search-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--z-space-2);
+}
+
+.z-studio-sheet-search-row > .z-input {
+  width: min(220px, 100%);
+}
+
+.z-studio-sheet-search-row > .z-select {
+  width: 150px;
+}
+
+.z-studio-sheet-search-status,
+.z-studio-sheet-search-hint {
+  margin: 0;
+}
+
+.z-studio-sheet-search-hint {
+  color: var(--z-color-fg-muted);
+  font-size: var(--z-text-xs);
+}
+
+.z-studio-sheet-bordergroup .z-select {
+  width: 92px;
+}
+
+.z-studio-sheet-cell[data-selected]::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  content: '';
+  pointer-events: none;
+  background: color-mix(in srgb, var(--z-studio-sheet-accent) 8%, transparent);
+}
+
+.z-studio-sheet-cell[data-active] {
+  z-index: 2;
+  outline: 2px solid var(--z-studio-sheet-accent);
+  outline-offset: -2px;
+}
+
+.z-studio-sheet-cell[data-error] > span {
+  color: var(--z-color-danger);
+}
+
+.z-studio-sheet-cell[data-invalid]::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  content: '';
+  border-top: 7px solid var(--z-color-danger);
+  border-left: 7px solid transparent;
+  pointer-events: none;
+}
+
+.z-studio-sheet-validation-list {
+  flex: none;
+  width: 160px;
+}
+
+.z-studio-sheet-validation-prompt {
+  flex: none;
+  padding: 5px 12px;
+  border-bottom: 1px solid var(--z-color-border);
+  background: var(--z-color-bg-subtle);
+  color: var(--z-color-fg-muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.z-studio-sheet-validation-prompt[data-invalid] {
+  color: var(--z-color-danger);
+}
+
+.z-studio-sheet-rule-dialog {
+  --z-studio-sheet-rule-gap: var(--z-space-3);
+  width: min(720px, calc(100vw - 32px));
+}
+
+.z-studio-sheet-link-dialog {
+  width: min(390px, calc(100vw - 24px));
+}
+
+.z-studio-sheet-link-dialog .z-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.z-studio-sheet-link-dialog .z-tabs-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 0;
+}
+
+.z-studio-sheet-link-dialog label {
+  font-size: 12px;
+}
+
+.z-studio-sheet-link-dialog .z-input,
+.z-studio-sheet-link-dialog .z-select {
+  width: 100%;
+}
+
+.z-studio-sheet-rule-form,
+.z-studio-sheet-rule-field,
+.z-studio-sheet-rule-style {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--z-studio-sheet-rule-gap);
+}
+
+.z-studio-sheet-rule-field {
+  flex: 1;
+  gap: var(--z-space-1);
+  font-size: var(--z-text-sm);
+}
+
+.z-studio-sheet-rule-field > .z-input,
+.z-studio-sheet-rule-field > .z-select {
+  width: 100%;
+}
+
+.z-studio-sheet-rule-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--z-studio-sheet-rule-gap);
+}
+
+.z-studio-sheet-rule-row > .z-studio-sheet-rule-field {
+  min-width: 140px;
+}
+
+.z-studio-sheet-rule-style {
+  margin: 0;
+  padding: var(--z-space-3);
+  border: 1px solid var(--z-color-border);
+  border-radius: var(--z-radius-md);
+}
+
+.z-studio-sheet-rule-style > legend {
+  padding-inline: var(--z-space-1);
+  color: var(--z-color-fg-muted);
+  font-size: var(--z-text-sm);
+}
+
+.z-studio-sheet-rule-hint,
+.z-studio-sheet-rule-field > small {
+  margin: 0;
+  color: var(--z-color-fg-muted);
+  font-size: var(--z-text-xs);
+  line-height: var(--z-leading-relaxed);
+}
+
+.z-studio-sheet-rule-error {
+  margin: 0;
+  color: var(--z-color-danger);
+  font-size: var(--z-text-sm);
+}
+
+.z-studio-sheet-rule-list {
+  margin-top: var(--z-space-5);
+  padding-top: var(--z-space-4);
+  border-top: 1px solid var(--z-color-border);
+}
+
+.z-studio-sheet-rule-entry {
+  display: flex;
+  align-items: center;
+  gap: var(--z-space-2);
+  margin-top: var(--z-space-2);
+  padding: var(--z-space-2);
+  border: 1px solid var(--z-color-border);
+  border-radius: var(--z-radius-sm);
+  font-size: var(--z-text-xs);
+}
+
+.z-studio-sheet-rule-entry > span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.z-studio-sheet-cell > .z-input {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: var(--z-color-bg);
+  box-shadow: none;
+  font: inherit;
+}
+
+.z-studio-sheet-cell .z-input-field {
+  width: 100%;
+  min-height: 0;
+  height: 100%;
+  padding: 0 8px;
+  font-size: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  font-family: inherit;
+}
+
+.z-studio-sheet-bottom {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  height: 25px;
+  box-sizing: border-box;
+  padding: 0 6px;
+  border-top: 1px solid var(--z-color-border);
+  background: var(--z-color-bg-subtle);
+}
+
+.z-studio-sheet-tabs {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 44%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.z-studio-sheet-tabs > .z-tabs-list {
+  gap: 2px;
+  width: max-content;
+  min-width: 100%;
+  border-bottom: 0;
+}
+
+.z-studio-sheet-tabs .z-tab {
+  min-height: 0;
+  height: 24px;
+  padding: 0 12px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.z-studio-sheet-tabs .z-tab[aria-selected='true'] {
+  background: var(--z-color-bg);
+  color: var(--z-studio-sheet-accent);
+  box-shadow: inset 0 2px var(--z-studio-sheet-accent);
+}
+
+.z-studio-sheet-tabs .z-tab::after {
+  display: none;
+}
+
+.z-studio-sheet-summary {
+  flex: none;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  color: var(--z-color-fg-muted);
+}
+
+.z-studio-sheet-rename {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-top: 1px solid var(--z-color-border);
+}
+
+.z-studio-sheet-rename > .z-input {
+  width: 180px;
+}
+
+.z-studio-sheet-notice {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  line-height: 24px;
+  color: var(--z-color-fg-muted);
+  white-space: nowrap;
+}
+
+.z-studio-sheet-bottom > .z-button {
+  --z-button-height: 24px;
+  --z-button-padding-x: 4px;
+  --z-button-radius: 0;
+  flex: none;
+  min-width: 24px;
+}
+
+.z-studio-sheet-empty {
+  margin: auto;
+  padding: 24px;
+  color: var(--z-color-fg-muted);
+}
+
+.z-studio-sheet-paste-help {
+  margin: 0 0 12px;
+  color: var(--z-color-fg-muted);
+  font-size: 13px;
+}
+
+.z-studio-sheet-paste-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-height: min(52vh, 430px);
+  overflow: auto;
+}
+
+.z-studio-sheet-paste-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--z-color-border);
+  border-radius: var(--z-radius-md);
+  background: var(--z-color-bg);
+  cursor: pointer;
+}
+
+.z-studio-sheet-paste-option:hover,
+.z-studio-sheet-paste-option[data-checked='true'] {
+  border-color: var(--z-studio-sheet-accent);
+  background: color-mix(in srgb, var(--z-studio-sheet-accent) 8%, var(--z-color-bg));
+}
+
+.z-studio-sheet-paste-option input {
+  flex: none;
+  margin: 2px 0 0;
+  accent-color: var(--z-studio-sheet-accent);
+}
+
+.z-studio-sheet-paste-option span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.z-studio-sheet-paste-option strong {
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.z-studio-sheet-paste-option small {
+  color: var(--z-color-fg-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+  .z-studio-sheet-workarea {
+    flex-direction: column;
+  }
+  .z-studio-sheet-chartpanel {
+    width: 100%;
+    min-width: 0;
+    max-height: 220px;
+    border-left: 0;
+    border-top: 1px solid var(--z-color-border);
+  }
+  .z-studio-sheet-ribbon > .z-tabs-list {
+    padding-inline: 4px;
+  }
+  .z-studio-sheet-toolgroup {
+    padding-inline: 9px;
+  }
+  .z-studio-sheet-formulabar {
+    padding-inline: 7px;
+    gap: 6px;
+  }
+  .z-studio-sheet-address {
+    width: 60px;
+  }
+  .z-studio-sheet-validation-list {
+    width: 115px;
+  }
+  .z-studio-sheet-rule-entry {
+    flex-wrap: wrap;
+  }
+  .z-studio-sheet-bottom {
+    padding-inline: 6px;
+  }
+  .z-studio-sheet-summary {
+    display: none;
+  }
+  .z-studio-sheet-paste-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+.z-studio-sheet-fit-probe {
+  position: fixed;
+  left: -100000px;
+  top: 0;
+  visibility: hidden;
+  pointer-events: none;
+  display: block;
+  line-height: 1.15;
+  padding: 0;
+  border: 0;
+}

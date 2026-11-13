@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { readFileSync, readdirSync } from 'node:fs';
 import { builderRuntimePlugin } from './builder-runtime-plugin';
+import { officePdfAssetsPlugin } from './office-pdf-assets-plugin';
 
 const { version } = JSON.parse(
   readFileSync(new URL('../packages/ui/package.json', import.meta.url), 'utf8')
@@ -18,6 +19,7 @@ export default defineConfig({
   plugins: [
     react(),
     builderRuntimePlugin(),
+    officePdfAssetsPlugin(),
     {
       name: 'zui-puck-local-font',
       enforce: 'pre',
@@ -46,7 +48,9 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (/\/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'react-runtime';
-          if (id.includes('/packages/ui/dist/')) return 'zui-components';
+          // Editor kernels stay behind their dynamic imports. The shared ZUI
+          // entry remains available to every route without loading them.
+          if (/\/packages\/ui\/dist\/index\.(?:js|cjs)$/.test(id)) return 'zui-components';
           // Puck 只在懒加载的 Builder 路由中使用；将其两组大依赖保持为
           // 独立路由级 chunk，避免单个 Builder chunk 越过 Vite 的 500 kB
           // 预算，同时不把编辑器代码抬到文档站首屏。
@@ -61,6 +65,10 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api/translate': 'http://127.0.0.1:8787',
+      '/api/office': 'http://127.0.0.1:8790',
     },
+  },
+  preview: {
+    proxy: { '/api/office': 'http://127.0.0.1:8790' },
   },
 });

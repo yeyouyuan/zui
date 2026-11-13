@@ -66,6 +66,16 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./office-editor": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./office-studio": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
     "./command-palette": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
@@ -348,9 +358,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@tiptap/extension-table": "^3.33.1",
+    "@tiptap/extension-text-align": "^3.33.1",
+    "@tiptap/extension-text-style": "^3.33.1",
+    "@tiptap/react": "^3.33.1",
+    "@tiptap/starter-kit": "^3.33.1",
     "@zui/i18n": "workspace:*",
     "@zui/icons": "workspace:*",
-    "@zui/tokens": "workspace:*"
+    "@zui/tokens": "workspace:*",
+    "fast-formula-parser": "^1.0.19"
   },
   "peerDependencies": {
     "react": "^19.0.0",

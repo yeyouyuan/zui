@@ -9,6 +9,7 @@ import {
   type WorkspaceFile,
   type Discussion,
 } from './workspace-model';
+import { validateOfficeDraft, type OfficeDraft } from './office/office-model';
 
 function dataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -78,7 +79,14 @@ export async function importBackup(
     const id = crypto.randomUUID();
     ids.set(oldId, id);
     const kind = item.kind;
-    if (kind !== 'text' && kind !== 'image' && kind !== 'pdf' && kind !== 'binary')
+    if (
+      kind !== 'text' &&
+      kind !== 'image' &&
+      kind !== 'pdf' &&
+      kind !== 'word' &&
+      kind !== 'excel' &&
+      kind !== 'binary'
+    )
       throw new Error('备份文件类型无效。');
     const blocks = list(item.blocks, 1000).map((entry) => {
       const block = record(entry);
@@ -181,6 +189,15 @@ export async function importBackup(
       commentDrafts[`${newFile}:${suffix}`] = text(value, 2000);
     }
   }
+  const officeDrafts: Record<string, OfficeDraft> = {};
+  for (const [oldFile, entry] of Object.entries(record(original.officeDrafts ?? {}))) {
+    const fileId = ids.get(oldFile);
+    const file = files.find((file) => file.id === fileId);
+    const draft = validateOfficeDraft(entry);
+    if (!file || !['word', 'excel', 'pdf'].includes(file.kind) || draft.kind !== file.kind)
+      throw new Error('备份 Office 草稿的关联无效。');
+    officeDrafts[file.id] = draft;
+  }
   return {
     data: {
       schema: 1,
@@ -191,6 +208,7 @@ export async function importBackup(
       commentTargets: {},
       commentDrafts,
       editorDrafts,
+      officeDrafts,
     },
     assets,
   };

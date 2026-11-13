@@ -61,8 +61,10 @@ test('完整 ZUI 组件目录：公开组件全部能配置、保存、画布渲
   const publicTypes = [...publicIndex.matchAll(/export \* from '\.\/components\/([^']+)'/g)].map(
     (match) => match[1]
   );
-  expect(publicTypes).toHaveLength(71);
-  expect(publicTypes.filter((type) => !defs[type])).toEqual([]);
+  expect(publicTypes).toHaveLength(73);
+  // 完整页文档编辑器不作为 builder 可配置节点，也不进入离线渲染目录。
+  const editorOnlyTypes = new Set(['OfficeEditor', 'OfficeStudio']);
+  expect(publicTypes.filter((type) => !defs[type] && !editorOnlyTypes.has(type))).toEqual([]);
   expect(defs.ConfigProvider).toBeDefined();
   const content = Object.keys(defs).map((type) => node(defs, type));
   await load(page, content);

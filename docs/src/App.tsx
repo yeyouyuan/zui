@@ -102,7 +102,8 @@ export default function App(): React.ReactNode {
 
   // 导航关闭 Drawer 后，等其归还触发焦点，再把焦点交给已提交路由的标题。
   useEffect(() => {
-    if (menuOpen || route !== displayedRoute || focusPageOnRouteRef.current !== displayedRoute) return undefined;
+    if (menuOpen || route !== displayedRoute || focusPageOnRouteRef.current !== displayedRoute)
+      return undefined;
 
     focusPageOnRouteRef.current = null;
     const main = mainRef.current;
@@ -425,7 +426,12 @@ export default function App(): React.ReactNode {
           </a>
         </div>
         <div className="doc-route-status" role="status" aria-live="polite" aria-atomic="true">
-          {isRoutePending && <><span className="doc-route-progress" aria-hidden="true" />正在打开 {current?.title ?? '页面'}…</>}
+          {isRoutePending && (
+            <>
+              <span className="doc-route-progress" aria-hidden="true" />
+              正在打开 {current?.title ?? '页面'}…
+            </>
+          )}
         </div>
       </header>
 
@@ -435,7 +441,12 @@ export default function App(): React.ReactNode {
 
       <main
         className={
-          isBuilderRoute || displayedRoute === '/lab' || displayedRoute === '/collaboration' || displayedRoute === '/blocks'
+          isBuilderRoute ||
+          displayedRoute === '/lab' ||
+          displayedRoute === '/collaboration' ||
+          displayedRoute === '/blocks' ||
+          displayedRoute === '/components/office-editor' ||
+          displayedRoute === '/components/office-studio'
             ? 'doc-main doc-main--wide'
             : 'doc-main'
         }

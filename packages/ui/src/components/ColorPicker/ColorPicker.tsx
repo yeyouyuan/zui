@@ -9,8 +9,10 @@ import './ColorPicker.css';
 
 export type ColorPickerSize = 'sm' | 'md' | 'lg';
 
-export interface ColorPickerProps
-  extends Omit<React.ComponentPropsWithRef<'div'>, 'value' | 'defaultValue' | 'onChange'> {
+export interface ColorPickerProps extends Omit<
+  React.ComponentPropsWithRef<'div'>,
+  'value' | 'defaultValue' | 'onChange'
+> {
   /** 受控值（hex：'#rgb' / '#rrggbb' / 省略 '#' 均可，统一归一化为 '#rrggbb' 小写） */
   value?: string;
   /** 非受控初始值，默认 '#ff0000' */
@@ -372,7 +374,7 @@ export function ColorPicker({
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
-        aria-label={locale.accessibility.colorPicker}
+        aria-label={rest['aria-label'] ?? locale.accessibility.colorPicker}
         disabled={disabled}
         onClick={handleTriggerClick}
       >
@@ -386,85 +388,92 @@ export function ColorPicker({
         </span>
       </button>
       {open ? (
-        <FloatingPanel open={open} anchorRef={rootRef} focusOnOpen initialFocusSelector="[data-part='sv']">
-        <div
-          ref={panelRef}
-          data-part="panel"
-          id={panelId}
-          role="dialog"
-          aria-label={locale.accessibility.colorPanel}
-          tabIndex={-1}
-          className={cx('z-color-picker-panel', classNames?.panel)}
-          onKeyDown={handleFloatingPanelKeyDown}
+        <FloatingPanel
+          open={open}
+          anchorRef={rootRef}
+          focusOnOpen
+          initialFocusSelector="[data-part='sv']"
         >
           <div
-            ref={svRef}
-            data-part="sv"
-            className="z-color-picker-sv"
-            role="slider"
-            tabIndex={0}
-            aria-label={locale.accessibility.saturationBrightness}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={activeHsv.s}
-            aria-valuetext={locale.accessibility.colorValue.replace('{s}', String(activeHsv.s)).replace('{v}', String(activeHsv.v))}
-            style={{ background: `hsl(${activeHsv.h} 100% 50%)` }}
-            onMouseDown={handleSvMouseDown}
+            ref={panelRef}
+            data-part="panel"
+            id={panelId}
+            role="dialog"
+            aria-label={locale.accessibility.colorPanel}
+            tabIndex={-1}
+            className={cx('z-color-picker-panel', classNames?.panel)}
+            onKeyDown={handleFloatingPanelKeyDown}
           >
-            <span
-              data-part="sv-white"
-              className="z-color-picker-sv-overlay"
-              style={{ background: SV_WHITE_OVERLAY }}
-            />
-            <span
-              data-part="sv-black"
-              className="z-color-picker-sv-overlay"
-              style={{ background: SV_BLACK_OVERLAY }}
-            />
-            <span
-              data-part="sv-pointer"
-              className="z-color-picker-pointer"
-              style={{
-                left: `${activeHsv.s}%`,
-                top: `${100 - activeHsv.v}%`,
-                background: normalized,
-              }}
-            />
+            <div
+              ref={svRef}
+              data-part="sv"
+              className="z-color-picker-sv"
+              role="slider"
+              tabIndex={0}
+              aria-label={locale.accessibility.saturationBrightness}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={activeHsv.s}
+              aria-valuetext={locale.accessibility.colorValue
+                .replace('{s}', String(activeHsv.s))
+                .replace('{v}', String(activeHsv.v))}
+              style={{ background: `hsl(${activeHsv.h} 100% 50%)` }}
+              onMouseDown={handleSvMouseDown}
+            >
+              <span
+                data-part="sv-white"
+                className="z-color-picker-sv-overlay"
+                style={{ background: SV_WHITE_OVERLAY }}
+              />
+              <span
+                data-part="sv-black"
+                className="z-color-picker-sv-overlay"
+                style={{ background: SV_BLACK_OVERLAY }}
+              />
+              <span
+                data-part="sv-pointer"
+                className="z-color-picker-pointer"
+                style={{
+                  left: `${activeHsv.s}%`,
+                  top: `${100 - activeHsv.v}%`,
+                  background: normalized,
+                }}
+              />
+            </div>
+            <div
+              ref={hueRef}
+              data-part="hue"
+              className={cx('z-color-picker-hue', classNames?.hue)}
+              role="slider"
+              tabIndex={0}
+              aria-label={locale.accessibility.hue}
+              aria-valuemin={0}
+              aria-valuemax={360}
+              aria-valuenow={activeHsv.h}
+              aria-valuetext={`${activeHsv.h}°`}
+              style={{ background: HUE_RAMP }}
+              onMouseDown={handleHueMouseDown}
+            >
+              <span
+                data-part="hue-pointer"
+                className="z-color-picker-pointer"
+                style={{ left: `${(activeHsv.h / 360) * 100}%` }}
+              />
+            </div>
+            <div className="z-color-picker-hex-row">
+              <input
+                data-part="hex"
+                className="z-color-picker-hex-input"
+                value={hexDraft}
+                aria-label={locale.accessibility.hex}
+                spellCheck={false}
+                autoComplete="off"
+                onChange={handleHexChange}
+                onBlur={() => setHexDraft(normalized)}
+              />
+            </div>
           </div>
-          <div
-            ref={hueRef}
-            data-part="hue"
-            className={cx('z-color-picker-hue', classNames?.hue)}
-            role="slider"
-            tabIndex={0}
-            aria-label={locale.accessibility.hue}
-            aria-valuemin={0}
-            aria-valuemax={360}
-            aria-valuenow={activeHsv.h}
-            aria-valuetext={`${activeHsv.h}°`}
-            style={{ background: HUE_RAMP }}
-            onMouseDown={handleHueMouseDown}
-          >
-            <span
-              data-part="hue-pointer"
-              className="z-color-picker-pointer"
-              style={{ left: `${(activeHsv.h / 360) * 100}%` }}
-            />
-          </div>
-          <div className="z-color-picker-hex-row">
-            <input
-              data-part="hex"
-              className="z-color-picker-hex-input"
-              value={hexDraft}
-              aria-label={locale.accessibility.hex}
-              spellCheck={false}
-              autoComplete="off"
-              onChange={handleHexChange}
-              onBlur={() => setHexDraft(normalized)}
-            />
-          </div>
-        </div>
-      </FloatingPanel>
+        </FloatingPanel>
       ) : null}
     </div>
   );

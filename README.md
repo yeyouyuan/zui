@@ -113,6 +113,8 @@ document.documentElement.style.setProperty('--z-color-primary', 'oklch(0.55 0.2 
 
 v0.3.0 新增 Combobox、MultiCombobox、SideNav、Splitter 和 CommandPalette，共 71 个组件。SideNav、Splitter 与 CommandPalette 的双迁移原型已落地；CommandPalette 仍需真实输入法、读屏与跨平台热键人工验收。DataGrid 已完成性能原型与 RFC 设计稿，待评审后分期实现。详见[组件路线图](./docs/COMPONENT-ROADMAP.md)。
 
+2026-11-12 工作区新增 `OfficeEditor` 和独立 `OfficeStudio`。前者内嵌 ONLYOFFICE 画布；后者直接使用 ZUI 控件，提供 Word 图片、页眉页脚、页码与查找替换，Excel 工作表与行列增删、合并、冻结、筛选排序、公式与原生柱状/折线图，PDF 缩略图、文字查找、绘图批注与普通表单。示例支持真实文件导入导出、打印、本地恢复及最近 20 次历史版本，无需文档服务器。当前源码为 73 个组件，本次尚未发布；已实现能力、复杂格式限制及宿主适配见 [OfficeStudio](./docs/office-studio.md)，服务版接入与授权见[完整文档编辑器](./docs/office-full-editor.md)。
+
 ## AI 翻译（`@zui/i18n`）
 
 组件内置文案（placeholder / 无障碍 aria-label / 分页、日期等 locale 段）可随用户语言自动翻译：
@@ -137,7 +139,7 @@ const placeholder = tSync('请选择', { component: 'Select', role: 'placeholder
 ## registry / CLI / MCP
 
 - **registry**（`registry/`）：机器可读的组件目录（`registry.json` + schema），记录每个组件的 API、依赖与源码位置
-- **CLI**（`@zui/cli`）：`zui init` 初始化、`zui add <component>` 把组件源码复制进你的项目并列出所需依赖、`zui diff` 对比本地与 registry 版本、`zui list` 浏览当前源码的 71 个组件与 16 个业务区块
+- **CLI**（`@zui/cli`）：`zui init` 初始化、`zui add <component>` 把组件源码复制进你的项目并列出所需依赖、`zui diff` 对比本地与 registry 版本、`zui list` 浏览随包分发的组件与业务区块；当前工作区 Registry 为 73 个组件与 16 个业务区块，新增编辑器尚未发布
 - **MCP**（`@zui/mcp`）：以 stdio JSON-RPC 暴露 `search` / `api` / `generate` 三个工具，让 AI 编码助手按你的项目上下文检索 ZUI API 并生成组件代码
 
 ## 开发

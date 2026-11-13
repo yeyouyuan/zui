@@ -1,0 +1,258 @@
+.z-office-editor {
+  --z-office-editor-min-height: 22.5rem;
+  --z-office-editor-bg: var(--z-color-bg);
+  --z-office-editor-stage-bg: var(--z-color-bg-subtle);
+  --z-office-editor-border: var(--z-color-border);
+  --z-office-editor-radius: var(--z-radius-lg);
+  --z-office-editor-toolbar-height: 3.5rem;
+  --z-office-editor-fullscreen-z: var(--z-z-modal);
+  /* Neutral chrome by default; a kind replaces these with the accent bar. */
+  --z-office-editor-accent: var(--z-color-fg-muted);
+  --z-office-editor-header-bg: var(--z-office-editor-bg);
+  --z-office-editor-header-fg: var(--z-color-primary-fg);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--z-office-editor-min-height);
+  overflow: hidden;
+  border: 1px solid var(--z-office-editor-border);
+  border-radius: var(--z-office-editor-radius);
+  color: var(--z-color-fg);
+  background: var(--z-office-editor-bg);
+}
+
+.z-office-editor[data-fullscreen='true'] {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-office-editor-fullscreen-z);
+  width: 100%;
+  height: 100% !important;
+  max-height: 100dvh;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.z-office-editor[data-kind='word'] {
+  --z-office-editor-accent: color-mix(in srgb, var(--z-color-primary) 72%, var(--z-color-fg));
+  --z-office-editor-header-bg: var(--z-office-editor-accent);
+}
+
+.z-office-editor[data-kind='excel'] {
+  --z-office-editor-accent: color-mix(in srgb, var(--z-color-success) 78%, var(--z-color-fg));
+  --z-office-editor-header-bg: var(--z-office-editor-accent);
+}
+
+.z-office-editor[data-kind='pdf'] {
+  --z-office-editor-accent: color-mix(in srgb, var(--z-color-danger) 70%, var(--z-color-fg));
+  --z-office-editor-header-bg: var(--z-office-editor-accent);
+}
+
+.z-office-editor[data-kind] .z-office-editor-toolbar {
+  min-height: 32px;
+  background: var(--z-office-editor-header-bg);
+  color: var(--z-office-editor-header-fg);
+}
+
+.z-office-editor[data-kind] .z-office-editor-toolbar .z-button {
+  --z-button-height: 24px;
+  --z-button-padding-x: 5px;
+  --z-button-radius: 2px;
+  --z-button-bg: transparent;
+  --z-button-fg: var(--z-office-editor-header-fg);
+  --z-button-border: transparent;
+  --z-button-hover-bg: color-mix(in srgb, var(--z-office-editor-header-fg) 15%, transparent);
+  --z-button-hover-fg: var(--z-office-editor-header-fg);
+  --z-button-active-bg: color-mix(in srgb, var(--z-office-editor-header-fg) 25%, transparent);
+}
+
+.z-office-editor[data-kind] .z-office-editor-toolbar .z-button:disabled {
+  color: var(--z-office-editor-header-fg);
+  background: transparent;
+  border-color: transparent;
+  opacity: 0.5;
+}
+
+.z-office-editor[data-kind] .z-office-editor-brand {
+  color: var(--z-office-editor-header-fg);
+  border-color: color-mix(in srgb, var(--z-office-editor-header-fg) 40%, transparent);
+}
+
+.z-office-editor[data-kind] .z-office-editor-title,
+.z-office-editor[data-kind] .z-office-editor-status {
+  color: var(--z-office-editor-header-fg);
+}
+
+.z-office-editor-header,
+.z-office-editor-toolbar {
+  flex: none;
+  border-bottom: 1px solid var(--z-office-editor-border);
+  background: var(--z-office-editor-bg);
+}
+
+.z-office-editor-header {
+  padding: var(--z-space-3) var(--z-space-4);
+}
+
+.z-office-editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--z-space-3);
+  min-height: var(--z-office-editor-toolbar-height);
+  padding: var(--z-space-2) var(--z-space-3);
+}
+
+.z-office-editor-heading,
+.z-office-editor-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--z-space-2);
+  min-width: 0;
+}
+
+.z-office-editor-heading {
+  flex: 1 1 12rem;
+  flex-wrap: wrap;
+}
+
+.z-office-editor-title {
+  max-width: min(32rem, 100%);
+  overflow: hidden;
+  font-size: var(--z-font-size-sm);
+  font-weight: var(--z-font-weight-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.z-office-editor-brand {
+  flex: none;
+  padding: var(--z-space-1) var(--z-space-2);
+  border: 1px solid var(--z-office-editor-border);
+  border-radius: var(--z-radius-sm);
+  color: var(--z-color-fg-muted);
+  font-size: var(--z-font-size-xs);
+  font-weight: var(--z-font-weight-semibold);
+  letter-spacing: 0.03em;
+}
+
+.z-office-editor-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--z-color-fg-muted);
+  font-size: var(--z-font-size-xs);
+  white-space: nowrap;
+}
+
+.z-office-editor-status-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.z-office-editor-status-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--z-radius-full);
+  background: var(--z-color-info);
+}
+
+.z-office-editor-status[data-save-state='ready'] .z-office-editor-status-dot {
+  background: var(--z-color-success);
+}
+
+.z-office-editor-status[data-save-state='error'] .z-office-editor-status-dot {
+  background: var(--z-color-danger);
+}
+
+.z-office-editor-actions {
+  flex: none;
+  flex-wrap: wrap;
+}
+
+.z-office-editor-stage {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--z-office-editor-stage-bg);
+}
+
+.z-office-editor[data-disabled='true'] .z-office-editor-stage {
+  pointer-events: none;
+}
+
+.z-office-editor-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.z-office-editor-canvas > iframe,
+.z-office-editor-canvas > div {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.z-office-editor-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--z-space-6);
+  background: var(--z-office-editor-stage-bg);
+}
+
+.z-office-editor-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--z-space-3);
+  max-width: 32rem;
+  color: var(--z-color-fg);
+  font-size: var(--z-font-size-sm);
+  text-align: center;
+}
+
+.z-office-editor-error p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.z-office-editor-notice {
+  flex: none;
+  padding: var(--z-space-2) var(--z-space-3);
+  border-bottom: 1px solid var(--z-office-editor-border);
+  background: var(--z-color-bg-subtle);
+}
+
+.z-office-editor-notice .z-office-editor-error {
+  flex-direction: row;
+  justify-content: space-between;
+  max-width: none;
+  text-align: start;
+}
+
+@media (max-width: 640px) {
+  .z-office-editor-toolbar {
+    align-items: flex-start;
+  }
+
+  .z-office-editor-heading,
+  .z-office-editor-actions {
+    flex-basis: 100%;
+  }
+
+  .z-office-editor-notice .z-office-editor-error {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

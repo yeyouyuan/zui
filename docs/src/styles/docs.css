@@ -674,6 +674,7 @@ a:hover {
   font-family: var(--z-font-mono);
   font-size: 0.875em;
   overflow-wrap: anywhere;
+  overflow-wrap: anywhere;
 }
 
 .doc-code-lang {
@@ -834,6 +835,11 @@ a:hover {
 
 .doc-demo-code {
   border-top: 1px solid var(--doc-border-faint);
+}
+
+/* 关闭态的代码块不参与布局：长代码行在窄视口会把正文撑出横向溢出 */
+.doc-demo-code:not([open]) .doc-code-wrap {
+  display: none;
 }
 
 /* Demo 内代码块与卡片融合：去掉外框描边与圆角，只保留底部圆角、紧贴 stage */
@@ -1622,11 +1628,7 @@ a:hover {
 .doc-api-table tbody tr:hover {
   background: var(--z-color-bg-subtle);
 }
-:where(
-  .doc-demo-code-toggle,
-  .doc-nav-clear,
-  .doc-table-wrap
-):focus-visible {
+:where(.doc-demo-code-toggle, .doc-nav-clear, .doc-table-wrap):focus-visible {
   outline: 2px solid var(--z-color-primary);
   outline-offset: 3px;
 }
@@ -2315,39 +2317,88 @@ a:hover {
   inset: 0 0 auto;
 }
 @keyframes doc-route-progress {
-  0%, 100% { opacity: .45; transform: scaleX(.3); }
-  50% { opacity: 1; transform: scaleX(1); }
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scaleX(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
 }
-.doc-page-loading { animation: none; min-height: 560px; }
-.doc-page-loading-label { color: var(--z-color-fg-muted); font-size: 13px; }
-.doc-page-loading-title, .doc-page-loading-line, .doc-page-loading-demo {
+.doc-page-loading {
+  animation: none;
+  min-height: 560px;
+}
+.doc-page-loading-label {
+  color: var(--z-color-fg-muted);
+  font-size: 13px;
+}
+.doc-page-loading-title,
+.doc-page-loading-line,
+.doc-page-loading-demo {
   background: var(--z-color-bg-muted);
   border-radius: var(--z-radius-md);
   margin-block: 16px;
 }
-.doc-page-loading-title { width: 45%; height: 36px; }
-.doc-page-loading-line { width: 90%; height: 16px; }
-.doc-page-loading-line + .doc-page-loading-line { width: 65%; }
-.doc-page-loading-demo { height: 160px; border: 1px solid var(--z-color-border); }
+.doc-page-loading-title {
+  width: 45%;
+  height: 36px;
+}
+.doc-page-loading-line {
+  width: 90%;
+  height: 16px;
+}
+.doc-page-loading-line + .doc-page-loading-line {
+  width: 65%;
+}
+.doc-page-loading-demo {
+  height: 160px;
+  border: 1px solid var(--z-color-border);
+}
 @media (prefers-reduced-motion: reduce) {
-  .doc-route-progress { animation: none; transform: none; }
+  .doc-route-progress {
+    animation: none;
+    transform: none;
+  }
 }
 
-.doc-note a { color: color-mix(in oklch, var(--z-color-primary) 75%, var(--z-color-fg)); }
+.doc-note a {
+  color: color-mix(in oklch, var(--z-color-primary) 75%, var(--z-color-fg));
+}
 
-.doc-demo-stage > .z-daterange { max-width: 100%; }
-.doc-demo-scroll { width: 100%; min-width: 0; overflow-x: auto; padding: 4px; }
-.doc-demo-scroll:focus-visible { outline: 2px solid var(--z-color-focus-ring); outline-offset: -2px; }
-.doc-demo-scroll .z-steps[data-direction='horizontal'] { min-width: 540px; }
+.doc-demo-stage > .z-daterange {
+  max-width: 100%;
+}
+.doc-demo-scroll {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 4px;
+}
+.doc-demo-scroll:focus-visible {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: -2px;
+}
+.doc-demo-scroll .z-steps[data-direction='horizontal'] {
+  min-width: 540px;
+}
 
-.doc-demo-scroll .z-table { min-width: 440px; }
+.doc-demo-scroll .z-table {
+  min-width: 440px;
+}
 
 /* 窄屏仍保留穿梭框条目的可读宽度；内容在演示区内滚动。 */
-.doc-demo-scroll .z-transfer { min-width: 440px; }
+.doc-demo-scroll .z-transfer {
+  min-width: 440px;
+}
 @media (max-width: 400px) {
   .doc-demo-stage .z-daterange {
     --z-date-range-trigger-padding-x: 6px;
     --z-date-range-trigger-font-size: 12px;
   }
-  .doc-demo-stage .z-daterange-trigger { gap: 4px; }
+  .doc-demo-stage .z-daterange-trigger {
+    gap: 4px;
+  }
 }

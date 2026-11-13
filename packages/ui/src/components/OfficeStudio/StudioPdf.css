@@ -1,0 +1,712 @@
+.z-studio-pdf {
+  --z-studio-pdf-paper: #fff;
+  --z-studio-pdf-ink: #243044;
+  --z-studio-pdf-muted-ink: #687589;
+  --z-studio-pdf-accent: var(--z-office-studio-accent, var(--z-color-primary));
+  --z-studio-pdf-ribbon-height: 84px;
+  --z-studio-pdf-sidebar-width: 260px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  color: var(--z-color-fg);
+}
+
+.z-studio-pdf-ribbon {
+  flex: none;
+  min-width: 0;
+  border-bottom: 1px solid var(--z-color-border);
+}
+
+.z-studio-pdf-ribbon-controls,
+.z-studio-pdf-ribbon-panel {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.z-studio-pdf-ribbon-controls {
+  box-sizing: border-box;
+  min-height: var(--z-studio-pdf-ribbon-height);
+  padding: 5px 8px;
+  overflow-x: auto;
+  background: var(--z-office-studio-ribbon-bg, var(--z-color-bg-subtle));
+}
+
+.z-studio-pdf-ribbon-panel {
+  flex: none;
+  margin: 0;
+  padding: 0;
+}
+
+.z-studio-pdf-ribbon-group {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 3px;
+  padding-inline: 10px;
+  border-right: 1px solid var(--z-color-border);
+}
+
+.z-studio-pdf-ribbon-panel > .z-studio-pdf-ribbon-group:last-child {
+  border-right: 0;
+}
+
+.z-studio-pdf-ribbon-group-body {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 3px;
+}
+
+.z-studio-pdf-ribbon-stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+}
+
+.z-studio-pdf-ribbon-caption {
+  color: var(--z-color-fg-muted);
+  font-size: 11px;
+  line-height: 14px;
+  text-align: center;
+}
+
+.z-studio-pdf .z-studio-pdf-ribbon-tool {
+  --z-studio-ribbon-control-height: 52px;
+  --z-button-height: 52px;
+  display: flex;
+  min-width: 52px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  padding: 3px 7px;
+}
+
+.z-studio-pdf-ribbon-tool .z-button-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.z-studio-pdf-statusbar,
+.z-studio-pdf-navigation,
+.z-studio-pdf-zoom {
+  display: flex;
+  align-items: center;
+}
+
+.z-studio-pdf-statusbar {
+  box-sizing: border-box;
+  flex: none;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  height: 25px;
+  padding-inline: 8px;
+  border-top: 1px solid var(--z-color-border);
+  background: var(--z-office-studio-ribbon-bg, var(--z-color-bg-subtle));
+  color: var(--z-color-fg-muted);
+  font-size: 12px;
+}
+
+.z-studio-pdf-navigation,
+.z-studio-pdf-zoom {
+  flex: none;
+  gap: 3px;
+}
+
+.z-studio-pdf-statusbar .z-button,
+.z-studio-pdf-panel-switch .z-button {
+  --z-button-height: 24px;
+  --z-button-padding-x: 4px;
+  --z-button-font-size: 12px;
+  --z-button-radius: 2px;
+}
+
+.z-studio-pdf-statusbar .z-select {
+  width: 76px;
+}
+
+.z-studio-pdf-statusbar .z-select-trigger {
+  min-height: 24px;
+  height: 24px;
+  padding: 2px 5px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  font-size: 12px;
+}
+
+.z-studio-pdf-zoom-listbox {
+  top: auto;
+  bottom: calc(100% + 4px);
+}
+
+.z-studio-pdf-navigation .z-input-number {
+  --z-input-number-height: 24px;
+  --z-input-number-padding-x: 4px;
+  --z-input-number-radius: 2px;
+  width: 72px;
+}
+
+.z-studio-pdf-navigation .z-input-number input {
+  font-size: 12px;
+  text-align: center;
+}
+
+.z-studio-pdf-navigation > span,
+.z-studio-pdf-status-mode {
+  white-space: nowrap;
+}
+
+.z-studio-pdf-status-mode {
+  margin-right: auto;
+  cursor: help;
+}
+
+.z-studio-pdf-status-mode:focus-visible {
+  outline: 2px solid var(--z-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.z-studio-pdf-panel-switch .z-button[aria-pressed='true'] {
+  background: var(--z-color-primary-subtle);
+  border-color: color-mix(in srgb, var(--z-color-primary) 42%, var(--z-color-border));
+  color: var(--z-color-primary-subtle-fg);
+}
+
+.z-studio-pdf-side-navigation {
+  display: flex;
+  flex: 0 0 38px;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  order: -2;
+  padding-block: 6px;
+  border-right: 1px solid var(--z-color-border);
+  background: var(--z-office-studio-ribbon-bg, var(--z-color-bg-subtle));
+}
+
+.z-studio-pdf-side-navigation .z-button {
+  --z-button-height: 30px;
+  --z-button-radius: 1px;
+  width: 30px;
+  padding: 0;
+}
+
+.z-studio-pdf-side-navigation .z-button[aria-pressed='true'] {
+  background: var(--z-color-primary-subtle);
+  border-color: color-mix(in srgb, var(--z-color-primary) 42%, var(--z-color-border));
+  color: var(--z-color-primary-subtle-fg);
+  box-shadow: inset 2px 0 var(--z-color-primary);
+}
+
+.z-studio-pdf-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--z-color-warning-subtle);
+  color: var(--z-color-warning-subtle-fg);
+  font-size: 13px;
+}
+
+.z-studio-pdf-workspace {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.z-studio-pdf-viewport {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 28px;
+  overflow: auto;
+  background: var(--z-office-studio-canvas-bg, var(--z-color-bg-muted));
+  overscroll-behavior: contain;
+}
+
+.z-studio-pdf-paper {
+  position: relative;
+  flex: none;
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--z-studio-pdf-paper);
+  outline: 1px solid var(--z-color-border-strong);
+  box-shadow: var(--z-shadow-md);
+}
+
+.z-studio-pdf-paper[data-tool='text'] {
+  cursor: text;
+}
+
+.z-studio-pdf-paper[data-tool='highlight'],
+.z-studio-pdf-paper[data-tool='rectangle'],
+.z-studio-pdf-paper[data-tool='ink'] {
+  cursor: crosshair;
+}
+
+.z-studio-pdf-paper[data-tool='rectangle'],
+.z-studio-pdf-paper[data-tool='ink'] {
+  touch-action: none;
+}
+
+.z-studio-pdf-search-hit,
+.z-studio-pdf-drawing-preview {
+  pointer-events: none;
+}
+
+.z-studio-pdf-paper > canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.z-studio-pdf-annotations,
+.z-studio-pdf-form-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.z-studio-pdf-annotations {
+  overflow: visible;
+  font-family: Helvetica, Arial, 'Noto Sans SC', sans-serif;
+}
+
+.z-studio-pdf-annotations [role='button'] {
+  cursor: move;
+  outline: none;
+  touch-action: none;
+}
+
+.z-studio-pdf-paper:not([data-tool='select']) .z-studio-pdf-annotations [role='button'] {
+  pointer-events: none;
+}
+
+.z-studio-pdf-mark-hit {
+  fill: transparent;
+  stroke: transparent;
+  pointer-events: all;
+}
+
+.z-studio-pdf-annotations [data-selected] .z-studio-pdf-mark-hit,
+.z-studio-pdf-annotations [role='button']:focus-visible .z-studio-pdf-mark-hit {
+  stroke: var(--z-color-primary);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.z-studio-pdf-form-layer {
+  pointer-events: none;
+}
+
+.z-studio-pdf-widget {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  pointer-events: auto;
+}
+
+.z-studio-pdf-widget-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.z-studio-pdf-widget-radio-group {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.z-studio-pdf-widget-content .z-studio-pdf-widget-input {
+  --z-input-height: 100%;
+  --z-input-padding-x: 0;
+  --z-input-font-size: inherit;
+  --z-input-radius: 1px;
+  --z-input-bg: var(--z-studio-pdf-paper);
+  --z-input-fg: var(--z-studio-pdf-ink);
+  --z-input-disabled-bg: var(--z-studio-pdf-paper);
+  --z-input-disabled-fg: var(--z-studio-pdf-muted-ink);
+  --z-input-textarea-min-height: 0;
+  --z-select-trigger-height: 100%;
+  --z-select-trigger-font-size: inherit;
+  --z-select-trigger-radius: 1px;
+  --z-select-trigger-bg: var(--z-studio-pdf-paper);
+  --z-select-trigger-fg: var(--z-studio-pdf-ink);
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+}
+
+.z-studio-pdf-widget-content .z-input,
+.z-studio-pdf-widget-content .z-select-trigger {
+  border: 1px dashed color-mix(in oklab, var(--z-color-primary) 36%, transparent);
+}
+
+.z-studio-pdf-widget-content .z-studio-pdf-widget-value {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 1px 3px;
+  font: inherit;
+  resize: none;
+}
+
+.z-studio-pdf-widget-content .z-input:focus-within,
+.z-studio-pdf-widget-content .z-select-trigger:focus-visible {
+  border-style: solid;
+  outline: 2px solid color-mix(in oklab, var(--z-color-primary) 25%, transparent);
+  outline-offset: 1px;
+}
+
+.z-studio-pdf-widget-content .z-studio-pdf-widget-value:disabled {
+  opacity: 1;
+  color: var(--z-studio-pdf-muted-ink);
+  -webkit-text-fill-color: var(--z-studio-pdf-muted-ink);
+}
+
+.z-studio-pdf-widget-content > .z-studio-pdf-widget-check {
+  --z-checkbox-size: 100%;
+  --z-checkbox-gap: 0;
+  --z-radio-size: 100%;
+  --z-radio-gap: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.z-studio-pdf-widget-content > .z-studio-pdf-widget-check:has(:disabled) {
+  cursor: not-allowed;
+}
+
+.z-studio-pdf-widget-content .z-select-trigger:disabled {
+  background: var(--z-studio-pdf-paper);
+}
+
+.z-studio-pdf-page-caption {
+  display: block;
+  width: max-content;
+  margin: 16px auto 0;
+  color: var(--z-color-fg-muted);
+  font-size: 12px;
+}
+
+.z-studio-pdf-placeholder,
+.z-studio-pdf-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--z-color-fg-muted);
+}
+
+.z-studio-pdf-placeholder {
+  flex-direction: column;
+  gap: 12px;
+  min-height: 300px;
+  font-size: 13px;
+}
+
+.z-studio-pdf-placeholder > svg {
+  width: 32px;
+  height: 32px;
+  color: var(--z-color-primary);
+}
+
+.z-studio-pdf-loading {
+  position: sticky;
+  top: 20px;
+  z-index: 1;
+  width: max-content;
+  margin: 0 auto;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--z-color-bg);
+  box-shadow: var(--z-shadow-md);
+  font-size: 13px;
+}
+
+.z-studio-pdf-inspector {
+  display: flex;
+  flex: 0 0 var(--z-studio-pdf-sidebar-width);
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-left: 1px solid var(--z-color-border);
+  background: var(--z-color-bg);
+}
+
+.z-studio-pdf-inspector[data-side='left'] {
+  order: -1;
+  border-right: 1px solid var(--z-color-border);
+  border-left: 0;
+}
+
+.z-studio-pdf-panel-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 4px;
+  border-bottom: 1px solid var(--z-color-border);
+}
+
+.z-studio-pdf-panel-body form[role='search'] {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.z-studio-pdf-search-navigation {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--z-color-fg-muted);
+  font-size: 12px;
+}
+
+.z-studio-pdf-search-navigation > span {
+  flex: 1;
+}
+
+.z-studio-pdf-thumbnail {
+  flex-shrink: 0;
+  min-height: 210px;
+  padding: 12px;
+  font-size: 12px;
+}
+
+.z-studio-pdf-thumbnail > .z-button-label {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.z-studio-pdf-thumbnail[aria-pressed='true'] {
+  border-color: var(--z-color-primary);
+  background: var(--z-color-primary-subtle);
+  color: var(--z-color-primary);
+}
+
+.z-studio-pdf-thumbnail-paper {
+  position: relative;
+  display: grid;
+  width: 160px;
+  min-height: 170px;
+  place-items: center;
+  overflow: hidden;
+  background: var(--z-studio-pdf-paper);
+  box-shadow: var(--z-shadow-sm);
+}
+
+.z-studio-pdf-thumbnail-paper > canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.z-studio-pdf-thumbnail-paper > span {
+  position: absolute;
+  color: var(--z-studio-pdf-muted-ink);
+}
+
+.z-studio-pdf-panel-switch .z-button {
+  flex: 1;
+  min-width: 0;
+}
+
+.z-studio-pdf-panel-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  padding: 12px;
+  overflow: auto;
+}
+
+.z-studio-pdf-panel-body > strong {
+  font-size: 12px;
+}
+
+.z-studio-pdf-panel-body label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.z-studio-pdf-panel-body .z-input-number,
+.z-studio-pdf-field .z-select {
+  width: 100%;
+}
+
+.z-studio-pdf-color {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.z-studio-pdf-color > .z-color-picker {
+  flex: none;
+}
+
+.z-studio-pdf-mark-sizes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.z-studio-pdf-hint {
+  margin: 0;
+  color: var(--z-color-fg-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.z-studio-pdf-mark-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-top: 14px;
+  border-top: 1px solid var(--z-color-border);
+}
+
+.z-studio-pdf-mark-list > .z-studio-pdf-list-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px;
+  height: auto;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--z-color-border);
+  border-radius: 2px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  white-space: normal;
+  cursor: pointer;
+}
+
+.z-studio-pdf-mark-list > .z-studio-pdf-list-item[aria-pressed='true'] {
+  border-color: var(--z-color-primary);
+  background: var(--z-color-primary-subtle);
+}
+
+.z-studio-pdf-list-item > .z-button-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.z-studio-pdf-list-item > .z-button-label > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.z-studio-pdf-mark-list strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.z-studio-pdf-mark-list small,
+.z-studio-pdf-field > small {
+  overflow: hidden;
+  color: var(--z-color-fg-muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.z-studio-pdf-mark-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-top: 4px;
+  border-radius: 50%;
+}
+
+.z-studio-pdf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+@media (max-width: 720px) {
+  .z-studio-pdf-inspector {
+    flex-basis: 220px;
+  }
+
+  .z-studio-pdf-ribbon-controls {
+    padding-inline: 4px;
+  }
+
+  .z-studio-pdf-ribbon-group {
+    padding-inline: 6px;
+  }
+
+  .z-studio-pdf-viewport {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 520px) {
+  .z-studio-pdf-workspace {
+    flex-direction: column;
+  }
+
+  .z-studio-pdf-inspector,
+  .z-studio-pdf-inspector[data-side='left'] {
+    flex-basis: 220px;
+    order: 1;
+    border-top: 1px solid var(--z-color-border);
+    border-right: 0;
+    border-left: 0;
+  }
+
+  .z-studio-pdf-side-navigation {
+    flex-basis: auto;
+    flex-direction: row;
+    padding: 3px 8px;
+    border-right: 0;
+    border-bottom: 1px solid var(--z-color-border);
+  }
+
+  .z-studio-pdf-statusbar {
+    gap: 3px;
+    padding-inline: 3px;
+  }
+
+  .z-studio-pdf-status-mode {
+    display: none;
+  }
+}

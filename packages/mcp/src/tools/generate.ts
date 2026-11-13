@@ -96,7 +96,8 @@ export function generateCode(
   );
   const imports = example.imports ?? entry.name;
   const helper = example.helper ?? '';
-  const code = `import { ${imports} } from '@zui/react';\nimport '@zui/react/styles.css';\n\n${helper}export function ${entry.name}Example() {\n  return (\n    ${indent(jsx, 4)}\n  );\n}\n`;
+  const parameters = example.parameters ?? '';
+  const code = `import { ${imports} } from '@zui/react';\nimport '@zui/react/styles.css';\n\n${helper}export function ${entry.name}Example(${parameters}) {\n  return (\n    ${indent(jsx, 4)}\n  );\n}\n`;
 
   return { ok: true, name: entry.name, code, warnings };
 }
@@ -149,6 +150,7 @@ interface Example {
   children?: string;
   imports?: string;
   helper?: string;
+  parameters?: string;
 }
 
 /** Required props and compound children come from the public component API. */
@@ -188,6 +190,26 @@ function exampleFor(name: string): Example {
       props: {
         commands: [{ key: 'home', label: 'Home', onSelect: () => {} }],
         'aria-label': 'Command palette',
+      },
+    },
+    OfficeEditor: {
+      imports: 'OfficeEditor, type OfficeEditorConfig',
+      parameters:
+        '{ documentServerUrl, config }: { documentServerUrl: string; config: OfficeEditorConfig }',
+      helper:
+        '// Supply your Docs server URL and the signed configuration returned by your backend.\n',
+      props: {
+        documentServerUrl: '{documentServerUrl}',
+        config: '{config}',
+        height: 760,
+      },
+    },
+    OfficeStudio: {
+      imports: 'OfficeStudio, createOfficeStudioDocument',
+      helper: '// Connect onSave, onImport and onExport to your persistence and file codecs.\n',
+      props: {
+        defaultValue: "{createOfficeStudioDocument('word')}",
+        height: 780,
       },
     },
     Modal: {

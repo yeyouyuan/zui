@@ -72,7 +72,7 @@ export default defineConfig({
       fileName: (format) => (format === 'es' ? 'index.js' : 'index.cjs'),
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime'],
+      external: ['react', 'react-dom', 'react/jsx-runtime', /^@tiptap\//, 'fast-formula-parser'],
       output: { assetFileNames: 'style[extname]', banner: "'use client';" },
     },
     cssCodeSplit: false,

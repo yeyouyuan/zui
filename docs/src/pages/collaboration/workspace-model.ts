@@ -1,4 +1,5 @@
-export type FileKind = 'text' | 'image' | 'pdf' | 'binary';
+import type { OfficeDraft } from './office/office-model';
+export type FileKind = 'text' | 'image' | 'pdf' | 'word' | 'excel' | 'binary';
 export interface TextBlock {
   id: string;
   title: string;
@@ -42,6 +43,7 @@ export interface Workspace {
   commentTargets: Record<string, CommentTarget>;
   commentDrafts: Record<string, string>;
   editorDrafts: Record<string, { blockId: string; body: string; baseRevision: number }>;
+  officeDrafts?: Record<string, OfficeDraft>;
 }
 export const MAX_FILE_BYTES = 20 * 1024 * 1024;
 export const MAX_TEXT_BYTES = 1024 * 1024;
@@ -61,6 +63,16 @@ export function validName(value: string): string {
   return name;
 }
 export function fileKind(name: string, mime: string): FileKind {
+  if (
+    /\.docx$/i.test(name) ||
+    mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  )
+    return 'word';
+  if (
+    /\.xlsx$/i.test(name) ||
+    mime === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  )
+    return 'excel';
   if (/\.(png|jpe?g|gif|webp|avif|svg|bmp|ico)$/i.test(name)) return 'image';
   if (/\.pdf$/i.test(name) || mime === 'application/pdf') return 'pdf';
   if (
@@ -155,6 +167,9 @@ export function removeFile(workspace: Workspace, id: string): Workspace {
     ),
     editorDrafts: Object.fromEntries(
       Object.entries(workspace.editorDrafts).filter(([key]) => key !== id)
+    ),
+    officeDrafts: Object.fromEntries(
+      Object.entries(workspace.officeDrafts ?? {}).filter(([key]) => key !== id)
     ),
     commentDrafts: Object.fromEntries(
       Object.entries(workspace.commentDrafts).filter(([key]) => !key.startsWith(`${id}:`))

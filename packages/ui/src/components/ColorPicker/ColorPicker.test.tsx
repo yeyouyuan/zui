@@ -38,6 +38,24 @@ function stubRect(element: Element, rect: Partial<DOMRect>): void {
 }
 
 describe('ColorPicker', () => {
+  it('distinguishes labeled pickers and returns keyboard focus to the named trigger', async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <ColorPicker aria-label="文字颜色" />
+        <ColorPicker aria-label="填充颜色" />
+      </>
+    );
+    const text = screen.getByRole('button', { name: '文字颜色' });
+    const fill = screen.getByRole('button', { name: '填充颜色' });
+    await user.click(text);
+    expect(text).toHaveAttribute('aria-expanded', 'true');
+    expect(fill).toHaveAttribute('aria-expanded', 'false');
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(text).toHaveFocus();
+  });
+
   it('renders trigger with swatch + hex text and default value', () => {
     const { container } = render(<ColorPicker />);
     const root = getRoot(container);
