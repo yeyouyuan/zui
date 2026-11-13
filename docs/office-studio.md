@@ -2,7 +2,7 @@
 
 2026-11-13：独立 `OfficeStudio` 已在基础编辑能力上补齐图片、页眉页脚、查找替换、工作表与行列增删、表格合并与冻结、筛选排序、原生图表、条件格式、数据验证与填充、Excel 字体/字号、超链接和选择性粘贴、PDF 绘图与表单，以及打印和历史版本。可见工具、菜单与表单直接使用 ZUI 的 Button、Input、Select、Tabs、DropdownMenu、ColorPicker、Modal、Checkbox、Radio/RadioGroup、Collapse 和 Table 等组件；Word、Excel、PDF 分别使用自己的文档模型和编辑内核。无需文档服务器，示例没有调用 `/api/office`。
 
-本地页面：`http://127.0.0.1:5175/#/components/office-studio`。已有 `OfficeEditor` 的 ONLYOFFICE 集成继续保留。当前源码包含 73 个 UI 组件与 16 个业务块，新增编辑器尚未发布到包仓库。
+本地页面：`http://127.0.0.1:5175/#/components/office-studio`。已有 `OfficeEditor` 的 ONLYOFFICE 集成继续保留。v0.4.0 包含 73 个 UI 组件与 16 个业务块，两个编辑器均随 `@zui/react` 和 Registry 分发。
 
 本轮依据 ONLYOFFICE web-apps、sdkjs 与 ranuts/document 的固定源码版本调整标题栏、文件菜单、标签、两行工具分组、画布与状态栏；实际来源和 ZUI 映射见 [界面与操作参考记录](office-studio-reference-2026-11-12.md)。已完成本地字体/行高及本轮编辑操作的浏览器核对；真实打印与 Office 精确分页仍需单独验收。功能状态逐项见 [Office 功能细节对照](office-function-comparison-2026-11-12.md)，不能据此认定整体功能已完全一致。
 
@@ -136,8 +136,8 @@ PDF 页面的原始字节仅在文件切换时重新载入。标注/表单变化
 
 本轮最终测试合计 2010 项通过：UI 全量 1668/1668、93 个文件，其中 OfficeStudio 359 项、OfficeEditor 19 项均已计入；文档站 Node 194/194，包含 187 个顶层测试；CLI 26、MCP 7、Tokens 3、Icons 7、I18n 37、Blocks 68 均通过。UI、docs 及其余工作区包的 TypeScript 与仓库 `pnpm lint` 通过。真实 XLSX 专项 32/32，覆盖超链接、字体与小数字号继承的重复往返；打印专项 19/19，jsdom 计算样式另确认 Excel 缺省 Calibri / 11pt、显式 Times New Roman / 11.5pt 优先，Word 表格保留 10pt；上述专项已计入各自全量。
 
-七包、IIFE 与文档站生产构建通过。Registry 共 89 条目，消费者检查验证 280 个源文件、73 个 MCP 示例与 Office 子路径；七包暂存 tarball 经真实 npm aliases 安装，ESM/CommonJS、React 19 SSR、CSS、CLI、MCP、严格公共声明及实际 CLI 复制出的 OfficeStudio 源码均通过。源码包名保持 `@zui/*`，本轮暂存版本为 `0.3.0`；详细日志与最终本地报告见验证记录。
+2026-11-12 的发布前检查中，七包、IIFE 与文档站生产构建通过。Registry 共 89 条目，消费者检查验证 280 个源文件、73 个 MCP 示例与 Office 子路径；七包暂存 tarball 经真实 npm aliases 安装，ESM/CommonJS、React 19 SSR、CSS、CLI、MCP、严格公共声明及实际 CLI 复制出的 OfficeStudio 源码均通过。当时暂存版本仍为 `0.3.0`，该数据属于历史验证；正式发布版本为 `0.4.0`。
 
 ESM 同步入口为 2 个模块、110,470 gzip 字节，低于 112 KiB（114,688 字节）预算；Word、Sheet、PDF 新增异步模块分别为 13,445、36,569、10,702 gzip 字节，external 依赖由消费者安装。生产预览 [OfficeStudio](http://127.0.0.1:5175/#/components/office-studio) 的索引和九个 JS/CSS 资源均 HTTP 200，内容与最终 `docs/dist` 相同；此检查只确认资源可取用。
 
-本轮源码尚未发布，也未运行浏览器或 Playwright 验收。Node、jsdom、fake-indexeddb 及文件往返测试不证明真实浏览器的画布布局、持久化、字体加载或打印对话框；这些结果需要分别记录。
+后续浏览器验收已覆盖 OfficeStudio 的关键编辑流程；Node、jsdom、fake-indexeddb 及文件往返测试仍不单独证明真实打印对话框或所有系统字体环境，相关边界需分别记录。

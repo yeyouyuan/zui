@@ -1,6 +1,14 @@
-# ZUI v0.2.0 发布清单
+# ZUI 发布清单
 
 适用包：`@zui/react`、`@zui/tokens`、`@zui/icons`、`@zui/i18n`、`@zui/cli`、`@zui/mcp`、`@zui/blocks`。
+
+## v0.4.0 发布基线（2026-11-13）
+
+- 七个公开包统一为 `0.4.0`，GitHub Release 标签必须为 `v0.4.0`；`@zui/mcp` 运行时自报版本与包版本一致。
+- Registry 为 73 个组件、16 个业务区块，共 89 个条目；`OfficeEditor` 与 `OfficeStudio` 已进入公共导出、子路径、Registry、CLI 和 MCP。
+- 发布前必须完成 Registry 校验、工作区构建与类型检查、ESLint、全量单元测试、浏览器 E2E、浏览器包构建、分发检查、源码消费者检查、包体预算及 GitHub Packages 本地真实安装检查。
+- `main` 的 CI 与 Pages 必须在同一提交成功；之后发布 GitHub Release，等待 GitHub Packages 工作流完成，并从真实 registry 重新安装七个包核对 SHA-512 完整性。
+- Pages 生产路径为 `/zui/`，CDN 产物位于 `cdn/v0.4.0/`；发布页与公开安装说明使用 `@yeyouyuan/zui-*` 名称和 `@zui/*` npm aliases。
 
 ## v0.2.0 发布基线（2026-11-07 历史记录）
 

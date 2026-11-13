@@ -2,6 +2,14 @@
 
 ZUI 遵循语义化版本：破坏性变更只随 major 发布，废弃 API 跨一个大版本后才移除。
 
+## v0.4.0 — OfficeStudio 与全组件质量审计（2026-11-13）
+
+- 正式发布 `OfficeEditor` 与 `OfficeStudio`，Registry 扩展到 73 个组件和 16 个业务区块；CLI 与 MCP 同步支持两个编辑器的检索、源码复制和代码生成。
+- `OfficeEditor` 提供自部署 ONLYOFFICE Docs 接入；`OfficeStudio` 使用 ZUI 控件与独立模型完成 Word、Excel、PDF 页面内编辑，并提供真实文件导入导出、打印、本地恢复和历史版本宿主适配。
+- Word 补齐图片缩放、页眉页脚常规双击编辑、上下文功能区、正文锁定和内容流式布局；Excel 补齐可拖动及键盘调整的行高；PDF 补齐矩形与高亮批注尺寸调整。
+- 完成全组件 P1/P2 交互、无障碍、视觉、RTL 和性能审计修复，覆盖焦点恢复、受控状态、浮层、窄屏与高对比度等边界。
+- 七个公开包统一发布到 GitHub Packages `0.4.0`，浏览器 IIFE、CSS 与许可清单同步部署到 GitHub Pages `cdn/v0.4.0/`。
+
 ## v0.3.0 — 页面设计、内容协作与 GitHub Packages（2026-11-11）
 
 - 组件目录扩展到 71 个，新增 Combobox、MultiCombobox、CommandPalette、SideNav 和 Splitter，保留 16 个业务区块。

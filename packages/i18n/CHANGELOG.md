@@ -1,5 +1,13 @@
 # @zui/i18n
 
+## 0.4.0
+
+### Minor Changes
+
+- 发布 ZUI v0.4.0：新增可自部署的 `OfficeEditor` 和完全使用 ZUI 控件的 `OfficeStudio`，覆盖 Word、Excel、PDF 的页面内编辑、真实文件导入导出、打印、恢复与历史版本；Registry、CLI 和 MCP 同步提供 73 个正式组件与 16 个业务区块。
+
+  本版本同时完成全组件 P1/P2 交互、无障碍、视觉、RTL 和性能审计修复，并完善 OfficeStudio 的图片缩放、Word 页眉页脚常规编辑流程、Excel 行高调整和 PDF 批注尺寸调整。
+
 ## 0.2.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 # Word、Excel、PDF 页面内完整编辑器
 
-实施日期：2026-11-12。文档站 `#/collaboration` 集成自部署的 ONLYOFFICE Docs 10.0，在文档画布中直接预览和修改 DOCX、XLSX、PDF。外层工作台负责文件、保存状态、讨论和备份，文档排版、表格计算及 PDF 编辑由专业引擎提供。原生画布现已提炼为 `@zui/react` 的 `OfficeEditor` 组件，工作台和组件示例共用它；本次源码变更尚未发布。
+实施日期：2026-11-12。文档站 `#/collaboration` 集成自部署的 ONLYOFFICE Docs 10.0，在文档画布中直接预览和修改 DOCX、XLSX、PDF。外层工作台负责文件、保存状态、讨论和备份，文档排版、表格计算及 PDF 编辑由专业引擎提供。原生画布现已提炼为 `@zui/react` 的 `OfficeEditor` 组件，工作台和组件示例共用它，并自 v0.4.0 起正式发布。
 
 ## 可复用组件
 

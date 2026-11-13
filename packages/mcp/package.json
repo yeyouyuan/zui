@@ -1,6 +1,6 @@
 {
   "name": "@zui/mcp",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "ZUI MCP server — pure stdio JSON-RPC 2.0 tool server for ZUI components (no MCP SDK)",
   "type": "module",
   "bin": {

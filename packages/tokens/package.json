@@ -1,6 +1,6 @@
 {
   "name": "@zui/tokens",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "ZUI 设计令牌：三层 CSS 变量 + TS 常量 + DTCG JSON",
   "type": "module",
   "sideEffects": [

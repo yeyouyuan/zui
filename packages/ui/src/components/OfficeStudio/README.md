@@ -18,7 +18,7 @@ import '@zui/react/styles.css';
 />;
 ```
 
-也可以从 `@zui/react/office-studio` 导入组件和类型。当前为尚未发布的源码新增，已发布的 0.3.0 不包含此组件。
+也可以从 `@zui/react/office-studio` 导入组件和类型。该子路径自 v0.4.0 起随 `@zui/react` 发布。
 
 `value / defaultValue / onChange` 管理文档模型。`onImport(file)` 与 `onCreate(kind)` 由宿主生成新的模型并更新受控 `value`。PDF 还需提供原始 `source: Blob` 和 `pdfRenderer`；新建 PDF 的原始字节由 `onCreate` 生成。Word 和 Excel 在无 `onCreate` 时可创建默认文档。
 

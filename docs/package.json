@@ -1,7 +1,7 @@
 {
   "name": "@zui/docs",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "ZUI 组件库中文文档站",
   "type": "module",
   "scripts": {

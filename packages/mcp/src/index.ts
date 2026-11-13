@@ -26,7 +26,7 @@ import { generateCode } from './tools/generate.js';
 /* --------------------------------- 常量 --------------------------------- */
 
 export const SERVER_NAME = '@zui/mcp';
-export const SERVER_VERSION = '0.3.0';
+export const SERVER_VERSION = '0.4.0';
 const PROTOCOL_VERSION = '2024-11-05';
 
 export const TOOL_SEARCH = 'zui_search_components';
@@ -82,7 +82,8 @@ export const TOOLS: unknown[] = [
         },
         props: {
           type: 'object',
-          description: '组件 props 键值对；true 渲染布尔属性，false 保留，null 省略，数字渲染为 {42}',
+          description:
+            '组件 props 键值对；true 渲染布尔属性，false 保留，null 省略，数字渲染为 {42}',
         },
         children: {
           type: 'string',
@@ -139,11 +140,7 @@ export interface ServerContext {
   root: string;
 }
 
-function runTool(
-  ctx: ServerContext,
-  name: string,
-  args: Record<string, unknown>,
-): ToolResult {
+function runTool(ctx: ServerContext, name: string, args: Record<string, unknown>): ToolResult {
   const catalog: Catalog = loadCatalog(ctx.root);
 
   if (name === TOOL_SEARCH) {
@@ -151,7 +148,9 @@ function runTool(
     const limit = typeof args.limit === 'number' && args.limit > 0 ? Math.floor(args.limit) : 10;
     const results = searchComponents(catalog, query, limit);
     return {
-      content: [{ type: 'text', text: JSON.stringify({ query, count: results.length, results }, null, 2) }],
+      content: [
+        { type: 'text', text: JSON.stringify({ query, count: results.length, results }, null, 2) },
+      ],
       structuredContent: { query, count: results.length, results },
     };
   }
@@ -159,7 +158,10 @@ function runTool(
   if (name === TOOL_API) {
     const rawName = args.name;
     if (typeof rawName !== 'string' || rawName.trim() === '') {
-      return { content: [{ type: 'text', text: '参数错误：name 必须是非空字符串' }], isError: true };
+      return {
+        content: [{ type: 'text', text: '参数错误：name 必须是非空字符串' }],
+        isError: true,
+      };
     }
     const api = getComponentApi(catalog, rawName);
     if (!api.ok) {
@@ -178,20 +180,26 @@ function runTool(
   if (name === TOOL_GENERATE) {
     const component = args.component;
     if (typeof component !== 'string' || component.trim() === '') {
-      return { content: [{ type: 'text', text: '参数错误：component 必须是非空字符串' }], isError: true };
+      return {
+        content: [{ type: 'text', text: '参数错误：component 必须是非空字符串' }],
+        isError: true,
+      };
     }
     const props = isRecord(args.props) ? args.props : {};
     const children = typeof args.children === 'string' ? args.children : undefined;
     const result = generateCode(catalog, component, props, children);
     if (!result.ok) {
-      const hint = result.suggestions.length > 0 ? `相近组件：${result.suggestions.join('、')}` : '';
+      const hint =
+        result.suggestions.length > 0 ? `相近组件：${result.suggestions.join('、')}` : '';
       return {
         content: [{ type: 'text', text: `${result.error}${hint ? `\n${hint}` : ''}` }],
         isError: true,
       };
     }
     const warnings =
-      result.warnings.length > 0 ? `\n\n注意：\n${result.warnings.map((w) => `- ${w}`).join('\n')}` : '';
+      result.warnings.length > 0
+        ? `\n\n注意：\n${result.warnings.map((w) => `- ${w}`).join('\n')}`
+        : '';
     return {
       content: [{ type: 'text', text: `${result.code}${warnings}` }],
       structuredContent: { name: result.name, code: result.code, warnings: result.warnings },
@@ -206,7 +214,12 @@ function runTool(
 
 /* --------------------------- 请求 → 响应 核心 --------------------------- */
 
-function errorResponse(id: JsonRpcId, code: number, message: string, data?: unknown): JsonRpcResponse {
+function errorResponse(
+  id: JsonRpcId,
+  code: number,
+  message: string,
+  data?: unknown
+): JsonRpcResponse {
   const error: JsonRpcError = { code, message };
   if (data !== undefined) error.data = data;
   return { jsonrpc: '2.0', id, error };
@@ -215,7 +228,7 @@ function errorResponse(id: JsonRpcId, code: number, message: string, data?: unkn
 /** 处理单条 JSON-RPC 消息；notification（无 id）返回 null。 */
 export function handleRpcMessage(
   msg: unknown,
-  ctx: ServerContext = { root: resolveRepoRoot() },
+  ctx: ServerContext = { root: resolveRepoRoot() }
 ): JsonRpcResponse | null {
   if (!isRecord(msg)) {
     return errorResponse(null, -32600, 'Invalid Request');
@@ -260,14 +273,21 @@ export function handleRpcMessage(
         return ok(runTool(ctx, name, args));
       } catch (err) {
         return ok({
-          content: [{ type: 'text', text: `工具执行出错：${err instanceof Error ? err.message : String(err)}` }],
+          content: [
+            {
+              type: 'text',
+              text: `工具执行出错：${err instanceof Error ? err.message : String(err)}`,
+            },
+          ],
           isError: true,
         });
       }
     }
 
     default:
-      return isNotification ? null : errorResponse(id ?? null, -32601, `Method not found: ${method}`);
+      return isNotification
+        ? null
+        : errorResponse(id ?? null, -32601, `Method not found: ${method}`);
   }
 }
 

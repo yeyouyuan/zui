@@ -1,10 +1,10 @@
 # @zui/cli
 
-> v0.3.0 发布到 GitHub Packages：`@yeyouyuan/zui-cli`，npmjs 暂不发布。先在项目 `.npmrc` 配置 `@yeyouyuan:registry=https://npm.pkg.github.com`，再用拥有包读取权限的 GitHub 账号登录。
+> v0.4.0 发布到 GitHub Packages：`@yeyouyuan/zui-cli`，npmjs 暂不发布。先在项目 `.npmrc` 配置 `@yeyouyuan:registry=https://npm.pkg.github.com`，再用拥有包读取权限的 GitHub 账号登录。
 
 ```bash
 npm login --scope=@yeyouyuan --auth-type=legacy --registry=https://npm.pkg.github.com
-pnpm add @zui/cli@npm:@yeyouyuan/zui-cli@0.3.0
+pnpm add @zui/cli@npm:@yeyouyuan/zui-cli@0.4.0
 ```
 
 源码导入继续使用 `@zui/cli`。完整认证和安装说明见仓库 [GitHub Packages 文档](https://github.com/yeyouyuan/zui/blob/main/docs/GITHUB-PACKAGES.md)。
@@ -15,13 +15,13 @@ ZUI registry 命令行工具：把 registry 里的组件**源码**复制进你�
 ## 命令（契约 §3）
 
 ```bash
-pnpm dlx @yeyouyuan/zui-cli@0.3.0 init                     # 交互式初始化：检测框架、配置目标目录、写 .zurc.json
-pnpm dlx @yeyouyuan/zui-cli@0.3.0 add button               # 复制 Button.tsx + Button.css 到 src/components/ui/button/
-pnpm dlx @yeyouyuan/zui-cli@0.3.0 add button modal         # 多组件
-pnpm dlx @yeyouyuan/zui-cli@0.3.0 add --all                # 复制全部组件与业务块
-pnpm dlx @yeyouyuan/zui-cli@0.3.0 diff button              # 本地副本 vs registry 的 unified diff（上游更新通道）
-pnpm dlx @yeyouyuan/zui-cli@0.3.0 list                     # 列出 registry 所有组件
-pnpm dlx @yeyouyuan/zui-cli@0.3.0 list --json              # JSON 输出整个 registry
+pnpm dlx @yeyouyuan/zui-cli@0.4.0 init                     # 交互式初始化：检测框架、配置目标目录、写 .zurc.json
+pnpm dlx @yeyouyuan/zui-cli@0.4.0 add button               # 复制 Button.tsx + Button.css 到 src/components/ui/button/
+pnpm dlx @yeyouyuan/zui-cli@0.4.0 add button modal         # 多组件
+pnpm dlx @yeyouyuan/zui-cli@0.4.0 add --all                # 复制全部组件与业务块
+pnpm dlx @yeyouyuan/zui-cli@0.4.0 diff button              # 本地副本 vs registry 的 unified diff（上游更新通道）
+pnpm dlx @yeyouyuan/zui-cli@0.4.0 list                     # 列出 registry 所有组件
+pnpm dlx @yeyouyuan/zui-cli@0.4.0 list --json              # JSON 输出整个 registry
 ```
 
 ## 选项
@@ -70,7 +70,7 @@ pnpm dlx @yeyouyuan/zui-cli@0.3.0 list --json              # JSON 输出整个 r
 - 输出 import 提示与需要安装的 npm `dependencies`（无则提示仅 react peer 依赖）。
 
 ```bash
-pnpm dlx @yeyouyuan/zui-cli@0.3.0 add button modal
+pnpm dlx @yeyouyuan/zui-cli@0.4.0 add button modal
 #   created  src/components/ui/button/Button.css
 #   created  src/components/ui/button/Button.tsx
 #   created  src/components/ui/modal/Modal.css

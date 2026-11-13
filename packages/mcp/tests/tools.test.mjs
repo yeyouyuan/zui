@@ -22,7 +22,7 @@ test('catalog resolves every shipped component from bundled data', () => {
   assert.equal(resolveRepoRoot(), fileURLToPath(new URL('../data', import.meta.url)));
 });
 test('server reports the published package version', () => {
-  assert.equal(SERVER_VERSION, '0.3.0');
+  assert.equal(SERVER_VERSION, '0.4.0');
   const initialized = JSON.parse(
     handleLine(JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize' }))
   );

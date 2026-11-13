@@ -1,6 +1,6 @@
 {
   "name": "@zui/icons",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "ZUI 图标：24 视窗线性图标组件（Feather/Lucide 风格），React 19",
   "type": "module",
   "sideEffects": false,

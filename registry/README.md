@@ -1,7 +1,7 @@
 # ZUI registry
 
 `registry.json` 从组件、业务块和公共源码生成，供 CLI 复制与 MCP 查询。
-当前源码包含 73 个组件、16 个业务块，共 89 个条目。`OfficeEditor` 和 `OfficeStudio` 为尚未发布的新增组件。`OfficeEditor` 需要 ONLYOFFICE Docs；`OfficeStudio` 使用 ZUI 与独立编辑内核，无需文档服务器，支持 Word 图片/页眉页脚/查找替换、Excel 工作表与行列增删/合并/冻结/筛选排序/原生图表和 PDF 绘图/文字查找/普通表单。`OfficeStudio` 的 UI 条目包含编辑内核与 ZUI 依赖；真实文件 codec、PDF worker/字体、打印及历史版本持久化由宿主适配，文档示例中的适配器不随此条目复制。接入与格式限制见 [OfficeStudio 说明](../docs/office-studio.md)。
+v0.4.0 包含 73 个组件、16 个业务块，共 89 个条目。`OfficeEditor` 需要 ONLYOFFICE Docs；`OfficeStudio` 使用 ZUI 与独立编辑内核，无需文档服务器，支持 Word 图片/页眉页脚/查找替换、Excel 工作表与行列增删/合并/冻结/筛选排序/原生图表和 PDF 绘图/文字查找/普通表单。`OfficeStudio` 的 UI 条目包含编辑内核与 ZUI 依赖；真实文件 codec、PDF worker/字体、打印及历史版本持久化由宿主适配，文档示例中的适配器不随此条目复制。接入与格式限制见 [OfficeStudio 说明](../docs/office-studio.md)。
 
 ```bash
 node registry/scripts/generate.mjs
