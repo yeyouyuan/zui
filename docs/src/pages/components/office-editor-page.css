@@ -1,3 +1,23 @@
+.office-editor-demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--z-space-2);
+}
+.office-editor-demo-disclosure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--z-space-2);
+  margin: var(--z-space-3) 0;
+  padding: var(--z-space-3);
+  border: 1px solid var(--z-color-border);
+  border-radius: var(--z-radius-md);
+  color: var(--z-color-fg-muted);
+  background: var(--z-color-success-subtle);
+  font-size: var(--z-text-sm);
+  line-height: 1.6;
+}
 .office-editor-demo-empty {
   display: flex;
   flex-direction: column;

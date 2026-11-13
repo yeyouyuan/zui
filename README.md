@@ -26,13 +26,13 @@ ZUI 以设计令牌连接设计与代码。组件使用原生 CSS、CSS 变量�
 
 ## 现在包含什么
 
-| 能力       | 当前范围                                                                 | 入口                                                                       |
-| ---------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| React 组件 | 73 个 Registry 组件、142 枚图标、10 套语言包                             | [组件文档](https://yeyouyuan.github.io/zui/#/components/button)            |
-| 业务区块   | 16 个页面级区块，覆盖数据展示、表单与账户、系统管理                      | [业务区块](https://yeyouyuan.github.io/zui/#/blocks)                       |
-| 文档编辑   | `OfficeEditor` 接入 ONLYOFFICE；`OfficeStudio` 原生编辑 Word、Excel、PDF | [OfficeStudio](https://yeyouyuan.github.io/zui/#/components/office-studio) |
-| 页面设计   | 多页、拖拽、图层、响应式样式、主组件、数据源与离线 HTML 导出             | [页面搭建器](https://yeyouyuan.github.io/zui/#/builder)                    |
-| AI 工具链  | Registry、CLI、MCP、`llms.txt`、机器可读 API 契约                        | [Registry 说明](./registry/README.md)                                      |
+| 能力       | 当前范围                                                                 | 入口                                                                                                                                                    |
+| ---------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| React 组件 | 73 个 Registry 组件、142 枚图标、10 套语言包                             | [组件文档](https://yeyouyuan.github.io/zui/#/components/button)                                                                                         |
+| 业务区块   | 16 个页面级区块，覆盖数据展示、表单与账户、系统管理                      | [业务区块](https://yeyouyuan.github.io/zui/#/blocks)                                                                                                    |
+| 文档编辑   | `OfficeEditor` 接入 ONLYOFFICE；`OfficeStudio` 原生编辑 Word、Excel、PDF | [OfficeEditor](https://yeyouyuan.github.io/zui/#/components/office-editor) · [OfficeStudio](https://yeyouyuan.github.io/zui/#/components/office-studio) |
+| 页面设计   | 多页、拖拽、图层、响应式样式、主组件、数据源与离线 HTML 导出             | [页面搭建器](https://yeyouyuan.github.io/zui/#/builder)                                                                                                 |
+| AI 工具链  | Registry、CLI、MCP、`llms.txt`、机器可读 API 契约                        | [Registry 说明](./registry/README.md)                                                                                                                   |
 
 ## 设计取向
 
@@ -47,7 +47,7 @@ ZUI 以设计令牌连接设计与代码。组件使用原生 CSS、CSS 变量�
 
 ## OfficeStudio：在页面内完成真实文档
 
-`OfficeStudio` 使用 ZUI 的按钮、菜单、表单和状态反馈构建独立编辑器，无需文档服务器。它支持真实文件导入导出、打印、浏览器本地恢复和最近 20 次历史版本；需要多人协同与服务端编辑时，可使用 `OfficeEditor` 接入自部署的 ONLYOFFICE Docs。
+`OfficeStudio` 使用 ZUI 的按钮、菜单、表单和状态反馈构建独立编辑器，无需文档服务器。它支持真实文件导入导出、打印、浏览器本地恢复和最近 20 次历史版本；需要多人协同与服务端编辑时，可使用 `OfficeEditor` 接入自部署的 ONLYOFFICE Docs。在线文档中的 `OfficeEditor` 临时 Demo 会连接 ONLYOFFICE 官方公共演示服务，并且只加载官方样例文件。
 
 [![OfficeStudio Word 页眉上下文编辑](./docs/assets/readme/office-studio.png)](https://yeyouyuan.github.io/zui/#/components/office-studio)
 

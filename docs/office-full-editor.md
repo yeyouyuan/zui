@@ -2,9 +2,22 @@
 
 实施日期：2026-11-12。文档站 `#/collaboration` 集成自部署的 ONLYOFFICE Docs 10.0，在文档画布中直接预览和修改 DOCX、XLSX、PDF。外层工作台负责文件、保存状态、讨论和备份，文档排版、表格计算及 PDF 编辑由专业引擎提供。原生画布现已提炼为 `@zui/react` 的 `OfficeEditor` 组件，工作台和组件示例共用它，并自 v0.4.0 起正式发布。
 
+## 发布站的免费在线 Demo
+
+GitHub Pages 没有文件接口、保存回调或 DocumentServer。组件文档页在
+`*.github.io` 上会切换到 ONLYOFFICE 官方 API 文档使用的公共演示服务：
+
+- DocumentServer：`https://api.docs.onlyoffice.com/`
+- 文档源：`https://static.onlyoffice.com/assets/docs/samples/demo.{docx,xlsx,pdf}`
+- 只加载官方样例，不把本地文件上传到公共服务；会话不持久化。
+
+这条路径用于查看 `OfficeEditor` 的实际内嵌效果。生产业务仍需按下文自部署
+ONLYOFFICE Docs，将 JWT 私钥和保存回调保留在服务端。开发时可用
+`?office-demo=official` 强制查看发布模式，用 `?office-demo=local` 强制查看本地完整模式。
+
 ## 可复用组件
 
-文档站 `#/components/office-editor` 提供组件说明、签名配置接入示例及 Word、Excel、PDF 的页面内试用。试用只在点击后创建新文件副本，保存到同一浏览器工作区；可以在文件工作区继续编辑、下载、备份或删除。
+文档站 `#/components/office-editor` 提供组件说明、签名配置接入示例及 Word、Excel、PDF 的页面内试用。GitHub Pages 模式自动打开官方在线样例且不持久化；本地完整模式在点击后创建新文件副本，保存到同一浏览器工作区，可以在文件工作区继续编辑、下载、备份或删除。
 
 ```tsx
 import { OfficeEditor, type OfficeEditorConfig } from '@zui/react';

@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { Button, Tag } from '@zui/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Button, OfficeEditor, Tag, type OfficeEditorConfig } from '@zui/react';
 import ApiTable from '../../components/ApiTable';
 import Demo from '../../components/Demo';
 import { usePageTitle } from '../../components/usePageTitle';
@@ -8,6 +8,12 @@ import { saveAllOfficeSessions } from '../collaboration/office/office-client';
 import { officeSample } from '../collaboration/office/samples';
 import { importFile, MAX_FILES, MAX_WORKSPACE_BYTES } from '../collaboration/workspace-model';
 import { useWorkspace, workspaceStore } from '../collaboration/workspace-store';
+import {
+  createOfficialOfficeDemoConfig,
+  ONLYOFFICE_OFFICIAL_DEMO_SERVER,
+  type OfficialOfficeDemoKind,
+  usesOfficialOfficeDemo,
+} from './official-office-demo';
 import './office-editor-page.css';
 
 const BASIC_CODE = `import { OfficeEditor, type OfficeEditorConfig } from '@zui/react';
@@ -51,8 +57,80 @@ const formats = [
 
 const officeAccept = '.docx,.xlsx,.pdf';
 
+function OfficialOfficeDemo(): React.ReactNode {
+  const [kind, setKind] = useState<OfficialOfficeDemoKind>('word');
+  const [config, setConfig] = useState<OfficeEditorConfig | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const openExample = useCallback(async (nextKind: OfficialOfficeDemoKind) => {
+    setKind(nextKind);
+    setLoading(true);
+    setError('');
+    try {
+      setConfig(await createOfficialOfficeDemoConfig(nextKind));
+    } catch (cause) {
+      setConfig(null);
+      setError(cause instanceof Error ? cause.message : '官方示例配置生成失败，请重试。');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void openExample('word');
+  }, [openExample]);
+
+  return (
+    <>
+      <div className="office-editor-demo-actions">
+        {formats.map(({ kind: option, label }) => (
+          <Button
+            key={option}
+            size="sm"
+            variant={kind === option ? 'primary' : 'outline'}
+            disabled={loading}
+            onClick={() => void openExample(option)}
+          >
+            打开 {label} 示例
+          </Button>
+        ))}
+      </div>
+      <div className="office-editor-demo-disclosure" role="note">
+        <Tag color="success">ONLYOFFICE 官方演示服务</Tag>
+        <span>
+          仅加载 ONLYOFFICE 官方样例。会话临时有效，不写入 ZUI 工作区；请勿输入或插入敏感内容。
+        </span>
+      </div>
+      {error && (
+        <p className="office-editor-demo-alert" role="alert">
+          {error}
+        </p>
+      )}
+      {config ? (
+        <OfficeEditor
+          key={config.document.key}
+          documentServerUrl={ONLYOFFICE_OFFICIAL_DEMO_SERVER}
+          config={config}
+          kind={kind}
+          title={`${formats.find((entry) => entry.kind === kind)?.label} 官方在线示例`}
+          height={720}
+          readyTimeout={120000}
+          labels={{ loading: '正在连接 ONLYOFFICE 官方演示服务…' }}
+        />
+      ) : (
+        <div className="office-editor-demo-empty" aria-busy={loading || undefined}>
+          <strong>{loading ? '正在准备官方在线示例…' : '示例暂时无法打开'}</strong>
+          <p>可以重新选择一种格式再试。</p>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function OfficeEditorPage(): React.ReactNode {
   usePageTitle('OfficeEditor 文档编辑器');
+  const officialDemo = usesOfficialOfficeDemo();
   const snapshot = useWorkspace();
   const [demoId, setDemoId] = useState<string | null>(null);
   const [readOnly, setReadOnly] = useState(false);
@@ -170,81 +248,98 @@ export default function OfficeEditorPage(): React.ReactNode {
       <h2 className="doc-h2">页面内试用</h2>
       <Demo
         title="Word、Excel、PDF 内嵌编辑"
-        description="点击创建独立示例副本；文件会保存到当前浏览器工作区，可在文件工作区继续编辑、备份或删除。"
+        description={
+          officialDemo
+            ? '发布站直接连接 ONLYOFFICE 官方免费演示服务，打开官方样例即可体验 ZUI OfficeEditor。'
+            : '点击创建独立示例副本；文件会保存到当前浏览器工作区，可在文件工作区继续编辑、备份或删除。'
+        }
         code={BASIC_CODE}
         stack
       >
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
-          {formats.map(({ kind, label }) => (
-            <Button
-              key={kind}
-              size="sm"
-              variant="outline"
-              disabled={blocked}
-              onClick={() => void createExample(kind)}
-            >
-              创建 {label} 示例
-            </Button>
-          ))}
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={blocked}
-            onClick={() => openInputRef.current?.click()}
-          >
-            打开本地文件
-          </Button>
-          {file && (
-            <Button
-              size="sm"
-              variant="outline"
-              disabled={blocked}
-              onClick={() => void changeMode()}
-            >
-              {readOnly ? '切换为编辑' : '切换为只读预览'}
-            </Button>
-          )}
-          <Button size="sm" variant="ghost" disabled={busy} onClick={() => void openWorkspace()}>
-            打开文件工作区
-          </Button>
-        </div>
-        {(error || snapshot.error) && (
-          <p className="office-editor-demo-alert" role="alert">
-            {error || snapshot.error}
-          </p>
-        )}
-        {busy && (
-          <p className="office-editor-demo-status" role="status">
-            正在保存当前文件并准备编辑器…
-          </p>
-        )}
-        {file ? (
-          <OfficeWorkbench
-            key={file.id}
-            file={file}
-            disabled={readOnly || snapshot.status === 'conflict'}
-            defaultExpanded={false}
-          />
+        {officialDemo ? (
+          <OfficialOfficeDemo />
         ) : (
-          <div className="office-editor-demo-empty">
-            <strong>选择一种文档开始试用</strong>
-            <p>编辑器将在这里打开，也可以通过文件工作区导入自己的 DOCX、XLSX 或 PDF。</p>
-          </div>
+          <>
+            <div className="office-editor-demo-actions">
+              {formats.map(({ kind, label }) => (
+                <Button
+                  key={kind}
+                  size="sm"
+                  variant="outline"
+                  disabled={blocked}
+                  onClick={() => void createExample(kind)}
+                >
+                  创建 {label} 示例
+                </Button>
+              ))}
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={blocked}
+                onClick={() => openInputRef.current?.click()}
+              >
+                打开本地文件
+              </Button>
+              {file && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={blocked}
+                  onClick={() => void changeMode()}
+                >
+                  {readOnly ? '切换为编辑' : '切换为只读预览'}
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={busy}
+                onClick={() => void openWorkspace()}
+              >
+                打开文件工作区
+              </Button>
+            </div>
+            {(error || snapshot.error) && (
+              <p className="office-editor-demo-alert" role="alert">
+                {error || snapshot.error}
+              </p>
+            )}
+            {busy && (
+              <p className="office-editor-demo-status" role="status">
+                正在保存当前文件并准备编辑器…
+              </p>
+            )}
+            {file ? (
+              <OfficeWorkbench
+                key={file.id}
+                file={file}
+                disabled={readOnly || snapshot.status === 'conflict'}
+                defaultExpanded={false}
+              />
+            ) : (
+              <div className="office-editor-demo-empty">
+                <strong>选择一种文档开始试用</strong>
+                <p>编辑器将在这里打开，也可以通过文件工作区导入自己的 DOCX、XLSX 或 PDF。</p>
+              </div>
+            )}
+          </>
         )}
       </Demo>
 
-      <input
-        ref={openInputRef}
-        type="file"
-        accept={officeAccept}
-        hidden
-        aria-label="打开本地 Office 文件"
-        onChange={(event) => {
-          const source = event.target.files?.[0];
-          event.target.value = '';
-          if (source) void openWorkspaceFile(source);
-        }}
-      />
+      {!officialDemo && (
+        <input
+          ref={openInputRef}
+          type="file"
+          accept={officeAccept}
+          hidden
+          aria-label="打开本地 Office 文件"
+          onChange={(event) => {
+            const source = event.target.files?.[0];
+            event.target.value = '';
+            if (source) void openWorkspaceFile(source);
+          }}
+        />
+      )}
 
       <h2 className="doc-h2">格式与接入</h2>
       <div className="doc-table-wrap">
@@ -277,8 +372,9 @@ export default function OfficeEditorPage(): React.ReactNode {
         <code>onDownload</code> 下载已经确认的结果文件。JWT 密钥保存在服务端。
       </p>
       <p>
-        本机示例使用现有文件桥接与工作区保存流程。部署说明见仓库中的{' '}
-        <code>docs/office-full-editor.md</code>。
+        发布站的在线示例使用 ONLYOFFICE
+        官方公共演示服务和官方样例，不提供持久化。完整业务接入使用自部署 DocumentServer、服务端 JWT
+        和现有文件桥接与工作区保存流程。部署说明见仓库中的 <code>docs/office-full-editor.md</code>。
       </p>
 
       <h2 className="doc-h2">嵌入现有工作台</h2>
