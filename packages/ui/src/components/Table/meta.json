@@ -1,11 +1,11 @@
 {
   "name": "Table",
-  "description": "表格：语义化 table 展示，可选数据驱动模式（columns/data）支持列拖拽排序、点击表头排序与列显隐",
+  "description": "表格：语义化组合用法与专业数据模式；数据模式支持显式排序菜单、专用手柄列移动、受控排序、字段搜索/显隐/重排",
   "category": "数据展示",
   "useCase": [
     "配置/记录类数据列表",
-    "需要调整字段显示顺序或按列排序的数据表",
-    "中小数据量（非虚拟滚动）"
+    "需要明确排序状态与可配置字段的数据表",
+    "客户端或服务端排序的中小数据量"
   ],
   "dontUse": ["上万行大数据用 VirtualTable（虚拟滚动）", "层级数据用 Tree", "卡片流式布局用 List"],
   "props": {
@@ -14,28 +14,46 @@
       "default": "'comfortable'",
       "desc": "行高密度（根 data-density）"
     },
-    "bordered": { "type": "boolean", "default": "false", "desc": "外框（行分隔线始终有）" },
+    "bordered": { "type": "boolean", "default": "false", "desc": "外框与单元格分隔线" },
     "striped": { "type": "boolean", "default": "false", "desc": "斑马纹" },
-    "data": { "type": "T[]", "desc": "数据驱动模式的行数组；与 columns 同时传入时启用" },
+    "data": { "type": "T[]", "desc": "数据模式的行数组；与 columns 同时传入时启用" },
     "columns": {
       "type": "TableColumn<T>[]",
-      "desc": "列配置：key/title/width/align/sortable/sorter/render"
+      "desc": "字段配置：key/title/width/align/sortable/sorter/render；render 第三参数为 sourceIndex"
     },
     "rowKey": {
-      "type": "string | ((row, index) => Key)",
-      "desc": "行 key 字段名或取值函数，用于 React key"
+      "type": "keyof T | ((row, index) => Key)",
+      "desc": "行 key 字段名或取值函数"
     },
     "columnState": {
       "type": "{ order?: string[]; hidden?: string[] }",
-      "desc": "受控列状态：显示顺序与隐藏列"
+      "desc": "受控字段状态：显示顺序与隐藏字段；未知/重复 key 会归一化"
     },
     "defaultColumnState": {
-      "type": "{ order?: string[]; hidden?: string[] }",
-      "desc": "非受控初始列状态"
+      "type": "TableColumnState",
+      "desc": "非受控初始字段状态"
     },
     "onColumnStateChange": {
-      "type": "(state) => void",
-      "desc": "列顺序或显隐变化回调（表头拖拽与设置面板共享）"
+      "type": "(state: TableColumnState) => void",
+      "desc": "字段拖拽、键盘移动、上下移、显隐或恢复默认时回调"
+    },
+    "sortState": {
+      "type": "TableSortState | null",
+      "desc": "受控单字段排序状态"
+    },
+    "defaultSortState": {
+      "type": "TableSortState | null",
+      "default": "null",
+      "desc": "非受控初始排序状态"
+    },
+    "onSortStateChange": {
+      "type": "(state: TableSortState | null) => void",
+      "desc": "升序、降序或清除排序回调"
+    },
+    "sortMode": {
+      "type": "'client' | 'manual'",
+      "default": "'client'",
+      "desc": "client 本地重排行；manual 只回调状态，供服务端排序"
     },
     "Table.Row.selected": {
       "type": "boolean",
@@ -45,21 +63,22 @@
     "Table.HeaderCell.align": {
       "type": "'left' | 'center' | 'right'",
       "default": "'left'",
-      "desc": "表头对齐（th scope=\"col\"）"
+      "desc": "语义模式表头对齐"
     },
     "Table.Cell.align": {
       "type": "'left' | 'center' | 'right'",
       "default": "'left'",
-      "desc": "单元格对齐（data-align）"
+      "desc": "语义模式单元格对齐"
     },
-    "classNames": { "type": "{ root? }", "default": "—", "desc": "slot 级类名追加" }
+    "classNames": { "type": "{ root? }", "default": "—", "desc": "table 根元素类名追加" }
   },
   "a11yNotes": [
-    "纯语义 table 标记：<table>/<thead>/<tbody>/<tr>/<th scope=\"col\">/<td>",
-    "复合结构：Table / Table.Head / Table.Body / Table.Row / Table.HeaderCell / Table.Cell",
-    "数据模式：sortable 列表头带 aria-sort（ascending/descending/none），排序按钮可键盘操作",
-    "表头与列设置面板均可指针拖拽调整列顺序；列设置面板为 Popover，提供重置",
-    "至少保留一列可见；不渲染隐藏列的 th/td"
+    "语义结构保持 table/thead/tbody/tr/th[scope=col]/td",
+    "排序使用显式菜单；只有当前活动 th 带 aria-sort=ascending/descending",
+    "字段移动只由具名手柄启动；Alt+方向/Home/End 与面板上下移按钮提供非拖拽替代",
+    "字段管理为具名 dialog，支持搜索、全选 indeterminate、最后一列 disabled 说明与恢复默认",
+    "排序、移动和显隐结果通过 polite live region 播报",
+    "数据模式表格位于具名、可聚焦的局部横向滚动区"
   ],
-  "related": ["Pagination", "VirtualTable", "Card", "Checkbox", "Popover"]
+  "related": ["Pagination", "VirtualTable", "Checkbox", "Popover", "DropdownMenu", "Tooltip"]
 }

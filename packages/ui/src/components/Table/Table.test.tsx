@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
-import { Table } from './index';
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { Table, type TableSortState } from './index';
 
 // 保证用例间 DOM 隔离（setup.ts 未注册自动 cleanup）
 afterEach(cleanup);
@@ -167,9 +167,6 @@ describe('Table', () => {
 
 /* ============================== 数据驱动模式 ============================== */
 
-import { fireEvent, waitFor } from '@testing-library/react';
-import { vi } from 'vitest';
-
 interface DemoRow {
   name: string;
   age: number;
@@ -189,58 +186,144 @@ const demoColumns = [
 ];
 
 function DataTable(props: {
+  label?: string;
   columnState?: { order?: string[]; hidden?: string[] };
   defaultColumnState?: { order?: string[]; hidden?: string[] };
   onColumnStateChange?: (state: { order?: string[]; hidden?: string[] }) => void;
+  sortState?: TableSortState | null;
+  defaultSortState?: TableSortState | null;
+  onSortStateChange?: (state: TableSortState | null) => void;
+  sortMode?: 'client' | 'manual';
 }) {
   return (
     <Table
+      aria-label={props.label ?? '人员表格'}
       data={demoData}
       columns={demoColumns}
       rowKey="name"
       columnState={props.columnState}
       defaultColumnState={props.defaultColumnState}
       onColumnStateChange={props.onColumnStateChange}
+      sortState={props.sortState}
+      defaultSortState={props.defaultSortState}
+      onSortStateChange={props.onSortStateChange}
+      sortMode={props.sortMode}
     />
   );
 }
 
-const headerCells = () =>
-  Array.from(document.querySelectorAll<HTMLTableCellElement>('[data-part="header-cell"]'));
+const tableByLabel = (label = '人员表格') => screen.getByRole('table', { name: label });
 
-const bodyCellsOfColumn = (key: string) =>
-  Array.from(document.querySelectorAll<HTMLTableCellElement>(`td[data-column-key="${key}"]`));
+function headerCells(table: HTMLElement = tableByLabel()): HTMLTableCellElement[] {
+  return Array.from(table.querySelectorAll<HTMLTableCellElement>('[data-part="header-cell"]'));
+}
+
+function headerKeys(table: HTMLElement = tableByLabel()): (string | undefined)[] {
+  return headerCells(table).map((cell) => cell.dataset.columnKey);
+}
+
+function bodyCellsOfColumn(
+  key: string,
+  table: HTMLElement = tableByLabel()
+): HTMLTableCellElement[] {
+  return Array.from(table.querySelectorAll<HTMLTableCellElement>(`td[data-column-key="${key}"]`));
+}
+
+function rect(left: number, top: number, width: number, height: number): DOMRect {
+  return {
+    x: left,
+    y: top,
+    left,
+    top,
+    width,
+    height,
+    right: left + width,
+    bottom: top + height,
+    toJSON() {},
+  } as DOMRect;
+}
+
+function setColumnRects(table: HTMLElement, top = 0) {
+  headerCells(table).forEach((cell, index) => {
+    vi.spyOn(cell, 'getBoundingClientRect').mockReturnValue(rect(index * 100, top, 100, 40));
+  });
+}
+
+function setPanelRects() {
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.z-table-column-item'));
+  items.forEach((item, index) => {
+    vi.spyOn(item, 'getBoundingClientRect').mockReturnValue(rect(0, index * 44, 320, 40));
+  });
+}
+
+function pointer(
+  target: HTMLElement | Window | Document,
+  type: 'pointerdown' | 'pointermove' | 'pointerup' | 'pointercancel',
+  init: Record<string, unknown> = {}
+) {
+  const event = new Event(type, { bubbles: true, cancelable: true });
+  const payload = {
+    pointerId: 7,
+    button: 0,
+    isPrimary: true,
+    clientX: 20,
+    clientY: 20,
+    ...init,
+  };
+  Object.defineProperties(
+    event,
+    Object.fromEntries(
+      Object.entries(payload).map(([key, value]) => [key, { configurable: true, value }])
+    )
+  );
+  fireEvent(target, event);
+}
+
+async function openSortMenu(column: string, current = '未排序') {
+  fireEvent.click(screen.getByRole('button', { name: `${column}排序，当前${current}` }));
+  await waitFor(() => expect(screen.getByRole('menu')).toBeInTheDocument());
+}
+
+async function openColumnManager(buttonName = /字段 3\/3/) {
+  fireEvent.click(screen.getByRole('button', { name: buttonName }));
+  await waitFor(() => expect(screen.getByRole('dialog', { name: '字段管理' })).toBeInTheDocument());
+  return screen.getByRole('dialog', { name: '字段管理' });
+}
 
 describe('Table 数据驱动模式', () => {
-  // jsdom 未实现 pointer capture，表头拖拽依赖它
   beforeAll(() => {
     Object.defineProperty(HTMLElement.prototype, 'setPointerCapture', {
       configurable: true,
       value() {},
     });
+    Object.defineProperty(HTMLElement.prototype, 'releasePointerCapture', {
+      configurable: true,
+      value() {},
+    });
   });
-  it('columns/data 渲染表头与数据行，render 函数生效', () => {
+
+  it('columns/data 渲染表头与数据行，render 接收显示序号与原始序号', () => {
+    const renderCell = vi.fn(
+      (row: DemoRow, index: number, sourceIndex: number) => `${index}/${sourceIndex}:${row.name}`
+    );
     render(
       <Table
+        aria-label="自定义表格"
         data={demoData}
         columns={[
-          { key: 'name', title: '姓名', render: (row: DemoRow) => `姓名:${row.name}` },
+          { key: 'name', title: '姓名', sortable: true, render: renderCell },
           { key: 'age', title: '年龄' },
         ]}
         rowKey="name"
+        defaultSortState={{ key: 'name', order: 'ascend' }}
       />
     );
-    const table = screen.getByRole('table');
-    expect(table).toBeInTheDocument();
-    expect(screen.getByText('姓名')).toBeInTheDocument();
-    expect(screen.getByText('姓名:张三')).toBeInTheDocument();
-    expect(screen.getByText('28')).toBeInTheDocument();
-    // rowKey 用 name 字段作 tr key（不可直接断言，但可断言行数）
-    const bodyRows = document.querySelectorAll('tbody tr');
-    expect(bodyRows).toHaveLength(3);
+    expect(screen.getByRole('table', { name: '自定义表格' })).toBeInTheDocument();
+    expect(screen.getByText('0/1:李四')).toBeInTheDocument();
+    expect(renderCell).toHaveBeenCalledWith(demoData[1], 0, 1);
   });
 
-  it('语义化用法不受影响：不传 columns 时不渲染工具行', () => {
+  it('语义化用法不受影响：不传 columns 时不渲染数据工具栏', () => {
     render(
       <Table>
         <Table.Body>
@@ -251,31 +334,37 @@ describe('Table 数据驱动模式', () => {
       </Table>
     );
     expect(screen.getByRole('table')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '列设置' })).not.toBeInTheDocument();
+    expect(screen.queryByText('数据排序')).not.toBeInTheDocument();
     expect(screen.getByText('仅语义化')).toBeInTheDocument();
   });
 
-  it('点击表头三态排序：升序 → 降序 → 取消，aria-sort 同步', () => {
+  it('显式菜单执行升序、降序与清除；只有活动 th 有 aria-sort', async () => {
     render(<DataTable />);
-    const nameButton = screen.getByRole('button', { name: /姓名/ });
-    expect(headerCells()[0]).toHaveAttribute('aria-sort', 'none');
-    fireEvent.click(nameButton);
+    expect(headerCells().every((cell) => !cell.hasAttribute('aria-sort'))).toBe(true);
+
+    await openSortMenu('姓名');
+    fireEvent.click(screen.getByRole('menuitem', { name: /升序排列/ }));
     expect(headerCells()[0]).toHaveAttribute('aria-sort', 'ascending');
-    // 默认比较用 zh-Hans localeCompare（拼音序：李 < 王 < 张）
+    expect(headerCells()[1]).not.toHaveAttribute('aria-sort');
     expect(bodyCellsOfColumn('name').map((cell) => cell.textContent)).toEqual([
       '李四',
       '王五',
       '张三',
     ]);
-    fireEvent.click(nameButton);
+    expect(screen.getByText('姓名 · 升序')).toBeInTheDocument();
+
+    await openSortMenu('姓名', '升序');
+    fireEvent.click(screen.getByRole('menuitem', { name: /降序排列/ }));
     expect(headerCells()[0]).toHaveAttribute('aria-sort', 'descending');
     expect(bodyCellsOfColumn('name').map((cell) => cell.textContent)).toEqual([
       '张三',
       '王五',
       '李四',
     ]);
-    fireEvent.click(nameButton);
-    expect(headerCells()[0]).toHaveAttribute('aria-sort', 'none');
+
+    await openSortMenu('姓名', '降序');
+    fireEvent.click(screen.getByRole('menuitem', { name: '清除排序' }));
+    expect(headerCells()[0]).not.toHaveAttribute('aria-sort');
     expect(bodyCellsOfColumn('name').map((cell) => cell.textContent)).toEqual([
       '张三',
       '李四',
@@ -283,10 +372,33 @@ describe('Table 数据驱动模式', () => {
     ]);
   });
 
-  it('默认比较按数字排序年龄，sorter 优先于默认比较', () => {
+  it('排序摘要关闭按钮清除排序且受控模式不产生假状态', async () => {
+    const onChange = vi.fn();
+    const { rerender } = render(
+      <DataTable sortState={{ key: 'age', order: 'descend' }} onSortStateChange={onChange} />
+    );
+    expect(screen.getByText('年龄 · 降序')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '清除年龄排序' }));
+    expect(onChange).toHaveBeenCalledWith(null);
+    expect(screen.getByText('年龄 · 降序')).toBeInTheDocument();
+    rerender(<DataTable sortState={null} onSortStateChange={onChange} />);
+    expect(screen.getByText('未排序')).toBeInTheDocument();
+  });
+
+  it('manual 排序只回调状态，不重排 data', async () => {
+    const onChange = vi.fn();
+    render(<DataTable sortMode="manual" onSortStateChange={onChange} />);
+    await openSortMenu('年龄');
+    fireEvent.click(screen.getByRole('menuitem', { name: /升序排列/ }));
+    expect(onChange).toHaveBeenCalledWith({ key: 'age', order: 'ascend' });
+    expect(bodyCellsOfColumn('age').map((cell) => cell.textContent)).toEqual(['28', '32', '24']);
+  });
+
+  it('自定义 sorter 优先；默认数字比较正确', async () => {
     const sorter = vi.fn((a: DemoRow, b: DemoRow) => b.age - a.age);
     render(
       <Table
+        aria-label="排序表格"
         data={demoData}
         columns={[
           { key: 'name', title: '姓名' },
@@ -295,89 +407,164 @@ describe('Table 数据驱动模式', () => {
         rowKey="name"
       />
     );
-    fireEvent.click(screen.getByRole('button', { name: /年龄/ }));
+    await openSortMenu('年龄');
+    fireEvent.click(screen.getByRole('menuitem', { name: /升序排列/ }));
     expect(sorter).toHaveBeenCalled();
-    expect(bodyCellsOfColumn('age').map((cell) => cell.textContent)).toEqual(['32', '28', '24']);
+    expect(
+      bodyCellsOfColumn('age', screen.getByRole('table', { name: '排序表格' })).map(
+        (cell) => cell.textContent
+      )
+    ).toEqual(['32', '28', '24']);
   });
 
-  it('非受控 columnState：面板勾选隐藏列，th/td 消失且至少保留一列', async () => {
+  it('专用表头手柄真实拖拽，按 before/after 精确换列并播报', async () => {
     render(<DataTable />);
-    fireEvent.click(screen.getByRole('button', { name: '列设置' }));
-    const cityToggle = screen.getByRole('checkbox', { name: '显示 城市' });
-    fireEvent.click(cityToggle);
-    await waitFor(() => {
-      expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['name', 'age']);
-    });
-    expect(document.querySelector('td[data-column-key="city"]')).toBeNull();
-    // 继续隐藏年龄：仅剩姓名一列仍合法
-    fireEvent.click(screen.getByRole('checkbox', { name: '显示 年龄' }));
-    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['name']);
-    // 最后一列拒绝隐藏
-    fireEvent.click(screen.getByRole('checkbox', { name: '显示 姓名' }));
-    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['name']);
+    const table = tableByLabel();
+    setColumnRects(table);
+    const handle = screen.getByRole('button', { name: '移动 姓名 列' });
+    pointer(handle, 'pointerdown', { clientX: 20, clientY: 20 });
+    pointer(window, 'pointermove', { clientX: 275, clientY: 20 });
+    pointer(window, 'pointerup', { clientX: 275, clientY: 20 });
+    await waitFor(() => expect(headerKeys()).toEqual(['age', 'city', 'name']));
+    expect(screen.getByRole('status')).toHaveTextContent('姓名已移动到第 3 列');
   });
 
-  it('受控 columnState：hidden/order 由外部驱动，onColumnStateChange 回调', async () => {
+  it('小于阈值、pointercancel 与 Escape 均不误提交', () => {
+    render(<DataTable />);
+    const table = tableByLabel();
+    setColumnRects(table);
+    const handle = screen.getByRole('button', { name: '移动 姓名 列' });
+
+    pointer(handle, 'pointerdown', { clientX: 20 });
+    pointer(window, 'pointermove', { clientX: 24 });
+    pointer(window, 'pointerup', { clientX: 24 });
+    expect(headerKeys()).toEqual(['name', 'age', 'city']);
+
+    pointer(handle, 'pointerdown', { clientX: 20 });
+    pointer(window, 'pointermove', { clientX: 275 });
+    pointer(window, 'pointercancel', { clientX: 275 });
+    expect(headerKeys()).toEqual(['name', 'age', 'city']);
+
+    pointer(handle, 'pointerdown', { clientX: 20 });
+    pointer(window, 'pointermove', { clientX: 275 });
+    fireEvent.keyDown(document, { key: 'Escape' });
+    pointer(window, 'pointerup', { clientX: 275 });
+    expect(headerKeys()).toEqual(['name', 'age', 'city']);
+  });
+
+  it('两个 Table 的拖拽命中互不干扰', async () => {
+    render(
+      <>
+        <DataTable label="第一个表格" />
+        <DataTable label="第二个表格" />
+      </>
+    );
+    const first = tableByLabel('第一个表格');
+    const second = tableByLabel('第二个表格');
+    setColumnRects(first, 0);
+    setColumnRects(second, 100);
+    const handle = within(first.closest('.z-table-data-wrap')!).getByRole('button', {
+      name: '移动 姓名 列',
+    });
+    pointer(handle, 'pointerdown', { clientX: 20, clientY: 20 });
+    pointer(window, 'pointermove', { clientX: 275, clientY: 20 });
+    pointer(window, 'pointerup', { clientX: 275, clientY: 20 });
+    await waitFor(() => expect(headerKeys(first)).toEqual(['age', 'city', 'name']));
+    expect(headerKeys(second)).toEqual(['name', 'age', 'city']);
+  });
+
+  it('Alt+方向/Home/End 提供非拖拽移动并保持可访问播报', () => {
+    render(<DataTable />);
+    const handle = screen.getByRole('button', { name: '移动 姓名 列' });
+    fireEvent.keyDown(handle, { key: 'ArrowRight', altKey: true });
+    expect(headerKeys()).toEqual(['age', 'name', 'city']);
+    fireEvent.keyDown(handle, { key: 'End', altKey: true });
+    expect(headerKeys()).toEqual(['age', 'city', 'name']);
+    expect(screen.getByRole('status')).toHaveTextContent('姓名已移动到第 3 列');
+  });
+
+  it('字段管理：搜索、可见计数、显隐、最后一列禁用与恢复默认', async () => {
+    render(<DataTable defaultColumnState={{ order: ['city', 'name', 'age'] }} />);
+    const dialog = await openColumnManager();
+    expect(dialog).toHaveAccessibleDescription('3 / 3 个字段可见');
+
+    fireEvent.change(within(dialog).getByRole('textbox', { name: '搜索字段' }), {
+      target: { value: '城' },
+    });
+    expect(within(dialog).getByText('城市')).toBeInTheDocument();
+    expect(within(dialog).queryByText('姓名')).not.toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole('button', { name: '清除' }));
+
+    fireEvent.click(within(dialog).getByRole('checkbox', { name: '显示 城市' }));
+    expect(headerKeys()).toEqual(['name', 'age']);
+    expect(screen.getByRole('button', { name: /字段 2\/3/ })).toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole('checkbox', { name: '显示 年龄' }));
+    expect(headerKeys()).toEqual(['name']);
+    expect(within(dialog).getByRole('checkbox', { name: '显示 姓名' })).toBeDisabled();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: '恢复默认字段' }));
+    expect(headerKeys()).toEqual(['name', 'age', 'city']);
+  });
+
+  it('字段管理：显示全部 indeterminate、上下移按钮和面板真实拖拽', async () => {
+    render(<DataTable defaultColumnState={{ hidden: ['city'] }} />);
+    const dialog = await openColumnManager(/字段 2\/3/);
+    const showAll = within(dialog).getByRole('checkbox', { name: '显示全部字段' });
+    expect(showAll).toHaveProperty('indeterminate', true);
+    fireEvent.click(showAll);
+    expect(headerKeys()).toEqual(['name', 'age', 'city']);
+
+    fireEvent.click(within(dialog).getByRole('button', { name: '下移 姓名 字段' }));
+    expect(headerKeys()).toEqual(['age', 'name', 'city']);
+
+    setPanelRects();
+    const dragHandle = within(dialog).getByRole('button', { name: '移动 城市 字段' });
+    pointer(dragHandle, 'pointerdown', { clientX: 20, clientY: 108 });
+    pointer(window, 'pointermove', { clientX: 20, clientY: 10 });
+    pointer(window, 'pointerup', { clientX: 20, clientY: 10 });
+    await waitFor(() => expect(headerKeys()).toEqual(['city', 'age', 'name']));
+  });
+
+  it('隐藏活动排序列时清除排序；字段重置不清除其他排序', async () => {
+    render(
+      <DataTable
+        defaultSortState={{ key: 'city', order: 'ascend' }}
+        defaultColumnState={{ order: ['city', 'name', 'age'] }}
+      />
+    );
+    const dialog = await openColumnManager();
+    fireEvent.click(within(dialog).getByRole('checkbox', { name: '显示 城市' }));
+    expect(screen.getByText('未排序')).toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: '完成' }));
+    await openSortMenu('年龄');
+    fireEvent.click(screen.getByRole('menuitem', { name: /降序排列/ }));
+    const reopened = await openColumnManager(/字段 2\/3/);
+    fireEvent.click(within(reopened).getByRole('button', { name: '恢复默认字段' }));
+    expect(screen.getByText('年龄 · 降序')).toBeInTheDocument();
+  });
+
+  it('受控 columnState 归一化未知/重复/all-hidden，回调发出完整状态', async () => {
     const onChange = vi.fn();
     const { rerender } = render(
-      <DataTable columnState={{ order: ['city', 'name', 'age'] }} onColumnStateChange={onChange} />
-    );
-    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['city', 'name', 'age']);
-    // 受控显隐：面板操作回调 onChange，外层未更新 value 前视图不变
-    fireEvent.click(screen.getByRole('button', { name: '列设置' }));
-    fireEvent.click(screen.getByRole('checkbox', { name: '显示 城市' }));
-    await waitFor(() => expect(onChange).toHaveBeenCalled());
-    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['city', 'name', 'age']);
-    // 外层提交 value 后视图跟随
-    rerender(
       <DataTable
-        columnState={{ order: ['city', 'name', 'age'], hidden: ['city'] }}
+        columnState={{ order: ['ghost', 'city', 'city'], hidden: ['name', 'age', 'city'] }}
         onColumnStateChange={onChange}
       />
     );
-    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['name', 'age']);
-    // 受控顺序
-    rerender(
-      <DataTable
-        columnState={{ order: ['name', 'city', 'age'], hidden: ['city'] }}
-        onColumnStateChange={onChange}
-      />
-    );
-    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['name', 'age']);
-  });
-
-  it('order 缺失 key 追加到末尾；未知 key 不渲染', () => {
-    render(
-      <Table data={demoData} columns={demoColumns} rowKey="name" columnState={{ order: ['age'] }} />
-    );
-    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['age', 'name', 'city']);
-  });
-
-  it('重置按钮恢复声明顺序与全部显示', async () => {
-    render(
-      <Table
-        data={demoData}
-        columns={demoColumns}
-        rowKey="name"
-        defaultColumnState={{ order: ['city', 'name', 'age'], hidden: ['age'] }}
-      />
-    );
-    expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['city', 'name']);
-    fireEvent.click(screen.getByRole('button', { name: '列设置' }));
-    fireEvent.click(screen.getByRole('button', { name: '重置' }));
-    await waitFor(() => {
-      expect(headerCells().map((cell) => cell.dataset.columnKey)).toEqual(['name', 'age', 'city']);
+    expect(headerKeys()).toEqual(['city']);
+    const dialog = await openColumnManager(/字段 1\/3/);
+    fireEvent.click(within(dialog).getByRole('button', { name: '下移 城市 字段' }));
+    expect(onChange).toHaveBeenCalledWith({
+      order: ['name', 'city', 'age'],
+      hidden: ['name', 'age'],
     });
-  });
-
-  it('列设置面板内拖动：非受控模式下更新顺序', () => {
-    // 面板内拖动与表头共享 moveColumn；直接验证面板 li 结构存在
-    render(<DataTable />);
-    fireEvent.click(screen.getByRole('button', { name: '列设置' }));
-    const items = document.querySelectorAll('.z-table-column-item');
-    expect(items).toHaveLength(3);
-    // Checkbox 与列标题一一对应
-    expect(screen.getByRole('checkbox', { name: '显示 姓名' })).toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: '显示 城市' })).toBeInTheDocument();
+    rerender(
+      <DataTable
+        columnState={{ order: ['name', 'city', 'age'], hidden: ['name', 'age'] }}
+        onColumnStateChange={onChange}
+      />
+    );
+    expect(headerKeys()).toEqual(['city']);
   });
 });

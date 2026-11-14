@@ -11,4 +11,6 @@ export type {
   TableColumn,
   TableColumnState,
   TableSortOrder,
+  TableSortMode,
+  TableSortState,
 } from './Table';

@@ -9,7 +9,7 @@
  * 与 a11y.roles / a11y.keyboard / a11y.labels 的分工：那三套断言我们「声明的语义」，
  * 本套用 axe-core 独立规则引擎反向验证「实际 DOM 是否有未声明的缺陷」。
  */
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import axe from 'axe-core';
 import { Alert } from '../components/Alert';
@@ -333,6 +333,32 @@ describe('axe-core 组件矩阵扫描', () => {
         </Table.Body>
       </Table>
     );
+    await expectNoViolations(host);
+  });
+
+  it('Table 数据模式：已排序表头、字段管理与最后可见列保护', async () => {
+    const data = [
+      { name: '张三', count: 3 },
+      { name: '李四', count: 1 },
+    ];
+    const host = renderForAxe(
+      <Table
+        aria-label="人员数据"
+        data={data}
+        columns={[
+          { key: 'name', title: '姓名', sortable: true },
+          { key: 'count', title: '任务数', sortable: true },
+        ]}
+        rowKey="name"
+        defaultSortState={{ key: 'count', order: 'descend' }}
+        defaultColumnState={{ hidden: ['name'] }}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: /字段 1\/2/ }));
+    await waitFor(() => {
+      expect(screen.getByRole('dialog', { name: '字段管理' })).toBeInTheDocument();
+    });
+    expect(screen.getByRole('checkbox', { name: '显示 任务数' })).toBeDisabled();
     await expectNoViolations(host);
   });
 

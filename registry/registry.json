@@ -354,6 +354,8 @@
     "TableColumn": "packages/ui/src/components/Table/index.ts",
     "TableColumnState": "packages/ui/src/components/Table/index.ts",
     "TableSortOrder": "packages/ui/src/components/Table/index.ts",
+    "TableSortMode": "packages/ui/src/components/Table/index.ts",
+    "TableSortState": "packages/ui/src/components/Table/index.ts",
     "Tabs": "packages/ui/src/components/Tabs/index.ts",
     "TabsList": "packages/ui/src/components/Tabs/index.ts",
     "TabsTrigger": "packages/ui/src/components/Tabs/index.ts",
@@ -2519,13 +2521,18 @@
       "name": "table",
       "type": "registry:component",
       "title": "Table 表格",
-      "description": "表格：语义化 table 展示，可选数据驱动模式（columns/data）支持列拖拽排序、点击表头排序与列显隐",
+      "description": "表格：语义化组合用法与专业数据模式；数据模式支持显式排序菜单、专用手柄列移动、受控排序、字段搜索/显隐/重排",
       "dependencies": [
         "@zui/icons"
       ],
       "registryDependencies": [
+        "button",
         "checkbox",
-        "popover"
+        "dropdown-menu",
+        "input",
+        "popover",
+        "tag",
+        "tooltip"
       ],
       "files": [
         "packages/ui/src/components/Table/Table.css",
@@ -2544,7 +2551,10 @@
         "--z-table-row-hover-bg": "var(--z-color-bg-muted)",
         "--z-table-row-selected-bg": "var(--z-color-primary-subtle)",
         "--z-table-row-selected-fg": "var(--z-color-primary-subtle-fg)",
-        "--z-table-striped-bg": "var(--z-color-bg-subtle)"
+        "--z-table-striped-bg": "var(--z-color-bg-subtle)",
+        "--z-table-toolbar-height": "40px",
+        "--z-table-handle-size": "28px",
+        "--z-table-manager-width": "min(360px, calc(100vw - 24px))"
       },
       "meta": "packages/ui/src/components/Table/meta.json"
     },

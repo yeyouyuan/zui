@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { TableColumn } from '@zui/react';
+import type { TableColumn, TableColumnState, TableSortState } from '@zui/react';
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@zui/react';
 
 import ApiTable from '../../components/ApiTable';
@@ -42,15 +42,22 @@ const DATA_CODE = `const columns = [
   { key: 'count', title: '任务数', sortable: true, align: 'right' },
 ];
 
+const [columnState, setColumnState] = useState<TableColumnState>({});
+const [sortState, setSortState] = useState<TableSortState | null>(null);
+
 <Table
+  aria-label="团队任务"
   data={rows}
   columns={columns}
   rowKey="name"
-  onColumnStateChange={(state) => persist(state)}
+  columnState={columnState}
+  onColumnStateChange={setColumnState}
+  sortState={sortState}
+  onSortStateChange={setSortState}
 />;
-// 表头按住可左右拖动调整列顺序；
-// 点击 sortable 列表头按 ascend → descend → 取消 三态排序；
-// 「列设置」面板可拖动排序、勾选显隐、一键重置。`;
+// 「排序」菜单明确选择升序、降序或清除；
+// 专用移动手柄支持拖拽与 Alt+方向/Home/End；
+// 「字段管理」支持搜索、显隐、上下移、拖拽和恢复默认。`;
 
 const BASIC_CODE = `<Table>
   <Table.Head>
@@ -83,14 +90,15 @@ const SELECT_CODE = `<Table.Row selected>
 
 export default function TablePage(): React.ReactNode {
   usePageTitle('Table 表格');
-  const [columnState, setColumnState] = useState<{ order?: string[]; hidden?: string[] }>({});
+  const [columnState, setColumnState] = useState<TableColumnState>({});
+  const [sortState, setSortState] = useState<TableSortState | null>(null);
 
   return (
     <div className="doc-page">
       <h1 className="doc-h1">Table 表格</h1>
       <p className="doc-lead">
-        纯语义 HTML 的展示型表格：table / thead / tbody / tr / th / td 包装组件，props 全量透传，
-        密度、斑马纹、边框、行选中由 data 属性 + 令牌驱动。
+        同时提供纯语义组合模式与专业数据模式。数据模式将数据排序、字段移动和字段显隐明确拆分，
+        支持受控状态、本地或服务端排序，并保留原生 table 语义。
       </p>
 
       <h2 className="doc-h2">示例</h2>
@@ -180,8 +188,8 @@ export default function TablePage(): React.ReactNode {
 
       <Demo
         scroll
-        title="数据驱动：字段排序与列设置"
-        description="传入 data + columns 启用数据模式：拖动表头调整字段显示顺序，点击 sortable 列表头对数据行三态排序，「列设置」面板可拖动排序、勾选显隐并重置。"
+        title="数据驱动：明确排序与高级字段管理"
+        description="「排序」菜单明确选择升序、降序或清除；只有专用手柄负责移动字段；工具栏持续显示当前排序，字段管理支持搜索、显隐、上下移、拖拽与恢复默认。"
         code={DATA_CODE}
         stack
       >
@@ -191,6 +199,8 @@ export default function TablePage(): React.ReactNode {
           rowKey="name"
           columnState={columnState}
           onColumnStateChange={setColumnState}
+          sortState={sortState}
+          onSortStateChange={setSortState}
           striped
         />
       </Demo>
@@ -221,7 +231,7 @@ export default function TablePage(): React.ReactNode {
             name: 'data / columns',
             type: 'T[] / TableColumn<T>[]',
             description:
-              '数据驱动模式：columns 声明 key/title/width/align/sortable/sorter/render；启用后表头可拖拽换列、sortable 列可点击三态排序。',
+              '数据模式：columns 声明 key/title/width/align/sortable/sorter/render；sortable 字段通过显式菜单选择升序、降序或清除，字段由专用手柄移动。',
           },
           {
             name: 'rowKey',
@@ -232,7 +242,18 @@ export default function TablePage(): React.ReactNode {
             name: 'columnState / defaultColumnState / onColumnStateChange',
             type: '{ order?: string[]; hidden?: string[] }',
             description:
-              '列状态受控/非受控与变更回调：order 为列 key 展示顺序（缺失 key 追加末尾），hidden 为隐藏列；表头拖拽与「列设置」面板共享同一状态，至少保留一列可见。',
+              '字段状态受控/非受控与变更回调：order 为字段顺序，hidden 为隐藏字段；表头手柄、字段管理拖拽/上下移/显隐共享状态，始终至少保留一列。',
+          },
+          {
+            name: 'sortState / defaultSortState / onSortStateChange',
+            type: 'TableSortState | null',
+            description: '单字段排序受控/非受控状态及变更回调；隐藏活动排序字段时自动清除。',
+          },
+          {
+            name: 'sortMode',
+            type: "'client' | 'manual'",
+            defaultValue: "'client'",
+            description: 'client 在本地重排行；manual 仅回调排序状态，适合服务端分页与查询。',
           },
           {
             name: 'classNames',
