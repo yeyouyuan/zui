@@ -279,9 +279,19 @@ function pointer(
   fireEvent(target, event);
 }
 
-async function openSortMenu(column: string, current = '未排序') {
-  fireEvent.click(screen.getByRole('button', { name: `${column}排序，当前${current}` }));
-  await waitFor(() => expect(screen.getByRole('menu')).toBeInTheDocument());
+function sortTrigger(column: string, current: '未排序' | '升序' | '降序' = '未排序') {
+  const hint =
+    current === '未排序'
+      ? '点击按升序排列'
+      : current === '升序'
+        ? '点击切换为降序'
+        : '点击清除排序';
+  return screen.getByRole('button', { name: `${column}，${current}，${hint}` });
+}
+
+function sortTh(column: string): HTMLTableCellElement {
+  const table = tableByLabel();
+  return table.querySelector<HTMLTableCellElement>(`th[data-column-key="${column}"]`)!;
 }
 
 async function openColumnManager(buttonName = /字段 3\/3/) {
@@ -338,14 +348,13 @@ describe('Table 数据驱动模式', () => {
     expect(screen.getByText('仅语义化')).toBeInTheDocument();
   });
 
-  it('显式菜单执行升序、降序与清除；只有活动 th 有 aria-sort', async () => {
+  it('标题排序触发器循环升序、降序与清除；只有活动 th 有 aria-sort', () => {
     render(<DataTable />);
     expect(headerCells().every((cell) => !cell.hasAttribute('aria-sort'))).toBe(true);
 
-    await openSortMenu('姓名');
-    fireEvent.click(screen.getByRole('menuitem', { name: /升序排列/ }));
-    expect(headerCells()[0]).toHaveAttribute('aria-sort', 'ascending');
-    expect(headerCells()[1]).not.toHaveAttribute('aria-sort');
+    fireEvent.click(sortTrigger('姓名'));
+    expect(sortTh('name')).toHaveAttribute('aria-sort', 'ascending');
+    expect(sortTh('age')).not.toHaveAttribute('aria-sort');
     expect(bodyCellsOfColumn('name').map((cell) => cell.textContent)).toEqual([
       '李四',
       '王五',
@@ -353,18 +362,16 @@ describe('Table 数据驱动模式', () => {
     ]);
     expect(screen.getByText('姓名 · 升序')).toBeInTheDocument();
 
-    await openSortMenu('姓名', '升序');
-    fireEvent.click(screen.getByRole('menuitem', { name: /降序排列/ }));
-    expect(headerCells()[0]).toHaveAttribute('aria-sort', 'descending');
+    fireEvent.click(sortTrigger('姓名', '升序'));
+    expect(sortTh('name')).toHaveAttribute('aria-sort', 'descending');
     expect(bodyCellsOfColumn('name').map((cell) => cell.textContent)).toEqual([
       '张三',
       '王五',
       '李四',
     ]);
 
-    await openSortMenu('姓名', '降序');
-    fireEvent.click(screen.getByRole('menuitem', { name: '清除排序' }));
-    expect(headerCells()[0]).not.toHaveAttribute('aria-sort');
+    fireEvent.click(sortTrigger('姓名', '降序'));
+    expect(sortTh('name')).not.toHaveAttribute('aria-sort');
     expect(bodyCellsOfColumn('name').map((cell) => cell.textContent)).toEqual([
       '张三',
       '李四',
@@ -388,8 +395,7 @@ describe('Table 数据驱动模式', () => {
   it('manual 排序只回调状态，不重排 data', async () => {
     const onChange = vi.fn();
     render(<DataTable sortMode="manual" onSortStateChange={onChange} />);
-    await openSortMenu('年龄');
-    fireEvent.click(screen.getByRole('menuitem', { name: /升序排列/ }));
+    fireEvent.click(sortTrigger('年龄'));
     expect(onChange).toHaveBeenCalledWith({ key: 'age', order: 'ascend' });
     expect(bodyCellsOfColumn('age').map((cell) => cell.textContent)).toEqual(['28', '32', '24']);
   });
@@ -407,8 +413,7 @@ describe('Table 数据驱动模式', () => {
         rowKey="name"
       />
     );
-    await openSortMenu('年龄');
-    fireEvent.click(screen.getByRole('menuitem', { name: /升序排列/ }));
+    fireEvent.click(sortTrigger('年龄'));
     expect(sorter).toHaveBeenCalled();
     expect(
       bodyCellsOfColumn('age', screen.getByRole('table', { name: '排序表格' })).map(
@@ -537,11 +542,10 @@ describe('Table 数据驱动模式', () => {
     expect(screen.getByText('未排序')).toBeInTheDocument();
 
     fireEvent.click(within(dialog).getByRole('button', { name: '完成' }));
-    await openSortMenu('年龄');
-    fireEvent.click(screen.getByRole('menuitem', { name: /降序排列/ }));
+    fireEvent.click(sortTrigger('年龄'));
     const reopened = await openColumnManager(/字段 2\/3/);
     fireEvent.click(within(reopened).getByRole('button', { name: '恢复默认字段' }));
-    expect(screen.getByText('年龄 · 降序')).toBeInTheDocument();
+    expect(screen.getByText('年龄 · 升序')).toBeInTheDocument();
   });
 
   it('受控 columnState 归一化未知/重复/all-hidden，回调发出完整状态', async () => {

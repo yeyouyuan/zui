@@ -74,7 +74,7 @@
   },
   "a11yNotes": [
     "语义结构保持 table/thead/tbody/tr/th[scope=col]/td",
-    "排序使用显式菜单；只有当前活动 th 带 aria-sort=ascending/descending",
+    "排序由字段名触发器循环升序/降序/清除；只有当前活动 th 带 aria-sort=ascending/descending，摘要标签提供显式清除",
     "字段移动只由具名手柄启动；Alt+方向/Home/End 与面板上下移按钮提供非拖拽替代",
     "字段管理为具名 dialog，支持搜索、全选 indeterminate、最后一列 disabled 说明与恢复默认",
     "排序、移动和显隐结果通过 polite live region 播报",

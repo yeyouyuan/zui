@@ -55,7 +55,7 @@ const [sortState, setSortState] = useState<TableSortState | null>(null);
   sortState={sortState}
   onSortStateChange={setSortState}
 />;
-// 「排序」菜单明确选择升序、降序或清除；
+// 点击字段名循环升序 → 降序 → 清除，工具栏摘要随时可关闭；
 // 专用移动手柄支持拖拽与 Alt+方向/Home/End；
 // 「字段管理」支持搜索、显隐、上下移、拖拽和恢复默认。`;
 
@@ -189,7 +189,7 @@ export default function TablePage(): React.ReactNode {
       <Demo
         scroll
         title="数据驱动：明确排序与高级字段管理"
-        description="「排序」菜单明确选择升序、降序或清除；只有专用手柄负责移动字段；工具栏持续显示当前排序，字段管理支持搜索、显隐、上下移、拖拽与恢复默认。"
+        description="点击字段名循环升序 → 降序 → 清除，工具栏常驻排序摘要可一键关闭；专用手柄负责移动字段（悬停显现），字段管理支持搜索、显隐、上下移、拖拽与恢复默认。"
         code={DATA_CODE}
         stack
       >
@@ -231,7 +231,7 @@ export default function TablePage(): React.ReactNode {
             name: 'data / columns',
             type: 'T[] / TableColumn<T>[]',
             description:
-              '数据模式：columns 声明 key/title/width/align/sortable/sorter/render；sortable 字段通过显式菜单选择升序、降序或清除，字段由专用手柄移动。',
+              '数据模式：columns 声明 key/title/width/align/sortable/sorter/render；sortable 字段点击循环升序、降序与清除，工具栏摘要可随时清除，字段由专用手柄移动。',
           },
           {
             name: 'rowKey',

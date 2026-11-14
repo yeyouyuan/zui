@@ -2528,7 +2528,6 @@
       "registryDependencies": [
         "button",
         "checkbox",
-        "dropdown-menu",
         "input",
         "popover",
         "tag",

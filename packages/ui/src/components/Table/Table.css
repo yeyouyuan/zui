@@ -251,6 +251,23 @@
   color: var(--z-color-fg);
 }
 
+.z-table-drag-handle {
+  opacity: 0;
+  transition: opacity var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-table-header-cell:hover .z-table-drag-handle,
+.z-table-header-cell:focus-within .z-table-drag-handle,
+.z-table-drag-handle:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .z-table-drag-handle {
+    opacity: 0.6;
+  }
+}
+
 .z-table-drag-handle:active,
 .z-table-panel-drag-handle:active {
   cursor: grabbing;
@@ -299,31 +316,23 @@
 .z-table-sort-trigger {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 3px;
-  min-width: 46px;
-  height: 26px;
-  padding: 0 7px;
-  border: 1px solid transparent;
+  gap: 4px;
+  min-width: 0;
+  height: 28px;
+  padding: 0 4px;
+  margin-inline-end: -4px;
+  border: 0;
   border-radius: var(--z-radius-sm);
   background: transparent;
-  color: var(--z-color-fg-subtle);
+  color: inherit;
   font: inherit;
-  font-size: 11px;
+  font-weight: inherit;
   cursor: pointer;
+  transition: background-color var(--z-duration-fast) var(--z-ease-standard);
 }
 
-.z-table-sort-trigger:hover,
-.z-table-sort-trigger[aria-expanded='true'] {
-  border-color: var(--z-color-border);
-  background: var(--z-color-bg);
-  color: var(--z-color-fg);
-}
-
-.z-table-sort-trigger[data-active='true'] {
-  border-color: color-mix(in srgb, var(--z-color-primary) 22%, transparent);
-  background: var(--z-color-primary-subtle);
-  color: var(--z-color-primary-subtle-fg);
+.z-table-sort-trigger:hover {
+  background: var(--z-color-bg-muted);
 }
 
 .z-table-sort-trigger:focus-visible {
@@ -331,20 +340,39 @@
   outline-offset: 1px;
 }
 
-.z-table-sort-trigger-icon {
+.z-table-sort-indicator {
   display: inline-flex;
-}
-
-.z-table-sort-menu {
-  min-width: 190px;
-}
-
-.z-table-sort-menu-row {
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--z-space-4);
-  width: 100%;
+  justify-content: center;
+  flex: none;
+  width: 14px;
+  color: var(--z-color-fg-subtle);
+  opacity: 0.5;
+  transition: opacity var(--z-duration-fast) var(--z-ease-standard);
+}
+
+.z-table-sort-indicator .z-table-sort-caret {
+  display: block;
+  margin-block: -3px;
+}
+
+.z-table-sort-trigger:hover .z-table-sort-indicator {
+  opacity: 1;
+}
+
+.z-table-sort-trigger[data-active='true'] .z-table-sort-indicator {
+  opacity: 1;
+  color: var(--z-color-primary);
+}
+
+.z-table-header-cell[data-sort] .z-table-header-title {
+  color: var(--z-color-fg);
+  font-weight: var(--z-weight-semibold);
+}
+
+.z-table-header-cell[data-sort] {
+  box-shadow: inset 0 -2px 0 var(--z-color-primary);
 }
 
 /* ---------------------------- 字段管理面板 -------------------------- */

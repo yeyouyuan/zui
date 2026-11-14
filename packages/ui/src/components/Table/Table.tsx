@@ -4,7 +4,6 @@ import * as React from 'react';
 import {
   ArrowDown,
   ArrowUp,
-  Check,
   ChevronDown,
   ChevronUp,
   Close,
@@ -16,7 +15,6 @@ import {
 import { Portal, cx, useControllableState } from '../../utils';
 import { Button } from '../Button';
 import { Checkbox } from '../Checkbox';
-import { DropdownMenu } from '../DropdownMenu';
 import { Input } from '../Input';
 import { Popover } from '../Popover';
 import { Tag } from '../Tag';
@@ -584,60 +582,48 @@ function Table<T>(props: TableProps<T>) {
   const sortedColumn = validSortState ? columnByKey.get(validSortState.key) : undefined;
   const sortedLabel = sortedColumn ? nodeText(sortedColumn.title) || sortedColumn.key : '';
 
-  const renderSortMenu = (column: TableColumn<T>) => {
+  const renderSortTrigger = (column: TableColumn<T>) => {
     const active = validSortState?.key === column.key ? validSortState.order : null;
-    const currentLabel = active ? sortLabel(active) : '未排序';
-    const icon =
-      active === 'ascend' ? (
-        <ArrowUp size={12} />
-      ) : active === 'descend' ? (
-        <ArrowDown size={12} />
-      ) : (
-        <ChevronDown size={12} />
-      );
     const label = nodeText(column.title) || column.key;
+    const stateText = active ? sortLabel(active) : '未排序';
+    const nextHint =
+      active === 'ascend'
+        ? '点击切换为降序'
+        : active === 'descend'
+          ? '点击清除排序'
+          : '点击按升序排列';
     return (
-      <DropdownMenu>
-        <DropdownMenu.Trigger
-          className="z-table-sort-trigger"
-          data-active={active ? 'true' : undefined}
-          aria-label={`${label}排序，当前${currentLabel}`}
-        >
-          <span>{active ? sortLabel(active) : '排序'}</span>
-          <span aria-hidden="true" className="z-table-sort-trigger-icon">
-            {icon}
-          </span>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Content className="z-table-sort-menu">
-          <DropdownMenu.Label>{label} · 排序方式</DropdownMenu.Label>
-          <DropdownMenu.Item
-            icon={<ArrowUp size={14} />}
-            onSelect={() => setSort({ key: column.key, order: 'ascend' })}
-          >
-            <span className="z-table-sort-menu-row">
-              升序排列
-              {active === 'ascend' ? <Check size={14} aria-hidden="true" /> : null}
-            </span>
-          </DropdownMenu.Item>
-          <DropdownMenu.Item
-            icon={<ArrowDown size={14} />}
-            onSelect={() => setSort({ key: column.key, order: 'descend' })}
-          >
-            <span className="z-table-sort-menu-row">
-              降序排列
-              {active === 'descend' ? <Check size={14} aria-hidden="true" /> : null}
-            </span>
-          </DropdownMenu.Item>
-          <DropdownMenu.Separator />
-          <DropdownMenu.Item
-            icon={<Close size={14} />}
-            disabled={!active}
-            onSelect={() => setSort(null)}
-          >
-            清除排序
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu>
+      <button
+        type="button"
+        className="z-table-sort-trigger"
+        data-active={active ?? undefined}
+        data-sort={active ?? undefined}
+        aria-label={`${label}，${stateText}，${nextHint}`}
+        title={`${label}：${nextHint}`}
+        onClick={() =>
+          setSort(
+            active === null
+              ? { key: column.key, order: 'ascend' }
+              : active === 'ascend'
+                ? { key: column.key, order: 'descend' }
+                : null
+          )
+        }
+      >
+        <span className="z-table-header-title">{column.title}</span>
+        <span className="z-table-sort-indicator" aria-hidden="true">
+          {active === 'ascend' ? (
+            <ArrowUp size={13} />
+          ) : active === 'descend' ? (
+            <ArrowDown size={13} />
+          ) : (
+            <>
+              <ChevronUp size={11} className="z-table-sort-caret" />
+              <ChevronDown size={11} className="z-table-sort-caret" />
+            </>
+          )}
+        </span>
+      </button>
     );
   };
 
@@ -682,8 +668,11 @@ function Table<T>(props: TableProps<T>) {
               <Menu size={14} aria-hidden="true" />
             </button>
           </Tooltip>
-          <span className="z-table-header-title">{column.title}</span>
-          {column.sortable ? renderSortMenu(column) : null}
+          {column.sortable ? (
+            renderSortTrigger(column)
+          ) : (
+            <span className="z-table-header-title">{column.title}</span>
+          )}
         </span>
       </TableHeaderCell>
     );
