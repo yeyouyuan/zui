@@ -4,7 +4,7 @@
   <p>73 个组件、16 个业务区块、OfficeStudio、页面搭建器，以及可供 CLI / MCP 消费的机器可读 Registry。</p>
 
   <p>
-    <a href="https://github.com/yeyouyuan/zui/releases/tag/v0.4.0"><img alt="Release" src="https://img.shields.io/github/v/release/yeyouyuan/zui?display_name=tag&sort=semver"></a>
+    <a href="https://github.com/yeyouyuan/zui/releases/tag/v0.5.0"><img alt="Release" src="https://img.shields.io/github/v/release/yeyouyuan/zui?display_name=tag&sort=semver"></a>
     <a href="https://github.com/yeyouyuan/zui/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/yeyouyuan/zui/actions/workflows/ci.yml/badge.svg"></a>
     <a href="https://github.com/yeyouyuan/zui/actions/workflows/pages.yml"><img alt="Pages" src="https://github.com/yeyouyuan/zui/actions/workflows/pages.yml/badge.svg"></a>
     <a href="./LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/yeyouyuan/zui"></a>
@@ -20,9 +20,9 @@
   </p>
 </div>
 
-[![ZUI v0.4.0 组件库概览](./docs/assets/readme/overview.png)](https://yeyouyuan.github.io/zui/)
+[![ZUI v0.5.0 组件库概览](./docs/assets/readme/overview.png)](https://yeyouyuan.github.io/zui/)
 
-ZUI 以设计令牌连接设计与代码。组件使用原生 CSS、CSS 变量和语义化定制出口，覆盖常规产品界面、页面级业务场景、文档编辑和可视化页面设计。文档站中的演示可直接操作，截图来自当前 `v0.4.0` 生产站。
+ZUI 以设计令牌连接设计与代码。组件使用原生 CSS、CSS 变量和语义化定制出口，覆盖常规产品界面、页面级业务场景、文档编辑和可视化页面设计。文档站中的演示可直接操作，截图来自当前 `v0.5.0` 生产站。
 
 ## 现在包含什么
 
@@ -77,9 +77,9 @@ ZUI 以设计令牌连接设计与代码。组件使用原生 CSS、CSS 变量�
 浏览器版已包含 React 和 React DOM，适合演示或没有构建步骤的页面。不要与页面中另一份 React 同时使用。
 
 ```html
-<link rel="stylesheet" href="https://yeyouyuan.github.io/zui/cdn/v0.4.0/zui.css" />
+<link rel="stylesheet" href="https://yeyouyuan.github.io/zui/cdn/v0.5.0/zui.css" />
 <div id="root"></div>
-<script src="https://yeyouyuan.github.io/zui/cdn/v0.4.0/zui.global.js"></script>
+<script src="https://yeyouyuan.github.io/zui/cdn/v0.5.0/zui.global.js"></script>
 <script>
   ZUI.createRoot(document.getElementById('root')).render(
     ZUI.React.createElement(ZUI.Button, { variant: 'primary' }, '你好，ZUI')
@@ -99,7 +99,7 @@ ZUI 以设计令牌连接设计与代码。组件使用原生 CSS、CSS 变量�
 
 ```bash
 npm login --scope=@yeyouyuan --auth-type=legacy --registry=https://npm.pkg.github.com
-pnpm add @zui/react@npm:@yeyouyuan/zui-react@0.4.0
+pnpm add @zui/react@npm:@yeyouyuan/zui-react@0.5.0
 ```
 
 npm alias 会保留源码中的 `@zui/*` 导入路径：
@@ -139,7 +139,7 @@ export default function App() {
 ## 组件范围
 
 <details>
-<summary><strong>查看 v0.4.0 的 73 个组件</strong></summary>
+<summary><strong>查看 v0.5.0 的 73 个组件</strong></summary>
 
 - **基础与录入**：Button、Input、InputNumber、Checkbox、Radio/RadioGroup、Switch、Select、Combobox、MultiCombobox、Cascader、Transfer、Mentions、Form、Rate、Slider、ColorPicker、Upload
 - **布局**：Row、Col、Flex、Space、Divider、Splitter

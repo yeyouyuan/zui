@@ -1,6 +1,6 @@
 {
   "name": "@zui/blocks",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "ZUI 业务区块：16 个覆盖数据展示、表单账户与系统管理的 React 页面级区块",
   "type": "module",
   "main": "./dist/index.js",

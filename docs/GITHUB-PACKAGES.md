@@ -24,7 +24,7 @@ GitHub Packages 的 npm 安装需要身份验证。使用有读取包权限的 G
 
 ```bash
 npm login --scope=@yeyouyuan --auth-type=legacy --registry=https://npm.pkg.github.com
-npm install @zui/react@npm:@yeyouyuan/zui-react@0.4.0 @zui/blocks@npm:@yeyouyuan/zui-blocks@0.4.0
+npm install @zui/react@npm:@yeyouyuan/zui-react@0.5.0 @zui/blocks@npm:@yeyouyuan/zui-blocks@0.5.0
 ```
 
 ```tsx
@@ -36,8 +36,8 @@ import { DashboardBlock } from '@zui/blocks';
 按需安装其他包时使用同样的别名形式，例如：
 
 ```bash
-npm install @zui/tokens@npm:@yeyouyuan/zui-tokens@0.4.0 @zui/icons@npm:@yeyouyuan/zui-icons@0.4.0
-npm install --save-dev @zui/cli@npm:@yeyouyuan/zui-cli@0.4.0 @zui/mcp@npm:@yeyouyuan/zui-mcp@0.4.0
+npm install @zui/tokens@npm:@yeyouyuan/zui-tokens@0.5.0 @zui/icons@npm:@yeyouyuan/zui-icons@0.5.0
+npm install --save-dev @zui/cli@npm:@yeyouyuan/zui-cli@0.5.0 @zui/mcp@npm:@yeyouyuan/zui-mcp@0.5.0
 npx zui list
 ```
 
@@ -45,7 +45,7 @@ npx zui list
 
 ## 发布流程
 
-七个公开包保持相同版本。先完成全站回归、工作区检查、构建和分发检查，再在对应提交发布同版本 GitHub Release（例如 v0.4.0）。Publish GitHub Packages 工作流只向 npm.pkg.github.com 发布，通过 GITHUB_TOKEN 的 packages:write 权限认证；也可手动触发工作流。
+七个公开包保持相同版本。先完成全站回归、工作区检查、构建和分发检查，再在对应提交发布同版本 GitHub Release（例如 v0.5.0）。Publish GitHub Packages 工作流只向 npm.pkg.github.com 发布，通过 GITHUB_TOKEN 的 packages:write 权限认证；也可手动触发工作流。
 
 ```bash
 pnpm build

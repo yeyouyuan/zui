@@ -1,6 +1,6 @@
 {
   "name": "@zui/i18n",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "ZUI AI 翻译：useAutoTranslate 组件内置文案自动翻译（openai/deepl/youdao/custom + localStorage 缓存）",
   "type": "module",
   "sideEffects": false,

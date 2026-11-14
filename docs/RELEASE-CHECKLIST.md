@@ -2,6 +2,14 @@
 
 适用包：`@zui/react`、`@zui/tokens`、`@zui/icons`、`@zui/i18n`、`@zui/cli`、`@zui/mcp`、`@zui/blocks`。
 
+## v0.5.0 发布基线（2026-11-14）
+
+- 七个公开包统一为 `0.5.0`，GitHub Release 标签必须为 `v0.5.0`；`@zui/mcp` 运行时自报版本同步。
+- Registry 保持 73 个组件、16 个业务区块（89 条目）；`Table` 新增数据驱动模式：显式排序循环（受控 `sortState`、`manual` 服务端模式）、专用手柄列移动、高级字段管理，语义化用法向后兼容。
+- 发布前门禁与 v0.4.0 相同：Registry 校验、工作区构建与类型检查、ESLint、全量单元测试、浏览器 E2E、浏览器包构建、分发检查、源码消费者检查、包体预算及 GitHub Packages 本地真实安装检查。
+- 发布流程：`main` CI 与 Pages 在同一提交成功后发布 GitHub Release `v0.5.0`，等待 Publish GitHub Packages 工作流完成。
+- CLI 与 MCP 的 `data/registry` 副本通过 `node registry/scripts/bundle.mjs cli|mcp` 重新生成，已随本次发布核对。
+
 ## v0.4.0 发布基线（2026-11-13）
 
 - 七个公开包统一为 `0.4.0`，GitHub Release 标签必须为 `v0.4.0`；`@zui/mcp` 运行时自报版本与包版本一致。
